@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="23px" height="37px" viewBox="0 0 23 37" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 3.7.2 (28276) - http://www.bohemiancoding.com/sketch -->
+    <title>98816D2E-AF47-4C57-A980-67105411167B</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="134.897503%" y1="-21.4907787%" x2="22.6645967%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#59C4FC" offset="0%"></stop>
+            <stop stop-color="#2D91F6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Formulario" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="clear_form_uplds_b" transform="translate(-273.000000, -573.000000)" fill="url(#linearGradient-1)">
+            <path d="M293.144295,601.576596 L293.144295,578.038298 L275.855705,578.038298 L275.855705,601.576596 L293.144295,601.576596 Z M287.818792,606.614894 L287.818792,604.961702 L281.181208,604.961702 L281.181208,606.614894 L287.818792,606.614894 Z M291.060403,573 C292.398219,573 293.555922,573.498575 294.533557,574.495745 C295.511192,575.492915 296,576.67375 296,578.038298 L296,604.961702 C296,606.326248 295.511192,607.507087 294.533557,608.504255 C293.555922,609.501423 292.398219,610 291.060403,610 L277.939597,610 C276.601783,610 275.444077,609.501423 274.466443,608.504255 C273.488809,607.507087 273,606.326248 273,604.961702 L273,578.038298 C273,576.67375 273.488809,575.492915 274.466443,574.495745 C275.444077,573.498575 276.601783,573 277.939597,573 L291.060403,573 Z" id="phone_icon"></path>
+        </g>
+    </g>
+</svg>
