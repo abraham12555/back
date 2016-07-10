@@ -2,11 +2,22 @@ package la.kosmos.app
 
 class Producto {
 
-    String nombre
-    String descripcion
+    String nombreDelProducto
+    Marca marca
+    EntidadFinanciera entidadFinanciera
+    TipoDeProducto tipoDeProducto
+    String rutaImagenDefault
+    boolean activo = true
     
     static constraints = {
-        nombre blank: false
-        descripcion blank:false
+        nombreDelProducto (blank: false)
+        marca (nullable: false)
+        entidadFinanciera (blank: false)
+        tipoDeProducto (nullable: false)
+        rutaImagenDefault (blank: false)
+    }
+    
+    static mapping = {
+        id generator: 'sequence', column: 'id_producto', params:[sequence:'producto_id_seq']
     }
 }

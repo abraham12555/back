@@ -1,9 +1,9 @@
 dataSource {
     pooled = true
     jmxExport = true
-    driverClassName = "org.h2.Driver"
-    username = "sa"
-    password = ""
+    driverClassName = "org.postgresql.Driver"
+    username = "kuser"
+    password = "kpasswd"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -19,19 +19,19 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:h2:testDb"
+            url = "jdbc:postgresql://localhost:5432/kosmosdb"
         }
     }
     test {
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
+            url = "jdbc:postgresql://localhost:5432/kosmosdb"
         }
     }
     production {
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
+            url = "jdbc:postgresql://localhost:5432/kosmosdb"
             properties {
                // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                jmxEnabled = true
