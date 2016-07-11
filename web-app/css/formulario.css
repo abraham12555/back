@@ -1878,7 +1878,17 @@ body{
   margin-right: 10px;
 }
 
-.cobalto, .negro , .plata {
+.oval4{
+  display: inline-block;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background-image: linear-gradient(to bottom, #519fcb, #0e189b);
+  vertical-align: bottom;
+  margin-right: 10px;
+}
+
+.cobalto, .negro , .plata, .azul {
   font-size: 18px;
   font-weight: normal;
   color: #b4b8d4;

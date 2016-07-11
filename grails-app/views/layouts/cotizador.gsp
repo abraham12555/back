@@ -10,11 +10,10 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link href="css/bootstrap.css" title="text/css" rel="stylesheet">
         <link href="css/formulario.css" title="text/css" rel="stylesheet">
-
         <script src="js/jquery-3.0.0.min.js"></script>
         <g:layoutHead/>
     </head>
-    <body class="bodyGray marginBottom150">
+    <body >
         <section class="containerWrapper height100P">
             <div class="cotizador-header">
                 <div class="container paddingTop20 paddingBottom20">
