@@ -3,7 +3,7 @@
     <div class="cotizador-p1-buttons clearFix">
         <g:each in="${productos}" var="producto" status="i">
             <div class="col6 floatLeft marginBottom10">
-                <p id="productElement${i}" class="productElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">${producto.nombre}</p>
+                <p id="productElement${i}" class="productElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">${producto.nombreDelProducto}</p>
             </div>
         </g:each>
     </div>
