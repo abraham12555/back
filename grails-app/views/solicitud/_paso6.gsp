@@ -31,18 +31,28 @@
                 <button id="idOficial" type="button" class="basic darkGray width354 radius100 colorWhite center paddingTop10 paddingBottom10" onclick="abrirModal('modalIds');">SUBE TU IDENTIFICACIÓN OFICIAL</button>
             </div>
             <div class="floatRight marginLeft40">
-                <button type="button" class="darkGray width354 radius100 colorWhite center paddingTop10 paddingBottom10">SUBE TU COMPROBANTE DE DOMICILIO</button>
+                <button id="compDomicilio" type="button" class="darkGray width354 radius100 colorWhite center paddingTop10 paddingBottom10" onclick="abrirModal('modalComp');">SUBE TU COMPROBANTE DE DOMICILIO</button>
             </div>
         </div>
     </div>
 </section>
 <footer class="footerContainer">
     <div class="center autoMargin">
-        <button type="button" class="width337 GrayButton radius100 gray center paddingTop15 paddingBottom15 font20 letterspacing1.8">ENVIAR MI SOLICITUD</button>
+        <button type="button" class="width337 GrayButton radius100 gray center paddingTop15 paddingBottom15 font20 letterspacing1.8" onclick="abrirModal('modalPaso7');">ENVIAR MI SOLICITUD</button>
     </div>
 </footer>
 <div class="modal" id="modalIds" style="display:none;">
     <p>
         <g:render template="/templates/solicitud/paso4/cargaDeIdentificaciones"/>
+    </p>
+</div>
+<div class="modal" id="modalComp" style="display:none;">
+    <p>
+        <g:render template="/templates/solicitud/paso4/cargaDeComprobanteDomiciliario"/>
+    </p>
+</div>
+<div class="modal" id="modalPaso7" style="display:none; vertical-align: middle;">
+    <p>
+        <g:render template="paso7"/>
     </p>
 </div>

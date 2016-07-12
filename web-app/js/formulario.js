@@ -198,3 +198,35 @@ function formatCurrency(n, currency) {
         return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
     });
 }
+
+function activarCheck(check) {
+    var valor = $('#' + check + 'Hdn').val();
+    if (valor === 'NO') {
+        $('#' + check).removeClass("whiteCheckBox");
+        $('#' + check).addClass("colorGreen");
+        $('#' + check).html("<i class='fa fa-check colorWhite paddingLeft2' aria-hidden='true'></i>");
+        $('#' + check + 'Hdn').val('SI');
+    } else {
+        $('#' + check).removeClass("colorGreen");
+        $('#' + check).addClass("whiteCheckBox");
+        $('#' + check).html();
+        $('#' + check + 'Hdn').val('NO');
+    }
+    verificarEnvioDeSolicitud();
+}
+
+function verificarEnvioDeSolicitud() {
+    var terminosYCondiciones = $('#terminosHdn').val();
+    var confidencialidad = $('#confidencialidadHdn').val();
+    if (terminosYCondiciones === 'SI' && confidencialidad === 'SI') {
+        $('#terminarSolicitud').removeClass("GrayButton");
+        $('#terminarSolicitud').removeClass("gray");
+        $('#terminarSolicitud').addClass("blueButton");
+        $('#terminarSolicitud').addClass("colorWhite");
+    } else {
+        $('#terminarSolicitud').removeClass("blueButton");
+        $('#terminarSolicitud').removeClass("colorWhite");
+        $('#terminarSolicitud').addClass("GrayButton");
+        $('#terminarSolicitud').addClass("gray");
+    }
+}

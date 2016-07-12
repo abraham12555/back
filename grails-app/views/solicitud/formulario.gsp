@@ -8,7 +8,7 @@
     </head>
     <body>
         <div id="pasoActual">
-            <g:render template="paso4"/>
+            <g:render template="paso6"/>
         </div>
     </body>
 </html>
