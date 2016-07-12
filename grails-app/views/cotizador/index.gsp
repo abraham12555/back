@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="cotizador"/>
-        <script src="js/cotizador.js"></script>
+        <g:external dir="js" file="cotizador.js" />
     </head>
     <body>       
         <div class="container clearFix">
