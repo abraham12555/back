@@ -16,5 +16,6 @@ class CotizadorController {
         println params.plazoElement
         println params.seguroElement
 
+        redirect(controller: "solicitud", action: "login")
     }
 }
