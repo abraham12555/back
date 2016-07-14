@@ -15,27 +15,17 @@
     <div class="col12 border1 marginBottom40"></div>
     <div class="col12">
         <div class="col8 autoMargin">
-            <div class="col6 floatLeft" style="padding-bottom: 10%;">
-                <div class="whiteBox marginRight20 marginTop23 clearFix">
-                    <div class="floatLeft">
-                        <img class="paddingLeft48 size28 paddingTop20 paddingBottom10"/>
-                    </div>
-                    <div class="center">
-                        <p class="center gray font18 letterspacing1.1 paddingTop20 paddingBottom10">TELMEX</p>
-                    </div>
-                </div>
+            <div class="col6 floatLeft" style="padding-bottom: 7%;">
+                <button type="button" class="botonOpcionModal gray font18">
+                    <span>TELMEX</span>
+                </button>
             </div>
         </div>
         <div class="col8 autoMargin">
-            <div class="col6 floatLeft" style="padding-bottom: 10%;">
-                <div class="whiteBox marginRight20 marginTop23 clearFix">
-                    <div class="floatLeft">
-                        <img class="size28 paddingTop20 paddingBottom10"/>
-                    </div>
-                    <div class="center">
-                        <p class="center gray font18 letterspacing1.1 paddingTop20">CFE</p>
-                    </div>
-                </div>
+            <div class="col6 floatLeft" style="padding-bottom: 7%;">
+                <button type="button" class="botonOpcionModal gray font18">
+                    <span>CFE</span>
+                </button>
             </div>
         </div>
     </div>

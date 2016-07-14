@@ -43,12 +43,12 @@
 </footer>
 <div class="modal" id="modalIds" style="display:none;">
     <p>
-        <g:render template="/templates/solicitud/paso4/cargaDeIdentificaciones"/>
+        <g:render template="/templates/solicitud/paso6/cargaDeIdentificaciones"/>
     </p>
 </div>
 <div class="modal" id="modalComp" style="display:none;">
     <p>
-        <g:render template="/templates/solicitud/paso4/cargaDeComprobanteDomiciliario"/>
+        <g:render template="/templates/solicitud/paso6/cargaDeComprobanteDomiciliario"/>
     </p>
 </div>
 <div class="modal" id="modalPaso7" style="display:none; vertical-align: middle;">

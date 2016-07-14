@@ -178,6 +178,7 @@ function cerrarModal() {
 }
 
 function avanzarPaso(paso) {
+    cerrarModal();
     $.ajax({
         type: 'POST',
         data: 'siguientePaso=' + paso,
@@ -186,6 +187,63 @@ function avanzarPaso(paso) {
             $('#pasoActual').hide();
             $('#pasoActual').html(data);
             $('#pasoActual').fadeIn();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+
+function avanzarPasoModal(paso, idModal, docto) {
+    $('.headingColor').addClass("gray");
+    $('.gray').removeClass("headingColor");
+    $('#labelPaso' + paso).removeClass("gray");
+    $('#labelPaso' + paso).addClass("headingColor");
+    $('#paso' + (paso - 1) + idModal).hide();
+    $('#paso' + paso + idModal).fadeIn();
+    if (idModal === 'WebcamModalIdentificaciones') {
+        $('#paso2ModalIdentificaciones').hide();
+        inicializarCamara();
+    } else if (paso === 3) {
+        $('#paso2WebcamModalIdentificaciones').hide();
+        $('#paso2WebcamModalIdentificaciones').html("");
+        inicializarCamara();
+    }
+}
+
+function inicializarCamara() {
+    $("#webcam").html("");
+    $('#webcam').photobooth().on("image", function (event, dataUrl) {
+        $("#imagenCapturada").val(dataUrl);
+        $("#webcam").html('<img src="' + dataUrl + '">');
+        $('#repetirFoto').prop('disabled', false);
+        $('#repetirFoto').removeClass("GrayButton");
+        $('#repetirFoto').addClass("buttonOrange");
+        $('#guardarFoto').prop('disabled', false);
+        $('#guardarFoto').removeClass("GrayButton");
+        $('#guardarFoto').addClass("colorGreen");
+    });
+    $('#repetirFoto').prop('disabled', true);
+    $('#repetirFoto').removeClass("buttonOrange");
+    $('#repetirFoto').addClass("GrayButton");
+    $('#guardarFoto').prop('disabled', true);
+    $('#guardarFoto').removeClass("colorGreen");
+    $('#guardarFoto').addClass("GrayButton");
+}
+
+function guardarFoto() {
+    $.ajax({
+        type: 'POST',
+        data: 'img_data=' + $("#imagenCapturada").val(),
+        url: '/kosmos-app/solicitud/guardarFoto',
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.status === 200) {
+                sweetAlert("!Enhorabuena¡", "La foto se subio correctamente", "success");
+                avanzarPasoModal(3, 'ModalIdentificaciones', 'ife');
+            } else {
+                sweetAlert("Oops...", "Algo salió mal al subir la foto, intenta nuevamente en unos minutos.", "error");
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -219,11 +277,13 @@ function verificarEnvioDeSolicitud() {
     var terminosYCondiciones = $('#terminosHdn').val();
     var confidencialidad = $('#confidencialidadHdn').val();
     if (terminosYCondiciones === 'SI' && confidencialidad === 'SI') {
+        $('#terminarSolicitud').prop('disabled', false);
         $('#terminarSolicitud').removeClass("GrayButton");
         $('#terminarSolicitud').removeClass("gray");
         $('#terminarSolicitud').addClass("blueButton");
         $('#terminarSolicitud').addClass("colorWhite");
     } else {
+        $('#terminarSolicitud').prop('disabled', true);
         $('#terminarSolicitud').removeClass("blueButton");
         $('#terminarSolicitud').removeClass("colorWhite");
         $('#terminarSolicitud').addClass("GrayButton");

@@ -44,7 +44,7 @@
     </div>
     <div class="marginTop30 marginBottom25">
         <div class="width337 autoMargin GrayButton marginTop30 radius100">
-            <button type="button" id="terminarSolicitud" class="width337 GrayButton radius100 gray center paddingTop18 paddingBottom19 font20 letterspacing1.8 textUpper">enviar mi solicitud</button>
+            <button type="button" id="terminarSolicitud" class="width337 GrayButton radius100 gray center paddingTop18 paddingBottom19 font20 letterspacing1.8 textUpper" onclick="avanzarPaso(8);" disabled>enviar mi solicitud</button>
         </div>
     </div>
 </div>
