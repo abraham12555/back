@@ -44,8 +44,9 @@
          function validar3_1(){
               if(validar_form('form_solicitud_3_1','paso3_1') == true){
                  setPaso('4');
-				 avanzarPaso(4);
-				 console.log("Avanzar Paso");
+		 //avanzarPaso(4);
+                 window.location.href = "/kosmos-app/solicitud/formulario";
+                 console.log("Avanzar Paso");
                  document.getElementById("alinkIr4").setAttribute("style", "");
                  $('#button_ir4').addClass('Rectangle-irA');
                  $('#button_ir4Texto').removeClass('footerTextColor');
