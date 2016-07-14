@@ -3,7 +3,7 @@
     <div class="cotizador-p1-buttons clearFix">
         <g:each in="${productos}" var="producto" status="i">
             <div class="col6 floatLeft marginBottom10">
-                <p id="productElement${i}" class="productElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">${producto.nombreDelProducto}</p>
+                <p id="productElement-${i}" class="productElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">${producto.nombreDelProducto}</p>
             </div>
         </g:each>
     </div>
@@ -15,7 +15,7 @@
     <div class="col6 col12-mob floatLeft">
         <div class="floatLeft paddingTop18 marginLeft24">
             <p class="formTitleColor font12 paddingBottom12 fontWeight500">1. Elige un auto</p>
-            <p class="formTitleColor font19 fontWeight500">NISSAN MAXIMA</p>
+            <p id="productSelected" class="formTitleColor font19 fontWeight500">NISSAN MAXIMA</p>
         </div>
     </div>
     <div class="cambiar-producto col6 col12-mob floatRight">

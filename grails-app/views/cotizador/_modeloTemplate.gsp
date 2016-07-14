@@ -13,16 +13,16 @@
     <h1 class="darkBluetitle font20 fontWeight400 letterspacing1 marginBottom20">Elige un modelo</h1>
     <div class="cotizador-p1-buttons clearFix">
         <div class="col6 floatLeft marginBottom10">
-            <p class="modelElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Pro SP</p>
+            <p id="modelElement-0" class="modelElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Pro SP</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="modelElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Sport SP</p>
+            <p id="modelElement-1" class="modelElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Sport SP</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="modelElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Pro SP</p>
+            <p id="modelElement-2" class="modelElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Pro SP</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="modelElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Sport SP</p>
+            <p id="modelElement-3" class="modelElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">2016 Sport SP</p>
         </div>
     </div>
     <div class="marker">
@@ -33,7 +33,7 @@
     <div class="col6  col12-mob floatLeft">
         <div class="floatLeft paddingTop18 marginLeft24">
             <p class="formTitleColor font12 paddingBottom12 fontWeight500">2. Elige un Modelo</p>
-            <p class="formTitleColor font19 fontWeight500">2016 Regular SP</p>
+            <p id="modelSelected" class="formTitleColor font19 fontWeight500">2016 Regular SP</p>
         </div>
     </div>
     <div class="cambiar-modelo col6 col12-mob floatRight">

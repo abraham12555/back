@@ -16,19 +16,13 @@
     <div class="clearFloat"></div>
     <div class="cotizador-p1-buttons clearFix">
         <div class="marginTop52">
-            <div class="engancheElement width478 autoMargin marginBottom25 clearFix loading-bar-container marginBottom40">
-                <div class="loading-bar-line autoMargin opacity05"></div>
-                <div class="width87 blueButton borderRadius10 positionA">
-                    <p class="white paddingTop10 paddingBottom10 paddingLeft10 font28 fontWeight500">
-                        <span class="paddingRight10">
-                            <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        </span>
-                        25%
-                        <span class="paddingLeft15">
-                            <i class="fa fa-angle-right" aria-hidden="true"></i>
-                        </span>
-                    </p>
-                </div>
+            <div id="financiamientoElement-0" class="engancheElement width478 autoMargin marginBottom25 clearFix loading-bar-container marginBottom40">
+                <p>
+                    <label for="porcentajeDeEnganche">Porcentaje de Enganche: </label>
+                    <input type="text" id="porcentajeDeEnganche" readonly>
+                </p>
+                <br/>
+                <div id="slider"></div>
                 <p class="floatLeft marginLeft12 font14 fontWeight500 gray opacity05 paddingTop5">MIN</p>
                 <p class="floatRight marginRight12 font14 fontWeight500 gray opacity05 paddingTop5">MAX</p>
                 <div class="clearFloat"></div>
@@ -43,7 +37,7 @@
     <div class="col6  col12-mob floatLeft">
         <div class="floatLeft paddingTop18 marginLeft24">
             <p class="formTitleColor font12 paddingBottom12 fontWeight500">4. Tu anganche</p>
-            <p class="formTitleColor font20 fontWeight400">$20,000.00</p>
+            <p id="financiamientoSelected" class="formTitleColor font20 fontWeight400">$20,000.00</p>
         </div>
     </div>
     <div class="cambiar-enganche col6 col12-mob floatRight">

@@ -23,16 +23,16 @@
     <h1 class="darkBluetitle font20 fontWeight400 letterspacing1 marginBottom20">Elige un Color</h1>
     <div class="cotizador-p1-buttons clearFix">
         <div class="col6 floatLeft marginBottom10">
-            <p class="colorElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="azul oval4"></span>Azul</p>
+            <p id="colorElement-0"  class="colorElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="azul oval4"></span>Azul</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="colorElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="cobalto oval1"></span>Cobalto</p>
+            <p id="colorElement-1" class="colorElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="cobalto oval1"></span>Cobalto</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="colorElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="negro oval2"></span>Negro</p>
+            <p id="colorElement-2"  class="colorElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="negro oval2"></span>Negro</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="colorElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="plata oval3"></span>Plata</p>
+            <p  id="colorElement-3" class="colorElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1"><span class="plata oval3"></span>Plata</p>
         </div>
     </div>
     <div class="marker">
@@ -44,8 +44,7 @@
         <div class="floatLeft paddingTop18 marginLeft24">
             <p class="formTitleColor font12 paddingBottom12 fontWeight500">3. Elige un Color</p>
             <div class="floatLeft">
-                <div class="gradientround marginRight10 floatLeft"></div>
-                <p class="formTitleColor font19 fontWeight500 floatLeft">Azul</p>
+                <p id="colorSelected" class="formTitleColor font19 fontWeight500 floatLeft">Azul</p>
             </div>
         </div>
     </div>

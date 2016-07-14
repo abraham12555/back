@@ -5,9 +5,9 @@
     <h1 class="darkBluetitle font20 fontWeight400 letterspacing1 marginBottom20">Elige tu seguro</h1>
     <div class="cotizador-p1-buttons clearFix">
         <div class="col12 floatLeft">
-            <div class="seguroElement cotizador-box lightGray clearFix marginTop15">
+            <div id="seguroElement-0" class="seguroElement cotizador-box lightGray clearFix marginTop15">
                 <div class="floatLeft width228 paddingLeft10">
-                    <p class="paddingTop20 font18 fontWeight500 letterspacing1">Amplio Plus</p>
+                    <p id="tipoDeSeguro-0" class="paddingTop20 font18 fontWeight500 letterspacing1">Amplio Plus</p>
                     <p class="paddingTop10 paddingBottom20 font11 fontWeight500 letterspacing1">NIVEL DE PROTECCIÓN: COMPLETO</p>
                 </div>
                 <div class="floatRight width219 paddingRight10">
@@ -17,9 +17,9 @@
             </div>
         </div>
         <div class="col12 floatLeft">
-            <div class="seguroElement cotizador-box lightGray clearFix marginTop15">
+            <div id="seguroElement-1" class="seguroElement cotizador-box lightGray clearFix marginTop15">
                 <div class="floatLeft width234 paddingLeft10">
-                    <p class="paddingTop20 font18 fontWeight500 letterspacing1">Básico</p>
+                    <p id="tipoDeSeguro-1" class="paddingTop20 font18 fontWeight500 letterspacing1">Básico</p>
                     <p class="paddingTop10 paddingBottom20 font12 fontWeight500 letterspacing1">NIVEL DE PROTECCIÓN: SUFICIENTE</p>
                 </div>
                 <div class="floatRight width109 paddingRight10">
@@ -29,9 +29,9 @@
             </div>
         </div>
         <div class="col12 floatLeft">
-            <div class="seguroElement cotizador-box lightGray clearFix marginTop15">
+            <div id="seguroElement-2" class="seguroElement cotizador-box lightGray clearFix marginTop15">
                 <div class="floatLeft width234 paddingLeft10">
-                    <p class="paddingTop20 font18 fontWeight500 letterspacing1">Esencial</p>
+                    <p id="tipoDeSeguro-2" class="paddingTop20 font18 fontWeight500 letterspacing1">Esencial</p>
                     <p class="paddingTop10 paddingBottom20 font12 fontWeight500 letterspacing1">NIVEL DE PROTECCIÓN: BUENO</p>
                 </div>
                 <div class="floatRight width109 paddingRight10">
@@ -49,7 +49,7 @@
     <div class="col8 col12-mob floatLeft">
         <div class="floatLeft marginLeft24">
             <p class="formTitleColor font12 paddingBottom12 fontWeight500">6. Seguro</p>
-            <p class="formTitleColor font20 fontWeight400">Amplio Plus</p>
+            <p id="seguroSelected" class="formTitleColor font20 fontWeight400">Amplio Plus</p>
         </div>
     </div>
     <div class="cambiar-seguro col4 col12-mob floatRight">

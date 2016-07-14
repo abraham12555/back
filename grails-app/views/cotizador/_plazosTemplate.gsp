@@ -21,34 +21,34 @@
     </div>
     <div class="cotizador-p1-buttons clearFix">
         <div class="col6 floatLeft marginBottom10">
-            <p class="periodoElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">Quincenal</p>
+            <p id="periodoElement-0" class="periodoElement width234 marginRight3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">Quincenal</p>
         </div>
         <div class="col6 floatLeft marginBottom10">
-            <p class="periodoElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">Mensual</p>
+            <p id="periodoElement-1" class="periodoElement width234 marginLeft3 center cotizador-box lightGray paddingTop20 paddingBottom20 font18 fontWeight300 letterspacing1">Mensual</p>
         </div>
         <h1 class="dark-blue-titles font20 fontWeight400 letterspacing1 marginBottom20">A cuantos meses pagarás tu auto?</h1>
         <div class="plazos-form3">
             <div class="col3 floatLeft">
-                <div class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
+                <div id="plazoElement-0" class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
                     <p class="font18 opacity08">12 meses</p>
                     <p class="font14 opacity08">$10,000</p>
                 </div>
 
             </div>
             <div class="col3 floatLeft">
-                <div class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
+                <div id="plazoElement-1" class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
                     <p class="font18 opacity08">12 meses</p>
                     <p class="font14 opacity08">$10,000</p>
                 </div>
             </div>
             <div class="col3 floatLeft">
-                <div class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
+                <div id="plazoElement-2"  class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
                     <p class="font18 opacity08">12 meses</p>
                     <p class="font14 opacity08">$10,000</p>
                 </div>
             </div>
             <div class="col3 floatLeft">
-                <div class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
+                <div id="plazoElement-3"  class="plazoElement marginLeft3 marginRight3 center cotizador-box lightGray paddingTop10 paddingBottom10 font18 fontWeight300 letterspacing1">
                     <p class="font18 opacity08">12 meses</p>
                     <p class="font14 opacity08">$10,000</p>
                 </div>
@@ -63,7 +63,7 @@
     <div class="col6  col12-mob floatLeft">
         <div class="floatLeft paddingTop18 marginLeft24">
             <p class="formTitleColor font12 paddingBottom12 fontWeight500">5. Tus Pagos</p>
-            <p class="formTitleColor font17 fontWeight500">$7,000.00 | Mensual | 36 meses</p>
+            <p id="plazosSelected" class="formTitleColor font17 fontWeight500">Mensual | 36 meses | $7,000</p>
         </div>
     </div>
     <div class="cambiar-plazo col6 col12-mob floatRight">

@@ -59,6 +59,8 @@ $(function(){
             $('.producto-form1').fadeIn();
             $('.modelo-form1').fadeIn();
             $('.financiamiento-form0').show();
+            $('#productElement').val($(this).attr('id').toString());
+            $('#productSelected').html($(this).html());
         }
     );
 
@@ -102,6 +104,8 @@ $(function(){
             $('.financiamiento-form1').fadeIn();
             agregarOpacity($('.producto-form1'), $('.cambiar-producto'));
             $('.cambiar-producto').off('click');
+            $('#modelElement').val($(this).attr('id').toString());
+            $('#modelSelected').html($(this).html());
         }
     );
 
@@ -144,6 +148,8 @@ $(function(){
             $('.financiamiento-form2').fadeIn();
             $('.plazos-form1').fadeIn();
             $('.cambiar-modelo').off('click');
+            $('#colorElement').val($(this).attr('id').toString());
+            $('#colorSelected').html($(this).html());
         }
     );
 
@@ -170,6 +176,9 @@ $(function(){
             $('.plazos-form2').fadeIn();
             $('.plazoElement.lightGray').off('click');
             $('.seguro-form0').fadeIn();
+            $('#financiamientoElement').val($(this).attr('id').toString());
+            $('#financiamientoSelected').html($('#porcentajeDeEnganche').val()+"%");
+
         }
     );
 
@@ -183,7 +192,7 @@ $(function(){
     //**********
     // CUANDO SE ELIGE PERIODO Y PLAZO
     //**********
-
+    var periodoTmp;
     // Cuando se da click sobre un boton de periodo
     $('.periodoElement').click(
         function (){
@@ -191,6 +200,8 @@ $(function(){
             $('.periodoElement.blueButton').removeClass("blueButton");
             $(this).removeClass("lightGray");
             $(this).addClass('blueButton');
+            $('#periodoElement').val($(this).attr('id').toString());
+            periodoTmp = $(this).html();
             $('.plazoElement.lightGray').on('click',
                 function() {
                     $(this).removeClass("lightGray");
@@ -203,8 +214,11 @@ $(function(){
                     $('.plazos-form2').hide();
                     $('.seguro-form0').hide();
                     $('.seguro-form1').fadeIn();
+                    $('#plazoElement').val($(this).attr('id').toString());
+                    $('#plazosSelected').html(periodoTmp + " | " + $(this).html());
                 }
             );
+
         }
     );
 
@@ -242,6 +256,10 @@ $(function(){
             $('.seguro-form0').hide();
             $('.seguro-form1').hide();
             showResumen();
+            var tipo = "tipoDeSeguro-" + $(this).attr('id').toString().split('-')[1];
+            var tipoDeSeguro = $('#' + tipo).html();
+            $('#seguroElement').val($(this).attr('id').toString());
+            $('#seguroSelected').html(tipoDeSeguro);
         }
     );
 
