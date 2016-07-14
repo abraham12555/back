@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="utf-8">
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />
-        <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="formulario2.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="progressbar.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery-ui.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />

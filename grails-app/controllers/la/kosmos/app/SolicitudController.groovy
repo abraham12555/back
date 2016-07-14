@@ -1,8 +1,13 @@
 package la.kosmos.app
 
 import grails.converters.JSON
-import java.util.Random
+import java.awt.image.BufferedImage
 import java.text.SimpleDateFormat
+import javax.imageio.ImageIO
+import java.util.Random
+import org.apache.commons.codec.binary.Base64
+import javax.xml.bind.DatatypeConverter
+//import org.apache.commons.io.FileUtils
 
 class SolicitudController {
     
@@ -31,13 +36,13 @@ class SolicitudController {
         }
 
         [nacionalidadList:Nacionalidad.findAll(),
-         estadoCivilList:EstadoCivil.findAll(),
-         coloniaList:Colonia.findAll(),
-         estadoList:Estado.findAll(),
-         municipioList:Municipio.findAll(),
-         temporalidadList:Temporalidad.findAll(),
-         datos_login:datos_login,
-         tipo_login:tipo_login]
+            estadoCivilList:EstadoCivil.findAll(),
+            coloniaList:Colonia.findAll(),
+            estadoList:Estado.findAll(),
+            municipioList:Municipio.findAll(),
+            temporalidadList:Temporalidad.findAll(),
+            datos_login:datos_login,
+            tipo_login:tipo_login]
     }
     
     def formulario(){
@@ -58,20 +63,20 @@ class SolicitudController {
         String[] nombre = params.NOMBRE_USUARIO.toString().split(" ");
         int num = nombre.size()
         switch (num) {
-            case 1:
-                cliente.setNombre(nombre[0]);
-                break;
+        case 1:
+            cliente.setNombre(nombre[0]);
+            break;
 
-            case 2:
-                cliente.setNombre(nombre[0]);
-                cliente.setApellidoPaterno(nombre[1]);
-                break;
+        case 2:
+            cliente.setNombre(nombre[0]);
+            cliente.setApellidoPaterno(nombre[1]);
+            break;
 
-            case 3:
-                cliente.setNombre(nombre[0]);
-                cliente.setApellidoPaterno(nombre[1]);
-                cliente.setApellidoMaterno(nombre[2]);
-                break;
+        case 3:
+            cliente.setNombre(nombre[0]);
+            cliente.setApellidoPaterno(nombre[1]);
+            cliente.setApellidoMaterno(nombre[2]);
+            break;
 
         }
 
@@ -252,5 +257,39 @@ class SolicitudController {
     
     def cargaDeArchivos(){
         render(template: "/templates/solicitud/paso4/cargaDeIdentificaciones")
+    }
+    
+    def guardarFoto(){
+        //println params
+        def respuesta = [:]
+        def imagenOrigen = params.img_data;
+        println "Longitud de la cadena: " + params.img_data.length()
+        def tokens = imagenOrigen.split(",");
+        String cadenaBase64 = URLEncoder.encode(tokens[1], "UTF-8");
+        int max = 1000  
+        def test = rand.nextInt(max+1)
+        BufferedImage imagen = null;
+        byte[] imagenEnBytes;
+        try{
+            //println cadenaBase64
+            imagenEnBytes = Base64.decodeBase64(cadenaBase64)
+            File file = new File("/var/uploads/kosmos/fotos/image" + test + ".png");
+            BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(file));
+            writer.write(imagenEnBytes);
+            writer.flush();
+            writer.close();
+            /*ByteArrayInputStream bis = new ByteArrayInputStream(imagenEnBytes);
+            imagen = ImageIO.read(bis);
+            bis.close();
+            File outputfile = new File("/var/uploads/kosmos/fotos/image" + test + ".png");
+            ImageIO.write(imagen, "png", outputfile);*/
+            respuesta.status = 200
+        } catch(Exception e){
+            respuesta.status = 500
+            respuesta.error = "Error al guardar el archivo"
+            e.printStackTrace();
+        } finally {
+            render respuesta as JSON
+        }
     }
 }
