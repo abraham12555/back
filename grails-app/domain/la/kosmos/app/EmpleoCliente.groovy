@@ -22,23 +22,25 @@ class EmpleoCliente implements Serializable{
     Cliente cliente
     
     static constraints = {
+
         puesto (blank: false)
-        actividad (blank: false)
-        profesion (blank: false)
-        giroEmpresarial (nullable: false)
+        actividad (nullable: true)
+        profesion (nullable: true)
+        giroEmpresarial (nullable: true)
         nombreDeLaEmpresa (blank: false)
-        nombreDelJefeInmediato (blank: false)
+        nombreDelJefeInmediato (nullable: true)
         temporalidad (nullable: false)
-        telefono (blank: false, maxSize: 10)
-        calle (blank: false)
-        numeroExterior (blank: false)
+        telefono (nullable: true, maxSize: 10)
+        calle (nullable: true)
+        numeroExterior (nullable: true)
         numeroInterior (nullable: true)
-        colonia (nullable: false)
-        municipio (nullable: false)
-        codigoPostal (blank: false, maxSize: 5)
-        ciudad (blank: false)
-        estado (nullable: false)
-        cliente (nullable: false)
+        colonia (nullable: true)
+        municipio (nullable: true)
+        codigoPostal (nullable: true, maxSize: 5)
+        ciudad (nullable: true)
+        estado (nullable: true)
+        cliente (nullable: true)
+
     }
     
     static mapping = {

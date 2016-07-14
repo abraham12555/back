@@ -25,11 +25,12 @@ class DireccionCliente implements Serializable{
         colonia (nullable: false)
         municipio (nullable: false)
         codigoPostal (blank: false, maxSize: 5)
-        ciudad (blank: false)
+        ciudad (nullable: true)
         estado (nullable: false)
-        tipoDeVivienda (nullable: false)
-        temporalidad (nullable: false)
+        tipoDeVivienda (nullable: true)
+        temporalidad (nullable: true)
         cliente (nullable: false)
+
     }
     
     static mapping = {
