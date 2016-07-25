@@ -381,11 +381,24 @@ function operacionesPaso6() {
 
     $('.camCapture').click(function () {
         $(this).parent().parent().parent().parent().parent().fadeOut();
-        $('.webcam_capture').delay(300).fadeIn();
-        $('.initialImage').delay(450).fadeOut();
-        $('.camPreview').delay(500).fadeIn();
-        $('.camControls').delay(500).fadeIn();
-        inicializarCamara();
+        $('.webcam_capture').fadeIn();
+        inicializarCamara('Frente');
+    });
+
+    $('#repetirFotoFrente').click(function () {
+        inicializarCamara('Frente');
+    });
+
+    $('#guardarFotoFrente').click(function () {
+        guardarFoto('Frente');
+    });
+    
+    $('#repetirFotoVuelta').click(function () {
+        inicializarCamara('Vuelta');
+    });
+
+    $('#guardarFotoVuelta').click(function () {
+        guardarFoto('Vuelta');
     });
 
     $('.goLastStep').click(function () {
@@ -737,37 +750,54 @@ function formatCurrency(n, currency) {
     });
 }
 
-function inicializarCamara() {
+function inicializarCamara(cara) {
     console.log("Inicializando camara...");
-    $("#webcam").html("");
-    $('#webcam').photobooth().on("image", function (event, dataUrl) {
-        $("#imagenCapturada").val(dataUrl);
-        $("#webcam").html('<img src="' + dataUrl + '">');
-        $('#repetirFoto').prop('disabled', false);
-        $('#repetirFoto').removeClass("GrayButton");
-        $('#repetirFoto').addClass("buttonOrange");
-        $('#guardarFoto').prop('disabled', false);
-        $('#guardarFoto').removeClass("GrayButton");
-        $('#guardarFoto').addClass("colorGreen");
+    $('#webcam' + cara).html("");
+    $('#webcam' + cara).photobooth().on("image", function (event, dataUrl) {
+        $('#webcam' + cara).data('photobooth').destroy();
+        $("#imagenCapturada" + cara).val(dataUrl);
+        $('#webcam' + cara).html('<img src="' + dataUrl + '">');
+        $('#repetirFoto' + cara).prop('disabled', false);
+        $('#repetirFoto' + cara).removeClass("GrayButton");
+        $('#repetirFoto' + cara).addClass("buttonOrange");
+        $('#guardarFoto' + cara).prop('disabled', false);
+        $('#guardarFoto' + cara).removeClass("GrayButton");
+        $('#guardarFoto' + cara).addClass("colorGreen");
     });
-    $('#repetirFoto').prop('disabled', true);
-    $('#repetirFoto').removeClass("buttonOrange");
-    $('#repetirFoto').addClass("GrayButton");
-    $('#guardarFoto').prop('disabled', true);
-    $('#guardarFoto').removeClass("colorGreen");
-    $('#guardarFoto').addClass("GrayButton");
+    $('#repetirFoto' + cara).prop('disabled', true);
+    $('#repetirFoto' + cara).removeClass("buttonOrange");
+    $('#repetirFoto' + cara).addClass("GrayButton");
+    $('#guardarFoto' + cara).prop('disabled', true);
+    $('#guardarFoto' + cara).removeClass("colorGreen");
+    $('#guardarFoto' + cara).addClass("GrayButton");
 }
 
-function guardarFoto() {
+function detenerCamara(cara) {
+    $('#webcam' + cara).data('photobooth').pause();
+    $('.photobooth').remove();
+    $('#webcam' + cara).html('');
+}
+
+function guardarFoto(cara) {
     $.ajax({
         type: 'POST',
-        data: 'img_data=' + $("#imagenCapturada").val(),
+        data: 'img_data=' + $("#imagenCapturada" + cara).val() + "&cara=" + cara,
         url: '/kosmos-app/solicitud/guardarFoto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.status === 200) {
                 sweetAlert("!Enhorabuena¡", "La foto se subio correctamente", "success");
-                avanzarPasoModal(3, 'ModalIdentificaciones', 'ife');
+                if (cara === 'Frente') {
+                    detenerCamara('Frente');
+                    $('#fotoFrente').fadeOut();
+                    $('.active_blue').removeClass('active_blue');
+                    $('.paddingBottom15').addClass('active_blue');
+                    $('#fotoVuelta').fadeIn();
+                    inicializarCamara('Vuelta');
+                } else if (cara === 'Vuelta'){
+                    detenerCamara('Vuelta');
+                    $('#identification_oficial').fadeOut();
+                }
             } else {
                 sweetAlert("Oops...", "Algo salió mal al subir la foto, intenta nuevamente en unos minutos.", "error");
             }

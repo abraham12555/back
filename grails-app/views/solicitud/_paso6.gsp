@@ -44,10 +44,10 @@
                     <p class="menuTile active_blue font16 ">PASO 1 /  TIPO DE IDENTIFICACIÓN</p>
                 </div>
                 <div class="col4 col12-mob floatLeft ">
-                    <p class="menuTile    gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
+                    <p class="menuTile gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
                 </div>
                 <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile   paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
+                    <p class="menuTile paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
                 </div>
             </div>
             <div class="border1"></div>
@@ -84,10 +84,10 @@
                     <p class="menuTile font16 ">PASO 1 /  TIPO DE IDENTIFICACIÓN</p>
                 </div>
                 <div class="col4 col12-mob floatLeft ">
-                    <p class="menuTile  active_blue  gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
+                    <p class="menuTile active_blue  gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
                 </div>
                 <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile   paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
+                    <p class="menuTile paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
                 </div>
             </div>
             <div class="border1"></div>
@@ -196,7 +196,7 @@
             </div>
         </div>
 
-        <div class="webcam_capture hide">
+        <div class="webcam_capture" style="display: none;">
 
             <div class="border1 clearFloat"></div>
             <div class="clearFix">
@@ -211,31 +211,18 @@
                 </div>
             </div>
             <div class="border1"></div>
-            <div class="col12 clearFix">
+            <div id="fotoFrente" class="col12 clearFix">
                 <div class="clearFix padding20">
                     <div class="col6 col12-mob floatLeft mobileDiv">
-                        <div class="padding20 initialImage">
-                            <p class="upldsTitles gray font16 fontWeight500 marginTop22 marginBottom19">
-                                Captura el <span class="headingColor">frente </span> de tu identificación con tu webcam
-                            </p>
-                            <br/>
-                            <p class="upldsTitles font16 gray fontWeight500">
-                                ACTIVA LA CAMARA
-                            </p>
-
-                            <div class="width95p marginLeft15">
-                            </div>
-                        </div>
-
-                        <div class="camPreview hide">
+                        <div class="camPreview">
                             <div class="marginLeft21">
                                 <p class="upldsTitles gray font16 fontWeight600 marginTop22 marginBottom19">
                                     Captura el <span class="headingColor">frente </span> de tu identificación con tu webcam
                                 </p>
                             </div>
-                            <div style="height:320px;width: 400px;" class="marginLeft21">
-                                <input type="hidden" id="imagenCapturada" name="imagenCapturada" value="" />
-                                <div id="webcam" style="height:320px;width: 400px; margin-top: 5%; text-align: center;"></div>
+                            <div style="min-height: 200px; min-width: 200px; height:320px;width: 400px;" class="marginLeft21">
+                                <input type="hidden" id="imagenCapturadaFrente" name="imagenCapturadaFrente" value="" />
+                                <div id="webcamFrente" style="height:320px;width: 400px; margin-top: 5%; text-align: center;"></div>
                             </div>
                         </div>
                     </div>
@@ -260,21 +247,81 @@
                     </div>
                 </div>
 
-                <div class="col9 col11-tab col12-mob camControls hide">
+                <div class="col9 col11-tab col12-mob camControls">
                     <div class="paddingAside20 clearFix">
-                        <div class="floatLeft col6  col12-mob">
-                            <div class="colorGreen width350 marginLeft15 radius100 marginBottom20 mobileAuto">
-                                <p class="colorWhite font16 fontWeight600 paddingTop9 paddingBottom9 center letterspacing1">
+                        <div class="floatLeft col4 col12-mob">
+                            <div class="buttonOrange width210 marginLeft15 radius100 marginBottom20 mobileAuto">
+                                <button type="button" id="repetirFotoFrente" style="background: #fb5e48;" class="buttonOrange radius100 mobileAuto width210 colorWhite font16 fontWeight600 paddingTop9 paddingBottom9 center letterspacing1">
                                     REPETIR FOTO
-                                </p>
+                                </button>
                             </div>
                         </div>
                         <div class="floatLeft col6  col12-mob">
-                            <div class="colorGreen width350 marginLeft15 radius100 marginBottom20 mobileAuto">
-                                <p class="colorWhite font16 fontWeight600 paddingTop9 paddingBottom9 center letterspacing1">
-                                    GUARDAR FOTO
+                            <a id="guardarFoto">
+                                <div class="colorGreen width210 marginLeft15 radius100 marginBottom20 mobileAuto">
+                                    <button type="button" id="guardarFotoFrente" class="colorGreen width210 radius100 mobileAuto colorWhite font16 fontWeight600 paddingTop9 paddingBottom9 center letterspacing1">
+                                        GUARDAR FOTO
+                                    </button>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearFloat"></div>
+            </div>
+            <div id="fotoVuelta" class="col12 clearFix" style="display: none;">
+                <div class="clearFix padding20">
+                    <div class="col6 col12-mob floatLeft mobileDiv">
+                        <div class="camPreview">
+                            <div class="marginLeft21">
+                                <p class="upldsTitles gray font16 fontWeight600 marginTop22 marginBottom19">
+                                    Captura la <span class="headingColor">vuelta </span> de tu identificación con tu webcam
                                 </p>
                             </div>
+                            <div style="min-height: 200px; min-width: 200px; height:320px;width: 400px;" class="marginLeft21">
+                                <input type="hidden" id="imagenCapturadaVuelta" name="imagenCapturadaVuelta" value="" />
+                                <div id="webcamVuelta" style="height:320px;width: 400px; margin-top: 5%; text-align: center;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col6 col12-mob floatLeft mobileDiv2">
+                        <div class="padding20">
+                            <p class="marginTop30 upldsTitles gray font16 fontWeight500 latterspacing1">
+                                COMPARA LOS EJEMPLOS
+                            </p>
+
+                            <div class="width350">
+                                <img class="upldsWebimage imgResponsive" src="${resource(dir:'images', file:'ids.png')}" alt="ids" />
+                            </div>
+                            <div class="marginLeft30">
+                                <p class=" upldsTitles colorRed font16 latterspacing1">
+                                    Tu documento no puede tener tachaduras o
+                                </p>
+                                <p class="upldsTitles colorRed font16 latterspacing1">
+                                    enmendaduras y debe ser legible y claro
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col9 col11-tab col12-mob camControls">
+                    <div class="paddingAside20 clearFix">
+                        <div class="floatLeft col4 col12-mob">
+                            <div class="buttonOrange width210 marginLeft15 radius100 marginBottom20 mobileAuto">
+                                <button type="button" id="repetirFotoVuelta" style="background: #fb5e48;" class="buttonOrange radius100 mobileAuto width210 colorWhite font16 fontWeight600 paddingTop9 paddingBottom9 center letterspacing1">
+                                    REPETIR FOTO
+                                </button>
+                            </div>
+                        </div>
+                        <div class="floatLeft col6  col12-mob">
+                            <a id="guardarFoto">
+                                <div class="colorGreen width210 marginLeft15 radius100 marginBottom20 mobileAuto">
+                                    <button type="button" id="guardarFotoVuelta" class="colorGreen width210 radius100 mobileAuto colorWhite font16 fontWeight600 paddingTop9 paddingBottom9 center letterspacing1">
+                                        GUARDAR FOTO
+                                    </button>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
