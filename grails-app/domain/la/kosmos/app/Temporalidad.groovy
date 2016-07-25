@@ -12,4 +12,8 @@ class Temporalidad implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_temporalidad', params:[sequence:'temporalidad_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

@@ -11,4 +11,8 @@ class StatusDeSolicitud implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_satus_de_solicitud', params:[sequence:'status_de_solicitud_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

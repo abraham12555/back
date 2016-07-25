@@ -11,4 +11,8 @@ class GiroEmpresarial implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_giro_empresarial', params:[sequence:'giro_empresarial_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

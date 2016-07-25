@@ -11,4 +11,8 @@ class Estado implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_estado', params:[sequence:'estado_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

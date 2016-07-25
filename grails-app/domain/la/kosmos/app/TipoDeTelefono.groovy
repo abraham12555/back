@@ -12,4 +12,8 @@ class TipoDeTelefono implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_tipo_de_telefono', params:[sequence:'tipo_de_telefono_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

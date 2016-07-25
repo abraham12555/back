@@ -7,9 +7,8 @@
         <title>Kosmos - Formulario</title>
     </head>
     <body>
-        <input type="hidden" id="pasoInicial" value="${paso}">
         <div id="pasoActual">
-            <g:render template="paso${paso}"/>
+            <g:render template="paso4"/>
         </div>
     </body>
 </html>

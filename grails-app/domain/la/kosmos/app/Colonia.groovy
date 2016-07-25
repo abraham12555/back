@@ -13,4 +13,8 @@ class Colonia implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_colonia', params:[sequence:'colonia_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

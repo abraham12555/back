@@ -12,4 +12,8 @@ class TipoDeEmail implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_tipo_de_email', params:[sequence:'tipo_de_email_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

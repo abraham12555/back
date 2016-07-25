@@ -12,4 +12,8 @@ class Aseguradora implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_aseguradora', params:[sequence:'aseguradora_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

@@ -11,4 +11,8 @@ class Nacionalidad implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_nacionalidad', params:[sequence:'nacionalidad_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

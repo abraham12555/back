@@ -12,4 +12,8 @@ class Marca implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_marca', params:[sequence:'marca_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

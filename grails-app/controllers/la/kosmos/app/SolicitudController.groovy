@@ -11,6 +11,7 @@ import javax.xml.bind.DatatypeConverter
 
 class SolicitudController {
     
+    grails.gsp.PageRenderer groovyPageRenderer
     Random rand = new Random() 
 
     def index() { }
@@ -45,8 +46,82 @@ class SolicitudController {
             tipo_login:tipo_login]
     }
     
-    def formulario(){
-
+    def formulario() {
+        println params
+        def tipoLogin;
+        def datosLogin;
+        def modelo = [:]
+        if(params.origen == 'login'){
+            if(params.datosFb.toString()!= 'null'){
+                println(":: Se inicio Sesión con FB ::" + params.datosFb.toString())
+                datosLogin = params.datosFb.toString()
+                tipoLogin="FB";
+                params.remove("datosFb")
+            }else if(params.datosGoogle.toString()!= 'null'){
+                println(":: Se inicio Sesión con Google ::"+params.datosGoogle.toString())
+                datosLogin = params.datosGoogle.toString();
+                tipoLogin="Google";
+                params.remove("datosGoogle")
+            }
+        } else if (params.origen == 'noLogin'){
+            println(":: No se inicio Sesión ::");
+            tipoLogin="none";
+        }
+        if(params.paso) {
+            println "Paso a mostrar: " + params.paso
+            def paso = params.paso as int
+            def templateContent
+            switch (paso) {
+            case 1:
+                println "paso1"
+                modelo = [nacionalidadList:Nacionalidad.findAll(),
+                    estadoCivilList:EstadoCivil.findAll(),
+                    temporalidadList:Temporalidad.findAll(),
+                    datosLogin:datosLogin,
+                    tipoLogin:tipoLogin,
+                    paso:paso]
+                break;
+            case 2:
+                println "paso2"
+                modelo = [coloniaList:Colonia.findAll(),
+                    estadoList:Estado.findAll(),
+                    municipioList:Municipio.findAll(),
+                    temporalidadList:Temporalidad.findAll(),
+                    paso:paso]
+                break;
+            case 3:
+                println "paso3"
+                modelo = [paso:paso]
+                break;
+            case 4:
+                println "paso4"
+                modelo = [paso:paso]
+                break;
+            case 5:
+                println "paso5"
+                modelo = [paso:paso]
+                break;
+            case 6:
+                println "paso6"
+                modelo = [paso:paso]
+                break;
+            case 7:
+                println "paso7"
+                modelo = [paso:paso]
+                break;
+            case 8:
+                println "paso8"
+                modelo = [paso:paso]
+                break;
+            }
+            params.remove("origen")
+            params.remove("paso")
+            modelo
+        } else {
+            println "No se recibio el parametro ...."
+            modelo = [error: "La ruta especificada no existe"]
+            render(template: "error", model: modelo)
+        }
     }
 
     def paso1_1() {
@@ -202,7 +277,16 @@ class SolicitudController {
     def cambiarPaso(){
 	println params
         if(params.siguientePaso){
-            render(template: ("paso"+params.siguientePaso))
+            def modelo = [:]
+            def paso =  params.siguientePaso as int
+            if(paso == 2){
+                modelo = [coloniaList:Colonia.findAll(),
+                    estadoList:Estado.findAll(),
+                    municipioList:Municipio.findAll(),
+                    temporalidadList:Temporalidad.findAll(),
+                    paso:paso]
+            }
+            render(template: ("paso"+params.siguientePaso), model: modelo)
         }
     }
     

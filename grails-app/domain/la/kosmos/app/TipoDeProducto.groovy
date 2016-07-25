@@ -12,4 +12,8 @@ class TipoDeProducto implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_tipo_de_producto', params:[sequence:'tipo_de_producto_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

@@ -13,5 +13,9 @@ class EntidadFinanciera implements Serializable{
 
     static mapping = {
         id generator: 'sequence', column: 'id_entidad_financiera', params:[sequence:'entidad_financiera_id_seq']
-    }    
+    }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

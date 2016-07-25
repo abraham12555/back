@@ -14,4 +14,8 @@ class TipoDeDocumento implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_tipo_de_documento', params:[sequence:'tipo_de_documento_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

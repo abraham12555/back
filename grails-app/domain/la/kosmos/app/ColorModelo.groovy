@@ -16,4 +16,8 @@ class ColorModelo implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_color_modelo', params:[sequence:'color_modelo_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

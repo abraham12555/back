@@ -1,6 +1,6 @@
 package la.kosmos.app
 
-class Producto {
+class Producto implements Serializable{
 
     String nombreDelProducto
     Marca marca
@@ -19,5 +19,9 @@ class Producto {
     
     static mapping = {
         id generator: 'sequence', column: 'id_producto', params:[sequence:'producto_id_seq']
+    }
+    
+    String toString () {
+        "${nombreDelProducto}"
     }
 }

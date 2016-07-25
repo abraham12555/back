@@ -13,4 +13,8 @@ class Municipio implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_municipio', params:[sequence:'municipio_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }

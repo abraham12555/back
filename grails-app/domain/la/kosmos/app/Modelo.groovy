@@ -19,4 +19,8 @@ class Modelo implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_modelo', params:[sequence:'modelo_id_seq']
     }
+    
+    String toString () {
+        "${nombre}"
+    }
 }
