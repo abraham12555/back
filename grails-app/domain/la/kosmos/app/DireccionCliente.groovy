@@ -5,11 +5,9 @@ class DireccionCliente implements Serializable{
     String calle
     String numeroExterior
     String numeroInterior
-    Colonia colonia
-    Municipio municipio
-    String codigoPostal
+    CodigoPostal codigoPostal
+    String colonia
     String ciudad
-    Estado estado
     TipoDeVivienda tipoDeVivienda
     Temporalidad temporalidad
     Cliente cliente
@@ -22,11 +20,9 @@ class DireccionCliente implements Serializable{
         calle (blank: false)
         numeroExterior (blank: false)
         numeroInterior (nullable: true)
-        colonia (nullable: false)
-        municipio (nullable: false)
-        codigoPostal (blank: false, maxSize: 5)
+        codigoPostal (nullable: false)
         ciudad (nullable: true)
-        estado (nullable: false)
+        colonia (nullable: false)
         tipoDeVivienda (nullable: true)
         temporalidad (nullable: true)
         cliente (nullable: false)
