@@ -3,9 +3,11 @@
         <div class="infoBox  desktop">
             <div style="width: 695px;" class="width670 autoMargin">
                 <p class="displayInline textUpper floatLeft center letterspacing0.5 font13 paddingTop20 paddingRight10 paddingBottom10">LLENA ESTA SECCION EN  MENOS DE 1 MINUTO TOMA UNA FOTO DE TU </p>
-                <div style="width: 225px;" class="blueBox floatRight marginTop10">
-                    <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">comprobante de domicilio</p>
-                </div>
+                <a id="paso2CompDom">
+                    <div style="width: 225px;" class="blueBox floatRight marginTop10">
+                        <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">comprobante de domicilio</p>
+                    </div>
+                </a>
             </div>
         </div>
         <div class="line18 "></div>
@@ -14,19 +16,24 @@
         </div>
     </div>
     <div class="padding20 clearFix formStep lastStep">
-        <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60"><span class="showOnFill">Mi dirección es:
-                <input type="text" class="inputsFormulario formValues width200" name="calle" placeholder="calle">,
+        <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
+            <span class="showOnFill">Mi dirección es:
+                <input type="text" class="inputsFormulario formValues width200" name="calle" placeholder="Calle">,
                 <input type="text" class="inputsFormulario formValues width200" name="noExterior" placeholder="No. Exterior">,
-                <input type="text" class="inputsFormulario formValues width200" name="noInterior" placeholder="No. Interior">.</span> <span class="hide showOnFill">Mi código postal es
-                <input type="text" class="inputsFormulario formValues width100" name="codigoPostal" placeholder="00001"> y está  ubicado en La Colonia
-                <span class="width290 inline selectWrap">
-                    <g:select noSelection="['':'Colonia...']" class="formulariOptions gray formValues" optionKey="id" optionValue="nombre" name="colonia" from="${coloniaList}" />
-                </span>,
-            </span><span class="hide showOnFill"> Mi
+                <input type="text" class="inputsFormulario formValues width200" name="noInterior" placeholder="No. Interior">.
+            </span>
+            <span class="hide showOnFill" id="cpRemote"> Mi código postal es
+                <input type="text" class="inputsFormulario formValues width120 typeahead tt-input" name="codigoPostal" id="codigoPostal" placeholder="00001"/>
+            </span>   
+            <span class="hide showOnFill">
+                y está  ubicado en La Colonia
+                <input type="text" class="inputsFormulario formValues width200" name="colonia" placeholder="Colonia" />,
+            </span>
+            <span class="hide showOnFill"> Mi
                 <span class="width240 inline selectWrap">
-                    <select class="formulariOptions gray formValues" name="tipoDelegacion">
+                    <select class="formulariOptions gray formValues notEmpty headingColor" name="tipoDelegacion">
                         <option value="delegacion">Delegación</option>
-                        <option value="municipio">Municipio</option>
+                        <option value="municipio" selected="">Municipio</option>
                     </select>
                 </span>
                 <span class="afterSelect">
@@ -90,3 +97,40 @@
         </div>
     </div>
 </footer>
+<style type="text/css">
+    .typeahead, .tt-query, .tt-hint {
+    border-bottom: 2px solid #9EA1BE;
+    padding: 8px 12px;
+    }
+    .typeahead {
+    background-color: #F1F3FA;
+    }
+    .typeahead:focus {
+    border: 2px solid #0097CF;
+    }
+    .tt-query {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    }
+    .tt-hint {
+    color: #999999;
+    }
+    .tt-menu {
+    background-color: #F1F3FA;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 12px;
+    padding: 8px 0;
+    }
+    .tt-suggestion {
+    line-height: 24px;
+    padding: 3px 20px;
+    }
+    .tt-suggestion.tt-is-under-cursor {
+    background-color: #0097CF;
+    color: #FFFFFF;
+    }
+    .tt-suggestion p {
+    margin: 0;
+    }
+</style>

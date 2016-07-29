@@ -14,11 +14,9 @@ class EmpleoCliente implements Serializable{
     String calle
     String numeroExterior
     String numeroInterior
-    Colonia colonia
-    Municipio municipio
-    String codigoPostal
+    CodigoPostal codigoPostal
+    String colonia
     String ciudad
-    Estado estado
     Cliente cliente
     
     static constraints = {
@@ -34,11 +32,8 @@ class EmpleoCliente implements Serializable{
         calle (nullable: true)
         numeroExterior (nullable: true)
         numeroInterior (nullable: true)
-        colonia (nullable: true)
-        municipio (nullable: true)
-        codigoPostal (nullable: true, maxSize: 5)
+        codigoPostal (nullable: true)
         ciudad (nullable: true)
-        estado (nullable: true)
         cliente (nullable: true)
 
     }

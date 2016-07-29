@@ -17,6 +17,7 @@ $(document).ready(function () {
         $(this).parent().fadeOut();
     });
     var pasoInicial = $('#pasoInicial').val();
+    operacionesModal();
     closeModal();
     actualizarProgreso(pasoInicial);
     if (pasoInicial === "1" || pasoInicial === "2" || pasoInicial === "3") {
@@ -51,11 +52,17 @@ function operacionesPaso1al3() {
         var maxIndex = $('.showOnFill').length;
 
         $('.formValues', this).change(function () {
-
-            if ($(this).val() != '') {
+            console.log("Registrando: " + $(this).val());
+            if ($(this).val() !== '') {
+                console.log("No esta vacio");
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
+                if ($(this).hasClass('typeahead')) {
+                    $('.typeahead').addClass('notEmpty');
+                    $('.typeahead').addClass('headingColor');
+                }
             } else {
+                console.log("Si esta vacio");
                 $(this).removeClass('notEmpty');
                 $(this).removeClass('headingColor');
             }
@@ -63,7 +70,9 @@ function operacionesPaso1al3() {
             var filledLength = $('.notEmpty:visible').length;
             var thisLength = $('.formValues:visible').length;
 
-            if (filledLength == thisLength) {
+            console.log("not Empty: " + filledLength + " -  total: " + thisLength);
+
+            if (filledLength === thisLength) {
                 if ((index + 1) < maxIndex) {
                     $('.showOnFill').eq(index + 1).css({'display': 'inline'});
                     checkInputs();
@@ -75,7 +84,7 @@ function operacionesPaso1al3() {
             var totalLength = $('.formStep:visible .formValues').length;
 
 
-            if (filledLength == totalLength) {
+            if (filledLength === totalLength) {
                 //alert('show submit');
                 $('.formValues.notEmpty').addClass('headingColor');
                 $('.formStep:visible .confirmDiv').fadeIn();
@@ -110,7 +119,66 @@ function operacionesPaso1al3() {
         }
     });
 
+    $('#paso2CompDom').click(function () {
+        openModal('comprobante_domicilio');
+    });
+
+    var bestPictures = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        prefetch: '/kosmos-app/solicitud/buscarCodigoPostal',
+        remote: {
+            url: '/kosmos-app/solicitud/buscarCodigoPostal?query=%QUERY',
+            wildcard: '%QUERY'
+        }
+    });
+    $('#cpRemote .typeahead').typeahead({minLength: 3}, {
+        name: 'codigos',
+        display: 'value',
+        source: bestPictures,
+        limit: 5,
+        templates: {
+            empty: [
+                '<div class="empty-message">',
+                'No hay coincidencias.',
+                '</div>'
+            ].join('\n')
+        }
+    });
+    $('#cpRemote .typeahead').bind('typeahead:select', function (ev, suggestion) {
+        consultarCodigoPostal(suggestion);
+    });
+
     submitNextPage();
+}
+
+function consultarCodigoPostal(sugerencia) {
+    var respuesta = eval(sugerencia);
+    var idCodigo = respuesta.id;
+    $.ajax({
+        type: 'POST',
+        data: 'idCodigoPostal=' + idCodigo,
+        url: '/kosmos-app/solicitud/consultarCodigoPostal',
+        success: function (data, textStatus) {
+            var response = eval(data)
+            $('#delegacion').append($('<option>', {
+                value: response.municipio.id,
+                text: response.municipio.nombre,
+                selected: true
+            }));
+            $('#estado').append($('<option>', {
+                value: response.estado.id,
+                text: response.estado.nombre,
+                selected: true
+            }));
+            $('#delegacion').addClass('notEmpty');
+            $('#delegacion').addClass('headingColor');
+            $('#estado').addClass('notEmpty');
+            $('#estado').addClass('headingColor');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {}
+    });
+
 }
 
 function operacionesPaso4() {
@@ -342,25 +410,16 @@ function operacionesPaso6() {
         submitNextPage();
     });
 
-    $('.greenClick').click(function () {
+    $('#paso6IdOf').click(function () {
+        openModal('identification_oficial');
         $(this).addClass('colorGreen');
-        var no_buttons = $('.greenClick').length;
-        var no_active = $('.greenClick.colorGreen').length;
+        habilitarTerminarSolicitud();
+    });
 
-        if ($(this).index('.greenClick') == 0) {
-            $('#identification_oficial').fadeIn();
-            $(this).html('ID GUARDADA');
-
-        } else if ($(this).index('.greenClick') == 1) {
-            $('#comprobante_domicilio').fadeIn();
-            $(this).html('COMPROBANTE GUARDADO');
-        }
-
-        if (no_active == no_buttons) {
-            $('.solicitud_modal').addClass('blueButton colorWhite pointer');
-        } else {
-            $('.solicitud_modal').removeClass('blueButton colorWhite pointer');
-        }
+    $('#paso6CompDom').click(function () {
+        openModal('comprobante_domicilio');
+        $(this).addClass('colorGreen');
+        habilitarTerminarSolicitud();
     });
 
     $('.solicitud_modal').click(function () {
@@ -369,57 +428,6 @@ function operacionesPaso6() {
         }
     });
 
-    $('.idType').click(function () {
-        $(this).parent().parent().parent().parent().parent().fadeOut();
-        $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
-    });
-
-    $('.phoneCapture').click(function () {
-        $(this).parent().parent().parent().parent().parent().fadeOut();
-        $('.phone_capture').delay(300).fadeIn();
-    });
-
-    $('.camCapture').click(function () {
-        $(this).parent().parent().parent().parent().parent().fadeOut();
-        $('.webcam_capture').fadeIn();
-        inicializarCamara('Frente');
-    });
-
-    $('#repetirFotoFrente').click(function () {
-        inicializarCamara('Frente');
-    });
-
-    $('#guardarFotoFrente').click(function () {
-        guardarFoto('Frente');
-    });
-    
-    $('#repetirFotoVuelta').click(function () {
-        inicializarCamara('Vuelta');
-    });
-
-    $('#guardarFotoVuelta').click(function () {
-        guardarFoto('Vuelta');
-    });
-
-    $('.goLastStep').click(function () {
-
-    });
-
-    $('.docChoice').click(function () {
-        $(this).parent().parent().parent().parent().parent().parent().delay(400).fadeOut();
-        $(this).parent().parent().parent().parent().parent().parent().next().delay(500).fadeIn();
-    });
-
-    $('.tomarFoto').click(function () {
-        $(this).parent().parent().fadeOut();
-        $('.defaultTP').delay(300).fadeOut();
-        $('.takePicture').delay(350).fadeIn();
-        $('.docControls').delay(350).fadeIn();
-    });
-
-    /*$('.afterSelect').click(function(){
-     openSelect($('#selTest'));
-     });*/
 }
 
 function showValues() {
@@ -794,7 +802,7 @@ function guardarFoto(cara) {
                     $('.paddingBottom15').addClass('active_blue');
                     $('#fotoVuelta').fadeIn();
                     inicializarCamara('Vuelta');
-                } else if (cara === 'Vuelta'){
+                } else if (cara === 'Vuelta') {
                     detenerCamara('Vuelta');
                     $('#identification_oficial').fadeOut();
                 }
@@ -806,6 +814,73 @@ function guardarFoto(cara) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
         }
     });
+}
+
+function openModal(divModal) {
+    $('#' + divModal).fadeIn();
+}
+
+function operacionesModal() {
+    $('.idType').click(function () {
+        $(this).parent().parent().parent().parent().parent().fadeOut();
+        $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
+    });
+
+    $('.phoneCapture').click(function () {
+        $(this).parent().parent().parent().parent().parent().fadeOut();
+        $('.phone_capture').delay(300).fadeIn();
+    });
+
+    $('.camCapture').click(function () {
+        $(this).parent().parent().parent().parent().parent().fadeOut();
+        $('.webcam_capture').fadeIn();
+        inicializarCamara('Frente');
+    });
+
+    $('#repetirFotoFrente').click(function () {
+        inicializarCamara('Frente');
+    });
+
+    $('#guardarFotoFrente').click(function () {
+        guardarFoto('Frente');
+    });
+
+    $('#repetirFotoVuelta').click(function () {
+        inicializarCamara('Vuelta');
+    });
+
+    $('#guardarFotoVuelta').click(function () {
+        guardarFoto('Vuelta');
+    });
+
+    $('#repetirFotoComprobante').click(function () {
+        inicializarCamara('Comprobante');
+    });
+
+    $('#guardarFotoComprobante').click(function () {
+        guardarFoto('Comprobante');
+    });
+
+    $('.goLastStep').click(function () {
+
+    });
+
+    $('.docChoice').click(function () {
+        $(this).parent().parent().parent().parent().parent().parent().fadeOut();
+        $(this).parent().parent().parent().parent().parent().parent().next().fadeIn();
+        inicializarCamara('Comprobante');
+    });
+}
+
+function habilitarTerminarSolicitud() {
+    var no_buttons = $('.greenClick').length;
+    var no_active = $('.greenClick.colorGreen').length;
+
+    if (no_active === no_buttons) {
+        $('.solicitud_modal').addClass('blueButton colorWhite pointer');
+    } else {
+        $('.solicitud_modal').removeClass('blueButton colorWhite pointer');
+    }
 }
 // ***************************** Fin de Funciones Auxiliares
 

@@ -11,8 +11,8 @@ import javax.xml.bind.DatatypeConverter
 
 class SolicitudController {
     
-    grails.gsp.PageRenderer groovyPageRenderer
     Random rand = new Random() 
+    def ephesoftService
 
     def index() { }
 	
@@ -83,9 +83,7 @@ class SolicitudController {
                 break;
             case 2:
                 println "paso2"
-                modelo = [coloniaList:Colonia.findAll(),
-                    estadoList:Estado.findAll(),
-                    municipioList:Municipio.findAll(),
+                modelo = [codigosPostales:CodigoPostal.list(),
                     temporalidadList:Temporalidad.findAll(),
                     paso:paso]
                 break;
@@ -375,5 +373,37 @@ class SolicitudController {
         } finally {
             render respuesta as JSON
         }
+    }
+    
+    def buscarCodigoPostal(){
+        println params
+        def respuesta = []
+        if(params.query){
+            def resultado
+            resultado = CodigoPostal.findAll("from CodigoPostal c Where c.codigo like '" + params.query + "%'")
+            def map
+            resultado.each{
+                map = [:]
+                map.value = it.codigo
+                map.id = it.id
+                map.tokens = [it.codigo.toString()]
+                respuesta << map
+                map = null
+            }
+        }
+        println respuesta
+        render respuesta as JSON
+    }
+    
+    def consultarCodigoPostal(){
+        println params
+        def respuesta = [:]
+        if(params.idCodigoPostal){
+            def codigo = CodigoPostal.get(params.idCodigoPostal as long)
+            respuesta.estado = codigo.municipio.estado
+            respuesta.municipio =  codigo.municipio
+        }
+        println respuesta
+        render respuesta as JSON
     }
 }
