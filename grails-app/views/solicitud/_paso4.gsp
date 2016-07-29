@@ -54,7 +54,7 @@
                 <input type="hidden" name="banco" value="" class="bankChoice formValues"/>
             </div>
 
-            <div class="clearFix paddingLeft10">
+            <!-- div class="clearFix paddingLeft10">
                 <input type="hidden" id="intentos" value="0"/>
                 <div class="floatLeft paddingTop20 col4 col6-tab col12-mob">
                     <p class=" marginBottom15 gray font14">NÚMERO DE CLIENTE</p>
@@ -68,7 +68,7 @@
                     <p class=" marginBottom15 gray font14">TOKEN O PIN</p>
                     <input class="inPuts4a formValues headingColor" type="text" id="tokenNo" name="tokenNo" placeholder="000000"/>
                 </div>
-            </div>
+            </div-->
 
             <div id="accionesNormal" class="paddingTop20 clearFix">
                 <div class="floatLeft col6 col12-mob">
@@ -288,3 +288,10 @@
         </div>
     </div>
 </footer>
+<!-- MODALS -->
+<div class="modal" id="modalloginBank" style="display:none;">
+    <p>
+        <g:render template="/templates/solicitud/paso4/loginBank"/>
+    </p>
+</div>
+

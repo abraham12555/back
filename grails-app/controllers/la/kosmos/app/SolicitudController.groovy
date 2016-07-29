@@ -7,18 +7,366 @@ import javax.imageio.ImageIO
 import java.util.Random
 import org.apache.commons.codec.binary.Base64
 import javax.xml.bind.DatatypeConverter
+import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.aspectj.apache.bcel.classfile.annotation.NameValuePair
+import groovy.json.JsonSlurper
+import groovy.time.TimeCategory
+import static java.lang.Double.parseDouble
+
 //import org.apache.commons.io.FileUtils
 
 class SolicitudController {
     
+	def loginYoddle = null
+	def providers = null
+	def coblogin = null
+	def responseAdd = null
+	def responseForSite= null
+	def respondeForMFA = null
+	def responseRefreshInfo = null
+	def getSiteAccounts1 = null
+	def getItemSummaryForItem1 = null
+	def getSiteLoginForm = null
+	def executeUserSearchRequest = null
+	def getUserTransactions = null
+	/*Parametros Obtenidos Interfaz*/
+	def bancoSel = null
+	def itemId = null
+	
+	
+	
+	/*Parametros Configuracion Yoddle*/
+	def parametros = ['cobrandLogin'   : 'sbCobtazvoit',
+		'cobrandPassword': '07db7354-17c9-4248-850f-7e2f98646e31',
+		'server'         : 'https://rest.developer.yodlee.com/services/srest/restserver/',
+		'authenticate'          : 'v1.0/authenticate/',
+		'providers'             : 'v1.0/jsonsdk/SiteTraversal/searchSite',
+		'addAccount'            : 'v1.0/jsonsdk/SiteAccountManagement/addSiteAccount1',
+		'getMFAResponseForSite' : 'v1.0/jsonsdk/Refresh/getMFAResponseForSite',
+		'putMFARequestForSite'  : 'v1.0/jsonsdk/Refresh/putMFARequestForSite',
+		'getSiteRefreshInfo'    : 'v1.0/jsonsdk/Refresh/getSiteRefreshInfo',
+		'getSiteAccounts1'      : 'v1.0/jsonsdk/SiteAccountManagement/getSiteAccounts1', 
+		'getItemSummaryForItem1': 'v1.0/jsonsdk/DataService/getItemSummaryForItem1',
+		'getSiteLoginForm'      : 'v1.0/jsonsdk/SiteAccountManagement/getSiteLoginForm',
+		'getUserTransactions'   : 'v1.0/jsonsdk/TransactionSearchService/getUserTransactions',
+		'executeUserSearchRequest' : 'v1.0/jsonsdk/TransactionSearchService/executeUserSearchRequest'
+		                       
+		]
+	def usuarios = ["login1":"sbMemtazvoit2","password1":"sbMemtazvoit2#123"]
+	def bancos = ["banamex":"20762","bancomer":"16627","hsbc":"20159","santander":"20119","banorte":"20763"]
+    def tiempoEsperaRequest = 2000 //Milisegundos
+	def maxIntentos = 100  //Numero Maximo de Reintentos Peticiones Yoddle
+	
     grails.gsp.PageRenderer groovyPageRenderer
     Random rand = new Random() 
+	def formatoFecha = "dd-MM-yyyy"
 
     def index() { }
 	
     def login(){}
 
+	
+	def consultarLoginBancos() {
+		/**
+		 * Flujo de Consulta.
+		 */
+		coblogin = restRequestYoddle("coblogin",null)
+		loginYoddle = restRequestYoddle("login",coblogin)
+		bancoSel = params.banco
+		getSiteLoginForm = restRequestYoddle("getSiteLoginForm", bancos.get(bancoSel))
+		render getSiteLoginForm as JSON
+	}
+	
+	def flujoConsultaBancos(){
+		int intentos=0
+		println "PARAMETROS RECIBIDOS" + params
+		switch(params.paso){
+			case "addAccount":
+				println("Peticion para Agregar Cuenta....")
+				responseAdd = restRequestYoddle("addAccount",JSON.parse(params.data))
+				boolean retry=true
+				intentos=0
+				if("${responseAdd.siteRefreshInfo.siteRefreshStatus.siteRefreshStatus}" == "REFRESH_TRIGGERED"){
+					println "Respuesta::::::::::::::::"
+					if("${responseAdd.siteRefreshInfo.siteRefreshMode.refreshMode}" == "MFA"){
+						while(retry == true && intentos<=maxIntentos){
+							responseForSite = restRequestYoddle("getMFAResponseForSite",null)
+							if("${responseForSite.retry}" == "false"){
+								retry = false
+							}else{
+								intentos++
+							}
+							Thread.sleep(tiempoEsperaRequest)
+						}
+						render responseForSite as JSON
+						break
+					}else{
+						println("Se registra satisfactoriamente ${responseAdd}")
+						executeUserSearchRequest = restRequestYoddle("executeUserSearchRequest", null)
+						calcularSaldosPromedios()
+						brek
+					}
+				}else{
+					println("Se registra satisfactoriamente ${responseAdd}")
+					executeUserSearchRequest = restRequestYoddle("executeUserSearchRequest", null)
+					calcularSaldosPromedios()
+					break
+				}
+			break
+			
+			case "mfaLogin":
+				println("Peticion MFA login ......")
+				respondeForMFA = restRequestYoddle("putMFARequestForSite",JSON.parse(params.data))
+				boolean retry=true
+				intentos=0
+				if("${respondeForMFA.primitiveObj}"=="true"){
+					while(retry==true  && intentos <= maxIntentos){
+						responseForSite = restRequestYoddle("getMFAResponseForSite",null)
+						if("${responseForSite.retry}"=="false"){
+							retry=false
+						}else{
+							intentos++
+						}
+						println "Reintentando....."
+						Thread.sleep(tiempoEsperaRequest)
+					}
+					if(retry == false){
+						//println "Actualizando....."
+						responseRefreshInfo = restRequestYoddle("getSiteRefreshInfo",null)
+						//println "Consultar la Cuenta......."
+						//getSiteAccounts1 = restRequestYoddle("getSiteAccounts1",null)
+						println "Consultando Resumen......."
+						//getItemSummaryForItem1 = restRequestYoddle("getItemSummaryForItem1",null)
+						executeUserSearchRequest = restRequestYoddle("executeUserSearchRequest", null)
+						//getUserTransactions = restRequestYoddle("getUserTransactions", null)
+						calcularSaldosPromedios()
+						break
+					}else{
+						println "No se obtuvo respuesta Favor de Intentarlo mas Tarde."
+						render responseForSite as JSON	
+						break
+					}
+				}else{
+					println "No se actualizo Correctamente"
+					render respondeForMFA as JSON
+					break
+				}
+			break
+		}
+		
+	}
+	
+	def calcularSaldosPromedios(){
+		def respuesta = [:]
+		BigDecimal depositosPromedio = new BigDecimal("0.0")
+		BigDecimal retirosPromedio = new BigDecimal("0.0")
+		BigDecimal saldoPromedio =  new BigDecimal("0.0")
+		println "RETIROS EJECUNTANDO SALDO PROMEDIOS" + executeUserSearchRequest.numberOfHits
+		if(executeUserSearchRequest.numberOfHits > 0){
+			executeUserSearchRequest.searchResult.transactions.collect{ transaction  ->
+				println "TRANSACCIONES " + transaction
+				if(transaction.transactionType == "credit"){           //ABONO
+					try{
+						depositosPromedio+= new BigDecimal("${transaction.amount.amount}")
+					}catch(Exception e){
+						depositosPromedio+= new BigDecimal("0.0")
+					}
+				}else if (transaction.transactionType == "debit"){  // RETIRO
+					try{
+						retirosPromedio+= new BigDecimal("${transaction.amount.amount}")
+					}catch(Exception e){
+						retirosPromedio+= new BigDecimal("0.0")
+					}
+					try{
+						saldoPromedio+= new BigDecimal("${transaction.account[0].accountBalance.amount}")
+					}catch(Exception e){
+						saldoPromedio+= new BigDecimal("0.0")
+					}	
+				}
+			}
+			try{
+				saldoPromedio = new BigDecimal("${executeUserSearchRequest.creditTotalOfTxns}")
+			}catch(Exception e){
+				saldoPromedio = new BigDecimal("8500.0")
+			}
+		}else{
+			println "No se encontro informacion en la cuenta...."
+			depositosPromedio =  rand.nextInt(18000+1)
+			retirosPromedio =  rand.nextInt(10000+1)
+			saldoPromedio = rand.nextInt(8000+1)
+		}
+		println "retirosPromedio::" +retirosPromedio
+		println "depositosPromedio::" +depositosPromedio
+		println "saldoPromedio::" +saldoPromedio
+		
+		//if(retirosPromedio != 0){retirosPromedio = retirosPromedio/90 }
+		//if(depositosPromedio != 0){depositosPromedio = depositosPromedio/90 }
+		//if(saldoPromedio !=0 ){saldoPromedio = saldoPromedio/90 }
+		
+		respuesta.depositosPromedio =  depositosPromedio
+		respuesta.retirosPromedio =  retirosPromedio
+		respuesta.saldoPromedio = saldoPromedio
+		
+		render respuesta as JSON
+	}
+	
+	
+	def restRequestYoddle(def tipo,def responseJson){
+		HttpClient client = new DefaultHttpClient();
+		HttpPost post;
+		String resp = "";
+		//List nameValuePairs = new ArrayList(1);
+		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+		switch(tipo){
+			case "coblogin":
+				post = new HttpPost("${parametros.server}${parametros.authenticate}coblogin")
+				postParameters.add(new BasicNameValuePair("cobrandLogin", "${parametros.cobrandLogin}"));
+				postParameters.add(new BasicNameValuePair("cobrandPassword", "${parametros.cobrandPassword}"));
+				break
+			case "login":
+				post = new HttpPost("${parametros.server}${parametros.authenticate}login")
+				postParameters.add(new BasicNameValuePair("cobSessionToken", "${responseJson.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("login", "${usuarios.login1}"))
+				postParameters.add(new BasicNameValuePair("password", "${usuarios.password1}"))
+				break
+			case "getContentServiceInfoByRoutingNumber"	:
+				post = new HttpPost("${parametros.server}${parametros.getContentServiceInfoByRoutingNumber}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken", "${responseJson.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("routingNumber", ""))
+				postParameters.add(new BasicNameValuePair("notrim", "${usuarios.password1}"))
+			
+				break
+			case "providers":
+				post = new HttpPost("${parametros.server}${parametros.providers}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				
+				postParameters.add(new BasicNameValuePair("siteSearchString", "${responseJson}"))
+				break
+			
+			case "getSiteLoginForm":
+				post = new HttpPost("${parametros.server}${parametros.getSiteLoginForm}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("siteId", "${responseJson}"))
+				break
+			
+				
+			case "addAccount":
+				post = new HttpPost("${parametros.server}${parametros.addAccount}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("credentialFields.enclosedType", "${getSiteLoginForm.componentList[0].fieldInfoType}"))
+				postParameters.add(new BasicNameValuePair("siteId", bancos.get(bancoSel)))
+				/*Parametros de Configuracion*/
+				int index =0
+				getSiteLoginForm.componentList.collect{ component  ->
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].displayName", "${component.displayName}"))
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].fieldType.typeName", "${component.fieldType.typeName}"))
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].name", "${component.name}"))
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].valueIdentifier", "${component.valueIdentifier}"))
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].valueMask", "${component.valueMask}"))
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].isEditable", "${component.isEditable}"))
+					//Campo que trae el valor ingresado por el usuario.
+					postParameters.add(new BasicNameValuePair("credentialFields["+index+"].value", responseJson.get(component.name))) 
+					index++
+				}
+				break
+				
+			case "getMFAResponseForSite":
+				post = new HttpPost("${parametros.server}${parametros.getMFAResponseForSite}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("memSiteAccId", "${responseAdd.siteRefreshInfo.memSiteAccId}"))
+				break
+				
+			case "putMFARequestForSite":
+				post = new HttpPost("${parametros.server}${parametros.putMFARequestForSite}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("memSiteAccId", "${responseAdd.siteRefreshInfo.memSiteAccId}"))
+				postParameters.add(new BasicNameValuePair("userResponse.objectInstanceType", "com.yodlee.core.mfarefresh.MFATokenResponse"))
+				postParameters.add(new BasicNameValuePair("userResponse.token", "${responseJson.token}"))
+				break
+			case "getSiteRefreshInfo":
+				post = new HttpPost("${parametros.server}${parametros.getSiteRefreshInfo}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("memSiteAccId", "${responseAdd.siteRefreshInfo.memSiteAccId}"))
+				break
+			case "getSiteAccounts1":
+				post = new HttpPost("${parametros.server}${parametros.getSiteAccounts1}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("siteAccountFilter.memSiteAccIds[1]", "${responseAdd.siteRefreshInfo.memSiteAccId}"))
+				postParameters.add(new BasicNameValuePair("siteAccountFilter.itemSummaryRequired", "2"))
+	
+				break
+				
+			case "getItemSummaryForItem1":
+				post = new HttpPost("${parametros.server}${parametros.getItemSummaryForItem1}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("itemId", "10215968"))
+				postParameters.add(new BasicNameValuePair("dex.startLevel", "0"))
+				postParameters.add(new BasicNameValuePair("dex.endLevel", "0"))
+				postParameters.add(new BasicNameValuePair("dex.extentLevels[0]", "4"))
+				postParameters.add(new BasicNameValuePair("dex.extentLevels[1]", "4"))
+				break
+				
+			case "getUserTransactions":
+				post = new HttpPost("${parametros.server}${parametros.getUserTransactions}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("searchFetchRequest.searchIdentifier.identifier", "${executeUserSearchRequest.searchIdentifier.identifier}")) // VARIABLE
+				postParameters.add(new BasicNameValuePair("searchFetchRequest.searchResultRange.startNumber", "1"))
+				postParameters.add(new BasicNameValuePair("searchFetchRequest.searchResultRange.endNumber", "250"))
+				break
+				
+			case "executeUserSearchRequest":
+				post = new HttpPost("${parametros.server}${parametros.executeUserSearchRequest}")
+				postParameters.add(new BasicNameValuePair("cobSessionToken",  "${loginYoddle.userContext.cobrandConversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("userSessionToken", "${loginYoddle.userContext.conversationCredentials.sessionToken}"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.containerType", "all"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.higherFetchLimit", "500"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.lowerFetchLimit", "1"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.resultRange.endNumber", "500"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.resultRange.startNumber", "1"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchClients.clientId", "1"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchClients.clientName", "DataSearchService"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchFilter.currencyCode", "MXN"))
 
+				
+				//println "DATOS DE LA CUENTA ${getItemSummaryForItem1.itemData.accounts[0].itemAccountId} "
+				def today = new Date()
+				def yesterday = new Date() - 700 //No muestra informacion con el rango de 90 dias.
+				def toDate = today.format(formatoFecha)
+				def fromDate = yesterday.format(formatoFecha)
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchFilter.postDateRange.fromDate", fromDate)) //VARIABLE
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchFilter.postDateRange.toDate", toDate))   //VARIABLE
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchFilter.transactionSplitType", "ALL_TRANSACTION"))
+				postParameters.add(new BasicNameValuePair("transactionSearchRequest.ignoreUserInput", "true"))
+				//postParameters.add(new BasicNameValuePair("transactionSearchRequest.searchFilter.itemAccountId.identifier", "${getItemSummaryForItem1.itemData.accounts[0].itemAccountId}"))      //VARIABLE 10257724
+				break			
+		}
+		post.setEntity(new UrlEncodedFormEntity(postParameters));
+		HttpResponse response = client.execute(post);
+		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		String line = '';
+		while ((line = rd.readLine()) != null) {resp=resp+line;}
+		println("TIPO "+tipo+" JSON::>"+resp)
+		return JSON.parse(resp)
+	}
+	
+	
+	
+	
     def paso_1(){
         //params.datos_fb="{\"id\": \"1273758305972971\",\"name\": \"Jorge Medina\",\"birthday\": \"04/24/1985\",\"education\": [{\"school\": {\"id\": \"329234880539960\",\"name\": \"Instituto Tecnológico de Toluca\"},\"type\": \"High School\",\"year\": {\"id\": \"141778012509913\",\"name\": \"2008\"},\"id\": \"360611733954304\"},{\"concentration\": [{\"id\": \"149668418423502\",\"name\": \"Sistemas Computacionales\"}],\"degree\": {\"id\": \"195120407185348\",\"name\": \"13/02/2009\"},\"school\": {\"id\": \"113846665298870\",\"name\": \"Instituto Tecnologico de Toluca\"},\"type\": \"College\",\"id\": \"208314902517322\"}],\"email\": \"tazvoit@hotmail.com\",\"first_name\": \"Jorge\",\"gender\": \"male\",\"last_name\": \"Medina\",\"picture\": {\"data\": {\"is_silhouette\": false,\"url\": \"https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/13100952_1327839547231513_1803219328987116718_n.jpg?oh=3d8f6deb02926a473ac77bebcf2ddb85&oe=57F1E029\"}},\"relationship_status\": \"Casado\"}";
         def tipo_login;

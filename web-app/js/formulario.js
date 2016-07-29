@@ -165,7 +165,8 @@ function operacionesPaso4() {
 
 
     $('.consultarBox').click(function () {
-        consultarBancos();
+        //consultarBancos();
+        consultarLoginBancos();
     });
 
     $('#reintentarBtn').click(function () {
@@ -634,6 +635,180 @@ function fillGoogle(data) {
 }
 
 //Callback para hacer la consulta con el API Bancaria
+function consultarLoginBancos(){
+	var banco = $('.bankChoice').val();
+	loadBar();
+	//Inicializando Formas
+	cleanformLogin()
+	console.log("Validando seleccion de banco...");
+	if (banco) {
+		$.ajax({
+            type: 'POST',
+            data: 'banco=' + banco,
+            url: '/kosmos-app/solicitud/consultarLoginBancos',
+            success: function (data, textStatus) {
+                var respuesta = checkIfJson(data);
+                restartLoadBar();
+                if ('errorCode' in respuesta) {
+                	restartLoadBar();
+                	sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar al banco. Por favor, inténtelo de nuevo más tarde. Codigo de Error"+respuesta.errorCode, "error");
+                }else if ('conjunctionOp' in respuesta){
+                	restartLoadBar();
+                	$('#formLoginBank').html(buildLoginBank(respuesta));
+                	abrirModal('modalloginBank');
+                } else if (respuesta.error) {
+                    $('#intentos').val(respuesta.intentos);
+                    $('#accionesNormal').hide();
+                    $('#accionesError').fadeIn();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                restartLoadBar();
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            }
+        });
+	}
+}
+
+function peticionLoginBancos(formInv,paso){
+	$("#formLoginBank").hide();
+	$("#formMfaLogin").hide();
+	loadBar();
+	var data = {};
+	$("#"+formInv).find("input, select").each(function(i, field) {
+	    data[field.name] = field.value;
+	});
+	$("#spinner").html(spinner());
+	if (paso) {
+		$.ajax({
+            type: 'POST',
+            data: 'paso=' + paso +"&data=" + JSON.stringify(data),
+            url: '/kosmos-app/solicitud/flujoConsultaBancos',
+            success: function (data, textStatus) {
+                var respuesta = checkIfJson(data);
+                restartLoadBar();
+                if ( paso == 'addAccount') {
+                	if('errorCode' in respuesta){ //Excepcion al Consultar Yoddle
+                		sweetAlert("Oops...", "Lo sentimos , hubo un problema al consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error "+respuesta.errorCode, "error");
+                		cerrarModal();
+                	}else if (respuesta.isMessageAvailable.fieldInfo != 'undefined'){
+                		console.log("Flujo MFA");
+                		$('#formLoginBank').hide();
+                		$("#spinner").html("");
+                		$('#formMfaLogin').html(buildFormMFA(respuesta));
+                		$("#formMfaLogin").fadeIn();
+                	}else{
+                		alert("Cuenta Agregada");
+                		$('#formMfaLogin').html("").show();
+                    	$('#formLoginBank').html("").show();
+                    	$("#spinner").html("");
+                    	$('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
+                        $('#ret90').val(formatCurrency(respuesta.retirosPromedio, "$"));
+                        $('#saldo90').val(formatCurrency(respuesta.saldoPromedio, "$"));
+                        $('.loadingActive').hide();
+                        $('#consultarInfo').hide();
+                        $('.defaultBubble').fadeOut();
+                        $('.successBubble').fadeIn();
+                        $('#confirmarConsulta').fadeIn();
+                	}
+                }else if( paso == 'mfaLogin'){
+                	if('errorCode' in respuesta){ //Excepcion al Consultar Yoddle
+                		sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error"+respuesta.errorCode, "error");
+                		cerrarModal();
+                	}else{
+                		$('#formMfaLogin').html("").show();
+                    	$('#formLoginBank').html("").show();
+                    	$("#spinner").html("");
+                    	$('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
+                        $('#ret90').val(formatCurrency(respuesta.retirosPromedio, "$"));
+                        $('#saldo90').val(formatCurrency(respuesta.saldoPromedio, "$"));
+                        $('.loadingActive').hide();
+                        $('#consultarInfo').hide();
+                        $('.defaultBubble').fadeOut();
+                        $('.successBubble').fadeIn();
+                        $('#confirmarConsulta').fadeIn();
+                        cerrarModal();
+                	}
+                }else if (respuesta.error) {
+                    $('#accionesNormal').hide();
+                    $('#accionesError').fadeIn();
+                    cerrarModal();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                restartLoadBar();
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                cerrarModal();
+            }
+        });
+	}
+}
+function cleanformLogin(){
+	$('#formLoginBank').html("");
+	$('#formLoginBank').show();
+	$('#formMfaLogin').html("");
+	$('#formMfaLogin').show();
+	$("#spinner").html("");
+}
+
+function spinner(){
+	var html="<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">Consultando...</p></center>";
+	return html;
+}
+
+function abrirModal(nombreModal) {
+    $('#' + nombreModal).modal({
+        fadeDuration: 300,
+        escapeClose: false,
+        clickClose: false,
+        showClose: false
+    });
+}
+
+function cerrarModal() {
+    $.modal.close();
+}
+
+
+function buildLoginBank(respuesta){
+	console.log("buildLoginBank...");
+	var html="";
+	//html+="<p class=\"headingColor textUpper letterspacing1.5 font25 paddingRight15 stepTitle\">"+respuesta.defaultOrgDisplayName+"</p>";
+	html+="<form action=\"#\" name=\"formLoginBank\" id=\"formLoginBank\">"
+	$.each(respuesta.componentList, function(key, componentList) {
+				html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+				html+="<p class=\" marginBottom15 gray font14\">"+respuesta.componentList[key].displayName+"</p>";
+				html+="<input class=\"inPuts4a formValues headingColor\" name=\""+respuesta.componentList[key].name+"\" id=\""+respuesta.componentList[key].valueIdentifier+"\" size=\""+respuesta.componentList[key].size+"\" maxlength=\""+respuesta.componentList[key].maxlength+"\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
+				html+="</div>";
+	});
+	html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+		html+="<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Procesar\" onclick=\"peticionLoginBancos('formLoginBank','addAccount');\" />";
+	html+="</div>";
+	html+="</form>"
+	return html;
+}
+
+function buildFormMFA(respuesta){
+	console.log("BuildFormMFA...");
+	var html="";
+	html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+	html+="</div>";
+	html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+	html+="<p class=\" marginBottom15 gray font14\">"+respuesta.fieldInfo.displayString+"</p>";
+	if(respuesta.fieldInfo.mfaFieldInfoType == "TOKEN_ID"){
+		html+="<form action=\"#\" name=\"formLoginMFA\" id=\"formLoginMFA\">";
+			html+="<input name=\"token\" class=\"inPuts4a formValues headingColor\" id=\"token\"  maxlength=\""+respuesta.fieldInfo.maximumLength+"\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\""+respuesta.fieldInfo.responseFieldType+"\">";
+			html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+				html+="<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Enviar\" onclick=\"peticionLoginBancos('formLoginMFA','mfaLogin');\" />";
+			html+="</div>";
+		html+="</form>";
+	}else{
+		html+="<h1>Opcion en Desarrollo....</h1>";
+	}
+	html+="</div>";
+	return html;
+}
+
 function consultarBancos() {
     var banco = $('.bankChoice').val();
     console.log("Validando seleccion de banco...");
