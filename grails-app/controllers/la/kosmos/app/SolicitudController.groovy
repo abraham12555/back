@@ -38,7 +38,7 @@ class SolicitudController {
 
         [nacionalidadList:Nacionalidad.findAll(),
             estadoCivilList:EstadoCivil.findAll(),
-            coloniaList:Colonia.findAll(),
+
             estadoList:Estado.findAll(),
             municipioList:Municipio.findAll(),
             temporalidadList:Temporalidad.findAll(),
@@ -207,9 +207,9 @@ class SolicitudController {
         direccion.setNumeroInterior(params.nointerior);
         direccion.setCodigoPostal(params.codigopostal);
 
-        Colonia colonia=Colonia.findById(new Integer(params.colonia));
+
         Municipio municipio = colonia.getMunicipio()
-        direccion.setColonia(colonia);
+
         direccion.setMunicipio(municipio)
         direccion.setEstado(municipio.getEstado())
         //direccion.cliente=cliente;
@@ -278,7 +278,7 @@ class SolicitudController {
             def modelo = [:]
             def paso =  params.siguientePaso as int
             if(paso == 2){
-                modelo = [coloniaList:Colonia.findAll(),
+                modelo = [
                     estadoList:Estado.findAll(),
                     municipioList:Municipio.findAll(),
                     temporalidadList:Temporalidad.findAll(),
