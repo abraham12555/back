@@ -4,10 +4,11 @@ class Modelo implements Serializable{
 
     String nombre
     String descripcion
-    Producto producto
     String rutaImagen
     float precio
     boolean activo
+
+    Producto producto
 
     static constraints = {
         nombre (blank:false)
@@ -21,6 +22,6 @@ class Modelo implements Serializable{
     }
     
     String toString () {
-        "${nombre}"
+        "${producto.nombreDelProducto} - ${nombre}"
     }
 }

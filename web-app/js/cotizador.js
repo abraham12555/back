@@ -1,508 +1,370 @@
-$(function(){
+$(document).ready(function(){
 
-    //**********
-    // CUANDO SE CARGA LA PAGINA POR PRIMERA VEZ
-    //**********
+    //$("#nombreDelProducto").html("" );
+    //$("#precioDelProducto").html("" );
+    //$("#descripcionDelProducto").html("" );
 
-    //Se carga la pagina
-    $('.producto-form1').hide();
+    $('#a1').hide();
+    $('#a2').hide();
+    $('#a3').hide();
+    $('#a4').hide();
+    $('#a5').hide();
+    $('#a6').hide();
+    $('#a7').hide();
+    $('#a8').hide();
 
-    $('.modelo-form1').hide();
-    $('.modelo-form2').hide();
+    $('.cotizadorStep').hide();
+    $('.cotizadorStep').eq(0).show();
 
-    $('.color-form1').hide();
-    $('.color-form2').hide();
+    $('.step1 .cotizador-p1-buttons .cotizador-box').click(function() {
+        var productoId = this.id.toString().substr(1);
+        $.ajax({
+            type: 'POST',
+            data: { id: productoId },
+            url: "/kosmos-app/cotizador/obtenerProducto",
+            success: function (jsonResponse, textStatus) {
+                var data = checkIfJson(jsonResponse);
 
-    $('.financiamiento-form0').hide();
-    $('.financiamiento-form1').hide();
-    $('.financiamiento-form2').hide();
-    $('.financiamiento-form3').hide();
+                // Sustituir el contenido necesario
+                var productoElegido = data.marca.nombre.toUpperCase() + " " + data.nombreDelProducto.toUpperCase();
+                $('#nombreDelProducto').html( productoElegido );
+                $('#descripcionDelProducto').html( data.descripcion );
+                $('#imagenDelProducto').css('background-image', 'url(images/nissan/' + data.rutaImagenDefault + ')');
+                $('#productoElegido').html( productoElegido );
+                $('#productoElegido2').html( productoElegido );
+                $('#productoElegido3').html( productoElegido );
 
-    $('.plazos-form0').hide();
-    $('.plazos-form1').hide();
-    $('.plazos-form2').hide();
-    $('.plazos-form4').hide();
+                // Ir al paso siguiente
+                $('.step1 .cotizador-p1-buttons .cotizador-box').parent().parent().parent().parent().parent().parent().slideUp();
+                $('.step1 .cotizador-p1-buttons .cotizador-box').parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
 
-    $('.seguro-form0').hide();
-    $('.seguro-form1').hide();
-    $('.seguro-form2').hide();
-
-    $('.solicitar-credito').hide();
-
-    //**********
-    // CUANDO SE ELIGE EL PRODUCTO
-    //**********
-
-    //Se pasa el curso sobre un boton de producto
-    $('.productElement').hover(
-        function(){
-            //Todos los botones que no son grises
-            $('.productElement.blueButton').addClass("lightGray");
-            $('.productElement.blueButton').removeClass("blueButton");
-            $(this).addClass('blueButton');
-            $(this).removeClass("lightGray");
-        },
-        function(){
-            $('.productElement.blueButton').addClass("lightGray");
-            $('.productElement.blueButton').removeClass("blueButton");
-        }
-    );
-
-    //Se selecciona un producto
-    $('.productElement').click(
-        function (){
-            removerOpacity($('.producto-form1'));
-            $('.productElement.blueButton').addClass('blueButton');
-            $('.productElement.blueButton').removeClass("lightGray");
-            $('.modelo-form0').hide();
-            $('.producto-form0').hide();
-            $('.producto-form1').fadeIn();
-            $('.modelo-form1').fadeIn();
-            $('.financiamiento-form0').show();
-            $('#productElement').val($(this).attr('id').toString());
-            $('#productSelected').html($(this).html());
-        }
-    );
-
-    //Se elige cambiar el producto
-    $('.cambiar-producto').click(
-        function(){
-            clickCambiarProducto();
-        }
-    );
-
-    //**********
-    // CUANDO SE ELIGE EL MODELO
-    //**********
-
-    //Se pasa el cursor sobre un boton de modelo
-    $('.modelElement').hover(
-        function(){
-            //Todos los botones que no son grises
-            $('.modelElement.blueButton').addClass("lightGray");
-            $('.modelElement.blueButton').removeClass("blueButton");
-            $(this).addClass('blueButton');
-            $(this).removeClass("lightGray");
-        },
-        function(){
-            $('.modelElement.blueButton').addClass("lightGray");
-            $('.modelElement.blueButton').removeClass("blueButton");
-        }
-    );
-
-    //Se selecciona un modelo
-    $('.modelElement').click(
-        function(){
-            $('.modelElement.blueButton').addClass('blueButton');
-            $('.modelElement.blueButton').removeClass("lightGray");
-            $('.modelo-form0').hide();
-            $('.modelo-form1').hide();
-            $('.modelo-form2').fadeIn();
-            $('.color-form1').fadeIn();
-            $('.color-form0').hide();
-            $('.financiamiento-form0').hide();
-            $('.financiamiento-form1').fadeIn();
-            agregarOpacity($('.producto-form1'), $('.cambiar-producto'));
-            $('.cambiar-producto').off('click');
-            $('#modelElement').val($(this).attr('id').toString());
-            $('#modelSelected').html($(this).html());
-        }
-    );
-
-    //Se elige cambiar el modelo
-    $('.cambiar-modelo').click(
-        function(){
-            clickCambiarModelo();
-        }
-    );
-
-    //**********
-    // CUANDO SE ELIGE EL COLOR
-    //**********
-
-    $('.colorElement').hover(
-        function(){
-            //Todos los botones que no son grises
-            $('.colorElement.blueButton').addClass("lightGray");
-            $('.colorElement.blueButton').removeClass("blueButton");
-            $(this).addClass('blueButton');
-            $(this).removeClass("lightGray");
-        },
-        function(){
-            $('.colorElement.blueButton').addClass("lightGray");
-            $('.colorElement.blueButton').removeClass("blueButton");
-        }
-    );
-
-    //Se selecciona un color
-    $('.colorElement').click(
-        function (){
-            $('.producto-form0').hide();
-            $('.producto-form1').hide();
-            agregarOpacity($('.modelo-form2'), $('.cambiar-modelo'));
-            $('.color-form0').hide();
-            $('.color-form1').hide();
-            $('.color-form2').fadeIn();
-            $('.financiamiento-form0').hide();
-            $('.financiamiento-form1').hide();
-            $('.financiamiento-form2').fadeIn();
-            $('.plazos-form1').fadeIn();
-            $('.cambiar-modelo').off('click');
-            $('#colorElement').val($(this).attr('id').toString());
-            $('#colorSelected').html($(this).html());
-        }
-    );
-
-    //Se elige cambiar el color
-    $('.cambiar-color').click(
-        function(){
-            clickCambiarColor();
-        }
-    );
-
-    //**********
-    // CUANDO SE ELIGE EL ENGANCHE
-    //**********
-
-    //Se selecciona un color
-    $('.engancheElement').click(
-        function () {
-            $('.modelo-form2').hide();
-            $('.financiamiento-form2').hide();
-            $('.financiamiento-form3').fadeIn();
-            agregarOpacity($('.color-form2'), $('.cambiar-color'));
-            $('.cambiar-color').off('click');
-            $('.plazos-form1').hide();
-            $('.plazos-form2').fadeIn();
-            $('.plazoElement.lightGray').off('click');
-            $('.seguro-form0').fadeIn();
-            $('#financiamientoElement').val($(this).attr('id').toString());
-            $('#financiamientoSelected').html($('#porcentajeDeEnganche').val()+"%");
-
-        }
-    );
-
-    //Se elige cambiar el enganche
-    $('.cambiar-enganche').click(
-        function(){
-            clickCambiarEnganche();
-        }
-    );
-
-    //**********
-    // CUANDO SE ELIGE PERIODO Y PLAZO
-    //**********
-    var periodoTmp;
-    // Cuando se da click sobre un boton de periodo
-    $('.periodoElement').click(
-        function (){
-            $('.periodoElement.blueButton').addClass("lightGray");
-            $('.periodoElement.blueButton').removeClass("blueButton");
-            $(this).removeClass("lightGray");
-            $(this).addClass('blueButton');
-            $('#periodoElement').val($(this).attr('id').toString());
-            periodoTmp = $(this).html();
-            $('.plazoElement.lightGray').on('click',
-                function() {
-                    $(this).removeClass("lightGray");
-                    $(this).addClass('blueButton');
-                    $('.color-form2').hide();
-                    $('.plazoElement.blueButton').addClass("lightGray");
-                    $('.plazoElement.blueButton').removeClass("blueButton");
-                    agregarOpacity($('.financiamiento-form3'), $('.cambiar-enganche'));
-                    $('.plazos-form4').fadeIn();
-                    $('.plazos-form2').hide();
-                    $('.seguro-form0').hide();
-                    $('.seguro-form1').fadeIn();
-                    $('#plazoElement').val($(this).attr('id').toString());
-                    $('#plazosSelected').html(periodoTmp + " | " + $(this).html());
-                }
-            );
-
-        }
-    );
-
-    //Se elige cambiar el plazo
-    $('.cambiar-plazo').click(
-        function(){
-            clickCambiarPlazo();
-        }
-    );
-
-    //**********
-    // CUANDO SE ELIGE SEGURO
-    //**********
-
-    $('.seguroElement').hover(
-        function(){
-            //Todos los botones que no son grises
-            $('.seguroElement.blueButton').addClass("lightGray");
-            $('.seguroElement.blueButton').removeClass("blueButton");
-            $(this).addClass('blueButton');
-            $(this).removeClass("lightGray");
-        },
-        function(){
-            $('.seguroElement.blueButton').addClass("lightGray");
-            $('.seguroElement.blueButton').removeClass("blueButton");
-        }
-    );
-
-    $('.seguroElement').click(
-        function (){
-            $('.seguroElement.blueButton').addClass("lightGray");
-            $('.seguroElement.blueButton').removeClass("blueButton");
-            $(this).removeClass("lightGray");
-            $(this).addClass('blueButton');
-            $('.seguro-form0').hide();
-            $('.seguro-form1').hide();
-            showResumen();
-            var tipo = "tipoDeSeguro-" + $(this).attr('id').toString().split('-')[1];
-            var tipoDeSeguro = $('#' + tipo).html();
-            $('#seguroElement').val($(this).attr('id').toString());
-            $('#seguroSelected').html(tipoDeSeguro);
-        }
-    );
-
-    function showResumen() {
-
-        $('.producto-form1').show();
-        removerOpacity($('.producto-form1'));
-
-
-        $('.modelo-form2').show();
-        removerOpacity($('.modelo-form2'));
-        $('.cambiar-producto').on('click',
-            function() {
-                clickCambiarProducto();
+                modeloList(productoId);
+                //Obtener Modelos
+                /*$.ajax({
+                    type: 'POST',
+                    data: { productoId: productoId },
+                    url: "/kosmos-app/cotizador/obtenerModelos",
+                    success: function (response, textStatus) {
+                        console.log(response);
+                        console.log($('#modelosList'));
+                        $('#modelosList').append(response);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                    }
+                });*/
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
             }
-        );
+        });
+    });
 
-        $('.color-form2').show();
-        removerOpacity($('.color-form2'));
-        $('.cambiar-modelo').on('click',
-            function() {
-                clickCambiarModelo();
-            }
-        );
+/////STEP 2
+    $('.step2 .cotizador-p1-buttons .cotizador-box').click(function(){
+        var modeloId = this.id.toString().substr(1);
+        precioDelModelo(modeloId);
+        colorDelModelo(modeloId);
+        $("#modeloElegido").html($("#m"+modeloId).html());
+        $("#modeloElegido2").html($("#m"+modeloId).html());
+        $("#modeloElegido3").html($("#m"+modeloId).html());
+        $(this).parent().parent().parent().parent().parent().parent().slideUp();
+        $(this).parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
+    });
 
-        $('.financiamiento-form3').show();
-        removerOpacity($('.financiamiento-form3'));
-        $('.cambiar-color').on('click',
-            function() {
-                clickCambiarColor();
-            }
-        );
 
-        $('.plazos-form4').show();
-        removerOpacity($('.plazos-form4'));
-        $('.cambiar-enganche').on('click',
-            function() {
-                clickCambiarEnganche();
-            }
-        );
+///STEP 3
+    $('.step3 .cotizador-p1-buttons .cotizador-box').click(function(){
+        var colorId = this.id.toString().substr(1);
+        var color = $("#c"+colorId).html();
+        $("#colorElegido").html(color);
+        $("#colorElegido2").html(color);
+        $("#colorElegido3").html(color);
+        imagenDelColor(colorId);
+        $(this).parent().parent().parent().parent().parent().parent().slideUp();
+        $(this).parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
+    });
 
-        $('.seguro-form2').show();
-        $('.cambiar-plazo').on('click',
-            function() {
-                clickCambiarPlazo();
-            }
-        );
 
-        $('.cambiar-seguro').on('click',
-            function() {
-                clickCambiarSeguro();
-            }
-        );
+///STEP 4
+    var restante;
+    $('#slider').mouseup(function(){
+        var engancheElegido = "$"+$("#engancheElegido").html()+".00";
+        var enganche= parseInt($("#engancheElegido").html());
+        var precio = parseInt($("#precioDelProducto").html());
+        restante = precio - enganche;
+        $("#engancheElegido2").html(engancheElegido);
+        $("#engancheElegido3").html(engancheElegido);
+        $("#engancheElegido4").html(engancheElegido);
+        $("#meses12").html((Math.round(restante / 12)));
+        $("#meses24").html((Math.round(restante / 24)));
+        $("#meses36").html((Math.round(restante / 36)));
+        $("#meses48").html((Math.round(restante / 48)));
+        $(this).parent().parent().parent().parent().parent().parent().slideUp();
+        $(this).parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
+    });
 
-        $('.solicitar-credito').show();
-    }
 
-    //**********
-    // COMUNES
-    //**********
+///STEP 5
+    var payChoice;
+    $('.step5 .payChoice .cotizador-box').click(function(){
+        $('.step5 .payChoice .cotizador-box').removeClass('blueButton');
+        $(this).addClass('blueButton');
+        payChoice = this;
+    });
 
-    //Código Comun para boton de cambiar producto
-    function clickCambiarProducto() {
+    var leyenda;
+    $('.step5 .cotizador-box.small').click(function(){
+        var periodo = this.id.toString().substr(1);
+        var monto;
+        var leyenda;
+        if (payChoice.id == "quincenal") {
+            monto = Math.round(restante / (periodo*2));
+            leyenda = "$" + monto + " | Quincenal | " + periodo + " meses";
+        } else {
+            monto = Math.round(restante / periodo);
+            leyenda = "$" + monto + " | Mensual | " + periodo + " meses";
+        }
+        $("#pagoElegido").html(leyenda);
+        $("#pagoElegido2").html(leyenda);
+        $(this).parent().parent().parent().parent().parent().parent().slideUp();
+        $(this).parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
+    });
 
-        $('.producto-form0').fadeIn();
-        $('.producto-form1').hide();
+///STEP 6
+    $('.step6 .cotizador-p1-buttons .cotizador-box').click(function(){
+        var seguro = this.id.toString().substr(1);
+        var descripcionSeguro = $("#seguro"+seguro).html();
+        $("#seguroElegido").html(descripcionSeguro);
+        $(this).parent().parent().parent().parent().slideUp();
+        $(this).parent().parent().parent().parent().next('.cotizadorStep').slideDown();
+    });
 
-        $('.modelo-form0').fadeIn();
-        $('.modelo-form1').hide();
-        $('.modelo-form2').hide();
+///STEP 7
 
-        $('.color-form0').fadeIn();
-        $('.color-form1').hide();
-        $('.color-form2').hide()
+    $('.step7 .borderGrayButton').click(function(){
+        var thisIndex = $(this).index('.step7 .borderGrayButton');
+        $('.cotizadorStep.step7').slideUp();
+        $('.cotizadorStep').eq(thisIndex).slideDown();
+    });
 
-        $('.financiamiento-form0').hide();
-        $('.financiamiento-form0').hide();
-        $('.financiamiento-form3').hide();
+///////CHANGE PREVIOUS STEP
 
-        $('.plazos-form4').hide();
+    $('.cotizadorStep').each(function( index ) {
+        var thisStep = $(this);
+        if(thisStep.hasClass('step7')){
 
-        $('.seguro-form2').hide();
+        }else{
 
-        $('.solicitar-credito').hide();
-    }
-
-    function clickCambiarModelo() {
-        $('.cambiar-producto').on('click',
-            function() {
-                clickCambiarProducto();
-            }
-        );
-
-        removerOpacity($('.producto-form1'));
-
-        $('.productElement.blueButton').addClass('blueButton');
-        $('.productElement.blueButton').removeClass("lightGray");
-
-        $('.modelo-form0').hide();
-        $('.modelo-form1').fadeIn();
-        $('.modelo-form2').hide();
-
-        $('.color-form0').fadeIn();
-        $('.color-form1').hide();
-        $('.color-form2').hide()
-
-        $('.financiamiento-form0').fadeIn();
-        $('.financiamiento-form1').hide();
-        $('.financiamiento-form3').hide();
-
-        $('.plazos-form0').hide();
-        $('.plazos-form4').hide();
-
-        $('.seguro-form2').hide();
-
-        $('.solicitar-credito').hide();
-    }
-
-    function clickCambiarColor() {
-        $('.cambiar-modelo').on('click',
-            function() {
-                clickCambiarModelo();
-            }
-        );
-        agregarOpacity($('.producto-form1'), $('.cambiar-producto'));
-        removerOpacity($('.modelo-form2'));
-
-        $('.producto-form1').fadeIn();
-
-        $('.modelo-form0').hide();
-        $('.modelo-form1').hide();
-        $('.modelo-form2').fadeIn();
-
-        $('.color-form0').hide();
-        $('.color-form1').fadeIn();
-        $('.color-form2').hide();
-
-        $('.financiamiento-form0').hide();
-        $('.financiamiento-form1').fadeIn();
-        $('.financiamiento-form2').hide();
-        $('.financiamiento-form3').hide();
-
-        $('.plazos-form0').hide();
-        $('.plazos-form1').hide();
-        $('.plazos-form4').hide();
-
-        $('.seguro-form2').hide();
-
-        $('.solicitar-credito').hide();
-    }
-
-    function clickCambiarEnganche() {
-        $('.cambiar-color').on('click',
-            function() {
-                clickCambiarColor();
-            }
-        );
-        removerOpacity($('.color-form2'));
-        agregarOpacity($('.modelo-form2'), $('.cambiar-modelo'));
-
-        $('.producto-form1').hide();
-
-        $('.modelo-form2').fadeIn();
-
-        $('.financiamiento-form0').hide();
-        $('.financiamiento-form1').hide();
-        $('.financiamiento-form2').fadeIn();
-        $('.financiamiento-form3').hide();
-
-        $('.plazos-form0').hide();
-        $('.plazos-form1').fadeIn();
-        $('.plazos-form2').hide();
-        $('.plazos-form3').fadeIn();
-        $('.plazos-form4').hide();
-
-        $('.seguro-form0').hide();
-        $('.seguro-form2').hide();
-
-        $('.solicitar-credito').hide();
-    }
-
-    function clickCambiarPlazo() {
-        $('.cambiar-enganche').on('click',
-            function() {
-                clickCambiarEnganche();
-            }
-        );
-        agregarOpacity($('.color-form2'), $('.cambiar-color'));
-        removerOpacity($('.financiamiento-form3'));
-
-        $('.producto-form1').hide();
-
-        $('.modelo-form2').hide();
-
-        $('.color-form2').fadeIn();
-
-        $('.financiamiento-form2').hide();
-        $('.financiamiento-form3').fadeIn();
-
-        $('.plazos-form1').hide();
-        $('.plazos-form2').fadeIn();
-        $('.plazos-form4').hide();
-
-        $('.seguro-form0').fadeIn();
-        $('.seguro-form1').hide();
-        $('.seguro-form2').hide();
-
-        $('.solicitar-credito').hide();
-    }
-
-    function clickCambiarSeguro() {
-        $('.cambiar-plazo').on('click',
-            function() {
-                clickCambiarPlazo();
-            }
-        );
-        agregarOpacity($('.financiamiento-form3'), $('.cambiar-enganche'));
-        removerOpacity($('.plazos-form4'));
-
-        $('.producto-form1').hide();
-
-        $('.modelo-form2').hide();
-
-        $('.color-form2').hide();
-
-        $('.plazos-form1').hide();
-        $('.plazos-form2').hide();
-        $('.plazos-form4').fadeIn();
-
-        $('.seguro-form1').fadeIn();
-        $('.seguro-form2').hide();
-
-        $('.solicitar-credito').hide();
-    }
-
-    function removerOpacity( form ) {
-        form.removeClass('paddingBottom15');
-        form.removeClass('opacity03');
-    }
-
-    function agregarOpacity( form, button ) {
-        button.off('click');
-        form.addClass('paddingBottom15');
-        form.addClass('opacity03');
-    }
+            $('.borderGrayButton',this).last().click(function(){
+                $(this).parent().parent().parent().parent().parent().slideUp();
+                $(this).parent().parent().parent().parent().parent().prev('.cotizadorStep').slideDown();
+            });
+        }
+    });
 });
+
+function checkIfJson(data) {
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        return data;
+    }
+}
+
+function modeloList(productoId) {
+    if (productoId == 2) {
+        $('#a1').show();
+        $('#a2').show();
+        $('#a3').hide();
+        $('#a4').hide();
+        $('#a5').hide();
+        $('#a6').hide();
+        $('#a7').hide();
+        $('#a8').hide();
+    } else if (productoId == 6) {
+        $('#a1').hide();
+        $('#a2').hide();
+        $('#a3').show();
+        $('#a4').show();
+        $('#a5').hide();
+        $('#a6').hide();
+        $('#a7').hide();
+        $('#a8').hide();
+    } else if (productoId == 1) {
+        $('#a1').hide();
+        $('#a2').hide();
+        $('#a3').hide();
+        $('#a4').hide();
+        $('#a5').show();
+        $('#a6').show();
+        $('#a7').hide();
+        $('#a8').hide();
+    } else if (productoId == 3) {
+        $('#a1').hide();
+        $('#a2').hide();
+        $('#a3').hide();
+        $('#a4').hide();
+        $('#a5').hide();
+        $('#a6').hide();
+        $('#a7').show();
+        $('#a8').show();
+    }
+}
+
+function precioDelModelo(modeloId) {
+    if (modeloId == 1) {
+        $('#precioDelProducto').html( "346000" );
+    } else if (modeloId == 2) {
+        $('#precioDelProducto').html( "383000" );
+    } else if (modeloId == 3) {
+        $('#precioDelProducto').html( "415000");
+    } else if (modeloId == 4) {
+        $('#precioDelProducto').html( "480000" );
+    } else if (modeloId == 5) {
+        $('#precioDelProducto').html( "256000" );
+    } else if (modeloId == 6) {
+        $('#precioDelProducto').html( "288000" );
+    } else if (modeloId == 7) {
+        $('#precioDelProducto').html( "401000" );
+    } else if (modeloId == 8) {
+        $('#precioDelProducto').html( "460000" );
+    }
+}
+
+function colorDelModelo(modeloId) {
+    if (modeloId == 1) {
+        $('#k1').show();
+        $('#k2').show();
+        $('#k3').hide();
+        $('#k4').hide();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').hide();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').hide();
+    } else if (modeloId == 2) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').show();
+        $('#k4').hide();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').hide();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').hide();
+    } else if (modeloId == 3) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').hide();
+        $('#k4').show();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').hide();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').hide();
+    } else if (modeloId == 4) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').hide();
+        $('#k4').hide();
+        $('#k5').show();
+        $('#k6').show();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').hide();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').hide();
+    } else if (modeloId == 5) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').hide();
+        $('#k4').hide();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').show();
+        $('#k8').show();
+        $('#k9').hide();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').hide();
+    } else if (modeloId == 6) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').hide();
+        $('#k4').hide();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').show();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').hide();
+    } else if (modeloId == 7) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').hide();
+        $('#k4').hide();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').hide();
+        $('#k10').show();
+        $('#k11').show();
+        $('#k12').hide();
+    } else if (modeloId == 8) {
+        $('#k1').hide();
+        $('#k2').hide();
+        $('#k3').hide();
+        $('#k4').hide();
+        $('#k5').hide();
+        $('#k6').hide();
+        $('#k7').hide();
+        $('#k8').hide();
+        $('#k9').hide();
+        $('#k10').hide();
+        $('#k11').hide();
+        $('#k12').show();
+    }
+}
+
+function imagenDelColor(colorId) {
+    if (colorId == 1) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-altima-azul.png)');
+    } else if (colorId == 2) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-altima-gris_2.png)');
+    } else if (colorId == 3) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-altima-rojo.png)');
+    } else if (colorId == 4) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-xtrail-blanca.png)');
+    } else if (colorId == 5) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-xtrail-negra.png)');
+    } else if (colorId == 6) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-xtrail-verde.png)');
+    } else if (colorId == 7) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-maxima-azul.png)');
+    } else if (colorId == 8) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-maxima-gris.png)');
+    } else if (colorId == 9) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-maxima-rojo.png)');
+    } else if (colorId == 10) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-sentra-blanco.png)');
+    } else if (colorId == 11) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-sentra-gris.png)');
+    } else if (colorId == 12) {
+        $('#imagenDelProducto').css('background-image', 'url(images/nissan/2016-sentra-negro.png)');
+    }
+
+}
