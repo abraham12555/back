@@ -14,14 +14,18 @@
         </div>
     </div>
     <div class="padding20 formStep lastStep">
-        <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60"><span class="showOnFill">Trabajo en
-                <input type="text" class="inputsFormulario width150 formValues" name="empresa" placeholder="Empresa">,
+        <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60">
+            <span class="showOnFill">Trabajo en
+                <input type="text" class="inputsFormulario width150 formValues" name="empresa" placeholder="Empresa">
+            </span>
+            <span class="hide showOnFill">,
                 y mi puesto es
-                <input type="text" class="inputsFormulario width180 formValues" name="puesto" placeholder="Puesto">,</span><span class="showOnFill hide">
-                llevo trabajando en esta empresa desde hace
-                <span class="width100 inline selectWrap">
+                <input type="text" class="inputsFormulario width180 formValues" name="puesto" placeholder="Puesto">
+            </span>
+            <span class="showOnFill hide">, laboro en esta empresa desde hace
+                <span class="width40 inline selectWrap">
                     <select class="formulariOptions gray formValues" name="no_periodo">
-                        <option  selected="selected" disabled>Cantidad...</option>
+                        <option selected="selected" disabled>0</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -44,12 +48,9 @@
                         <option value="20">20</option>
                     </select>
                 </span>
-                <span class="afterSelect">
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                </span>
-                <span class="width180 inline selectWrap">
+                <span class="width140 inline selectWrap">
                     <select class="formulariOptions gray formValues" name="plazo">
-                        <option  selected="selected" disabled>Plazo...</option>
+                        <option selected>Plazo...</option>
                         <option value="dias">Día(s)</option>
                         <option value="meses">Mese(s)</option>
                         <option value="anios">Año(s)</option>
@@ -59,8 +60,14 @@
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </span>
-            </span> <span class="showOnFill hide">y mi tipo de contrato es
-                <input type="text" class="inputsFormulario width180 formValues" name="contrato" placeholder="Contrato">.
+            </span> 
+            <span class="showOnFill hide">y mi tipo de contrato es
+                <span class="width280 inline selectWrap">
+                    <g:select style="text-align:center;" class="formulariOptions gray formValues" name="contrato" from="${tipoDeContratoList}" optionKey="id" noSelection="['':'Tipo de Contrato']"/>
+                    <span class="afterSelect">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </span>.
+                </span>
             </span>
         </p>
 

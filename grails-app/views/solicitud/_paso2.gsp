@@ -1,51 +1,80 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight">
-    <div class="container clearFix relative autoMargin width920">
-        <div class="infoBox  desktop">
-            <div style="width: 695px;" class="width670 autoMargin">
-                <p class="displayInline textUpper floatLeft center letterspacing0.5 font13 paddingTop20 paddingRight10 paddingBottom10">LLENA ESTA SECCION EN  MENOS DE 1 MINUTO TOMA UNA FOTO DE TU </p>
-                <a id="paso2CompDom">
-                    <div style="width: 225px;" class="blueBox floatRight marginTop10">
-                        <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">comprobante de domicilio</p>
-                    </div>
-                </a>
+    <div class="defaultBubble">
+        <div class="container clearFix relative autoMargin width920">
+            <div class="infoBox  desktop">
+                <div style="width: 695px;" class="width670 autoMargin">
+                    <p class="displayInline textUpper floatLeft center letterspacing0.5 font13 paddingTop20 paddingRight10 paddingBottom10">LLENA ESTA SECCION EN  MENOS DE 1 MINUTO TOMA UNA FOTO DE TU </p>
+                    <a id="paso2CompDom">
+                        <div style="width: 225px;" class="blueBox floatRight marginTop10">
+                            <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">comprobante de domicilio</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="line18 "></div>
+            <div class="crosCircle ">
+                <p class="center cross"><i class="fa fa-times" aria-hidden="true"></i></p>
             </div>
         </div>
-        <div class="line18 "></div>
-        <div class="crosCircle ">
-            <p class="center cross"><i class="fa fa-times" aria-hidden="true"></i></p>
+    </div>
+    <div class="successBubble hide">
+        <div class="container clearFix relative autoMargin width920">
+            <div class="infoBoxGreen floatLeft">
+                <div class="infoContainer4c">
+                    <p class="center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5">TUS DATOS SE PRE-LLENARON EXITOSAMENTE, PORFAVOR VERIFICA QUE TU INFORMACIÓN SEA CORRECTA</p>
+                </div>
+            </div>
+            <div class="line18 colorGreen floatLeft"></div>
+            <div class="crosCircle floatLeft colorGreen">
+                <p class="center marginTop5 font12 colorWhite"><i class="fa fa-times" aria-hidden="true"></i></p>
+            </div>
         </div>
     </div>
     <div class="padding20 clearFix formStep lastStep">
         <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
-            <span class="showOnFill">Mi dirección es:
-                <input type="text" class="inputsFormulario formValues width200" name="calle" placeholder="Calle">,
-                <input type="text" class="inputsFormulario formValues width200" name="noExterior" placeholder="No. Exterior">,
-                <input type="text" class="inputsFormulario formValues width200" name="noInterior" placeholder="No. Interior">.
-            </span>
-            <span class="hide showOnFill" id="cpRemote"> Mi código postal es
-                <input type="text" class="inputsFormulario formValues width120 typeahead tt-input" name="codigoPostal" id="codigoPostal" placeholder="00001"/>
-            </span>   
+            <span class="showOnFill">Mi dirección es
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" id="calle" name="calle" placeholder="Calle">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" id="noExterior" name="noExterior" placeholder="No. Exterior">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" id="noInterior" name="noInterior" placeholder="No. Interior">,
+            </span>  
             <span class="hide showOnFill">
-                y está  ubicado en La Colonia
-                <input type="text" class="inputsFormulario formValues width200" name="colonia" placeholder="Colonia" />,
+                Colonia
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" name="colonia" placeholder="Colonia" />, 
             </span>
+            <span class="hide showOnFill" id="cpRemote"> C. P.
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input" name="codigoPostal" id="codigoPostal" placeholder="00000"/>.
+            </span> 
             <span class="hide showOnFill"> Mi
-                <span class="width240 inline selectWrap">
+                <span class="width220 inline selectWrap">
                     <select class="formulariOptions gray formValues notEmpty headingColor" name="tipoDelegacion">
+                        <option selected>Tipo</option>
                         <option value="delegacion">Delegación</option>
-                        <option value="municipio" selected="">Municipio</option>
+                        <option value="municipio">Municipio</option>
                     </select>
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </span>es
                 <span class="width290 inline selectWrap">
-                    <g:select noSelection="['':'Delegación/Municipio...']" class="formulariOptions gray formValues" optionKey="id" optionValue="nombre" name="delegacion" from="${municipioList}" />
+                    <g:select noSelection="['':'Delegación/Municipio']" class="formulariOptions gray formValues" optionKey="id" optionValue="nombre" name="delegacion" from="${municipioList}" />
                 </span>
-                y estoy en el estado de
+                en el estado de
                 <span class="width290 inline selectWrap">
-                    <g:select noSelection="['':'Estado...']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" />.
+                    <g:select noSelection="['':'Estado']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" />
+                </span>.
+            </span>
+            <span class="hide showOnFill"> La vivienda es
+                <span class="width120 inline selectWrap">
+                    <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="tipoDeVivienda" from="${tiposDeVivienda}" />
                 </span>
+            </span>
+            <span class="hide showOnFill"> y vivo en ella desde hace
+                <span class="width80 inline selectWrap">
+                    <g:select id="tiempo" name="tiempo" class="formulariOptions width100 gray formValues"  from="${1..80}" noSelection="['':'0']"/>
+                </span>
+                <span class="width120 inline selectWrap">
+                    <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" />
+                </span>.
             </span>
         </p>
 

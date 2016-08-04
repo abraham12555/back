@@ -50,51 +50,24 @@ function operacionesPaso1al3() {
     $('.showOnFill').each(function (index) {
         var thisStep = $(this);
         var maxIndex = $('.showOnFill').length;
-
+        console.log("Indice: " + index);
         $('.formValues', this).change(function () {
             console.log("Registrando: " + $(this).val());
             if ($(this).val() !== '') {
                 console.log("No esta vacio");
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
-                if ($(this).hasClass('typeahead')) {
-                    $('.typeahead').addClass('notEmpty');
-                    $('.typeahead').addClass('headingColor');
+                console.log("--->" + $(this).attr('id'));
+                if ($(this).attr('id') === 'nombre') {
+                    console.log("Si entraaaaaaaa");
+                    $('#nombreCliente').html('¡Hola! ' + $(this).val());
                 }
             } else {
                 console.log("Si esta vacio");
                 $(this).removeClass('notEmpty');
                 $(this).removeClass('headingColor');
             }
-
-            var filledLength = $('.notEmpty:visible').length;
-            var thisLength = $('.formValues:visible').length;
-
-            console.log("not Empty: " + filledLength + " -  total: " + thisLength);
-
-            if (filledLength === thisLength) {
-                if ((index + 1) < maxIndex) {
-                    $('.showOnFill').eq(index + 1).css({'display': 'inline'});
-                    checkInputs();
-                } else {
-                }
-
-            } else {
-            }
-            var totalLength = $('.formStep:visible .formValues').length;
-
-
-            if (filledLength === totalLength) {
-                //alert('show submit');
-                $('.formValues.notEmpty').addClass('headingColor');
-                $('.formStep:visible .confirmDiv').fadeIn();
-                $('.defaultBubble').fadeOut();
-                $('.successBubble').fadeIn();
-
-            } else {
-                //alert('hide submit');
-                $('.formValues.notEmpty').removeClass('headingColor');
-            }
+            verificarCambios(index);
         });
     });
 
@@ -120,7 +93,9 @@ function operacionesPaso1al3() {
     });
 
     $('#paso2CompDom').click(function () {
+        $('#tipoDeDocumento').val('UtilityBill');
         openModal('comprobante_domicilio');
+        inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
     });
 
     var bestPictures = new Bloodhound({
@@ -152,6 +127,30 @@ function operacionesPaso1al3() {
     submitNextPage();
 }
 
+function verificarCambios(index) {
+    var maxIndex = $('.showOnFill').length;
+    var filledLength = $('.notEmpty:visible').length;
+    var thisLength = $('.formValues:visible').length;
+
+    console.log("not Empty: " + filledLength + " -  total: " + thisLength);
+
+    if (filledLength === thisLength) {
+        if ((index + 1) < maxIndex) {
+            $('.showOnFill').eq(index + 1).fadeIn();
+            $('.showOnFill').eq(index + 1).css({'display': 'inline'});
+            checkInputs();
+        } else {
+        }
+
+    } else {
+    }
+    var totalLength = $('.formStep:visible .formValues').length;
+
+    if (filledLength === totalLength) {
+        $('.formStep:visible .confirmDiv').fadeIn();
+    }
+}
+
 function consultarCodigoPostal(sugerencia) {
     var respuesta = eval(sugerencia);
     var idCodigo = respuesta.id;
@@ -171,10 +170,13 @@ function consultarCodigoPostal(sugerencia) {
                 text: response.estado.nombre,
                 selected: true
             }));
+            $('.typeahead').addClass('notEmpty');
+            $('.typeahead').addClass('headingColor');
             $('#delegacion').addClass('notEmpty');
             $('#delegacion').addClass('headingColor');
             $('#estado').addClass('notEmpty');
             $('#estado').addClass('headingColor');
+            verificarCambios(1);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {}
     });
@@ -413,12 +415,16 @@ function operacionesPaso6() {
 
     $('#paso6IdOf').click(function () {
         openModal('identification_oficial');
+        $('#tipoDeDocumento').val('Identicaciones');
+        inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
         $(this).addClass('colorGreen');
         habilitarTerminarSolicitud();
     });
 
     $('#paso6CompDom').click(function () {
+        $('#tipoDeDocumento').val('UtilityBill');
         openModal('comprobante_domicilio');
+        inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
         $(this).addClass('colorGreen');
         habilitarTerminarSolicitud();
     });
@@ -466,17 +472,9 @@ function checkInputs() {
     var totalLength = $('.formStep:visible .formValues').length;
     var filledLength = $('.notEmpty:visible').length;
 
-    if (filledLength == totalLength) {
-        $('.formValues.notEmpty').addClass('headingColor');
+    if (filledLength === totalLength) {
         $('.formStep:visible .confirmDiv').fadeIn();
-        $('.defaultBubble').fadeOut();
-        $('.successBubble').fadeIn();
-
-    } else {
-        //alert('hide submit');
-        $('.formValues.notEmpty').removeClass('headingColor');
     }
-
 }
 
 function openSelect(elem) {
@@ -625,6 +623,34 @@ function fillFB(data) {
     $("#dia").val(json["birthday"].substring(3, 5));
     $("#anio").val(json["birthday"].substring(6, 12));
     $("#estadoCivil").val(json["relationship_status"]);
+    if (json["first_name"]) {
+        $("#nombre").addClass('notEmpty');
+        $("#nombre").addClass('headingColor');
+    }
+    if (json["last_name"]) {
+        $("#apellidoPaterno").addClass('notEmpty');
+        $("#apellidoPaterno").addClass('headingColor');
+    }
+    if (json["birthday"].substring(0, 2)) {
+        $("#mes").addClass('notEmpty');
+        $("#mes").addClass('headingColor');
+    }
+    if (json["birthday"].substring(3, 5)) {
+        $("#dia").addClass('notEmpty');
+        $("#dia").addClass('headingColor');
+    }
+    if (json["birthday"].substring(6, 12)) {
+        $("#anio").addClass('notEmpty');
+        $("#anio").addClass('headingColor');
+    }
+    if (json["relationship_status"]) {
+        $("#estadoCivil").addClass('notEmpty');
+        $("#estadoCivil").addClass('headingColor');
+    }
+    $('#nombreCliente').html('¡Hola! ' + json["first_name"]);
+    $('.defaultBubble').fadeOut();
+    $('.successBubble').fadeIn();
+    verificarCambios(0);
 }
 
 function fillGoogle(data) {
@@ -636,21 +662,20 @@ function fillGoogle(data) {
     console.log('Family Name: ' + json.getFamilyName());
     console.log("Image URL: " + json.getImageUrl());
     console.log("Email: " + json.getEmail());
-    /*$("#usuario").html(json["name"]);
-     $("#nombre").val(json["first_name"]);
-     $("#apellidoPaterno").val(json["last_name"]);
-     $("#imagenUsuario").html("<img src=" + json["picture"].data.url + "/>");*/
+    $('#nombreCliente').html('¡Hola! ' + json.getName());
+    $('.defaultBubble').fadeOut();
+    $('.successBubble').fadeIn();
 }
 
 //Callback para hacer la consulta con el API Bancaria
-function consultarLoginBancos(){
-	var banco = $('.bankChoice').val();
-	loadBar();
-	//Inicializando Formas
-	cleanformLogin()
-	console.log("Validando seleccion de banco...");
-	if (banco) {
-		$.ajax({
+function consultarLoginBancos() {
+    var banco = $('.bankChoice').val();
+    loadBar();
+    //Inicializando Formas
+    cleanformLogin()
+    console.log("Validando seleccion de banco...");
+    if (banco) {
+        $.ajax({
             type: 'POST',
             data: 'banco=' + banco,
             url: '/kosmos-app/solicitud/consultarLoginBancos',
@@ -658,12 +683,12 @@ function consultarLoginBancos(){
                 var respuesta = checkIfJson(data);
                 restartLoadBar();
                 if ('errorCode' in respuesta) {
-                	restartLoadBar();
-                	sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar al banco. Por favor, inténtelo de nuevo más tarde. Codigo de Error"+respuesta.errorCode, "error");
-                }else if ('conjunctionOp' in respuesta){
-                	restartLoadBar();
-                	$('#formLoginBank').html(buildLoginBank(respuesta));
-                	abrirModal('modalloginBank');
+                    restartLoadBar();
+                    sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar al banco. Por favor, inténtelo de nuevo más tarde. Codigo de Error" + respuesta.errorCode, "error");
+                } else if ('conjunctionOp' in respuesta) {
+                    restartLoadBar();
+                    $('#formLoginBank').html(buildLoginBank(respuesta));
+                    abrirModal('modalloginBank');
                 } else if (respuesta.error) {
                     $('#intentos').val(respuesta.intentos);
                     $('#accionesNormal').hide();
@@ -675,42 +700,42 @@ function consultarLoginBancos(){
                 sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
             }
         });
-	}
+    }
 }
 
-function peticionLoginBancos(formInv,paso){
-	$("#formLoginBank").hide();
-	$("#formMfaLogin").hide();
-	loadBar();
-	var data = {};
-	$("#"+formInv).find("input, select").each(function(i, field) {
-	    data[field.name] = field.value;
-	});
-	$("#spinner").html(spinner());
-	if (paso) {
-		$.ajax({
+function peticionLoginBancos(formInv, paso) {
+    $("#formLoginBank").hide();
+    $("#formMfaLogin").hide();
+    loadBar();
+    var data = {};
+    $("#" + formInv).find("input, select").each(function (i, field) {
+        data[field.name] = field.value;
+    });
+    $("#spinner").html(spinner());
+    if (paso) {
+        $.ajax({
             type: 'POST',
-            data: 'paso=' + paso +"&data=" + JSON.stringify(data),
+            data: 'paso=' + paso + "&data=" + JSON.stringify(data),
             url: '/kosmos-app/solicitud/flujoConsultaBancos',
             success: function (data, textStatus) {
                 var respuesta = checkIfJson(data);
                 restartLoadBar();
-                if ( paso == 'addAccount') {
-                	if('errorCode' in respuesta){ //Excepcion al Consultar Yoddle
-                		sweetAlert("Oops...", "Lo sentimos , hubo un problema al consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error "+respuesta.errorCode, "error");
-                		cerrarModal();
-                	}else if (respuesta.isMessageAvailable.fieldInfo != 'undefined'){
-                		console.log("Flujo MFA");
-                		$('#formLoginBank').hide();
-                		$("#spinner").html("");
-                		$('#formMfaLogin').html(buildFormMFA(respuesta));
-                		$("#formMfaLogin").fadeIn();
-                	}else{
-                		alert("Cuenta Agregada");
-                		$('#formMfaLogin').html("").show();
-                    	$('#formLoginBank').html("").show();
-                    	$("#spinner").html("");
-                    	$('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
+                if (paso == 'addAccount') {
+                    if ('errorCode' in respuesta) { //Excepcion al Consultar Yoddle
+                        sweetAlert("Oops...", "Lo sentimos , hubo un problema al consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error " + respuesta.errorCode, "error");
+                        cerrarModal();
+                    } else if (respuesta.isMessageAvailable.fieldInfo != 'undefined') {
+                        console.log("Flujo MFA");
+                        $('#formLoginBank').hide();
+                        $("#spinner").html("");
+                        $('#formMfaLogin').html(buildFormMFA(respuesta));
+                        $("#formMfaLogin").fadeIn();
+                    } else {
+                        alert("Cuenta Agregada");
+                        $('#formMfaLogin').html("").show();
+                        $('#formLoginBank').html("").show();
+                        $("#spinner").html("");
+                        $('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
                         $('#ret90').val(formatCurrency(respuesta.retirosPromedio, "$"));
                         $('#saldo90').val(formatCurrency(respuesta.saldoPromedio, "$"));
                         $('.loadingActive').hide();
@@ -718,16 +743,16 @@ function peticionLoginBancos(formInv,paso){
                         $('.defaultBubble').fadeOut();
                         $('.successBubble').fadeIn();
                         $('#confirmarConsulta').fadeIn();
-                	}
-                }else if( paso == 'mfaLogin'){
-                	if('errorCode' in respuesta){ //Excepcion al Consultar Yoddle
-                		sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error"+respuesta.errorCode, "error");
-                		cerrarModal();
-                	}else{
-                		$('#formMfaLogin').html("").show();
-                    	$('#formLoginBank').html("").show();
-                    	$("#spinner").html("");
-                    	$('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
+                    }
+                } else if (paso == 'mfaLogin') {
+                    if ('errorCode' in respuesta) { //Excepcion al Consultar Yoddle
+                        sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error" + respuesta.errorCode, "error");
+                        cerrarModal();
+                    } else {
+                        $('#formMfaLogin').html("").show();
+                        $('#formLoginBank').html("").show();
+                        $("#spinner").html("");
+                        $('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
                         $('#ret90').val(formatCurrency(respuesta.retirosPromedio, "$"));
                         $('#saldo90').val(formatCurrency(respuesta.saldoPromedio, "$"));
                         $('.loadingActive').hide();
@@ -736,8 +761,8 @@ function peticionLoginBancos(formInv,paso){
                         $('.successBubble').fadeIn();
                         $('#confirmarConsulta').fadeIn();
                         cerrarModal();
-                	}
-                }else if (respuesta.error) {
+                    }
+                } else if (respuesta.error) {
                     $('#accionesNormal').hide();
                     $('#accionesError').fadeIn();
                     cerrarModal();
@@ -749,19 +774,19 @@ function peticionLoginBancos(formInv,paso){
                 cerrarModal();
             }
         });
-	}
+    }
 }
-function cleanformLogin(){
-	$('#formLoginBank').html("");
-	$('#formLoginBank').show();
-	$('#formMfaLogin').html("");
-	$('#formMfaLogin').show();
-	$("#spinner").html("");
+function cleanformLogin() {
+    $('#formLoginBank').html("");
+    $('#formLoginBank').show();
+    $('#formMfaLogin').html("");
+    $('#formMfaLogin').show();
+    $("#spinner").html("");
 }
 
-function spinner(){
-	var html="<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">Consultando...</p></center>";
-	return html;
+function spinner() {
+    var html = "<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">Consultando...</p></center>";
+    return html;
 }
 
 function abrirModal(nombreModal) {
@@ -778,43 +803,43 @@ function cerrarModal() {
 }
 
 
-function buildLoginBank(respuesta){
-	console.log("buildLoginBank...");
-	var html="";
-	//html+="<p class=\"headingColor textUpper letterspacing1.5 font25 paddingRight15 stepTitle\">"+respuesta.defaultOrgDisplayName+"</p>";
-	html+="<form action=\"#\" name=\"formLoginBank\" id=\"formLoginBank\">"
-	$.each(respuesta.componentList, function(key, componentList) {
-				html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-				html+="<p class=\" marginBottom15 gray font14\">"+respuesta.componentList[key].displayName+"</p>";
-				html+="<input class=\"inPuts4a formValues headingColor\" name=\""+respuesta.componentList[key].name+"\" id=\""+respuesta.componentList[key].valueIdentifier+"\" size=\""+respuesta.componentList[key].size+"\" maxlength=\""+respuesta.componentList[key].maxlength+"\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
-				html+="</div>";
-	});
-	html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-		html+="<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Procesar\" onclick=\"peticionLoginBancos('formLoginBank','addAccount');\" />";
-	html+="</div>";
-	html+="</form>"
-	return html;
+function buildLoginBank(respuesta) {
+    console.log("buildLoginBank...");
+    var html = "";
+    //html+="<p class=\"headingColor textUpper letterspacing1.5 font25 paddingRight15 stepTitle\">"+respuesta.defaultOrgDisplayName+"</p>";
+    html += "<form action=\"#\" name=\"formLoginBank\" id=\"formLoginBank\">"
+    $.each(respuesta.componentList, function (key, componentList) {
+        html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+        html += "<p class=\" marginBottom15 gray font14\">" + respuesta.componentList[key].displayName + "</p>";
+        html += "<input class=\"inPuts4a formValues headingColor\" name=\"" + respuesta.componentList[key].name + "\" id=\"" + respuesta.componentList[key].valueIdentifier + "\" size=\"" + respuesta.componentList[key].size + "\" maxlength=\"" + respuesta.componentList[key].maxlength + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
+        html += "</div>";
+    });
+    html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+    html += "<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Procesar\" onclick=\"peticionLoginBancos('formLoginBank','addAccount');\" />";
+    html += "</div>";
+    html += "</form>"
+    return html;
 }
 
-function buildFormMFA(respuesta){
-	console.log("BuildFormMFA...");
-	var html="";
-	html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-	html+="</div>";
-	html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-	html+="<p class=\" marginBottom15 gray font14\">"+respuesta.fieldInfo.displayString+"</p>";
-	if(respuesta.fieldInfo.mfaFieldInfoType == "TOKEN_ID"){
-		html+="<form action=\"#\" name=\"formLoginMFA\" id=\"formLoginMFA\">";
-			html+="<input name=\"token\" class=\"inPuts4a formValues headingColor\" id=\"token\"  maxlength=\""+respuesta.fieldInfo.maximumLength+"\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\""+respuesta.fieldInfo.responseFieldType+"\">";
-			html+="<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-				html+="<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Enviar\" onclick=\"peticionLoginBancos('formLoginMFA','mfaLogin');\" />";
-			html+="</div>";
-		html+="</form>";
-	}else{
-		html+="<h1>Opcion en Desarrollo....</h1>";
-	}
-	html+="</div>";
-	return html;
+function buildFormMFA(respuesta) {
+    console.log("BuildFormMFA...");
+    var html = "";
+    html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+    html += "</div>";
+    html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+    html += "<p class=\" marginBottom15 gray font14\">" + respuesta.fieldInfo.displayString + "</p>";
+    if (respuesta.fieldInfo.mfaFieldInfoType == "TOKEN_ID") {
+        html += "<form action=\"#\" name=\"formLoginMFA\" id=\"formLoginMFA\">";
+        html += "<input name=\"token\" class=\"inPuts4a formValues headingColor\" id=\"token\"  maxlength=\"" + respuesta.fieldInfo.maximumLength + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"" + respuesta.fieldInfo.responseFieldType + "\">";
+        html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
+        html += "<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Enviar\" onclick=\"peticionLoginBancos('formLoginMFA','mfaLogin');\" />";
+        html += "</div>";
+        html += "</form>";
+    } else {
+        html += "<h1>Opcion en Desarrollo....</h1>";
+    }
+    html += "</div>";
+    return html;
 }
 
 function consultarBancos() {
@@ -995,6 +1020,10 @@ function openModal(divModal) {
     $('#' + divModal).fadeIn();
 }
 
+function closeModal(divModal) {
+    $('#' + divModal).fadeOut();
+}
+
 function operacionesModal() {
     $('.idType').click(function () {
         $(this).parent().parent().parent().parent().parent().fadeOut();
@@ -1010,6 +1039,12 @@ function operacionesModal() {
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $('.webcam_capture').fadeIn();
         inicializarCamara('Frente');
+    });
+
+    $('.camCaptureComp').click(function () {
+        $(this).parent().parent().parent().parent().parent().fadeOut();
+        $('.webcamCaptureComp').fadeIn();
+        inicializarCamara('Comprobante');
     });
 
     $('#repetirFotoFrente').click(function () {
@@ -1043,7 +1078,6 @@ function operacionesModal() {
     $('.docChoice').click(function () {
         $(this).parent().parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().parent().next().fadeIn();
-        inicializarCamara('Comprobante');
     });
 }
 
@@ -1056,6 +1090,47 @@ function habilitarTerminarSolicitud() {
     } else {
         $('.solicitud_modal').removeClass('blueButton colorWhite pointer');
     }
+}
+
+function inicializarDropzone(elemento, boton) {
+    Dropzone.autoDiscover = false;
+    var kosmosDropzone = new Dropzone(elemento, {
+        url: "/kosmos-app/solicitud/consultarEphesoft",
+        uploadMultiple: true,
+        parallelUploads: 1,
+        paramName: "archivo",
+        params: {'docType': $('#tipoDeDocumento').val()},
+        maxFiles: 1,
+        maxFilesize: 5,
+        acceptedFiles: ".pdf, .png, .jpg, .jpeg",
+        autoQueue: true,
+        createImageThumbnails: false,
+        clickable: boton
+    });
+    kosmosDropzone.on("addedfile", function (file) {
+        console.log("Archivo enviad: " + file);
+        $('.dz-preview').hide();
+        $('#progresoConsultaComp').fadeIn();
+    });
+    kosmosDropzone.on("success", function (file, response) {
+        var respuesta = eval(response);
+        console.log("Respuesta recibida: " + respuesta);
+        $('#progresoConsultaComp').fadeOut();
+        if (respuesta.direccion) {
+            sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombrePersona + "<br/><strong>Dirección: </strong>" + respuesta.direccion + "<br/><strong>Fecha del Recibo: </strong> " + respuesta.fechaRecibo + "</br>", type: "success"});
+            this.removeAllFiles();
+            closeModal('comprobante_domicilio');
+            $('#calle').val(respuesta.direccion);
+            $('#calle').addClass("notEmpty");
+            $('#calle').addClass("headingColor");
+            $('.defaultBubble').fadeOut();
+            $('.successBubble').fadeIn();
+        } else if (respuesta.error) {
+            sweetAlert("Oops...", respuesta.error, "error");
+        } else if (respuesta.fatal) {
+            sweetAlert("Oops...", "Ocurrio un error al procesar el documento: " + respuesta.error, "error");
+        }
+    });
 }
 // ***************************** Fin de Funciones Auxiliares
 

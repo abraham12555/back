@@ -34,11 +34,16 @@
             <span class="showOnFill">Mi nombre es
                 <input type="text" class="inputsFormulario width200 formValues headingColor" style="text-align:center;" id="nombre" name="nombre" placeholder="Jorge"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor" id="apellidoPaterno" name="apellidoPaterno" placeholder="Perez"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor" id="apellidoMaterno" name="apellidoMaterno" placeholder="Lopez">
             </span>
+            <span class="hide showOnFill">, soy
+                <span class="width160 inline selectWrap">
+                    <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions gray formValues" name="sexo" from="${generoList}" optionKey="id" />
+                </span>
+            </span>
             <span class="hide showOnFill">y nací el&nbsp;
 
                 <span class="width70 inline selectWrap">
                     <select style="text-align:center;" class="formulariOptions gray formValues" name="dia" id="dia">
-                        <option  selected="selected" disabled>día</option>
+                        <option selected="selected" disabled>Día</option>
                         <option value="01">01</option>
                         <option value="02">02</option>
                         <option value="03">03</option>
@@ -74,38 +79,54 @@
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
-                </span>de&nbsp;
-                <span class="width200 inline selectWrap">
-                    <select style="text-align:center;" class="formulariOptions gray formValues" id="mes" name="mes">
-                        <option  selected="selected" disabled>Mes</option>
-                        <option value="01">Enero</option>
-                        <option value="02">Febrero</option>
-                        <option value="03">Marzo</option>
-                        <option value="04">Abril</option>
-                        <option value="05">Mayo</option>
-                        <option value="06">Junio</option>
-                        <option value="07 ">Julio</option>
-                        <option value="08">Agosto</option>
-                        <option value="09">septiembre</option>
-                        <option value="10">Octubre </option>
-                        <option value="11">Noviembre</option>
-                        <option value="12">Diciembre </option>
-                    </select>
                 </span>
-                <span class="afterSelect">
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                <span class="hide showOnFill">
+                    de&nbsp;
+                    <span class="width200 inline selectWrap">
+                        <select style="text-align:center;" class="formulariOptions gray formValues" id="mes" name="mes">
+                            <option  selected="selected" disabled>Mes</option>
+                            <option value="01">Enero</option>
+                            <option value="02">Febrero</option>
+                            <option value="03">Marzo</option>
+                            <option value="04">Abril</option>
+                            <option value="05">Mayo</option>
+                            <option value="06">Junio</option>
+                            <option value="07 ">Julio</option>
+                            <option value="08">Agosto</option>
+                            <option value="09">septiembre</option>
+                            <option value="10">Octubre </option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre </option>
+                        </select>
+                    </span>
+                    <span class="afterSelect">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </span>
                 </span>
-                de&nbsp;  <input type="number" style="text-align:center;" class="inputsFormulario width100 formValues" id="anio" name="anio" placeholder="Año">.
+                <% def anioActual = Calendar.getInstance().get(Calendar.YEAR) %>
+                <span class="hide showOnFill">
+                    de&nbsp;
+                    <span class="width100 inline selectWrap">
+                        <g:select id="anio" name="anio" class="formulariOptions width100 gray formValues"  from="${(anioActual-18)..(anioActual-120)}" value="" noSelection="['':'Año']"/>
+                    </span>
+                    <span class="afterSelect">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </span>
+                </span>
             </span>
-            <span class="hide showOnFill show2"> Soy de nacionalidad
-                <span class="width240 inline selectWrap">
-                    <g:select style="text-align:center;" class="formulariOptions gray formValues" name="nacionalidad" from="${nacionalidadList}" optionKey="id" />
+            <br/>
+            <span class="hide showOnFill show2"> en
+                <span class="width354 inline selectWrap">
+                    <g:select style="text-align:center;" noSelection="['':'Estado']" class="formulariOptions gray formValues" name="estado" from="${estadoList}" optionKey="id" />
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
-                </span>y soy&nbsp;
-                <span class="width225 inline selectWrap">
-                    <g:select style="text-align:center;" class="formulariOptions gray formValues" name="estadoCivil" from="${estadoCivilList}" optionKey="id" />
+                </span>
+            </span>
+            <span class="hide showOnFill show2">    
+                , mi estado civil es&nbsp;
+                <span class="width220 inline selectWrap">
+                    <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions gray formValues" name="estadoCivil" from="${estadoCivilList}" optionKey="id" />
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -126,10 +147,40 @@
     </div>
 
     <div class="padding15 formStep hide lastStep">
-        <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60"><span class="hide showOnFill">Mi nivel escolar es
-                <input type="text" class="inputsFormulario width200 formValues" name="nivelEscolar" placeholder="universitario"></span><span class="hide showOnFill"> y mi número telefónico es el
-                <input type="text" class="inputsFormulario width210 formValues" name="telefono" placeholder="(55)4185 2233)"></span><span class="hide showOnFill"> y mi celular es el
-                <input type="text" class="inputsFormulario width210 formValues" name="celular" placeholder="(55)2345 2345)">.</span>
+        <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60">
+            <span class="hide showOnFill">Mi nivel escolar es
+                <span class="width240 inline selectWrap">
+                    <g:select id="nivelEscolar" name="nivelEscolar" class="formulariOptions width100 gray formValues"  from="${escolaridadList}" optionKey="id" noSelection="['':'Nivel Escolar']"/>
+                </span>
+                <span class="afterSelect">
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                </span>
+            </span>
+            <span class="hide showOnFill"> y mi número telefónico es el
+                <input type="text" class="inputsFormulario width210 headingColor formValues" name="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)">
+            </span>
+            <span class="hide showOnFill"> y mi celular es el
+                <input type="text" class="inputsFormulario width210 headingColor formValues" name="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)">.
+            </span>
+            <span class="hide showOnFill"> Mi RFC es
+                <input type="text" class="inputsFormulario width210 headingColor formValues" name="rfc" maxlength="13" placeholder="AAAA000000AZ0">
+            </span>
+            <span class="hide showOnFill"> y mi CURP es
+                <input type="text" class="inputsFormulario width300 headingColor formValues" name="curp" maxlength="18" placeholder="CURP">.
+            </span>
+            <br/>
+            <span class="hide showOnFill"> Mi conyugue es
+                <input type="text" class="inputsFormulario width500 headingColor formValues" name="nombreConyugue" placeholder="Maria Hernández Pérez">
+            </span>
+            <span class="hide showOnFill">
+                , de mi dependen&nbsp;
+                <span class="width80 inline selectWrap">
+                    <g:select id="anio" name="anio" class="formulariOptions width80 gray formValues"  from="${1..20}" noSelection="['':'0']"/>
+                </span>
+                <span class="afterSelect">
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                </span> persona(s).
+            </span>
         </p>
         <div class="confirmDiv hide col7 col12-tab floatRight marginTop28 clearFix">
             <div class="floatLeft marginBottom20">
@@ -185,6 +236,6 @@
             fillFB("${datosLogin.encodeAsJSON()}");
         }else if("${tipoLogin}" == 'Google'){
             fillGoogle("${datosLogin.encodeAsJSON()}");
-        }
+    }
     });
 </script>

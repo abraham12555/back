@@ -92,7 +92,7 @@
                 <div class="marginLeft15 floatLeft ">
                     <button type="button" class="consultarBox center colorWhite letterspacing1 font16" onclick="consultarBancos();">CONSULTAR DE FORMA SEGURA <i class="fa fa-lock paddingLeft10" aria-hidden="true"></i></button>
                 </div>
-                <div id="progresoConsulta" style="display:none;" class="floatLeft marginLeft20">
+                <div id="progresoConsulta" style="display:none;width: 50%;margin-left:25%;" class="floatLeft marginLeft20">
                     <div class="loadingBar meter animate">
                         <span style="width: 100%"><span></span></span>
                     </div>

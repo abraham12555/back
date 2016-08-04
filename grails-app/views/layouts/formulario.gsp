@@ -19,6 +19,7 @@
         <g:external dir="js" file="jquery.modal.min.js" />
         <g:external dir="js" file="formulario.js" />
         <g:external dir="js" file="photobooth_min.js" />
+        <g:external dir="js" file="dropzone.js" />
     </head>
     <body>
         <header class="topHeader">
@@ -28,8 +29,8 @@
                     <img class="logoMobile floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" title="Logo" />
                     <div class="floatingHeader floatRight clearFix">
                         <div class="floatRight clearFix">
-                            <div class="userPicture floatLeft "></div>
-                            <p class="userName marginTop28 paddingRight5 marginBottom27 floatLeft">Hola Joseph</p>
+                            <div id="imagenUsuario" class="userPicture floatLeft "></div>
+                            <p id="nombreCliente" class="userName marginTop28 paddingRight5 marginBottom27 floatLeft">¡Hola!</p>
                             <div class="dropBox floatLeft marginTop28 marginLeft5 desktop">
                                 <i class="fa fa-angle-down paddingTop2 paddingRight2 paddingLeft5" aria-hidden="true"></i>
                             </div>

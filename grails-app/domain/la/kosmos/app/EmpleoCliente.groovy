@@ -5,6 +5,7 @@ class EmpleoCliente implements Serializable{
     String puesto
     String actividad
     String profesion
+    TipoDeContrato tipoDeContrato
     GiroEmpresarial giroEmpresarial
     String nombreDeLaEmpresa
     String nombreDelJefeInmediato
@@ -35,7 +36,7 @@ class EmpleoCliente implements Serializable{
         codigoPostal (nullable: true)
         ciudad (nullable: true)
         cliente (nullable: true)
-
+        tipoDeContrato (nullable: true)
     }
     
     static mapping = {

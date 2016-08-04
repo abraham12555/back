@@ -12,6 +12,7 @@ class Cliente implements Serializable{
     Genero genero
     String rfc
     EstadoCivil estadoCivil
+    NivelEducativo nivelEducativo
     int dependientesEconomicos = 0
     String nombreDelConyugue
     Date fechaDeRegistro = new Date()
@@ -28,6 +29,7 @@ class Cliente implements Serializable{
         genero (nullable: true)
         rfc ( maxSize: 13, unique: true, nullable: true)
         estadoCivil (nullable: false)
+        nivelEducativo (nullable: false)
         nombreDelConyugue (nullable: true)
         fechaDeRegistro (nullable: false)
 
