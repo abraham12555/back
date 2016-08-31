@@ -4,8 +4,11 @@ import la.kosmos.app.Producto
 import la.kosmos.app.TipoDeProducto
 
 class BootStrap {
-
+	
+	def sequenceGeneratorService
+	
     def init = { servletContext ->
+		sequenceGeneratorService.initSequence('CUSTOMER', null, null, 200, 'KD-%05d')		
         /*def marca = new Marca(nombre:"Nissan").save(flush: true)
         def entidadFinanciera = new EntidadFinanciera(nombre: "CrediNissan").save(flush: true)
         def tipoDeProducto = new TipoDeProducto(nombre: "Automóviles").save(flush: true);

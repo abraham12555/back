@@ -1,27 +1,24 @@
-<div class="whiteContainer width95 paddingBottom60 ">
-	<h1
-		class="headingColor marginLeft30 font25 letterspacing1.5 marginTop23 marginBottom14 displayInline">LOGIN</h1>
-	<div class="floatRight borderGray radius100 marginTop23 marginRight17">
-		<button type="button" style="background: #f8f9ff;"
-			class="borderGray radius100 textUpper gray paddingTop7 paddingBottom5 font18 paddingLeft24"
-			onclick="cerrarModal();">
-			cerrar<i class="fa fa-times paddingLeft5 paddingRight20"
-				aria-hidden="true"></i>
-		</button>
-	</div>
-	<div class="col12 border1"></div>
-	<div class="col12 clearFix"></div>
-	<div class="col12 border1 marginBottom40"></div>
-	<div class="col12">
-		<div class="clearFix paddingLeft10">
-			<!-- div class="whiteBox width250 autoMargin marginTop13"-->
-			<div class=" width550 autoMargin marginTop13">
-				<div id="formLoginBank"></div>
-				<div id="formMfaLogin"></div>
+<div class="whiteContainer lightboxPos identificationLb">
+	<h2
+		class="floatLeft lbHeader headingColor fontWeight300 letterspacing1.5">Consultando</h2>
+	<span
+		class="closeModal floatRight borderGray radius100 marginTop15 marginRight15">
+		<p
+			class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20">
+			<span class="notMobile paddingRight5">cerrar</span><i
+				class="fa fa-times " aria-hidden="true"></i>
+		</p>
+	</span>
+
+	<div class="idView">
+		<div class="border1 clearFloat"></div>
+		<div class="border1"></div>
+		<div class="padding20">
+			<div
+				class="col9 col12-tab autoMargin clearFix paddingTop50 paddingBottom50 fontWeight500">
 				<div id="spinner"></div>
+				<div id="loginInteractiveHtml"></div>
 			</div>
 		</div>
 	</div>
 </div>
-
-

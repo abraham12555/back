@@ -236,7 +236,7 @@ function operacionesPaso4() {
 
     $('.consultarBox').click(function () {
         //consultarBancos();
-        consultarLoginBancos();
+    	authenticate();
     });
 
     $('#reintentarBtn').click(function () {
@@ -668,124 +668,121 @@ function fillGoogle(data) {
 }
 
 //Callback para hacer la consulta con el API Bancaria
-function consultarLoginBancos() {
-    var banco = $('.bankChoice').val();
-    loadBar();
-    //Inicializando Formas
-    cleanformLogin()
-    console.log("Validando seleccion de banco...");
-    if (banco) {
-        $.ajax({
-            type: 'POST',
-            data: 'banco=' + banco,
-            url: '/kosmos-app/solicitud/consultarLoginBancos',
-            success: function (data, textStatus) {
-                var respuesta = checkIfJson(data);
-                restartLoadBar();
-                if ('errorCode' in respuesta) {
-                    restartLoadBar();
-                    sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar al banco. Por favor, inténtelo de nuevo más tarde. Codigo de Error" + respuesta.errorCode, "error");
-                } else if ('conjunctionOp' in respuesta) {
-                    restartLoadBar();
-                    $('#formLoginBank').html(buildLoginBank(respuesta));
-                    abrirModal('modalloginBank');
-                } else if (respuesta.error) {
-                    $('#intentos').val(respuesta.intentos);
-                    $('#accionesNormal').hide();
-                    $('#accionesError').fadeIn();
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                restartLoadBar();
-                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-            }
-        });
-    }
-}
-
-function peticionLoginBancos(formInv, paso) {
-    $("#formLoginBank").hide();
-    $("#formMfaLogin").hide();
-    loadBar();
+function loginInteractive() {
+    loading($('.bankChoice').val());
+    $('#loginInteractiveHtml').fadeOut();
     var data = {};
-    $("#" + formInv).find("input, select").each(function (i, field) {
+    $("#formLoginInteractive").find("input, select").each(function (i, field) {
         data[field.name] = field.value;
     });
-    $("#spinner").html(spinner());
-    if (paso) {
-        $.ajax({
-            type: 'POST',
-            data: 'paso=' + paso + "&data=" + JSON.stringify(data),
-            url: '/kosmos-app/solicitud/flujoConsultaBancos',
-            success: function (data, textStatus) {
-                var respuesta = checkIfJson(data);
-                restartLoadBar();
-                if (paso == 'addAccount') {
-                    if ('errorCode' in respuesta) { //Excepcion al Consultar Yoddle
-                        sweetAlert("Oops...", "Lo sentimos , hubo un problema al consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error " + respuesta.errorCode, "error");
-                        cerrarModal();
-                    } else if (respuesta.isMessageAvailable.fieldInfo != 'undefined') {
-                        console.log("Flujo MFA");
-                        $('#formLoginBank').hide();
-                        $("#spinner").html("");
-                        $('#formMfaLogin').html(buildFormMFA(respuesta));
-                        $("#formMfaLogin").fadeIn();
-                    } else {
-                        alert("Cuenta Agregada");
-                        $('#formMfaLogin').html("").show();
-                        $('#formLoginBank').html("").show();
-                        $("#spinner").html("");
-                        $('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
-                        $('#ret90').val(formatCurrency(respuesta.retirosPromedio, "$"));
-                        $('#saldo90').val(formatCurrency(respuesta.saldoPromedio, "$"));
-                        $('.loadingActive').hide();
-                        $('#consultarInfo').hide();
-                        $('.defaultBubble').fadeOut();
-                        $('.successBubble').fadeIn();
-                        $('#confirmarConsulta').fadeIn();
-                    }
-                } else if (paso == 'mfaLogin') {
-                    if ('errorCode' in respuesta) { //Excepcion al Consultar Yoddle
-                        sweetAlert("Oops...", "Lo sentimos , hubo un problema consultar su cuenta . Por favor, inténtelo de nuevo más tarde. Codigo de Error" + respuesta.errorCode, "error");
-                        cerrarModal();
-                    } else {
-                        $('#formMfaLogin').html("").show();
-                        $('#formLoginBank').html("").show();
-                        $("#spinner").html("");
-                        $('#dep90').val(formatCurrency(respuesta.depositosPromedio, "$"));
-                        $('#ret90').val(formatCurrency(respuesta.retirosPromedio, "$"));
-                        $('#saldo90').val(formatCurrency(respuesta.saldoPromedio, "$"));
-                        $('.loadingActive').hide();
-                        $('#consultarInfo').hide();
-                        $('.defaultBubble').fadeOut();
-                        $('.successBubble').fadeIn();
-                        $('#confirmarConsulta').fadeIn();
-                        cerrarModal();
-                    }
-                } else if (respuesta.error) {
-                    $('#accionesNormal').hide();
-                    $('#accionesError').fadeIn();
-                    cerrarModal();
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                restartLoadBar();
-                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-                cerrarModal();
+    console.log("PUT Interactive Mode....");
+    $.ajax({
+        type: 'POST',
+        data: 'data=' + JSON.stringify(data),
+        url: '/kosmos-app/solicitud/loginInteractive',
+        success: function (data, textStatus) {
+            var respuesta = checkIfJson(data);
+            if ('error_class' in respuesta) {
+            	cerrarModal();
+                sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
+            } else {
+            	 cerrarModal();
+                 $("#spinner").html("");
+                 var index = 0;
+	             $.each(respuesta.accounts_resume, function(i, item) {
+	             	if(respuesta.accounts_resume[i].depositoPromedio > 0){
+	             		index=i;
+	             	}
+	             });
+                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
+                 $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
+                 $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
+                 $('.loadingActive').hide();
+                 $('#consultarInfo').hide();
+                 $('.defaultBubble').fadeOut();
+                 $('.successBubble').fadeIn();
+                 $('#confirmarConsulta').fadeIn();
             }
-        });
-    }
-}
-function cleanformLogin() {
-    $('#formLoginBank').html("");
-    $('#formLoginBank').show();
-    $('#formMfaLogin').html("");
-    $('#formMfaLogin').show();
-    $("#spinner").html("");
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        	cerrarModal();
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
 }
 
-function spinner() {
-    var html = "<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">Consultando...</p></center>";
+//Callback para hacer la consulta con el API Bancaria
+function authenticate() {
+	loading($('.bankChoice').val());
+	var data = {};
+    data["password"] = $('#password').val();
+    data["login"] = $('#login').val();
+    data["provider_code"] = $('.bankChoice').val();
+    data["customer_id"] = $('#customer_id').val();
+    console.log("Authenticating....");
+    $.ajax({
+        type: 'POST',
+        data: 'data=' + JSON.stringify(data),
+        url: '/kosmos-app/solicitud/authenticate',
+        success: function (data, textStatus) {
+            var respuesta = checkIfJson(data);
+            if ('error_class' in respuesta) {
+            	cerrarModal();
+                sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
+            } else if ('interactiveFieldsName' in respuesta) {
+            	$("#spinner").html("");
+                $('#loginInteractiveHtml').html(buildLoginBank(respuesta));
+            } else {
+            	cerrarModal();
+            	var index = 0;
+            	$.each(respuesta.accounts_resume, function(i, item) {
+            		if(respuesta.accounts_resume[i].depositoPromedio > 0){
+            			index=i;
+            		}
+            	});
+                $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
+                $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
+                $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
+                $('.loadingActive').hide();
+                $('#consultarInfo').hide();
+                $('.defaultBubble').fadeOut();
+                $('.successBubble').fadeIn();
+                $('#confirmarConsulta').fadeIn();
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        	cerrarModal();
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+
+function loading(bank) {
+	$("#spinner").html(spinner(bank));
+	$("#spinner").fadeIn();
+    $('#modalloginBank').modal({keyboard: false, backdrop: false})
+}
+
+function complete() {
+    $("#spinner").html("");
+    $("#loginInteractiveHtml").html("");
+}
+
+function spinner(bank) {
+	var html = "<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">...</p></center>";
+	html+="<center><p style=\"font-size:16px;color:#298df5\">Estableciendo Conexi&oacute;n con la Instituci&oacute;n Financiera</p>";
+	if(bank == 'banamex'){
+		
+		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banamex.png\"/></center>";
+	}else if (bank == 'bancomer'){
+		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/bancomer.png\"/></center>";
+	}else if (bank == 'american_express'){
+		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/american_express.png\"/></center>";
+	}else if (bank == 'santander'){
+		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/santander.png\"/></center>";
+	}else if (bank == 'banorte'){
+		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banorte.png\"/></center>";
+	}
     return html;
 }
 
@@ -800,46 +797,47 @@ function abrirModal(nombreModal) {
 
 function cerrarModal() {
     $.modal.close();
+    complete();
 }
-
 
 function buildLoginBank(respuesta) {
     console.log("buildLoginBank...");
-    var html = "";
-    //html+="<p class=\"headingColor textUpper letterspacing1.5 font25 paddingRight15 stepTitle\">"+respuesta.defaultOrgDisplayName+"</p>";
-    html += "<form action=\"#\" name=\"formLoginBank\" id=\"formLoginBank\">"
-    $.each(respuesta.componentList, function (key, componentList) {
-        html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-        html += "<p class=\" marginBottom15 gray font14\">" + respuesta.componentList[key].displayName + "</p>";
-        html += "<input class=\"inPuts4a formValues headingColor\" name=\"" + respuesta.componentList[key].name + "\" id=\"" + respuesta.componentList[key].valueIdentifier + "\" size=\"" + respuesta.componentList[key].size + "\" maxlength=\"" + respuesta.componentList[key].maxlength + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
-        html += "</div>";
-    });
-    html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-    html += "<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Procesar\" onclick=\"peticionLoginBancos('formLoginBank','addAccount');\" />";
-    html += "</div>";
-    html += "</form>"
-    return html;
-}
-
-function buildFormMFA(respuesta) {
-    console.log("BuildFormMFA...");
-    var html = "";
-    html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-    html += "</div>";
-    html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-    html += "<p class=\" marginBottom15 gray font14\">" + respuesta.fieldInfo.displayString + "</p>";
-    if (respuesta.fieldInfo.mfaFieldInfoType == "TOKEN_ID") {
-        html += "<form action=\"#\" name=\"formLoginMFA\" id=\"formLoginMFA\">";
-        html += "<input name=\"token\" class=\"inPuts4a formValues headingColor\" id=\"token\"  maxlength=\"" + respuesta.fieldInfo.maximumLength + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"" + respuesta.fieldInfo.responseFieldType + "\">";
-        html += "<div class=\"floatLeft paddingTop20 col4 col6-tab col12-mob\">";
-        html += "<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Enviar\" onclick=\"peticionLoginBancos('formLoginMFA','mfaLogin');\" />";
-        html += "</div>";
-        html += "</form>";
+    var html_base = "";
+    html_base += "<center>";
+    html_base += "<div class=\"row\">";
+    html_base += "<div class=\"col6 col12-mob floatLeft\">";
+    if (respuesta.loginInteractiveHtml == null) {
+        html_base += "Ingresa tu Token de Seguridad"
     } else {
-        html += "<h1>Opcion en Desarrollo....</h1>";
+        html_base += respuesta.loginInteractiveHtml
     }
+    html_base += "</div>";
+    html_base += "</div>";
+    html_base += "</center>";
+    var html = "";
+    html += "<form action=\"#\" name=\"formLoginInteractive\" id=\"formLoginInteractive\">"
+    $.each(respuesta.interactiveFieldsName, function (i, fieldName) {
+        console.log("FIELD" + fieldName);
+        html += "<center>";
+        html += "<div class=\"row\">";
+        html += "<div class=\"col6 col12-mob floatLeft\">";
+        html += "<input class=\"inPuts4a formValues textUpper headingColor notEmpty\" name=\"" + fieldName + "\" id=\"" + fieldName + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
+        html += "</div>";
+        html += "</div>";
+        html += "</center>";
+    });
+    html += "<input class=\"\" name=\"customer_id\" id=\"customer_id\" autocomplete=\"off\" autocapitalize=\"off\" value=\"" + respuesta.customer_id + "\" type=\"hidden\">";
+    html += "<div class=\"clearfix\"><br/></div>";
+    html += "<center>";
+    html += "<div class=\"row\">";
+    html += "<div class=\"col12 col12-mob floatLeft\">";
+    html += "<input type=\"button\" class=\"consultarBox marginLeft15 center colorWhite letterspacing1 font16\" value=\"Enviar\" onclick=\"loginInteractive();\" />";
     html += "</div>";
-    return html;
+    html += "</div>";
+    html += "</center>";
+    html += "</form>";	    	
+    console.log("resp" + html_base + html);
+    return html_base + html
 }
 
 function consultarBancos() {

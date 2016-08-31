@@ -3,8 +3,8 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = "target/work"
-grails.project.target.level = 1.6
-grails.project.source.level = 1.6
+grails.project.target.level = 1.7
+grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.project.fork = [
@@ -52,6 +52,9 @@ grails.project.dependency.resolution = {
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
 		compile 'org.apache.httpcomponents:httpclient:4.5'
+		compile 'com.google.code.gson:gson:2.3.1'
+		compile 'org.bouncycastle:bcpkix-jdk15on:1.52'
+		compile 'org.json:json:20160212'
     }
 
     plugins {
@@ -67,6 +70,7 @@ grails.project.dependency.resolution = {
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.10" // or ":hibernate:3.6.10.18"
         runtime ":database-migration:1.4.0"
+		compile ':sequence-generator:1.2'
         //runtime ":jquery:1.11.1"
 
         // Uncomment these to enable additional asset-pipeline capabilities
