@@ -16,46 +16,28 @@
     <div class="padding20 formStep lastStep">
         <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60">
             <span class="showOnFill">Trabajo en
-                <input type="text" class="inputsFormulario width150 formValues" name="empresa" placeholder="Empresa">
+                <input type="text" class="inputsFormulario width150 formValues <g:if test="${generales?.empresa}"> notEmpty headingColor </g:if>" name="empresa" placeholder="Empresa" value="${generales?.empresa}">
             </span>
             <span class="hide showOnFill">,
                 y mi puesto es
-                <input type="text" class="inputsFormulario width180 formValues" name="puesto" placeholder="Puesto">
+                <input type="text" class="inputsFormulario width180 formValues <g:if test="${generales?.puesto}"> notEmpty headingColor </g:if>" name="puesto" placeholder="Puesto" value="${generales?.puesto}">
             </span>
             <span class="showOnFill hide">, laboro en esta empresa desde hace
                 <span class="width40 inline selectWrap">
-                    <select class="formulariOptions gray formValues" name="no_periodo">
-                        <option selected="selected" disabled>0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                    </select>
+                    <g:if test="${generales?.periodo}">
+                        <g:select id="noPeriodo" name="noPeriodo" class="formulariOptions width100 gray formValues notEmpty headingColor"  from="${1..30}" noSelection="['':'0']" value="${generales?.periodo}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select id="noPeriodo" name="noPeriodo" class="formulariOptions width100 gray formValues"  from="${1..30}" noSelection="['':'0']"/>
+                    </g:else>
                 </span>
                 <span class="width140 inline selectWrap">
-                    <select class="formulariOptions gray formValues" name="plazo">
-                        <option selected>Plazo...</option>
-                        <option value="dias">Día(s)</option>
-                        <option value="meses">Mese(s)</option>
-                        <option value="anios">Año(s)</option>
-
-                    </select>
+                    <g:if test="${generales?.plazo}">
+                        <g:select id="plazo" name="plazo" class="formulariOptions gray formValues notEmpty headingColor" from="${[[nombre: 'Día(s)', id: 'dias'],[nombre: 'Mes(es)', id: 'meses'],[nombre: 'Año(s)', id: 'anios']]}" optionKey="id" optionValue="nombre" noSelection="['':'Tipo']" value="${generales?.plazo}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select id="plazo" name="plazo" class="formulariOptions gray formValues"  from="${[[nombre: 'Día(s)', id: 'dias'],[nombre: 'Mes(es)', id: 'meses'],[nombre: 'Año(s)', id: 'anios']]}" optionKey="id" optionValue="nombre" noSelection="['':'Tipo']"/>
+                    </g:else>
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -63,7 +45,12 @@
             </span> 
             <span class="showOnFill hide">y mi tipo de contrato es
                 <span class="width280 inline selectWrap">
-                    <g:select style="text-align:center;" class="formulariOptions gray formValues" name="contrato" from="${tipoDeContratoList}" optionKey="id" noSelection="['':'Tipo de Contrato']"/>
+                    <g:if test="${generales?.contrato}">
+                        <g:select style="text-align:center;" class="formulariOptions gray formValues notEmpty headingColor" name="contrato" from="${tipoDeContratoList}" optionKey="id" noSelection="['':'Tipo de Contrato']" value="${generales?.contrato}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select style="text-align:center;" class="formulariOptions gray formValues" name="contrato" from="${tipoDeContratoList}" optionKey="id" noSelection="['':'Tipo de Contrato']"/>
+                    </g:else>
                     <span class="afterSelect">
                         <i class="fa fa-caret-down" aria-hidden="true"></i>
                     </span>.
@@ -83,34 +70,7 @@
     </div>
 </section>
 <footer class="footerContainer">
-    <form class="sendValues" name="formPaso3" id="formPaso3" method="post">
-        <input type="hidden" name="siguientePaso" id="siguientePaso" value="4">
-    </form>
-    <div class="width600 clearFix desktop tablet">
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">1</p>
-        </div>
-        <div class="floatLeft line20"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">2</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="blueCircle center floatLeft">
-            <p class="colorWhite font18 paddingTop10">3</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="rectangle250 center floatLeft nextBtn">
-            <p class="textUpper footerTextColor font18 paddingTop10">ir al paso 4</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">5</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">6</p>
-        </div>
-    </div>
+    <g:render template="stepBar"/>
     <div class="mobile">
         <div class="paddingAside15 clearFix">
             <div class="grayrectangle floatLeft marginRight10">Atras</div>

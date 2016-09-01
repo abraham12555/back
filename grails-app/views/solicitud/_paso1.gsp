@@ -32,82 +32,55 @@
         <p class="headingColor font35 marginTop5 letterspacing1">Cuentanos tu historia:</p>
         <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
             <span class="showOnFill">Mi nombre es
-                <input type="text" class="inputsFormulario width200 formValues headingColor" style="text-align:center;" id="nombre" name="nombre" placeholder="Jorge"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor" id="apellidoPaterno" name="apellidoPaterno" placeholder="Perez"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor" id="apellidoMaterno" name="apellidoMaterno" placeholder="Lopez">
-            </span>
-            <span class="hide showOnFill">, soy
+                <input type="text" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.nombre}"> notEmpty headingColor </g:if>" style="text-align:center;" id="nombre" name="nombre" placeholder="Jorge" value="${generales?.nombre}"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.apellidoPaterno}"> notEmpty headingColor </g:if>" id="apellidoPaterno" name="apellidoPaterno" placeholder="Perez" value="${generales?.apellidoPaterno}"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.apellidoMaterno}"> notEmpty headingColor </g:if>" id="apellidoMaterno" name="apellidoMaterno" placeholder="Lopez" value="${generales?.apellidoMaterno}">
+                </span>
+                        <span class="hide showOnFill">, soy
                 <span class="width160 inline selectWrap">
-                    <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions gray formValues" name="sexo" from="${generoList}" optionKey="id" />
+                    <g:if test="${generales?.sexo}">
+                        <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions formValues notEmpty headingColor" name="sexo" from="${generoList}" optionKey="id" value="${generales?.sexo}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions gray formValues" name="sexo" from="${generoList}" optionKey="id" value="${generales?.sexo}"/>
+                    </g:else>
                 </span>
             </span>
             <span class="hide showOnFill">y nací el&nbsp;
 
                 <span class="width70 inline selectWrap">
-                    <select style="text-align:center;" class="formulariOptions gray formValues" name="dia" id="dia">
-                        <option selected="selected" disabled>Día</option>
-                        <option value="01">01</option>
-                        <option value="02">02</option>
-                        <option value="03">03</option>
-                        <option value="04">04</option>
-                        <option value="05">05</option>
-                        <option value="06">06</option>
-                        <option value="07">07</option>
-                        <option value="08">08</option>
-                        <option value="09">09</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
-                    </select>
-                </span>
-                <span class="afterSelect">
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                </span>
-                <span class="hide showOnFill">
-                    de&nbsp;
-                    <span class="width200 inline selectWrap">
-                        <select style="text-align:center;" class="formulariOptions gray formValues" id="mes" name="mes">
-                            <option  selected="selected" disabled>Mes</option>
-                            <option value="01">Enero</option>
-                            <option value="02">Febrero</option>
-                            <option value="03">Marzo</option>
-                            <option value="04">Abril</option>
-                            <option value="05">Mayo</option>
-                            <option value="06">Junio</option>
-                            <option value="07 ">Julio</option>
-                            <option value="08">Agosto</option>
-                            <option value="09">septiembre</option>
-                            <option value="10">Octubre </option>
-                            <option value="11">Noviembre</option>
-                            <option value="12">Diciembre </option>
-                        </select>
+                    <g:if test="${generales?.dia}">
+                        <g:select id="dia" name="dia" class="formulariOptions formValues notEmpty headingColor"  from="${1..31}" noSelection="['':'Día']" value="${generales?.dia}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select id="dia" name="dia" class="formulariOptions gray formValues "  from="${1..31}" noSelection="['':'Día']" value="${generales?.dia}"/>
+                    </g:else>
                     </span>
                     <span class="afterSelect">
                         <i class="fa fa-caret-down" aria-hidden="true"></i>
                     </span>
-                </span>
+                    <span class="hide showOnFill">
+                    de&nbsp;
+                    <span class="width200 inline selectWrap">
+                    <g:if test="${generales?.mes}">
+                        <g:select id="mes" name="mes" class="formulariOptions formValues notEmpty headingColor"  from="${['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']}" noSelection="['':'Mes']" value="${generales?.mes}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select id="mes" name="mes" class="formulariOptions gray formValues "  from="${['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']}" noSelection="['':'Mes']" value="${generales?.mes}"/>
+                    </g:else>
+                        </span>
+                        <span class="afterSelect">
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        </span>
+                    </span>
                 <% def anioActual = Calendar.getInstance().get(Calendar.YEAR) %>
                 <span class="hide showOnFill">
                     de&nbsp;
                     <span class="width100 inline selectWrap">
-                        <g:select id="anio" name="anio" class="formulariOptions width100 gray formValues"  from="${(anioActual-18)..(anioActual-120)}" value="" noSelection="['':'Año']"/>
+                        <g:if test="${generales?.anio}">
+                            <g:select id="anio" name="anio" class="formulariOptions width100 formValues notEmpty headingColor"  from="${(anioActual-18)..(anioActual-120)}" noSelection="['':'Año']" value="${generales?.anio}"/>
+                        </g:if>
+                        <g:else>
+                            <g:select id="anio" name="anio" class="formulariOptions width100 gray formValues"  from="${(anioActual-18)..(anioActual-120)}" noSelection="['':'Año']" value="${generales?.anio}"/>
+                        </g:else>
                     </span>
                     <span class="afterSelect">
                         <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -117,7 +90,12 @@
             <br/>
             <span class="hide showOnFill show2"> en
                 <span class="width354 inline selectWrap">
-                    <g:select style="text-align:center;" noSelection="['':'Estado']" class="formulariOptions gray formValues" name="estado" from="${estadoList}" optionKey="id" />
+                    <g:if test="${generales?.entidad}">
+                        <g:select style="text-align:center;" noSelection="['':'Estado']" class="formulariOptions formValues notEmpty headingColor" name="estado" from="${estadoList}" optionKey="id" value="${generales?.entidad}" />
+                    </g:if>
+                    <g:else>
+                        <g:select style="text-align:center;" noSelection="['':'Estado']" class="formulariOptions gray formValues" name="estado" from="${estadoList}" optionKey="id" value="${generales?.entidad}" />
+                    </g:else>    
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -126,7 +104,12 @@
             <span class="hide showOnFill show2">    
                 , mi estado civil es&nbsp;
                 <span class="width220 inline selectWrap">
-                    <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions gray formValues" name="estadoCivil" from="${estadoCivilList}" optionKey="id" />
+                    <g:if test="${generales?.entidad}">
+                        <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions formValues notEmpty headingColor" name="estadoCivil" from="${estadoCivilList}" optionKey="id" value="${generales?.estadoCivil}" />
+                    </g:if>
+                    <g:else>
+                        <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions gray formValues" name="estadoCivil" from="${estadoCivilList}" optionKey="id" value="${generales?.estadoCivil}" />
+                    </g:else>
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -150,32 +133,32 @@
         <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60">
             <span class="hide showOnFill">Mi nivel escolar es
                 <span class="width240 inline selectWrap">
-                    <g:select id="nivelEscolar" name="nivelEscolar" class="formulariOptions width100 gray formValues"  from="${escolaridadList}" optionKey="id" noSelection="['':'Nivel Escolar']"/>
+                    <g:select id="nivelEscolar" name="nivelEscolar" class="formulariOptions width100 gray formValues"  from="${escolaridadList}" optionKey="id" noSelection="['':'Nivel Escolar']" value="${generales?.nivelEscolar}"/>
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </span>
             </span>
             <span class="hide showOnFill"> y mi número telefónico es el
-                <input type="text" class="inputsFormulario width210 headingColor formValues" name="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)">
+                <input type="text" class="inputsFormulario width210 headingColor formValues" name="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)" value="${generales?.numeroCasa}">
             </span>
             <span class="hide showOnFill"> y mi celular es el
-                <input type="text" class="inputsFormulario width210 headingColor formValues" name="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)">.
+                <input type="text" class="inputsFormulario width210 headingColor formValues" name="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)" value="${generales?.numeroCelular}">.
             </span>
             <span class="hide showOnFill"> Mi RFC es
-                <input type="text" class="inputsFormulario width210 headingColor formValues" name="rfc" maxlength="13" placeholder="AAAA000000AZ0">
+                <input type="text" class="inputsFormulario width210 headingColor formValues" name="rfc" maxlength="13" placeholder="AAAA000000AZ0" value="${generales?.rfc}">
             </span>
             <span class="hide showOnFill"> y mi CURP es
-                <input type="text" class="inputsFormulario width300 headingColor formValues" name="curp" maxlength="18" placeholder="CURP">.
+                <input type="text" class="inputsFormulario width300 headingColor formValues" name="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
             </span>
             <br/>
             <span class="hide showOnFill"> Mi conyugue es
-                <input type="text" class="inputsFormulario width500 headingColor formValues" name="nombreConyugue" placeholder="Maria Hernández Pérez">
+                <input type="text" class="inputsFormulario width500 headingColor formValues" name="nombreConyugue" placeholder="Maria Hernández Pérez" ${generales?.conyugue}>
             </span>
             <span class="hide showOnFill">
                 , de mi dependen&nbsp;
                 <span class="width80 inline selectWrap">
-                    <g:select id="anio" name="anio" class="formulariOptions width80 gray formValues"  from="${1..20}" noSelection="['':'0']"/>
+                    <g:select id="dependientes" name="dependientes" class="formulariOptions width80 gray formValues"  from="${1..20}" noSelection="['':'0']" value="${generales?.dependientes}"/>
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
@@ -195,34 +178,7 @@
 
 </section>
 <footer class="footerContainer">
-    <form class="sendValues" name="formPaso1" id="formPaso1" method="post">
-        <input type="hidden" name="siguientePaso" id="siguientePaso" value="2">
-    </form>
-    <div class="width600 clearFix desktop tablet">
-        <div class="blueCircle center floatLeft colorWhite">
-            <p class="paddingTop10 font18">1</p>
-        </div>
-        <div class="floatLeft line60"></div>
-        <div class="rectangle250 center floatLeft nextBtn">
-            <p class="textUpper footerTextColor font18 paddingTop10">ir al paso 2</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">3</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">4</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">5</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">6</p>
-        </div>
-    </div>
+    <g:render template="stepBar"/>
     <div class="mobile">
         <div class="paddingAside15 clearFix">
             <div class="grayrectangle floatLeft marginRight10">Atras</div>

@@ -92,34 +92,7 @@
     </div>
 </section>
 <footer class="footerContainer">
-    <form class="sendValues" name="formPaso5" id="formPaso5" method="post">
-        <input type="hidden" name="siguientePaso" id="siguientePaso" value="6">
-    </form>
-    <div class="width600 clearFix desktop tablet">
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">1</p>
-        </div>
-        <div class="floatLeft line20"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">2</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">3</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">4</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="blueCircle center floatLeft">
-            <p class="colorWhite font18 paddingTop10">5</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="rectangle250  center floatLeft nextBtn">
-            <p class="textUpper footerTextColor font18 paddingTop10">ir al paso 6</p>
-        </div>
-    </div>
+    <g:render template="stepBar"/>
     <div class="mobile">
         <div class="paddingAside15 clearFix">
             <div class="grayrectangle floatLeft marginRight10">Atras</div>

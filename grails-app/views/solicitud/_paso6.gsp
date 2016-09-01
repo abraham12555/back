@@ -20,12 +20,7 @@
     </div>
 </section>
 <footer class="footerContainer">
-    <div class="rectangleRound autoMargin GrayButton radius100 gray font20 letterspacing1.8 center width350 solicitud_modal">
-        ENVIAR MI SOLICITUD
-    </div>
-    <form class="sendValues" name="formPaso6" id="formPaso6" method="post">
-        <input type="hidden" name="siguientePaso" id="siguientePaso" value="8">
-    </form>
+    <g:render template="stepBar"/>
 </footer>
 
 <div class="solicitudLightbox hide" id="resumen_solicitud">

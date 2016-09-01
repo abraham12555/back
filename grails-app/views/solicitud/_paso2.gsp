@@ -33,133 +33,131 @@
     <div class="padding20 clearFix formStep lastStep">
         <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
             <span class="showOnFill">Mi dirección es
-                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" id="calle" name="calle" placeholder="Calle">,
-                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" id="noExterior" name="noExterior" placeholder="No. Exterior">,
-                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" id="noInterior" name="noInterior" placeholder="No. Interior">,
-            </span>  
-            <span class="hide showOnFill">
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.calle}"> notEmpty headingColor </g:if>" id="calle" name="calle" placeholder="Calle" value="${generales?.calle}">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.noExterior}"> notEmpty headingColor </g:if>" id="noExterior" name="noExterior" placeholder="No. Exterior" value="${generales?.noExterior}">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.noInterior}"> notEmpty headingColor </g:if>" id="noInterior" name="noInterior" placeholder="No. Interior" value="${generales?.noInterior}">,
+                </span>  
+                <span class="hide showOnFill">
                 Colonia
-                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200" name="colonia" placeholder="Colonia" />, 
-            </span>
-            <span class="hide showOnFill" id="cpRemote"> C. P.
-                <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input" name="codigoPostal" id="codigoPostal" placeholder="00000"/>.
-            </span> 
-            <span class="hide showOnFill"> Mi
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200<g:if test="${generales?.colonia}"> notEmpty headingColor </g:if>" name="colonia" placeholder="Colonia" value="${generales?.colonia}"/>, 
+                </span>
+                <span class="hide showOnFill" id="cpRemote"> C. P.
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input <g:if test="${generales?.codigoPostal}"> notEmpty headingColor </g:if>" name="codigoPostal" id="codigoPostal" placeholder="00000" value="${generales?.codigoPostal}"/>.
+                </span> 
+                <span class="hide showOnFill"> Mi
                 <span class="width220 inline selectWrap">
-                    <select class="formulariOptions gray formValues notEmpty headingColor" name="tipoDelegacion">
-                        <option selected>Tipo</option>
-                        <option value="delegacion">Delegación</option>
-                        <option value="municipio">Municipio</option>
-                    </select>
+                    <g:if test="${generales?.tipoDelegacion}">
+                        <g:select id="tipoDelegacion" name="tipoDelegacion" class="formulariOptions gray formValues notEmpty headingColor" from="${[[nombre: 'Delegación', id: 'delegacion'],[nombre: 'Municipio', id: 'municipio']]}" optionKey="id" optionValue="nombre" value="${generales?.tipoDelegacion}" noSelection="['':'Tipo']"/>
+                    </g:if>
+                    <g:else>
+                        <g:select id="tipoDelegacion" name="tipoDelegacion" class="formulariOptions gray formValues"  from="${[[nombre: 'Delegación', id: 'delegacion'],[nombre: 'Municipio', id: 'municipio']]}" optionKey="id" optionValue="nombre" noSelection="['':'Tipo']"/>
+                    </g:else>
                 </span>
                 <span class="afterSelect">
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </span>es
                 <span class="width290 inline selectWrap">
-                    <g:select noSelection="['':'Delegación/Municipio']" class="formulariOptions gray formValues" optionKey="id" optionValue="nombre" name="delegacion" from="${municipioList}" />
+                    <g:if test="${generales?.delegacion}">
+                        <g:select noSelection="['':'Delegación/Municipio']" class="formulariOptions gray formValues notEmpty headingColor" optionKey="id" optionValue="nombre" name="delegacion" from="${municipioList}" value="${generales?.delegacion}" />
+                    </g:if>
+                    <g:else>
+                        <g:select noSelection="['':'Delegación/Municipio']" class="formulariOptions gray formValues" optionKey="id" optionValue="nombre" name="delegacion" from="${municipioList}" />
+                    </g:else>
                 </span>
                 en el estado de
                 <span class="width290 inline selectWrap">
-                    <g:select noSelection="['':'Estado']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" />
+                    <g:if test="${generales?.estado}">
+                        <g:select noSelection="['':'Estado']" class="formulariOptions formValues gray notEmpty headingColor"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" value="${generales?.estado}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select noSelection="['':'Estado']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" />
+                    </g:else>
                 </span>.
             </span>
             <span class="hide showOnFill"> La vivienda es
                 <span class="width120 inline selectWrap">
-                    <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="tipoDeVivienda" from="${tiposDeVivienda}" />
+                    <g:if test="${generales?.tipoDeVivienda}">
+                        <g:select noSelection="['':'Elija']" class="formulariOptions formValues gray notEmpty headingColor"  optionKey="id" optionValue="nombre" name="tipoDeVivienda" from="${tiposDeVivienda}" value="${generales?.tipoDeVivienda}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="tipoDeVivienda" from="${tiposDeVivienda}" />
+                    </g:else>
                 </span>
             </span>
             <span class="hide showOnFill"> y vivo en ella desde hace
                 <span class="width80 inline selectWrap">
-                    <g:select id="tiempo" name="tiempo" class="formulariOptions width100 gray formValues"  from="${1..80}" noSelection="['':'0']"/>
+                    <g:if test="${generales?.tiempo}">
+                        <g:select id="tiempo" name="tiempo" class="formulariOptions width100 gray formValues notEmpty headingColor"  from="${1..80}" noSelection="['':'0']" value="${generales?.tiempo}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select id="tiempo" name="tiempo" class="formulariOptions width100 gray formValues"  from="${1..80}" noSelection="['':'0']"/>
+                    </g:else>
                 </span>
                 <span class="width120 inline selectWrap">
-                    <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" />
-                </span>.
-            </span>
-        </p>
+                    <g:if test="${generales?.temporalidad}">
+                        <g:select noSelection="['':'Elija']" class="formulariOptions formValues gray notEmpty headingColor"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" value="${generales?.temporalidad}" />
+                    </g:if>
+                    <g:else>
+                        <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" />
+                    </g:else>
+                        </span>.
+                    </span>
+                </p>
 
-        <div class="confirmDiv hide col7 col12-tab floatRight marginTop28 clearFix">
-            <div class="floatLeft marginBottom20">
-                <p class="font25 marginTop5 headingColor marginRight10"> Mi información es correcta</p>
+                <div class="confirmDiv hide col7 col12-tab floatRight marginTop28 clearFix">
+                    <div class="floatLeft marginBottom20">
+                        <p class="font25 marginTop5 headingColor marginRight10"> Mi información es correcta</p>
+                    </div>
+                    <div class="clearFloat mobile"></div>
+                    <div class="buttonM mobileAuto lightBlueBg floatLeft colorWhite textUpper letterspacing0.8 radius100">
+                        confirmar
+                    </div>
+                </div>
             </div>
-            <div class="clearFloat mobile"></div>
-            <div class="buttonM mobileAuto lightBlueBg floatLeft colorWhite textUpper letterspacing0.8 radius100">
-                confirmar
+        </section>
+        <footer class="footerContainer">
+            <g:render template="stepBar"/>
+            <div class="mobile">
+                <div class="paddingAside15 clearFix">
+                    <div class="grayrectangle floatLeft marginRight10">Atras</div>
+                    <div class="grayrectangle floatLeft nextBtn">Ir al paso 3</div>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
-<footer class="footerContainer">
-    <form class="sendValues" name="formPaso2" id="formPaso2" method="post">
-        <input type="hidden" name="siguientePaso" id="siguientePaso" value="3">
-    </form>
-    <div class="width600 clearFix desktop tablet">
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">1</p>
-        </div>
-        <div class="floatLeft line20"></div>
-        <div class="blueCircle center floatLeft">
-            <p class="colorWhite font18 paddingTop10">2</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="rectangle250 center floatLeft nextBtn">
-            <p class="textUpper footerTextColor font18 paddingTop10">ir al paso 3</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">4</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">5</p>
-        </div>
-        <div class="line20 floatLeft"></div>
-        <div class="grayCircle center floatLeft">
-            <p class="paddingTop5 footerTextColor font18">6</p>
-        </div>
-    </div>
-    <div class="mobile">
-        <div class="paddingAside15 clearFix">
-            <div class="grayrectangle floatLeft marginRight10">Atras</div>
-            <div class="grayrectangle floatLeft nextBtn">Ir al paso 3</div>
-        </div>
-    </div>
-</footer>
-<style type="text/css">
-    .typeahead, .tt-query, .tt-hint {
-    border-bottom: 2px solid #9EA1BE;
-    padding: 8px 12px;
-    }
-    .typeahead {
-    background-color: #F1F3FA;
-    }
-    .typeahead:focus {
-    border: 2px solid #0097CF;
-    }
-    .tt-query {
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-    }
-    .tt-hint {
-    color: #999999;
-    }
-    .tt-menu {
-    background-color: #F1F3FA;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    margin-top: 12px;
-    padding: 8px 0;
-    }
-    .tt-suggestion {
-    line-height: 24px;
-    padding: 3px 20px;
-    }
-    .tt-suggestion.tt-is-under-cursor {
-    background-color: #0097CF;
-    color: #FFFFFF;
-    }
-    .tt-suggestion p {
-    margin: 0;
-    }
-</style>
+        </footer>
+        <style type="text/css">
+            .typeahead, .tt-query, .tt-hint {
+            border-bottom: 2px solid #9EA1BE;
+            padding: 8px 12px;
+            }
+            .typeahead {
+            background-color: #F1F3FA;
+            }
+            .typeahead:focus {
+            border: 2px solid #0097CF;
+            }
+            .tt-query {
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+            }
+            .tt-hint {
+            color: #999999;
+            }
+            .tt-menu {
+            background-color: #F1F3FA;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 12px;
+            padding: 8px 0;
+            }
+            .tt-suggestion {
+            line-height: 24px;
+            padding: 3px 20px;
+            }
+            .tt-suggestion.tt-is-under-cursor {
+            background-color: #0097CF;
+            color: #FFFFFF;
+            }
+            .tt-suggestion p {
+            margin: 0;
+            }
+        </style>

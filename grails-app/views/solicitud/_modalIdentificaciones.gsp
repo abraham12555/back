@@ -109,7 +109,7 @@
 
                     <div id="divDropzoneIds" class="col4 col12-tab floatLeft">
                         <div class="paddingAside10">
-                            <a id="subirComprobante">
+                            <a id="subirIdentificacion">
                                 <div class="iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
                                     <img class="icon40" src="${resource(dir:'images', file:'file-icon.svg')}" alt="File">
                                     <p class="gray font18 letterspacing1.1 iconButtonTxt">Subir desde tu PC</p>

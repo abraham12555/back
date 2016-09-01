@@ -24,16 +24,17 @@ import static java.lang.Double.parseDouble
 
 class SolicitudController {
     def ephesoftService
+    def solicitudService
 	
 	def saltEdgeService
 	int timeWait = 500
     def maximumAttempts = 100
 	def formatoFecha = "dd-MM-yyyy"
-	
+		                       
 	def jsonSlurper = new JsonSlurper()
     grails.gsp.PageRenderer groovyPageRenderer
     Random rand = new Random() 
-    
+
 	
     def index() { }
 	
@@ -53,13 +54,13 @@ class SolicitudController {
 				if (customer.error_class == null) {
 					request.customer_id = customer.data.id
 					session["customer_id"] = request.customer_id
-				}
+    }
 			}
 			if (!request.containsKey("customer_id")) {
-				response.error_class = "Existe un problema de ComunicaciÛn, Favor de Volver a intentarlo."
+				response.error_class = "Existe un problema de ComunicaciÔøΩn, Favor de Volver a intentarlo."
 				render response as JSON
 			}
-
+	
 			def login = fixJson(saltEdgeService.findLogin(request.customer_id))
 			def credentials = [:]
 			request.provider_code = request.provider_code + "_mx"
@@ -72,16 +73,16 @@ class SolicitudController {
 					credentials.login = request.login
 					credentials.password = request.password
 					break;
-			}
+                        }
 			if (login.data == null) {
 				println "Creando Login"
 				login = saltEdgeService.createLogin(request.customer_id, request.provider_code, credentials)
 				if (login.error_class) {
 					def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-					response.error_class = "Existe un problema de ComunicaciÛn, Favor de Volver a intentarlo."
+					response.error_class = "Existe un problema de ComunicaciÔøΩn, Favor de Volver a intentarlo."
 					render response as JSON
-				}
-			}
+                    }
+                }
 			println "Esperando a conectar con la cuenta"
 			login = requestWait("connect_account",request.customer_id)
 			println "Cuenta Conectada... Interactive:" + login.data.last_attempt.interactive + " Name:" + login.data.last_attempt.last_stage.name
@@ -103,7 +104,7 @@ class SolicitudController {
 					session["customer_id"] = null
 					response.error_class = "No se pudo obtener Token de Acceso."
 					render response as JSON
-				}
+            }
 			} else {
 				//Esperamos para realizar la consulta de Login
 				println "Consultando Cuenta..."
@@ -112,7 +113,7 @@ class SolicitudController {
 				session["login_id"] = login.data.id
 				response.accounts_resume = accountsResume(login.data.id)
 				render response as JSON
-			}
+                    }
 		} catch (Exception e) {
 			println "Exception:" + e
 			def deleteUser = saltEdgeService.deleteUser(request.customer_id)
@@ -120,8 +121,8 @@ class SolicitudController {
 			session["customer_id"] = null
 			response.error_class = "Error al Autentificar al usuario. Favor de intentarlo mas tarde."
 			render response as JSON
-		}
-	}
+                }
+                }
 	
 	def loginInteractive() {
 		println "LOGIN INTERACTIVE"
@@ -131,7 +132,7 @@ class SolicitudController {
 		def credentials = [:]
 		login.data.last_attempt.last_stage.interactive_fields_names.collect { component ->
 			credentials.put("$component", request.get("${component}"))
-		}
+            }
 		def interactive = saltEdgeService.interactiveLogin(login.data.id, credentials)
 		login = requestWait("check_account",request.customer_id)
 		if (login.data.last_attempt.fail_message == null) {
@@ -142,11 +143,11 @@ class SolicitudController {
 			def deleteLogin = saltEdgeService.deleteLogin(login.data.id)
 			def deleteUser = saltEdgeService.deleteUser(request.customer_id)
 			response.error_class = login.data.last_attempt.fail_message
-		}
+        }
 		
 		println response as JSON
 		render response as JSON
-	}
+    }
 	
 	def accountsResume(def login_id){
 		def accounts_resume = []
@@ -158,9 +159,9 @@ class SolicitudController {
 			account_resume.retiroPromedio = account_temp.retiroPromedio
 			account_resume.saldoPromedio = account_temp.saldoPromedio
 			accounts_resume.add(account_resume)
-		}
+                    }
 		return accounts_resume
-	}
+                    }
 	
 	def requestWait(def tipo, def customer_id){
 		int attempt = 0
@@ -171,33 +172,33 @@ class SolicitudController {
 					Thread.sleep(timeWait)
 					login = fixJson(saltEdgeService.findLogin(customer_id))
 					attempt++
-				}
+                    }	
 			break;
 			case "login_interactive":
 				while (login.data.last_attempt.last_stage.name != "interactive" && attempt <= maximumAttempts) {
 					Thread.sleep(timeWait)
 					login = fixJson(saltEdgeService.findLogin(customer_id))
 					attempt++
-				}
+                }
 			break;
 			case "check_account":
 				while (login.data.last_attempt.finished == false && attempt <= maximumAttempts) {
 					Thread.sleep(timeWait)
 					login = fixJson(saltEdgeService.findLogin(customer_id))
 					attempt++
-				}
+            }
 			break;
-		}
+            }
 		return login
-	}
-	
+        }
+		
 	def fixJson(def json) {
 		def element = [:]
 		element.data = null
 		json.data.collect { component -> element.data = component }
 		return element
 	}
-	
+		
 	def transactions(def account_id) {
 		def formatDate = "yyyy-MM-dd"
 		def today = new Date()
@@ -291,53 +292,49 @@ class SolicitudController {
 					}else{
 						depositosPromedio += amount
 						noElementosDepositos++
-					}
+    }
 				}
 			}
-
+	
 			if(depositosPromedio< 0){
 				depositosPromedio = depositosPromedio * -1
 			}
 			if(retirosPromedio< 0){
 				retirosPromedio = retirosPromedio * -1
 			}
-
+	
 			dataList.depositosPromedio = depositosPromedio
 			dataList.retirosPromedio = retirosPromedio
 			saldosPromedio = dataList.depositosPromedio - dataList.retirosPromedio
-
+			
 			depositoPromedio +=  depositosPromedio
 			retiroPromedio +=  retirosPromedio
 			saldoPromedio += depositosPromedio - retirosPromedio
-
+				
 			saldoPromedioList.add(saldosPromedio)
 			depositosPromedioList.add(dataList.depositosPromedio)
 			retirosPromedioList.add(dataList.retirosPromedio)
 			accountResume.transactions = transactions
-		}
+            }
 		accountResume.monthsList = monthsNames
 		accountResume.depositosPromedioList = depositosPromedioList
 		accountResume.retirosPromedioList = retirosPromedioList
 		accountResume.saldoPromedioList = saldoPromedioList
-
+				
 		if(depositoPromedio == 0){
 			accountResume.depositoPromedio = depositoPromedio
 		}else{
 			accountResume.depositoPromedio = depositoPromedio/noElementosDepositos
-		}
+        }
 		if(retiroPromedio == 0){
 			accountResume.retiroPromedio= retiroPromedio
 		}else{
 			accountResume.retiroPromedio= retiroPromedio/noElementosRetiros
-		}
+    }
 		accountResume.saldoPromedio= saldoPromedio
 		println "accountResume:::>" +accountResume
 		return accountResume 
 	}
-	
-	
-	
-	
 	
     def paso_1(){
         //params.datos_fb="{\"id\": \"1273758305972971\",\"name\": \"Jorge Medina\",\"birthday\": \"04/24/1985\",\"education\": [{\"school\": {\"id\": \"329234880539960\",\"name\": \"Instituto Tecnol√≥gico de Toluca\"},\"type\": \"High School\",\"year\": {\"id\": \"141778012509913\",\"name\": \"2008\"},\"id\": \"360611733954304\"},{\"concentration\": [{\"id\": \"149668418423502\",\"name\": \"Sistemas Computacionales\"}],\"degree\": {\"id\": \"195120407185348\",\"name\": \"13/02/2009\"},\"school\": {\"id\": \"113846665298870\",\"name\": \"Instituto Tecnologico de Toluca\"},\"type\": \"College\",\"id\": \"208314902517322\"}],\"email\": \"tazvoit@hotmail.com\",\"first_name\": \"Jorge\",\"gender\": \"male\",\"last_name\": \"Medina\",\"picture\": {\"data\": {\"is_silhouette\": false,\"url\": \"https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/13100952_1327839547231513_1803219328987116718_n.jpg?oh=3d8f6deb02926a473ac77bebcf2ddb85&oe=57F1E029\"}},\"relationship_status\": \"Casado\"}";
@@ -400,7 +397,7 @@ class SolicitudController {
                     generoList: Genero.list(),
                     datosLogin:datosLogin,
                     tipoLogin:tipoLogin,
-                    paso:paso]
+                    paso:paso, generales: session[("datosPaso" + paso)]]
                 break;
             case 2:
                 println "paso2"
@@ -408,23 +405,23 @@ class SolicitudController {
                     municipioList:Municipio.findAll(),
                     tiposDeVivienda: TipoDeVivienda.findAllWhere(activo:true),
                     temporalidadList:Temporalidad.findAll(),
-                    paso:paso]
+                    paso:paso, generales: session[("datosPaso" + paso)]]
                 break;
             case 3:
                 println "paso3"
-                modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso]
+                modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso, generales: session[("datosPaso" + paso)]]
                 break;
             case 4:
                 println "paso4"
-                modelo = [paso:paso]
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
                 break;
             case 5:
                 println "paso5"
-                modelo = [paso:paso]
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
                 break;
             case 6:
                 println "paso6"
-                modelo = [paso:paso]
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
                 break;
             case 7:
                 println "paso7"
@@ -600,23 +597,31 @@ class SolicitudController {
         if(params.siguientePaso){
             def modelo = [:]
             def paso =  params.siguientePaso as int
+            def pasoAnterior =  params.pasoAnterior as int
+            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior)
             if(paso == 1){
                 modelo = [estadoList:Estado.findAll(),
                     estadoCivilList:EstadoCivil.findAll(),
                     temporalidadList:Temporalidad.findAll(),
                     escolaridadList:NivelEducativo.findAll(),
                     generoList: Genero.list(),
-                    datosLogin:datosLogin,
-                    tipoLogin:tipoLogin,
-                    paso:paso]
+                    datosLogin:session.datosLogin,
+                    tipoLogin:session.tipoLogin,
+                    paso:paso, generales: session[("datosPaso" + paso)]]
             } else if(paso == 2){
                 modelo = [estadoList:Estado.findAll(),
                     municipioList:Municipio.findAll(),
                     tiposDeVivienda: TipoDeVivienda.findAllWhere(activo:true),
                     temporalidadList:Temporalidad.findAll(),
-                    paso:paso]
+                    paso:paso, generales: session[("datosPaso" + paso)]]
             } else if(paso == 3){
-                modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso]
+                modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso, generales: session[("datosPaso" + paso)]]
+            } else if(paso == 4){
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
+            } else if(paso == 5){
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
+            } else if(paso == 6){
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
             }
             render(template: ("paso"+params.siguientePaso), model: modelo)
         }

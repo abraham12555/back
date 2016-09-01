@@ -19,6 +19,8 @@ $(document).ready(function () {
     var pasoInicial = $('#pasoInicial').val();
     operacionesModal();
     closeModal();
+    stepBarHover();
+    //submitNextPage();
     actualizarProgreso(pasoInicial);
     if (pasoInicial === "1" || pasoInicial === "2" || pasoInicial === "3") {
         operacionesPaso1al3();
@@ -29,7 +31,71 @@ $(document).ready(function () {
     } else if (pasoInicial === "6") {
         operacionesPaso6();
     }
+    verificarCambios(0);
 });
+
+function stepBarHover() {
+    $(".grayCircle").hover(function () {
+        if ($(this).hasClass("grayCircle")) {
+            $(this).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
+            $(this).addClass('nextBtn');
+            $(this).addClass('sendBtn');
+            $(this).children('p').addClass('paddingTop10');
+            $(this).children('p').removeClass('paddingTop5');
+            $(this).children('p').html("IR AL PASO " + $(this).children('p').text());
+        }
+    }, function () {
+        if ($(this).hasClass("grayCircle")) {
+            $(this).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
+            $(this).removeClass('nextBtn');
+            $(this).removeClass('sendBtn');
+            $(this).children('p').addClass('paddingTop5');
+            $(this).children('p').removeClass('paddingTop10');
+            $(this).children('p').html($(this).children('p').text().replace("IR AL PASO ", ""));
+        }
+    });
+    $('#circuloPaso1').click(function () {
+        if ($(this).hasClass("grayCircle")) {
+            showValues();
+            avanzarPaso("1");
+        }
+    });
+    $('#circuloPaso2').click(function () {
+        if ($(this).hasClass("grayCircle")) {
+            showValues();
+            avanzarPaso("2");
+        }
+    });
+    $('#circuloPaso3').click(function () {
+        if ($(this).hasClass("grayCircle")) {
+            showValues();
+            avanzarPaso("3");
+        }
+    });
+    $('#circuloPaso4').click(function () {
+        if ($(this).hasClass("grayCircle")) {
+            showValues();
+            avanzarPaso("4");
+        }
+    });
+    $('#circuloPaso5').click(function () {
+        if ($(this).hasClass("grayCircle")) {
+            showValues();
+            avanzarPaso("5");
+        }
+    });
+    $('#circuloPaso6').click(function () {
+        if ($(this).hasClass("grayCircle")) {
+            showValues();
+            avanzarPaso("6");
+        }
+    });
+    $('#terminarSolicitud').click(function () {
+        if ($(this).hasClass("GrayButton")) {
+            avanzarPaso("8");
+        }
+    });
+}
 
 function operacionesPaso1al3() {
     /****FORMULARIOS 1 A 3 *******/
@@ -73,16 +139,17 @@ function operacionesPaso1al3() {
 
     $('.formStep .confirmDiv .buttonM').click(function () {
 
-        if ($(this).parent().parent().is(':hidden') == true) {
+        if ($(this).parent().parent().is(':hidden') === true) {
 
         } else {
-            if ($(this).parent().parent().hasClass('lastStep') == true) {
+            if ($(this).parent().parent().hasClass('lastStep') === true) {
 
                 $(".formValues").on("change", showValues);
-                showValues();
+                //showValues();
                 $('.nextBtn').addClass('sendBtn');
-                submitNextPage();
-
+                //submitNextPage();
+                var currentStep = $('#pasoAnterior').val();
+                $('#circuloPaso' + (parseInt(currentStep) + 1)).click();
             } else {
                 $(this).parent().parent().slideUp();
                 $(this).parent().parent().next('.formStep').slideDown();
@@ -124,7 +191,7 @@ function operacionesPaso1al3() {
         consultarCodigoPostal(suggestion);
     });
 
-    submitNextPage();
+    //submitNextPage();
 }
 
 function verificarCambios(index) {
@@ -306,7 +373,7 @@ function operacionesPaso4() {
     $('.confirmDb').click(function () {
         showValues();
         $('.nextBtn').addClass('sendBtn');
-        submitNextPage();
+        //submitNextPage();
     });
 }
 
@@ -410,7 +477,7 @@ function operacionesPaso6() {
     $('.enviarSolicitud').click(function () {
         showValues();
         $('.enviarSolicitud').addClass('sendBtn');
-        submitNextPage();
+        //submitNextPage();
     });
 
     $('#paso6IdOf').click(function () {
@@ -445,12 +512,12 @@ function showValues() {
     });
 }
 
-function submitNextPage() {
-    $('.sendBtn').click(function () {
-        //$('.sendValues').submit();
-        avanzarPaso();
-    });
-}
+/*function submitNextPage() {
+ $('.grayCircle').click(function () {
+ //$('.sendValues').submit();
+ avanzarPaso();
+ });
+ }*/
 
 function loadBar() {
     $('.loadingBar').fadeIn();
@@ -513,9 +580,10 @@ function setFooter() {
 // ***************************** Inicio de Funciones Auxiliares
 
 
-function avanzarPaso() {
+function avanzarPaso(paso) {
     //cerrarModal();
-    var paso = $('#siguientePaso').val();
+    var paso = paso;
+    $('#siguientePaso').val(paso);
     console.log("Avanzando a paso " + paso);
     $.ajax({
         type: 'POST',
@@ -528,6 +596,9 @@ function avanzarPaso() {
             if (paso === "1" || paso === "2" || paso === "3") {
                 console.log("Cargando funciones de paso " + paso);
                 operacionesPaso1al3();
+                $('.showOnFill').each(function (index) {
+                    verificarCambios(index);
+                });
             } else if (paso === "4") {
                 console.log("Cargando funciones de paso 4");
                 operacionesPaso4();
@@ -542,6 +613,7 @@ function avanzarPaso() {
             }
             setFooter();
             actualizarProgreso(paso);
+            stepBarHover();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -553,6 +625,13 @@ function actualizarProgreso(paso) {
     var percentStep;
     console.log("Actualizando progreso paso " + paso);
     $('.pasoTitle').html('paso ' + paso);
+    $('#circuloPaso' + paso).removeClass("grayCircle");
+    $('#circuloPaso' + paso).addClass("blueCircle");
+    $('#circuloPaso' + paso).addClass("colorWhite");
+    $('#circuloPaso' + paso).prop('disabled', true);
+    $('#pPaso' + paso).removeClass("paddingTop5");
+    $('#pPaso' + paso).removeClass("footerTextColor");
+    $('#pPaso' + paso).addClass("paddingTop10");
     if (paso === "1") {
         percentStep = 5;
         $('.activeProgress').css({
@@ -676,12 +755,12 @@ function loginInteractive() {
         data[field.name] = field.value;
     });
     console.log("PUT Interactive Mode....");
-    $.ajax({
-        type: 'POST',
+        $.ajax({
+            type: 'POST',
         data: 'data=' + JSON.stringify(data),
         url: '/kosmos-app/solicitud/loginInteractive',
-        success: function (data, textStatus) {
-            var respuesta = checkIfJson(data);
+            success: function (data, textStatus) {
+                var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
             	cerrarModal();
                 sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
@@ -692,7 +771,7 @@ function loginInteractive() {
 	             $.each(respuesta.accounts_resume, function(i, item) {
 	             	if(respuesta.accounts_resume[i].depositoPromedio > 0){
 	             		index=i;
-	             	}
+                }
 	             });
                  $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
                  $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
@@ -703,59 +782,59 @@ function loginInteractive() {
                  $('.successBubble').fadeIn();
                  $('#confirmarConsulta').fadeIn();
             }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
         	cerrarModal();
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-        }
-    });
-}
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            }
+        });
+    }
 
 //Callback para hacer la consulta con el API Bancaria
 function authenticate() {
 	loading($('.bankChoice').val());
-	var data = {};
+    var data = {};
     data["password"] = $('#password').val();
     data["login"] = $('#login').val();
     data["provider_code"] = $('.bankChoice').val();
     data["customer_id"] = $('#customer_id').val();
     console.log("Authenticating....");
-    $.ajax({
-        type: 'POST',
+        $.ajax({
+            type: 'POST',
         data: 'data=' + JSON.stringify(data),
         url: '/kosmos-app/solicitud/authenticate',
-        success: function (data, textStatus) {
-            var respuesta = checkIfJson(data);
+            success: function (data, textStatus) {
+                var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
-            	cerrarModal();
+                        cerrarModal();
                 sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
             } else if ('interactiveFieldsName' in respuesta) {
-            	$("#spinner").html("");
+                        $("#spinner").html("");
                 $('#loginInteractiveHtml').html(buildLoginBank(respuesta));
-            } else {
+                    } else {
             	cerrarModal();
             	var index = 0;
             	$.each(respuesta.accounts_resume, function(i, item) {
             		if(respuesta.accounts_resume[i].depositoPromedio > 0){
             			index=i;
-            		}
+                    }
             	});
                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
                 $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
                 $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
-                $('.loadingActive').hide();
-                $('#consultarInfo').hide();
-                $('.defaultBubble').fadeOut();
-                $('.successBubble').fadeIn();
-                $('#confirmarConsulta').fadeIn();
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $('.loadingActive').hide();
+                        $('#consultarInfo').hide();
+                        $('.defaultBubble').fadeOut();
+                        $('.successBubble').fadeIn();
+                        $('#confirmarConsulta').fadeIn();
+                    }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
         	cerrarModal();
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-        }
-    });
-}
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            }
+        });
+    }
 
 function loading(bank) {
 	$("#spinner").html(spinner(bank));
@@ -835,10 +914,10 @@ function buildLoginBank(respuesta) {
     html += "</div>";
     html += "</div>";
     html += "</center>";
-    html += "</form>";	    	
+        html += "</form>";
     console.log("resp" + html_base + html);
     return html_base + html
-}
+    }
 
 function consultarBancos() {
     var banco = $('.bankChoice').val();
@@ -920,7 +999,7 @@ function consultarBuro() {
                     restartLoadBar();
                     showValues();
                     $('.nextBtn').addClass('sendBtn');
-                    submitNextPage();
+                    //submitNextPage();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
