@@ -10,7 +10,9 @@
                     max: 90,
                     step: 10,
                     slide: function( event, ui ) {
-                        $( "#engancheElegido" ).html(parseInt($("#precioDelProducto").html()) * (ui.value/100));
+                        $( "#engancheElegido" ).html("$"+
+                                (parseInt($("#precioDelProducto").html().replace("$","").replace(",","")) * (ui.value/100))
+                        );
                     }
                 });
             } );
@@ -26,11 +28,9 @@
                     </h1>
                     <h3 id="precioDelProducto" class="darkBluetitle font30 fontWeight400 marginBottom20">
                     </h3>
-<<<<<<< Updated upstream
-=======
-                    <div class="container" style=" ; "><div (../images/nissan/2016-maxima-azul.png) style= background-img=sombrablur; background size: "contain"; background repeat=norepeat;></div></div>
->>>>>>> Stashed changes
-                    <div id="imagenDelProducto" class="cotizador-bg none800"><div id="sisabesno" class="cotizador-bae"></div></div>
+                    <div id="imagenDelProducto" class="cotizador-bg none800">
+                        <div class="cotizador-bae"></div>
+                    </div>
                     <div class="paddingAside10">
                         <p id="descripcionDelProducto" class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
                             Fusce vehicula dolor arcu, sit amet blandit dolor mollis nec.
@@ -398,7 +398,7 @@
                                     <div class="marginTop52">
 
                                         <div class="marginBottom25 clearFix loading-bar-container inner marginBottom40">
-                                            <div id="slider" class="loading-bar-line autoMargin opacity05">
+                                            <div id="slider" class="loading-bar-line blueButton autoMargin opacity05">
                                             </div>
 
                                             <p class="floatLeft marginLeft12 font14 fontWeight500 gray opacity05 paddingTop5">MIN</p>
@@ -502,8 +502,7 @@
                                     <div class="col3 col6-tab floatLeft marginBottom10">
                                         <div class="paddingAside5">
                                             <div id="m12" class="cotizador-box small">
-                                                <p class="font18 opacity08">12 meses</p>
-
+                                                <p id="meses12txt" class="font18 opacity08">12 meses</p>
                                                 <p id="meses12" class="font14 opacity08"></p>
                                             </div>
                                         </div>
@@ -513,8 +512,7 @@
                                     <div class="col3 col6-tab floatLeft marginBottom10">
                                         <div class="paddingAside5">
                                             <div id="m24" class="cotizador-box small">
-                                                <p class="font18 opacity08">24 meses</p>
-
+                                                <p id="meses24txt" class="font18 opacity08">24 meses</p>
                                                 <p id="meses24" class="font14 opacity08"></p>
                                             </div>
                                         </div>
@@ -523,8 +521,7 @@
                                     <div class="col3 col6-tab floatLeft marginBottom10">
                                         <div class="paddingAside5">
                                             <div id="m36" class="cotizador-box small">
-                                                <p class="font18 opacity08">36 meses</p>
-
+                                                <p id="meses36txt" class="font18 opacity08">36 meses</p>
                                                 <p id="meses36" class="font14 opacity08"></p>
                                             </div>
                                         </div>
@@ -533,8 +530,7 @@
                                     <div class="col3 col6-tab floatLeft marginBottom10">
                                         <div class="paddingAside5">
                                             <div id="m48" class="cotizador-box small">
-                                                <p class="font18 opacity08">48 meses</p>
-
+                                                <p id="meses48txt" class="font18 opacity08">48 meses</p>
                                                 <p id="meses48" class="font14 opacity08"></p>
                                             </div>
                                         </div>

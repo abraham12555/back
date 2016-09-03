@@ -68,6 +68,7 @@ $(document).ready(function(){
         $("#modeloElegido").html($("#m"+modeloId).html());
         $("#modeloElegido2").html($("#m"+modeloId).html());
         $("#modeloElegido3").html($("#m"+modeloId).html());
+
         $(this).parent().parent().parent().parent().parent().parent().slideUp();
         $(this).parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
     });
@@ -89,17 +90,21 @@ $(document).ready(function(){
 ///STEP 4
     var restante;
     $('#slider').mouseup(function(){
-        var engancheElegido = "$"+$("#engancheElegido").html()+".00";
-        var enganche= parseInt($("#engancheElegido").html());
-        var precio = parseInt($("#precioDelProducto").html());
+        var engancheElegido = $("#engancheElegido").html();
+        var enganche = parseInt($("#engancheElegido").html().replace("$","").replace(",",""));
+        var precio = parseInt($("#precioDelProducto").html().replace(",","").replace("$",""));
         restante = precio - enganche;
         $("#engancheElegido2").html(engancheElegido);
         $("#engancheElegido3").html(engancheElegido);
         $("#engancheElegido4").html(engancheElegido);
-        $("#meses12").html((Math.round(restante / 12)));
-        $("#meses24").html((Math.round(restante / 24)));
-        $("#meses36").html((Math.round(restante / 36)));
-        $("#meses48").html((Math.round(restante / 48)));
+        $("#meses12").html((Math.round(restante / 24)));
+        $("#meses24").html((Math.round(restante / 48)));
+        $("#meses36").html((Math.round(restante / 72)));
+        $("#meses48").html((Math.round(restante / 96)));
+        $("#meses12txt").html("24 Quincenas");
+        $("#meses24txt").html("48 Quincenas");
+        $("#meses36txt").html("72 Quincenas");
+        $("#meses48txt").html("96 Quincenas");
         $(this).parent().parent().parent().parent().parent().parent().slideUp();
         $(this).parent().parent().parent().parent().parent().parent().next('.cotizadorStep').slideDown();
     });
@@ -111,6 +116,25 @@ $(document).ready(function(){
         $('.step5 .payChoice .cotizador-box').removeClass('blueButton');
         $(this).addClass('blueButton');
         payChoice = this;
+        if (payChoice.id == "quincenal") {
+            $("#meses12").html((Math.round(restante / 24)));
+            $("#meses24").html((Math.round(restante / 48)));
+            $("#meses36").html((Math.round(restante / 72)));
+            $("#meses48").html((Math.round(restante / 96)));
+            $("#meses12txt").html("24 Quincenas");
+            $("#meses24txt").html("48 Quincenas");
+            $("#meses36txt").html("72 Quincenas");
+            $("#meses48txt").html("96 Quincenas");
+        } else {
+            $("#meses12").html((Math.round(restante / 12)));
+            $("#meses24").html((Math.round(restante / 24)));
+            $("#meses36").html((Math.round(restante / 36)));
+            $("#meses48").html((Math.round(restante / 48)));
+            $("#meses12txt").html("12 Meses");
+            $("#meses24txt").html("24 Meses");
+            $("#meses36txt").html("36 Meses");
+            $("#meses48txt").html("48 Meses");
+        }
     });
 
     var leyenda;
@@ -120,7 +144,7 @@ $(document).ready(function(){
         var leyenda;
         if (payChoice.id == "quincenal") {
             monto = Math.round(restante / (periodo*2));
-            leyenda = "$" + monto + " | Quincenal | " + periodo + " meses";
+            leyenda = "$" + monto + " | Quincenal | " + parseInt(periodo)*2 + " quincenas";
         } else {
             monto = Math.round(restante / periodo);
             leyenda = "$" + monto + " | Mensual | " + periodo + " meses";
@@ -214,21 +238,21 @@ function modeloList(productoId) {
 
 function precioDelModelo(modeloId) {
     if (modeloId == 1) {
-        $('#precioDelProducto').html( "346000" );
+        $('#precioDelProducto').html( "$346,000" );
     } else if (modeloId == 2) {
-        $('#precioDelProducto').html( "383000" );
+        $('#precioDelProducto').html( "$383,000" );
     } else if (modeloId == 3) {
-        $('#precioDelProducto').html( "415000");
+        $('#precioDelProducto').html( "$415,000");
     } else if (modeloId == 4) {
-        $('#precioDelProducto').html( "480000" );
+        $('#precioDelProducto').html( "$480,000" );
     } else if (modeloId == 5) {
-        $('#precioDelProducto').html( "256000" );
+        $('#precioDelProducto').html( "$256,000" );
     } else if (modeloId == 6) {
-        $('#precioDelProducto').html( "288000" );
+        $('#precioDelProducto').html( "$288,000" );
     } else if (modeloId == 7) {
-        $('#precioDelProducto').html( "401000" );
+        $('#precioDelProducto').html( "$401,000" );
     } else if (modeloId == 8) {
-        $('#precioDelProducto').html( "460000" );
+        $('#precioDelProducto').html( "$460,000" );
     }
 }
 
