@@ -6,6 +6,8 @@ import grails.transaction.Transactional
 class SolicitudService {
 
     def construirDatosTemporales(def params, def pasoEnviado) {
+		println "PARAMETROS ENVIADOS:::"+ params +" PASO ENVIADO..." +pasoEnviado
+		
         def datosPaso = [:]
         if(pasoEnviado == 1){
             datosPaso.nombre = params.nombre
@@ -43,7 +45,13 @@ class SolicitudService {
            datosPaso.plazo = (params.plazo ? params.plazo : null)
            datosPaso.contrato = (params.contrato ? params.contrato : null)
         } else if (pasoEnviado == 4){
-            
+		   datosPaso.depositoPromedio = (params.depositos ? params.depositos :null)
+		   datosPaso.retiroPromedio = (params.retiros ? params.retiros :null)
+		   datosPaso.saldoPromedio = (params.saldo ? params.saldo :null)
+		   datosPaso.login_id = params.login_id
+		   datosPaso.depositoCorrecto=(params.depositoCorrecto ? params.depositoCorrecto:null)
+		   datosPaso.retiroCorrecto=(params.retiroCorrecto ? params.retiroCorrecto:null)
+		   datosPaso.saldoCorrecto=(params.saldoCorrecto ? params.saldoCorrecto:null)
         } else if (pasoEnviado == 5){
             
         } else if (pasoEnviado == 6){

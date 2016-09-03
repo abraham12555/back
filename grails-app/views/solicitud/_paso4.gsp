@@ -40,8 +40,9 @@
                     <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'bancomer.png')}" data-hover="bancomer"/>
                 </div>
                 <div class="width160 brandingBox floatLeft bankButton">
-                    <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'hsbc.png')}" data-hover="hsbc"/>
-                </div>
+					<img class="width80 blockAuto"
+						src="${resource(dir:'images', file:'american_express.png')}" data-hover="american_express" />
+				</div>
                 <div class="width160 brandingBox floatLeft bankButton">
                     <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'santander.png')}" data-hover="santander"/>
                 </div>
@@ -56,7 +57,6 @@
 
             <div class="clearFix paddingLeft10">
                 <input type="hidden" id="intentos" value="0"/>
-                <input type="hidden" name="customer_id" id="customer_id" value="${customer_id}"/>
                 <div class="floatLeft paddingTop20 col6 col6-tab col12-mob">
                     <p class=" marginBottom15 gray font14">NÚMERO DE CLIENTE</p>
                     <input class="inPuts4a formValues textUpper headingColor" type="text" id="login" name="login" placeholder="no. de cliente"/>
@@ -76,7 +76,7 @@
                 <div class="floatLeft col6 col12-mob">
                     <div class="padding10">
                         <div class="consultarBox marginLeft15 center colorWhite letterspacing1 font16">
-                            CONSULTAR DE FORMA SEGURA <i class="fa fa-lock paddingLeft10" aria-hidden="true"></i>
+                            CONSULTAR DE FORMA SEGURA
                         </div>
                     </div>
                 </div>
@@ -124,14 +124,15 @@
 
                 <div class="floatLeft paddingTop20 col4 col12-mob">
                     <p class="marginBottom15 gray font14">DEPOSITOS PROMEDIO (90 DÍAS)</p>
-                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="dep90" name="depositos" placeholder="$55,000.00 MXN"/>
-
+                    <input type="hidden" class="inputsFormulario  formValues" name="customer_id" id="customer_id" value="${customer_id}"/>
+                	<input type="hidden" class="inputsFormulario  formValues" name="login_id" id="login_id" value="${generales?.login_id}"/>
+                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="dep90" name="depositos" placeholder="$55,000.00 MXN" value="${generales?.depositoPromedio}"/>
                     <div class="paddingTop20 clearFix confirmInfo">
                         <p class="marginBottom15 gray font14">¿ESTA INFORMACIÓN ES CORRECTA?</p>
-                        <div class="correctaBox floatLeft">
+                        <div id="deposito_correcto_si" class="correctaBox floatLeft">
                             <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
                         </div>
-                        <div class="floatLeft correctaBox">
+                        <div id="deposito_correcto_no" class="floatLeft correctaBox">
                             <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
                         </div>
                     </div>
@@ -139,14 +140,14 @@
 
                 <div class="floatLeft paddingTop20 col4 col12-mob">
                     <p class="marginBottom15 gray font14">RETIROS PROMEDIO (90 DÍAS)</p>
-                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="ret90" name="retiros" placeholder="$55,000.00 MXN"/>
-
+                     <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="ret90" name="retiros" placeholder="$55,000.00 MXN" value="${generales?.retiroPromedio}"/>
+                 
                     <div class="paddingTop20 clearFix confirmInfo">
                         <p class="marginBottom15 gray font14">¿ESTA INFORMACIÓN ES CORRECTA?</p>
-                        <div class="correctaBox floatLeft">
+                        <div id="retiro_correcto_si" class="correctaBox floatLeft">
                             <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
                         </div>
-                        <div class="floatLeft correctaBox">
+                        <div id="retiro_correcto_no" class="floatLeft correctaBox">
                             <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
                         </div>
                     </div>
@@ -154,14 +155,17 @@
 
                 <div class="floatLeft paddingTop20 col4 col12-mob ">
                     <p class="marginBottom15 gray font14">SALDO PROMEDIO (90 DÍAS)</p>
-                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="saldo90" name="saldo" placeholder="$55,000.00 MXN"/>
-
+                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="saldo90" name="saldo" placeholder="$55,000.00 MXN" value="${generales?.saldoPromedio}"/>
+                    <input class="formValues" type="hidden" id="saldoCorrecto" name="saldoCorrecto"  value="${generales?.saldoCorrecto}"/>
+                    <input class="formValues" type="hidden" id="retiroCorrecto" name="retiroCorrecto" value="${generales?.retiroCorrecto}"/>
+                    <input class="formValues" type="hidden" id="depositoCorrecto" name="depositoCorrecto" value="${generales?.depositoCorrecto}"/>
+                    
                     <div class="paddingTop20 clearFix confirmInfo">
                         <p class="marginBottom15 gray font14">¿ESTA INFORMACIÓN ES CORRECTA?</p>
-                        <div class="correctaBox floatLeft">
+                        <div id="saldo_correcto_si" class="correctaBox floatLeft">
                             <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
                         </div>
-                        <div class="floatLeft correctaBox">
+                        <div id="saldo_correcto_no" class="floatLeft correctaBox">
                             <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
                         </div>
                     </div>

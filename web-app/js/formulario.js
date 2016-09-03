@@ -298,12 +298,17 @@ function operacionesPaso4() {
         $(this).addClass('active_green');
         $('.bankChoice').val(bankChoice);
         $('.bankChoice').addClass('notEmpty');
+        
+        
+        
+        
     });
-
-
     $('.consultarBox').click(function () {
-        //consultarBancos();
-    	authenticate();
+    	
+    	if(!$(this).hasClass('exito')){
+    		//consultarBancos();
+        	authenticate();
+    	}
     });
 
     $('#reintentarBtn').click(function () {
@@ -371,10 +376,33 @@ function operacionesPaso4() {
 
 
     $('.confirmDb').click(function () {
-        showValues();
+        //showValues();
         $('.nextBtn').addClass('sendBtn');
+        var currentStep = $('#pasoAnterior').val();
+        $('#circuloPaso' + (parseInt(currentStep) + 1)).click();
+        
         //submitNextPage();
     });
+    
+    $('#saldo_correcto_si').click(function () {
+    	$('#saldoCorrecto').val("SI");
+    });
+    $('#saldo_correcto_no').click(function () {
+    	$('#saldoCorrecto').val("NO");
+    });
+    $('#retiro_correcto_si').click(function () {
+    	$('#retiroCorrecto').val("SI");
+    });
+    $('#retiro_correcto_no').click(function () {
+    	$('#retiroCorrecto').val("NO");
+    });
+    $('#deposito_correcto_si').click(function () {
+    	$('#depositoCorrecto').val("SI");
+    });
+    $('#deposito_correcto_no').click(function () {
+    	$('#depositoCorrecto').val("NO");
+    });
+    
 }
 
 function operacionesPaso5() {
@@ -585,6 +613,7 @@ function avanzarPaso(paso) {
     var paso = paso;
     $('#siguientePaso').val(paso);
     console.log("Avanzando a paso " + paso);
+    //alert("Datos::"+$('.sendValues').serialize());
     $.ajax({
         type: 'POST',
         data: $('.sendValues').serialize(),
@@ -602,6 +631,7 @@ function avanzarPaso(paso) {
             } else if (paso === "4") {
                 console.log("Cargando funciones de paso 4");
                 operacionesPaso4();
+                verificacionSubPaso();
             } else if (paso === "5") {
                 console.log("Cargando funciones de paso 5");
                 operacionesPaso5();
@@ -621,6 +651,38 @@ function avanzarPaso(paso) {
     });
 }
 
+
+function verificacionSubPaso(){
+	console.log("login_id:"+$("#login_id").val());
+	if($("#login_id").val() != ""){
+		$('.loadingActive').hide();
+	    $('#consultarInfo').hide();
+	    $('.defaultBubble').fadeOut();
+	    $('.successBubble').fadeIn();
+	    $('#confirmarConsulta').fadeIn();
+	}
+		if($("#depositoCorrecto").val() && $("#retiroCorrecto").val() && $("#saldoCorrecto").val()){
+			$('.confirmDb').removeClass('hide');
+		}
+		if($("#depositoCorrecto").val() === 'SI'){
+			$('#deposito_correcto_si').addClass('active_green');
+		}
+		if($("#depositoCorrecto").val() === 'NO'){
+			$('#deposito_correcto_no').addClass('active_green');
+		}
+		if($("#retiroCorrecto").val() === "SI"){
+			$('#retiro_correcto_si').addClass('active_green');
+		}
+		if($("#retiroCorrecto").val() === "NO"){
+			$('#retiro_correcto_no').addClass('active_green');
+		}
+		if($("#saldoCorrecto").val() === "SI"){
+			$('#saldo_correcto_si').addClass('active_green');
+		}
+		if($("#saldoCorrecto").val() === "NO"){
+			$('#saldo_correcto_no').addClass('active_green');
+		}
+}
 function actualizarProgreso(paso) {
     var percentStep;
     console.log("Actualizando progreso paso " + paso);
@@ -776,6 +838,7 @@ function loginInteractive() {
                  $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
                  $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
                  $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
+                 $('#login_id').val(respuesta.login_id);
                  $('.loadingActive').hide();
                  $('#consultarInfo').hide();
                  $('.defaultBubble').fadeOut();
@@ -799,6 +862,7 @@ function authenticate() {
     data["provider_code"] = $('.bankChoice').val();
     data["customer_id"] = $('#customer_id').val();
     console.log("Authenticating....");
+    $('#loginInteractiveHtml').fadeIn();
         $.ajax({
             type: 'POST',
         data: 'data=' + JSON.stringify(data),
@@ -809,9 +873,9 @@ function authenticate() {
                         cerrarModal();
                 sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
             } else if ('interactiveFieldsName' in respuesta) {
-                        $("#spinner").html("");
+                $("#spinner").html("");
                 $('#loginInteractiveHtml').html(buildLoginBank(respuesta));
-                    } else {
+            } else {
             	cerrarModal();
             	var index = 0;
             	$.each(respuesta.accounts_resume, function(i, item) {
@@ -819,9 +883,11 @@ function authenticate() {
             			index=i;
                     }
             	});
+            	console.log("DATOS::"+respuesta.accounts_resume[index].depositoPromedio);
                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
                 $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
                 $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
+                $('#login_id').val(respuesta.login_id);
                         $('.loadingActive').hide();
                         $('#consultarInfo').hide();
                         $('.defaultBubble').fadeOut();
