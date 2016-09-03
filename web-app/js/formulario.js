@@ -18,7 +18,6 @@ $(document).ready(function () {
     });
     var pasoInicial = $('#pasoInicial').val();
     operacionesModal();
-    closeModal();
     stepBarHover();
     //submitNextPage();
     actualizarProgreso(pasoInicial);
@@ -30,9 +29,24 @@ $(document).ready(function () {
         operacionesPaso5();
     } else if (pasoInicial === "6") {
         operacionesPaso6();
+    } else if (pasoInicial === "0") {
+        operacionesLogin();
     }
-    verificarCambios(0);
+    $('.showOnFill').each(function (index) {
+        verificarCambios(index);
+    });
 });
+
+function operacionesLogin() {
+    $('#loginIdOf').click(function () {
+        openModal('identification_oficial');
+    });
+
+    $('#loginCompDom').click(function () {
+        openModal('comprobante_domicilio');
+    });
+}
+
 
 function stepBarHover() {
     $(".grayCircle").hover(function () {
@@ -88,11 +102,6 @@ function stepBarHover() {
         if ($(this).hasClass("grayCircle")) {
             showValues();
             avanzarPaso("6");
-        }
-    });
-    $('#terminarSolicitud').click(function () {
-        if ($(this).hasClass("GrayButton")) {
-            avanzarPaso("8");
         }
     });
 }
@@ -207,12 +216,13 @@ function verificarCambios(index) {
             $('.showOnFill').eq(index + 1).css({'display': 'inline'});
             checkInputs();
         } else {
+            //console.log("Else 1");
         }
-
     } else {
+        //    console.log("Else 2");
     }
     var totalLength = $('.formStep:visible .formValues').length;
-
+    //console.log("totalLength: " + totalLength);
     if (filledLength === totalLength) {
         $('.formStep:visible .confirmDiv').fadeIn();
     }
@@ -298,17 +308,13 @@ function operacionesPaso4() {
         $(this).addClass('active_green');
         $('.bankChoice').val(bankChoice);
         $('.bankChoice').addClass('notEmpty');
-        
-        
-        
-        
     });
     $('.consultarBox').click(function () {
-    	
-    	if(!$(this).hasClass('exito')){
-    		//consultarBancos();
-        	authenticate();
-    	}
+
+        if (!$(this).hasClass('exito')) {
+            //consultarBancos();
+            authenticate();
+        }
     });
 
     $('#reintentarBtn').click(function () {
@@ -380,29 +386,29 @@ function operacionesPaso4() {
         $('.nextBtn').addClass('sendBtn');
         var currentStep = $('#pasoAnterior').val();
         $('#circuloPaso' + (parseInt(currentStep) + 1)).click();
-        
+
         //submitNextPage();
     });
-    
+
     $('#saldo_correcto_si').click(function () {
-    	$('#saldoCorrecto').val("SI");
+        $('#saldoCorrecto').val("SI");
     });
     $('#saldo_correcto_no').click(function () {
-    	$('#saldoCorrecto').val("NO");
+        $('#saldoCorrecto').val("NO");
     });
     $('#retiro_correcto_si').click(function () {
-    	$('#retiroCorrecto').val("SI");
+        $('#retiroCorrecto').val("SI");
     });
     $('#retiro_correcto_no').click(function () {
-    	$('#retiroCorrecto').val("NO");
+        $('#retiroCorrecto').val("NO");
     });
     $('#deposito_correcto_si').click(function () {
-    	$('#depositoCorrecto').val("SI");
+        $('#depositoCorrecto').val("SI");
     });
     $('#deposito_correcto_no').click(function () {
-    	$('#depositoCorrecto').val("NO");
+        $('#depositoCorrecto').val("NO");
     });
-    
+
 }
 
 function operacionesPaso5() {
@@ -465,6 +471,13 @@ function operacionesPaso5() {
     $('#consultarBuroBtn').click(function () {
         consultarBuro();
     });
+
+    $('.avanzaBtn').click(function () {
+        if ($(this).hasClass('colorGreen') || $(this).hasClass('buttonOrange')) {
+            showValues();
+            avanzarPaso("6");
+        }
+    });
 }
 
 function operacionesPaso6() {
@@ -509,19 +522,27 @@ function operacionesPaso6() {
     });
 
     $('#paso6IdOf').click(function () {
-        openModal('identification_oficial');
-        $('#tipoDeDocumento').val('Identicaciones');
-        inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
-        $(this).addClass('colorGreen');
-        habilitarTerminarSolicitud();
+        if ($(this).hasClass("darkGray")) {
+            openModal('identification_oficial');
+            //$('#tipoDeDocumento').val('Identicaciones');
+            //inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
+            //$(this).addClass('colorGreen');
+        }
     });
 
     $('#paso6CompDom').click(function () {
-        $('#tipoDeDocumento').val('UtilityBill');
-        openModal('comprobante_domicilio');
-        inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
-        $(this).addClass('colorGreen');
-        habilitarTerminarSolicitud();
+        if ($(this).hasClass("darkGray")) {
+            //$('#tipoDeDocumento').val('UtilityBill');
+            openModal('comprobante_domicilio');
+            //inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
+            //$(this).addClass('colorGreen')
+        }
+    });
+
+    $('#terminarSolicitud').click(function () {
+        if ($(this).hasClass("blueButton")) {
+            avanzarPaso("8");
+        }
     });
 
     $('.solicitud_modal').click(function () {
@@ -555,12 +576,6 @@ function loadBar() {
 function restartLoadBar() {
     $('.loadingBar').fadeIn();
     $('.loadingActive').css({'width': '0%'});
-}
-
-function closeModal() {
-    $('.closeModal').click(function () {
-        $(this).parent().parent().fadeOut();
-    });
 }
 
 function checkInputs() {
@@ -652,37 +667,38 @@ function avanzarPaso(paso) {
 }
 
 
-function verificacionSubPaso(){
-	console.log("login_id:"+$("#login_id").val());
-	if($("#login_id").val() != ""){
-		$('.loadingActive').hide();
-	    $('#consultarInfo').hide();
-	    $('.defaultBubble').fadeOut();
-	    $('.successBubble').fadeIn();
-	    $('#confirmarConsulta').fadeIn();
-	}
-		if($("#depositoCorrecto").val() && $("#retiroCorrecto").val() && $("#saldoCorrecto").val()){
-			$('.confirmDb').removeClass('hide');
-		}
-		if($("#depositoCorrecto").val() === 'SI'){
-			$('#deposito_correcto_si').addClass('active_green');
-		}
-		if($("#depositoCorrecto").val() === 'NO'){
-			$('#deposito_correcto_no').addClass('active_green');
-		}
-		if($("#retiroCorrecto").val() === "SI"){
-			$('#retiro_correcto_si').addClass('active_green');
-		}
-		if($("#retiroCorrecto").val() === "NO"){
-			$('#retiro_correcto_no').addClass('active_green');
-		}
-		if($("#saldoCorrecto").val() === "SI"){
-			$('#saldo_correcto_si').addClass('active_green');
-		}
-		if($("#saldoCorrecto").val() === "NO"){
-			$('#saldo_correcto_no').addClass('active_green');
-		}
+function verificacionSubPaso() {
+    console.log("login_id:" + $("#login_id").val());
+    if ($("#login_id").val() != "") {
+        $('.loadingActive').hide();
+        $('#consultarInfo').hide();
+        $('.defaultBubble').fadeOut();
+        $('.successBubble').fadeIn();
+        $('#confirmarConsulta').fadeIn();
+    }
+    if ($("#depositoCorrecto").val() && $("#retiroCorrecto").val() && $("#saldoCorrecto").val()) {
+        $('.confirmDb').removeClass('hide');
+    }
+    if ($("#depositoCorrecto").val() === 'SI') {
+        $('#deposito_correcto_si').addClass('active_green');
+    }
+    if ($("#depositoCorrecto").val() === 'NO') {
+        $('#deposito_correcto_no').addClass('active_green');
+    }
+    if ($("#retiroCorrecto").val() === "SI") {
+        $('#retiro_correcto_si').addClass('active_green');
+    }
+    if ($("#retiroCorrecto").val() === "NO") {
+        $('#retiro_correcto_no').addClass('active_green');
+    }
+    if ($("#saldoCorrecto").val() === "SI") {
+        $('#saldo_correcto_si').addClass('active_green');
+    }
+    if ($("#saldoCorrecto").val() === "NO") {
+        $('#saldo_correcto_no').addClass('active_green');
+    }
 }
+
 function actualizarProgreso(paso) {
     var percentStep;
     console.log("Actualizando progreso paso " + paso);
@@ -817,45 +833,45 @@ function loginInteractive() {
         data[field.name] = field.value;
     });
     console.log("PUT Interactive Mode....");
-        $.ajax({
-            type: 'POST',
+    $.ajax({
+        type: 'POST',
         data: 'data=' + JSON.stringify(data),
         url: '/kosmos-app/solicitud/loginInteractive',
-            success: function (data, textStatus) {
-                var respuesta = checkIfJson(data);
+        success: function (data, textStatus) {
+            var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
-            	cerrarModal();
+                cerrarModal();
                 sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
             } else {
-            	 cerrarModal();
-                 $("#spinner").html("");
-                 var index = 0;
-	             $.each(respuesta.accounts_resume, function(i, item) {
-	             	if(respuesta.accounts_resume[i].depositoPromedio > 0){
-	             		index=i;
-                }
-	             });
-                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
-                 $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
-                 $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
-                 $('#login_id').val(respuesta.login_id);
-                 $('.loadingActive').hide();
-                 $('#consultarInfo').hide();
-                 $('.defaultBubble').fadeOut();
-                 $('.successBubble').fadeIn();
-                 $('#confirmarConsulta').fadeIn();
+                cerrarModal();
+                $("#spinner").html("");
+                var index = 0;
+                $.each(respuesta.accounts_resume, function (i, item) {
+                    if (respuesta.accounts_resume[i].depositoPromedio > 0) {
+                        index = i;
+                    }
+                });
+                $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
+                $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
+                $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
+                $('#login_id').val(respuesta.login_id);
+                $('.loadingActive').hide();
+                $('#consultarInfo').hide();
+                $('.defaultBubble').fadeOut();
+                $('.successBubble').fadeIn();
+                $('#confirmarConsulta').fadeIn();
             }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-        	cerrarModal();
-                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-            }
-        });
-    }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            cerrarModal();
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
 
 //Callback para hacer la consulta con el API Bancaria
 function authenticate() {
-	loading($('.bankChoice').val());
+    loading($('.bankChoice').val());
     var data = {};
     data["password"] = $('#password').val();
     data["login"] = $('#login').val();
@@ -863,48 +879,48 @@ function authenticate() {
     data["customer_id"] = $('#customer_id').val();
     console.log("Authenticating....");
     $('#loginInteractiveHtml').fadeIn();
-        $.ajax({
-            type: 'POST',
+    $.ajax({
+        type: 'POST',
         data: 'data=' + JSON.stringify(data),
         url: '/kosmos-app/solicitud/authenticate',
-            success: function (data, textStatus) {
-                var respuesta = checkIfJson(data);
+        success: function (data, textStatus) {
+            var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
-                        cerrarModal();
+                cerrarModal();
                 sweetAlert("Oops...", "Parece que hubo un error :" + respuesta.error_class, "error");
             } else if ('interactiveFieldsName' in respuesta) {
                 $("#spinner").html("");
                 $('#loginInteractiveHtml').html(buildLoginBank(respuesta));
             } else {
-            	cerrarModal();
-            	var index = 0;
-            	$.each(respuesta.accounts_resume, function(i, item) {
-            		if(respuesta.accounts_resume[i].depositoPromedio > 0){
-            			index=i;
+                cerrarModal();
+                var index = 0;
+                $.each(respuesta.accounts_resume, function (i, item) {
+                    if (respuesta.accounts_resume[i].depositoPromedio > 0) {
+                        index = i;
                     }
-            	});
-            	console.log("DATOS::"+respuesta.accounts_resume[index].depositoPromedio);
+                });
+                console.log("DATOS::" + respuesta.accounts_resume[index].depositoPromedio);
                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
                 $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
                 $('#saldo90').val(formatCurrency(respuesta.accounts_resume[index].saldoPromedio, "$"));
                 $('#login_id').val(respuesta.login_id);
-                        $('.loadingActive').hide();
-                        $('#consultarInfo').hide();
-                        $('.defaultBubble').fadeOut();
-                        $('.successBubble').fadeIn();
-                        $('#confirmarConsulta').fadeIn();
-                    }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-        	cerrarModal();
-                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                $('.loadingActive').hide();
+                $('#consultarInfo').hide();
+                $('.defaultBubble').fadeOut();
+                $('.successBubble').fadeIn();
+                $('#confirmarConsulta').fadeIn();
             }
-        });
-    }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            cerrarModal();
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
 
 function loading(bank) {
-	$("#spinner").html(spinner(bank));
-	$("#spinner").fadeIn();
+    $("#spinner").html(spinner(bank));
+    $("#spinner").fadeIn();
     $('#modalloginBank').modal({keyboard: false, backdrop: false})
 }
 
@@ -914,20 +930,20 @@ function complete() {
 }
 
 function spinner(bank) {
-	var html = "<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">...</p></center>";
-	html+="<center><p style=\"font-size:16px;color:#298df5\">Estableciendo Conexi&oacute;n con la Instituci&oacute;n Financiera</p>";
-	if(bank == 'banamex'){
-		
-		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banamex.png\"/></center>";
-	}else if (bank == 'bancomer'){
-		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/bancomer.png\"/></center>";
-	}else if (bank == 'american_express'){
-		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/american_express.png\"/></center>";
-	}else if (bank == 'santander'){
-		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/santander.png\"/></center>";
-	}else if (bank == 'banorte'){
-		html+="<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banorte.png\"/></center>";
-	}
+    var html = "<center><i class=\"fa fa-refresh fa-spin\" style=\"font-size:60px;color:#298df5\"></i><p style=\"font-size:16px;color:#298df5\">...</p></center>";
+    html += "<center><p style=\"font-size:16px;color:#298df5\">Estableciendo Conexi&oacute;n con la Instituci&oacute;n Financiera</p>";
+    if (bank == 'banamex') {
+
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banamex.png\"/></center>";
+    } else if (bank == 'bancomer') {
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/bancomer.png\"/></center>";
+    } else if (bank == 'american_express') {
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/american_express.png\"/></center>";
+    } else if (bank == 'santander') {
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/santander.png\"/></center>";
+    } else if (bank == 'banorte') {
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banorte.png\"/></center>";
+    }
     return html;
 }
 
@@ -980,10 +996,10 @@ function buildLoginBank(respuesta) {
     html += "</div>";
     html += "</div>";
     html += "</center>";
-        html += "</form>";
+    html += "</form>";
     console.log("resp" + html_base + html);
     return html_base + html
-    }
+}
 
 function consultarBancos() {
     var banco = $('.bankChoice').val();
@@ -1168,9 +1184,35 @@ function closeModal(divModal) {
 }
 
 function operacionesModal() {
-    $('.idType').click(function () {
+    $('.closeModal').click(function () {
+        $(this).parent().parent().fadeOut();
+    });
+    $('.pasaporteId').click(function () {
+        $('#tipoDeDocumento').val('Pasaportes');
+        $('#nombreDeLaIdentificacion').html('frente de tu Pasaporte');
+        inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
+        $('#label2Ids').addClass('active_blue');
+        $('#label1Ids').removeClass('active_blue');
+        $('#label3Ids').removeClass('active_blue');
+        $('#label3Ids').addClass('gray');
+        $('#label1Ids').addClass('gray');
+        $('#label2Ids').removeClass('gray');
+    });
+
+    $('.ineId').click(function () {
+        $('#tipoDeDocumento').val('Identicaciones');
+        $('#nombreDeLaIdentificacion').html('frente de tu Credencial de Elector');
+        inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
+        $(this).parent().parent().parent().parent().parent().fadeOut();
+        $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
+        $('#label2Ids').addClass('active_blue');
+        $('#label1Ids').removeClass('active_blue');
+        $('#label3Ids').removeClass('active_blue');
+        $('#label3Ids').addClass('gray');
+        $('#label1Ids').addClass('gray');
+        $('#label2Ids').removeClass('gray');
     });
 
     $('.phoneCapture').click(function () {
@@ -1217,10 +1259,94 @@ function operacionesModal() {
     $('.goLastStep').click(function () {
 
     });
-
-    $('.docChoice').click(function () {
+    //Temporal //nombreDelDocumento
+    /*$('.docChoice').click(function () {
+     $('#tipoDeDocumento').val('UtilityBill');
+     inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
+     $(this).parent().parent().parent().parent().parent().parent().fadeOut();
+     $(this).parent().parent().parent().parent().parent().parent().next().fadeIn();
+     $('#label2Comp').addClass('active_blue');
+     $('#label1Comp').removeClass('active_blue');
+     $('#label1Comp').addClass('gray');
+     $('#label2Comp').removeClass('gray');
+     });*/
+    $('.cfe').click(function () {
+        $('#tipoDeDocumento').val('UtilityBill');
+        $('#nombreDelDocumento').html('Recibo de C.F.E.');
+        inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
         $(this).parent().parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().parent().next().fadeIn();
+        $('#label2Comp').addClass('active_blue');
+        $('#label1Comp').removeClass('active_blue');
+        $('#label1Comp').addClass('gray');
+        $('#label2Comp').removeClass('gray');
+    });
+    $('.telmex').click(function () {
+        $('#tipoDeDocumento').val('UtilityBill');
+        $('#nombreDelDocumento').html('Recibo de Telmex');
+        inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
+        $(this).parent().parent().parent().parent().parent().parent().fadeOut();
+        $(this).parent().parent().parent().parent().parent().parent().next().fadeIn();
+        $('#label2Comp').addClass('active_blue');
+        $('#label1Comp').removeClass('active_blue');
+        $('#label1Comp').addClass('gray');
+        $('#label2Comp').removeClass('gray');
+    });
+
+    $('#paso1CompDom').click(function () {
+        $('#label1Comp').addClass('active_blue');
+        $('#label2Comp').removeClass('active_blue');
+        $('#label2Comp').addClass('gray');
+        $('#label1Comp').removeClass('gray');
+        $('#seleccionComprobante').show();
+        $('#metodoSubidaComprobante').hide();
+        $('#capturaTelefonoComp').hide();
+        $('#webcamCaptureComp').hide();
+    });
+
+    $('#paso2CompDom').click(function () {
+        if ($('#tipoDeDocumento').val()) {
+            $('#label2Comp').addClass('active_blue');
+            $('#label1Comp').removeClass('active_blue');
+            $('#label1Comp').addClass('gray');
+            $('#label2Comp').removeClass('gray');
+            $('#seleccionComprobante').hide();
+            $('#metodoSubidaComprobante').show();
+            $('#capturaTelefonoComp').hide();
+            $('#webcamCaptureComp').hide();
+        }
+    });
+
+    $('#paso1Ids').click(function () {
+        $('#label1Ids').addClass('active_blue');
+        $('#label2Ids').removeClass('active_blue');
+        $('#label3Ids').removeClass('active_blue');
+        $('#label3Ids').addClass('gray');
+        $('#label2Ids').addClass('gray');
+        $('#label1Ids').removeClass('gray');
+        $('#seleccionIdentificacion').show();
+        $('#metodoSubidaIdentificacion').hide();
+        $('#capturaTelefonoIds').hide();
+        $('#fotoFrente').show();
+        $('#fotoVuelta').hide();
+        $('#webcamCaptureIds').hide();
+    });
+
+    $('#paso2Ids').click(function () {
+        if ($('#tipoDeDocumento').val()) {
+            $('#label2Ids').addClass('active_blue');
+            $('#label1Ids').removeClass('active_blue');
+            $('#label3Ids').removeClass('active_blue');
+            $('#label3Ids').addClass('gray');
+            $('#label1Ids').addClass('gray');
+            $('#label2Ids').removeClass('gray');
+            $('#seleccionIdentificacion').hide();
+            $('#metodoSubidaIdentificacion').show();
+            $('#capturaTelefonoIds').hide();
+            $('#fotoFrente').show();
+            $('#fotoVuelta').hide();
+            $('#webcamCaptureIds').hide();
+        }
     });
 }
 
@@ -1235,8 +1361,10 @@ function habilitarTerminarSolicitud() {
     }
 }
 
+Dropzone.autoDiscover = false;
+
 function inicializarDropzone(elemento, boton) {
-    Dropzone.autoDiscover = false;
+    //Dropzone.autoDiscover = false;
     var kosmosDropzone = new Dropzone(elemento, {
         url: "/kosmos-app/solicitud/consultarEphesoft",
         uploadMultiple: true,
@@ -1251,28 +1379,64 @@ function inicializarDropzone(elemento, boton) {
         clickable: boton
     });
     kosmosDropzone.on("addedfile", function (file) {
-        console.log("Archivo enviad: " + file);
+        console.log("Archivo enviado: " + file);
         $('.dz-preview').hide();
         $('#progresoConsultaComp').fadeIn();
+        $('#progresoConsultaIds').fadeIn();
     });
     kosmosDropzone.on("success", function (file, response) {
         var respuesta = eval(response);
         console.log("Respuesta recibida: " + respuesta);
         $('#progresoConsultaComp').fadeOut();
-        if (respuesta.direccion) {
-            sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombrePersona + "<br/><strong>Dirección: </strong>" + respuesta.direccion + "<br/><strong>Fecha del Recibo: </strong> " + respuesta.fechaRecibo + "</br>", type: "success"});
-            this.removeAllFiles();
-            closeModal('comprobante_domicilio');
-            $('#calle').val(respuesta.direccion);
-            $('#calle').addClass("notEmpty");
-            $('#calle').addClass("headingColor");
-            $('.defaultBubble').fadeOut();
-            $('.successBubble').fadeIn();
-        } else if (respuesta.error) {
-            sweetAlert("Oops...", respuesta.error, "error");
-        } else if (respuesta.fatal) {
-            sweetAlert("Oops...", "Ocurrio un error al procesar el documento: " + respuesta.error, "error");
+        console.log("Documento Vigente? " + respuesta.vigente);
+        if (respuesta.vigente === true) {
+            var pasoActual = $('#pasoInicial').val();
+            if (pasoActual === "0") {
+                $('#formLogin').submit();
+            } else {
+                if (respuesta.direccion) {
+                    sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombrePersona + "<br/><strong>Dirección: </strong>" + respuesta.direccion + "<br/><strong>Fecha del Recibo: </strong> " + respuesta.fechaRecibo + "</br>", type: "success"});
+                    closeModal('comprobante_domicilio');
+                    $('#calle').val(respuesta.direccion);
+                    $('#calle').addClass("notEmpty");
+                    $('#calle').addClass("headingColor");
+                    $('.defaultBubble').fadeOut();
+                    $('.successBubble').fadeIn();
+                    $('#paso6CompDom').addClass('colorGreen');
+                    habilitarTerminarSolicitud();
+                } else if (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno)) {
+                    sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellido Paterno: </strong>" + respuesta.apellidoPaterno + "<br/><strong>Apellido Materno: </strong> " + respuesta.apellidoMaterno + "</br>", type: "success"});
+                    closeModal('identification_oficial');
+                    $('#paso6IdOf').addClass('colorGreen');
+                    habilitarTerminarSolicitud();
+                } else if (respuesta.nombre && (respuesta.apellidos || respuesta.noDocumento)) {
+                    sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellidos: </strong>" + respuesta.apellidos + "<br/><strong>Documento No.: </strong> " + respuesta.noDocumento + "</br>", type: "success"});
+                    closeModal('identification_oficial');
+                    $('#paso6IdOf').addClass('colorGreen');
+                    habilitarTerminarSolicitud();
+                } else if (respuesta.error) {
+                    sweetAlert("Oops...", respuesta.error, "error");
+                } else if (respuesta.fatal) {
+                    sweetAlert("Oops...", "Ocurrio un error al procesar el documento: " + respuesta.error, "error");
+                } else {
+                    sweetAlert("¡Advertencia!", "No se recuperaron datos legibles", "warning");
+                    this.removeAllFiles();
+                    closeModal('identification_oficial');
+                    closeModal('comprobante_domicilio');
+                }
+            }
+        } else if (respuesta.vigente === false) {
+            sweetAlert("Oops...", "El documento envíado no está vigente. Por favor, suba un documento vigente.", "error");
+        } else {
+            sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga border blancos.", "warning");
         }
+        this.removeAllFiles();
+        $('#progresoConsultaComp').fadeOut();
+        $('#progresoConsultaIds').fadeOut();
+    });
+    kosmosDropzone.on("error", function (file, response) {
+        console.log(response);
+        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
     });
 }
 // ***************************** Fin de Funciones Auxiliares

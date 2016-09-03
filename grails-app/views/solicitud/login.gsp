@@ -11,6 +11,8 @@
             <input type="hidden" id="datosGoogle" name="datosGoogle"/>
             <input type="hidden" name="origen" value="login" />
             <input type="hidden" name="paso" value="1" />
+            <input type="hidden" id="pasoInicial" value="0">
+            <input type="hidden" id="tipoDeDocumento">
         </form>
         <header class="formularioHeader clearFix">
             <div class="container">
@@ -73,17 +75,21 @@
                                         </p>
 
                                         <div class="marginBottom20">
-                                            <div class="width350 boxGreen autoMargin pointer">
+                                            <a id="loginIdOf">
+                                                <div class="width350 boxGreen autoMargin pointer">
+                                                    <p class="paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
+                                                        SUBE TU IDENTIFICACIÓN OFICIAL
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <a id="loginCompDom">
+                                            <div class="width350 boxGreen pointer autoMargin">
                                                 <p class="paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
-                                                    SUBE TU IDENTIFICACIÓN OFICIAL
+                                                    SUBE TU COMPROBANTE DE DOMICILIO
                                                 </p>
                                             </div>
-                                        </div>
-                                        <div class="width350 boxGreen pointer autoMargin">
-                                            <p class="paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
-                                                SUBE TU COMPROBANTE DE DOMICILIO
-                                            </p>
-                                        </div>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -103,6 +109,8 @@
                     </div>
                 </div>
             </div>
+            <g:render template="modalIdentificaciones"/>
+            <g:render template="modalComprobantes"/>
         </section>
         <script type="text/javascript">
             $(document).ready(function() {

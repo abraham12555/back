@@ -86,7 +86,8 @@ class EphesoftService {
                 responseBody = verificarRespuestaEphesoft(respuesta)
                 //println(statusCode + " *** " + responseBody);
                 responseBody.statusCode = statusCode
-                responseBody.respuestaXml = XmlUtil.serialize(respuesta)
+                responseBody.llenadoPrevio = true
+                //responseBody.respuestaXml = XmlUtil.serialize(respuesta)
             } else if (statusCode == 403) {
                 println("Invalid username/password..");
                 responseBody.error = "Invalid username/password.."
@@ -98,7 +99,7 @@ class EphesoftService {
                 respuesta = respuesta.replaceAll('ephesoft', 'kosmos')
                 responseBody = verificarRespuestaEphesoft(respuesta)
                 responseBody.statusCode = statusCode
-                responseBody.respuestaXml = XmlUtil.serialize(respuesta)
+                //responseBody.respuestaXml = XmlUtil.serialize(respuesta)
             }
         } catch (FileNotFoundException e) {
             println("Archivo no encontrado..");
@@ -163,14 +164,14 @@ class EphesoftService {
         if(codigoRespuesta.equals("200")){
             respuestaEphesoft.Result.Batch.Documents.Document.DocumentLevelFields.DocumentLevelField.each { campo ->
                 if(campo.Name.text()?.equals("CustomerAddress")){
-                    mapa.direccion = campo.Value.text()
+                    mapa.direccion = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                 } else if(campo.Name.text()?.equals("CustomerName")){
-                    mapa.nombrePersona = campo.Value.text()
+                    mapa.nombrePersona = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                 } else if (campo.Name.text()?.equals("Date")) {
-                    mapa.fechaRecibo = campo.Value.text()
+                    mapa.fechaRecibo = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     mapa.vigente = esDocumentoVigente(mapa.fechaRecibo, "fecha")
                 } else if (campo.Name.text()?.equals("numeroDoc")) {
-                    mapa.numeroDocumento = campo.Value.text()
+                    mapa.numeroDocumento = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaNumDocAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("numeroDoc")){
@@ -179,9 +180,9 @@ class EphesoftService {
                     }
                     mapa.numDocAlternos = listaNumDocAlternos
                 } else if (campo.Name.text()?.equals("pais")) {
-                    mapa.pais = campo.Value.text()
+                    mapa.pais = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                 } else if (campo.Name.text()?.equals("nacimiento")) {
-                    mapa.nacimiento = campo.Value.text()
+                    mapa.nacimiento = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaFechNacAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("nacimiento")){
@@ -190,7 +191,7 @@ class EphesoftService {
                     }
                     mapa.fechaNacAlternos = listaFechNacAlternos
                 } else if (campo.Name.text()?.equals("vigencia")) {
-                    mapa.vigencia = campo.Value.text()
+                    mapa.vigencia = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     mapa.vigente = esDocumentoVigente(mapa.vigencia, "anio")
                     def listaVigenciaAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
@@ -200,7 +201,7 @@ class EphesoftService {
                     }
                     mapa.vigenciaAlternos = listaVigenciaAlternos
                 } else if (campo.Name.text()?.equals("apellidoPaterno")) {
-                    mapa.apellidoPaterno = campo.Value.text()
+                    mapa.apellidoPaterno = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaApPaternoAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("apellidoPaterno")){
@@ -210,6 +211,19 @@ class EphesoftService {
                     mapa.apPaternoAlternos = listaApPaternoAlternos
                 } else if (campo.Name.text()?.equals("sexo")) {
                     mapa.sexo = campo.Value.text()
+                    if(mapa.sexo?.contains("H")){
+                        mapa.sexo = 1
+                    } else if(mapa.sexo?.contains("F")){
+                        mapa.sexo = 2
+                    } else if(mapa.sexo?.contains("M")){
+                        if(mapa.apellidos || mapa.apellidos?.length() > 1){
+                            mapa.sexo = 1                           
+                        } else {
+                            mapa.sexo = 2
+                        }
+                    } else {
+                        mapa.sexo = null
+                    }
                     def listaSexoAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("sexo")){
@@ -218,7 +232,7 @@ class EphesoftService {
                     }
                     mapa.sexoValorAlternos = listaSexoAlternos
                 } else if (campo.Name.text()?.equals("seccion")) {
-                    mapa.seccion = campo.Value.text()
+                    mapa.seccion = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaSeccionAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("seccion")){
@@ -227,7 +241,7 @@ class EphesoftService {
                     }
                     mapa.seccionAlternos = listaSeccionAlternos
                 } else if (campo.Name.text()?.equals("colonia")) {
-                    mapa.colonia = campo.Value.text()
+                    mapa.colonia = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaColoniaAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("colonia")){
@@ -236,7 +250,7 @@ class EphesoftService {
                     }
                     mapa.coloniaAlternos = listaColoniaAlternos
                 } else if (campo.Name.text()?.equals("estado")) {
-                    mapa.estado = campo.Value.text()
+                    mapa.estado = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaEstadoAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("estado")){
@@ -245,7 +259,7 @@ class EphesoftService {
                     }
                     mapa.estadosAlternos = listaEstadoAlternos
                 } else if (campo.Name.text()?.equals("municipio")) {
-                    mapa.municipio = campo.Value.text()
+                    mapa.municipio = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaMunicipioAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("municipio")){
@@ -254,7 +268,7 @@ class EphesoftService {
                     }
                     mapa.municipioAlternos = listaMunicipioAlternos
                 } else if (campo.Name.text()?.equals("apellidoMaterno")) {
-                    mapa.apellidoMaterno = campo.Value.text()
+                    mapa.apellidoMaterno = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaApMaternoAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("apellidoMaterno")){
@@ -263,7 +277,7 @@ class EphesoftService {
                     }
                     mapa.apMaternoAlternos = listaApMaternoAlternos
                 } else if (campo.Name.text()?.equals("nombre")) {
-                    mapa.nombre = campo.Value.text()
+                    mapa.nombre = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaValoresAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("nombre")){
@@ -272,7 +286,7 @@ class EphesoftService {
                     }
                     mapa.nombresAlternos = listaValoresAlternos
                 } else if (campo.Name.text()?.equals("curp")) {
-                    mapa.curp = campo.Value.text()
+                    mapa.curp = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaCurpAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("curp")){
@@ -281,7 +295,7 @@ class EphesoftService {
                     }
                     mapa.curpAlternos = listaCurpAlternos
                 } else if (campo.Name.text()?.equals("emision")) {
-                    mapa.emision = campo.Value.text()
+                    mapa.emision = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaEmisionAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("emision")){
@@ -290,7 +304,7 @@ class EphesoftService {
                     }
                     mapa.emisionAlternos = listaEmisionAlternos
                 } else if (campo.Name.text()?.equals("calle")) {
-                    mapa.calle = campo.Value.text()
+                    mapa.calle = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaCalleAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("calle")){
@@ -298,86 +312,8 @@ class EphesoftService {
                         }
                     }
                     mapa.calleAlternos = listaCalleAlternos
-                } else if (campo.Name.text()?.equals("ClaveDeAvaluo")) {
-                    mapa.claveDeAvaluo = campo.Value.text()
-                } else if (campo.Name.text()?.equals("CodigoPostal")) {
-                    mapa.codigoPostal = campo.Value.text()
-                } else if (campo.Name.text()?.equals("FechaDelAvaluo")) {
-                    mapa.fechaDelAvaluo = campo.Value.text()
-                } else if (campo.Name.text()?.equals("Colonia")) {
-                    mapa.colonia = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ClaveEntidadFederativaINEGI")) {
-                    mapa.claveEntidadFederativaINEGI = campo.Value.text()
-                } else if (campo.Name.text()?.equals("CalleNumero")) {
-                    mapa.calleNumero = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ColoniaAvaluo")) {
-                    mapa.coloniaAvaluo = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NumeroDeCuentaPredial")) {
-                    mapa.numeroDeCuentaPredial = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ProximidadUrbana")) {
-                    mapa.proximidadUrbana = campo.Value.text()
-                } else if (campo.Name.text()?.equals("PropositoDelAval")) {
-                    mapa.propositoDelAval = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ClaveDelValuadorProfesional")) {
-                    mapa.claveDelValuadorProfesional = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ClaveDelControlador")) {
-                    mapa.claveDelControlador = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ClaveDeLaEntidadQueOtorgaElCredito")) {
-                    mapa.claveDeLaEntidadQueOtorgaElCredito = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ClaveDelegacion")) {
-                    mapa.claveDelegacion = campo.Value.text()
-                } else if (campo.Name.text()?.equals("TipoDeInmueble")) {
-                    mapa.tipoDeInmueble = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NivelDeInfraestructura")) {
-                    mapa.nivelDeInfraestructura = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ClaseDelInmueble")) {
-                    mapa.claseDelInmueble = campo.Value.text()
-                } else if (campo.Name.text()?.equals("VidaUtilRemanente")) {
-                    mapa.vidaUtilRemanente = campo.Value.text()
-                } else if (campo.Name.text()?.equals("AnioDeTerminacionDeLaObra")) {
-                    mapa.anioDeTerminacionDeLaObra = campo.Value.text()
-                } else if (campo.Name.text()?.equals("UnidadesRentablesGenerales")) {
-                    mapa.unidadesRentablesGenerales = campo.Value.text()
-                } else if (campo.Name.text()?.equals("UnidadesRentables")) {
-                    mapa.unidadesRentables = campo.Value.text()
-                } else if (campo.Name.text()?.equals("SuperficieDeTerreno")) {
-                    mapa.superficieDeTerreno = campo.Value.text()
-                } else if (campo.Name.text()?.equals("SuperficieConstruida")) {
-                    mapa.superficieConstruida = campo.Value.text()
-                } else if (campo.Name.text()?.equals("SuperficieAccesoria")) {
-                    mapa.superficieAccesoria = campo.Value.text()
-                } else if (campo.Name.text()?.equals("SuperficieVendible")) {
-                    mapa.superficieVendible = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ValorComparativoDeMercado")) {
-                    mapa.valorComparativoDeMercado = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ValorFisicoDelTerreno")) {
-                    mapa.valorFisicoDelTerreno = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ValorFisicoDeLaConstruccion")) {
-                    mapa.valorFisicoDeLaConstruccion = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ValorFisicoElementosComunes")) {
-                    mapa.valorFisicoElementosComunes = campo.Value.text()
-                } else if (campo.Name.text()?.equals("ImporteDelValorConcluido")) {
-                    mapa.importeDelValorConcluido = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NumeroDeRecamaras")) {
-                    mapa.numeroDeRecamaras = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NumeroDeBanios")) {
-                    mapa.numeroDeBanios = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NumeroDeMediosBanios")) {
-                    mapa.numeroDeMediosBanios = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NumeroDeNivelesDeLaUnidadValuada")) {
-                    mapa.numeroDeNivelesDeLaUnidadValuada = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NumeroDeEspaciosDeEstacionamiento")) {
-                    mapa.numeroDeEspaciosDeEstacionamiento = campo.Value.text()
-                } else if (campo.Name.text()?.equals("SuministroTelefonico")) {
-                    mapa.suministroTelefonico = campo.Value.text()
-                } else if (campo.Name.text()?.equals("NivelDeEquipamientoUrbano")) {
-                    mapa.nivelDeEquipamientoUrbano = campo.Value.text()
-                } else if (campo.Name.text()?.equals("Elevador")) {
-                    mapa.elevador = campo.Value.text()
-                } else if (campo.Name.text()?.equals("Georeferencia")) {
-                    mapa.georeferencia = campo.Value.text()
                 } else if (campo.Name.text()?.equals("apellidos")){
-                    mapa.apellidos = campo.Value.text()
+                    mapa.apellidos = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaApellidosAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("apellidos")){
@@ -386,7 +322,7 @@ class EphesoftService {
                     }
                     mapa.apellidosAlternos = listaApellidosAlternos
                 } else if (campo.Name.text()?.equals("noDocumento")){
-                    mapa.noDocumento = campo.Value.text()
+                    mapa.noDocumento = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaDocumentosAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("noDocumento")){
@@ -395,7 +331,7 @@ class EphesoftService {
                     }
                     mapa.noDocumentosAlternos = listaDocumentosAlternos
                 } else if (campo.Name.text()?.equals("fechaNacimiento")){
-                    mapa.fechaNacimiento = campo.Value.text()
+                    mapa.fechaNacimiento = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaNacimientoAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("fechaNacimiento")){
@@ -404,7 +340,7 @@ class EphesoftService {
                     }
                     mapa.fechaNacimientoAlterno = listaNacimientoAlternos
                 } else if (campo.Name.text()?.equals("fechaExpedicion")){
-                    mapa.fechaExpedicion = campo.Value.text()
+                    mapa.fechaExpedicion = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaExpedicionAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("fechaExpedicion")){
@@ -413,7 +349,7 @@ class EphesoftService {
                     }
                     mapa.fechaExpedicionAlternos = listaExpedicionAlternos
                 } else if (campo.Name.text()?.equals("nacionalidad")){
-                    mapa.nacionalidad = campo.Value.text()
+                    mapa.nacionalidad = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaNacionalidadAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("nacionalidad")){
@@ -422,7 +358,7 @@ class EphesoftService {
                     }
                     mapa.nacionalidadAlternos = listaNacionalidadAlternos
                 } else if (campo.Name.text()?.equals("fechaCaducidad")){
-                    mapa.fechaCaducidad = campo.Value.text()
+                    mapa.fechaCaducidad = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaCaducidadAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("fechaCaducidad")){
@@ -487,7 +423,7 @@ class EphesoftService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace()
+            //e.printStackTrace()
             resultado = "No fue posible determinar la vigencia del documento"
         } finally {
             return resultado

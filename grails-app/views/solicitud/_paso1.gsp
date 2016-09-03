@@ -1,5 +1,5 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
-    <div class="defaultBubble">
+    <div class="defaultBubble <g:if test="${generales?.llenadoPrevio && (generales?.nombre || generales?.apellidoPaterno || generales?.apellidoMaterno || generales?.nombreCompleto || generales?.apellidos || generales?.sexo || generales?.curp || generales?.rfc)}"> hide </g:if> ">
         <div class="container clearFix relative autoMargin width920">
             <div class="infoBox floatLeft desktop">
                 <div class="width529 autoMargin">
@@ -15,7 +15,7 @@
             </div>
         </div>
     </div>
-    <div class="successBubble hide">
+    <div class="successBubble <g:if test="${!generales?.llenadoPrevio}"> hide </g:if>">
         <div class="container clearFix relative autoMargin width920">
             <div class="infoBoxGreen floatLeft">
                 <div class="infoContainer4c">
@@ -32,7 +32,7 @@
         <p class="headingColor font35 marginTop5 letterspacing1">Cuentanos tu historia:</p>
         <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
             <span class="showOnFill">Mi nombre es
-                <input type="text" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.nombre}"> notEmpty headingColor </g:if>" style="text-align:center;" id="nombre" name="nombre" placeholder="Jorge" value="${generales?.nombre}"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.apellidoPaterno}"> notEmpty headingColor </g:if>" id="apellidoPaterno" name="apellidoPaterno" placeholder="Perez" value="${generales?.apellidoPaterno}"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.apellidoMaterno}"> notEmpty headingColor </g:if>" id="apellidoMaterno" name="apellidoMaterno" placeholder="Lopez" value="${generales?.apellidoMaterno}">
+                <input type="text" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.nombre ?: generales?.nombrePersona}"> notEmpty headingColor </g:if>" style="text-align:center;" id="nombre" name="nombre" placeholder="Jorge" value="${generales?.nombre ?: generales?.nombrePersona}"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.apellidoPaterno}"> notEmpty headingColor </g:if>" id="apellidoPaterno" name="apellidoPaterno" placeholder="Perez" value="${generales?.apellidoPaterno}"> <input type="text" style="text-align:center;" class="inputsFormulario width200 formValues headingColor <g:if test="${generales?.apellidoMaterno}"> notEmpty headingColor </g:if>" id="apellidoMaterno" name="apellidoMaterno" placeholder="Lopez" value="${generales?.apellidoMaterno}">
                 </span>
                         <span class="hide showOnFill">, soy
                 <span class="width160 inline selectWrap">

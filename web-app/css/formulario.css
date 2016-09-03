@@ -2154,8 +2154,18 @@ body{
   background-repeat: no-repeat;
   background-size: 100%;
   height: 45vh;
+  position:relative;
 }
-
+.cotizador-bae{
+  width: 890px;
+  height: 172px;
+  background-image: url(../images/sombra11.png);
+  position: absolute;
+  bottom: 4px;
+  right: 100px;
+  left: -50px;
+  filter: blur(46.6px);
+}
 .cotizador-rightside{
   position: relative;
 }

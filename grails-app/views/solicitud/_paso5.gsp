@@ -64,13 +64,13 @@
             </div>
         </div>
         <div id="accionesSuccess" style="display: none;" class="clearFix clearFloat">
-            <div class="colorGreen buttonM radius100 font16 colorWhite letterspacing1.5 center blockAuto">
+            <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor:pointer;">
                 CONSULTA EXITOSA
             </div>
         </div>
         <div id="accionesError" style="display: none;" class="clearFix">
             <div class="col5 col12-tab floatLeft">
-                <div class="buttonOrange buttonM radius100 font16 colorWhite letterspacing1.5 blockAuto">CONSULTA FALLIDA</div>
+                <div class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto" style="cursor:pointer;">CONSULTA FALLIDA</div>
             </div>
             <div class="clearFloat tablet mobile"></div>
             <div class="phoneStaus col6 col8-tab col12-mob blockAuto floatRight clearFix">

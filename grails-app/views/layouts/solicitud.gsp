@@ -12,10 +12,16 @@
         <script src = "https://apis.google.com/js/api:client.js"></script>
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="progressbar.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="jquery-ui.min.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
         <g:external dir="js" file="google.js" />
         <g:external dir="js" file="facebook.js" />
+        <g:external dir="js" file="sweetalert.min.js" />
         <g:external dir="js" file="jquery.validate.min.js" />
+        <g:external dir="js" file="photobooth_min.js" />
+        <g:external dir="js" file="dropzone.js" />
         <g:external dir="js" file="formulario.js" />
         <g:layoutHead/>
     </head>

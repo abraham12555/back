@@ -28,7 +28,7 @@
     </div>
     <g:if test="${paso == 6}">
         <div class="line20 floatLeft"></div>
-        <div class="center floatLeft width250  solicitud_modal" style="width: 250px; height: 45px; background-color: #d4dbe6; border-radius: 50px;">
+        <div class="center floatLeft width250  solicitud_modal <g:if test="${documentosSubidos?.comprobanteDeDomicilio && documentosSubidos?.identificacion}"> blueButton colorWhite pointer </g:if>" style="width: 250px; height: 45px; background-color: #d4dbe6; border-radius: 50px;">
             <p class="paddingTop10 colorWhite font18">
             ENVIAR MI SOLICITUD
             </p>

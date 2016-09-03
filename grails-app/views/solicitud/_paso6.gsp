@@ -8,12 +8,12 @@
         <div class="marginTop50 clearFix">
             <div class="floatLeft col5 col6-tab col12-mob">
                 <div class="paddingAside15">
-                    <div id="paso6IdOf" class="colorWhite darkGray radius100 buttonM mobileAuto greenClick pointer">SUBE TU IDENTIFICACIÓN OFICIAL</div>
+                    <div id="paso6IdOf" class="colorWhite <g:if test="${documentosSubidos?.identificacion}"> colorGreen </g:if><g:else> darkGray </g:else> radius100 buttonM mobileAuto greenClick pointer">SUBE TU IDENTIFICACIÓN OFICIAL</div>
                 </div>
             </div>
             <div class="floatRight col5 col6-tab col12-mob">
                 <div class="paddingAside15">
-                    <div id="paso6CompDom" class="colorWhite darkGray radius100 buttonM mobileAuto greenClick pointer">SUBE TU COMPROBANTE DE DOMICILIO</div>
+                    <div id="paso6CompDom" class="colorWhite <g:if test="${documentosSubidos?.comprobanteDeDomicilio}"> colorGreen </g:if><g:else> darkGray </g:else> radius100 buttonM mobileAuto greenClick pointer">SUBE TU COMPROBANTE DE DOMICILIO</div>
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@
                 </div>
             </div>
             <div class="marginBottom25">
-                <div class="width350 blockAuto rectangleRound marginTop30 center font20 letterspacing1.8 textUpper enviarSolicitud">
+                <div id="terminarSolicitud" class="width350 blockAuto rectangleRound marginTop30 center font20 letterspacing1.8 textUpper enviarSolicitud">
                     enviar mi solicitud
                 </div>
             </div>

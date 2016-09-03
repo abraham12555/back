@@ -5,33 +5,36 @@
         <span class="floatRight borderGray radius100 marginTop15 marginRight15 closeModal">
             <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><span class="notMobile paddingRight5">cerrar</span><i class="fa fa-times " aria-hidden="true"></i></p>
         </span>
-
-        <div class="docStep">
-            <div class="border1 clearFloat"></div>
-            <div class="clearFix">
+        <div class="border1 clearFloat"></div>
+        <div class="clearFix">
+            <a id="paso1CompDom">
                 <div class="col6 col12-mob floatLeft">
-                    <p class="menuTile active_blue font16 ">PASO 1 /  TIPO DE COMPROBANTE</p>
+                    <p id="label1Comp" class="menuTile active_blue font16 " style="cursor:pointer;">PASO 1 /  TIPO DE COMPROBANTE</p>
                 </div>
+            </a>
+            <a id="paso2CompDom">
                 <div class="col6 col12-mob floatLeft ">
-                    <p class="menuTile    gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
+                    <p id="label2Comp" class="menuTile gray font16 " style="cursor:pointer;">PASO 2 /  CAPTURA FRENTE</p>
                 </div>
-            </div>
-            <div class="border1"></div>
+            </a>
+        </div>
+        <div class="border1"></div>
+        <div id="seleccionComprobante" class="docStep">
 
             <div class="col8 col10-tab col12-mob autoMargin marginTop80 marginBottom80">
                 <div class="paddingTop20 paddingBottom20">
                     <div class="padding20 clearFix">
                         <div class="col6 col12-mob floatLeft">
                             <div class="paddingAside10">
-                                <div class="iconButton whiteBox docChoice pointer">
-                                    <p class="gray font18 fontWeight600 paddingTop10">TELMEX</p>
+                                <div class="iconButton whiteBox docChoice telmex pointer">
+                                    <p class="gray font18 fontWeight600 paddingTop10" style="cursor:pointer;">TELMEX</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col6 col12-mob floatLeft">
                             <div class="paddingAside10">
-                                <div class="iconButton whiteBox docChoice pointer">
-                                    <p class="gray font18 fontWeight600 paddingTop10">CFE</p>
+                                <div class="iconButton whiteBox docChoice cfe pointer">
+                                    <p class="gray font18 fontWeight600 paddingTop10" style="cursor:pointer;">CFE</p>
                                 </div>
                             </div>
                         </div>
@@ -40,23 +43,13 @@
             </div>
         </div>
 
-        <div class="idView docStep hide">
-            <div class="border1 clearFloat"></div>
-            <div class="clearFix">
-                <div class="col6 col12-mob floatLeft">
-                    <p class="menuTile font16 ">PASO 1 /  TIPO DE COMPROBANTE</p>
-                </div>
-                <div class="col6 col12-mob floatLeft ">
-                    <p class="menuTile active_blue  gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
-                </div>
-            </div>
-            <div class="border1"></div>
+        <div id="metodoSubidaComprobante" class="idView docStep hide">
 
             <div class="padding20">
 
                 <div class="col10 autoMargin">
                     <div class="paddingTop20 paddingBottom20">
-                        <h1 class="font16 gray letterspacing1">Te damos algunos tips para saber como subir tu <span class="headingColor">comprobante de domicilio</span></h1>
+                        <h1 class="font16 gray letterspacing1">Te damos algunos tips para saber como subir tu <span class="headingColor" id="nombreDelDocumento"></span></h1>
                     </div>
                     <div class="autoMargin clearFix">
                         <div class="col4 col12-mob col floatLeft idDocs">
@@ -118,8 +111,7 @@
             </div>
         </div>
 
-        <div class="phone_capture hide">
-            <div class="border1 clearFloat"></div>
+        <div id="capturaTelefonoComp" class="phone_capture hide">
             <div class="marginTop15 marginBottom15">
                 <p class="center gray font16">
                     ¿Cómo quieres recibir el link en tu smartphone?
@@ -163,17 +155,7 @@
             </div>
         </div>
 
-        <div class="webcamCaptureComp docStep hide">
-            <div class="border1 clearFloat"></div>
-            <div class="clearFix">
-                <div class="col6 col12-mob floatLeft">
-                    <p class="menuTile font16 ">PASO 1 /  TIPO DE COMPROBANTE</p>
-                </div>
-                <div class="col6 col12-mob floatLeft ">
-                    <p class="menuTile  active_blue  gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
-                </div>
-            </div>
-            <div class="border1"></div>
+        <div id="webcamCaptureComp" class="webcamCaptureComp docStep hide">
 
             <div class="col12 clearFix marginBottom40">
                 <div class="padding20">

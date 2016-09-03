@@ -1,5 +1,5 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight">
-    <div class="defaultBubble">
+    <div class="defaultBubble <g:if test="${generales?.llenadoPrevio && (generales?.direccion || generales?.calle || generales?.municipio || generales?.estado)}"> hide </g:if> ">
         <div class="container clearFix relative autoMargin width920">
             <div class="infoBox  desktop">
                 <div style="width: 695px;" class="width670 autoMargin">
@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="successBubble hide">
+    <div class="successBubble <g:if test="${!generales?.llenadoPrevio}"> hide </g:if> ">
         <div class="container clearFix relative autoMargin width920">
             <div class="infoBoxGreen floatLeft">
                 <div class="infoContainer4c">
@@ -33,7 +33,7 @@
     <div class="padding20 clearFix formStep lastStep">
         <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
             <span class="showOnFill">Mi dirección es
-                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.calle}"> notEmpty headingColor </g:if>" id="calle" name="calle" placeholder="Calle" value="${generales?.calle}">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.calle ?: generales?.direccion}"> notEmpty headingColor </g:if>" id="calle" name="calle" placeholder="Calle" value="${generales?.calle ?: generales?.direccion}">,
                 <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.noExterior}"> notEmpty headingColor </g:if>" id="noExterior" name="noExterior" placeholder="No. Exterior" value="${generales?.noExterior}">,
                 <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.noInterior}"> notEmpty headingColor </g:if>" id="noInterior" name="noInterior" placeholder="No. Interior" value="${generales?.noInterior}">,
                 </span>  

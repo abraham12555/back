@@ -6,27 +6,32 @@
             <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><span class="notMobile paddingRight5">cerrar</span><i class="fa fa-times " aria-hidden="true"></i></p>
         </span>
 
-        <div class="idView">
-            <div class="border1 clearFloat"></div>
-            <div class="clearFix">
+        <div class="border1 clearFloat"></div>
+        <div class="clearFix">
+            <a id="paso1Ids">
                 <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile active_blue font16 ">PASO 1 /  TIPO DE IDENTIFICACIÓN</p>
+                    <p id="label1Ids" class="menuTile active_blue font16 " style="cursor:pointer;">PASO 1 /  TIPO DE IDENTIFICACIÓN</p>
                 </div>
+            </a>
+            <a id="paso2Ids">
                 <div class="col4 col12-mob floatLeft ">
-                    <p class="menuTile gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
+                    <p id="label2Ids" class="menuTile gray font16 "  style="cursor:pointer;">PASO 2 /  CAPTURA FRENTE</p>
                 </div>
-                <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
-                </div>
+            </a>
+            <div class="col4 col12-mob floatLeft">
+                <p id="label3Ids" class="menuTile paddingBottom15 gray font16"  style="cursor:pointer;">PASO 3 /  CAPTURA VUELTA</p>
             </div>
-            <div class="border1"></div>
+        </div>
+        <div class="border1"></div>
+
+        <div id="seleccionIdentificacion" class="idView">
 
             <div class="padding20">
                 <div class="col9 col12-tab autoMargin clearFix paddingTop50 paddingBottom50 fontWeight500">
 
                     <div class="col6 col12-mob floatLeft">
                         <div class="paddingAside10">
-                            <div class="idType iconButton whiteBox pointer">
+                            <div class="idType pasaporteId iconButton whiteBox pointer">
                                 <img class="icon40" src="${resource(dir:'images', file:'passport.png')}" alt="passport" title="passport"/>
                                 <p class="gray font18 letterspacing1.1  iconButtonTxt">PASAPORTE</p>
                             </div>
@@ -35,7 +40,7 @@
 
                     <div class="col6 col12-mob floatLeft">
                         <div class="paddingAside10">
-                            <div class="idType iconButton whiteBox pointer">
+                            <div class="idType ineId iconButton whiteBox pointer">
                                 <img class="icon40 " src="${resource(dir:'images', file:'identification.png')}" alt="identification" title="identification"/>
                                 <p class="gray font18 letterspacing1.1 iconButtonTxt">IDENTIFICACIÓN (IFE)</p>
                             </div>
@@ -46,26 +51,13 @@
             </div>
         </div>
 
-        <div class="idView hide">
-            <div class="border1 clearFloat"></div>
-            <div class="clearFix">
-                <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile font16 ">PASO 1 /  TIPO DE IDENTIFICACIÓN</p>
-                </div>
-                <div class="col4 col12-mob floatLeft ">
-                    <p class="menuTile active_blue  gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
-                </div>
-                <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
-                </div>
-            </div>
-            <div class="border1"></div>
+        <div id="metodoSubidaIdentificacion" class="idView hide">
 
             <div class="padding20">
 
                 <div class="col10 autoMargin">
                     <div class="paddingTop20 paddingBottom20">
-                        <h1 class="font16 gray letterspacing1">Te damos algunos tips para saber como subir el <span class="headingColor">frente de tu identificación o pasaporte</span></h1>
+                        <h1 class="font16 gray letterspacing1">Te damos algunos tips para saber como subir el <span id="nombreDeLaIdentificacion" class="headingColor"></span></h1>
                     </div>
                     <div class="autoMargin clearFix">
                         <div class="col4 col12-mob col floatLeft idDocs">
@@ -117,11 +109,17 @@
                             </a>
                         </div>
                     </div>
+                    <div id="progresoConsultaIds" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
+                        <div class="loadingBar meter animate">
+                            <span style="width: 100%"><span></span></span>
+                        </div>
+                        <center><span style="color: #71758d;">Estamos subiendo tu identificación, espera por favor...</span></center>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="phone_capture hide">
+        <div id="capturaTelefonoIds" class="phone_capture hide">
             <div class="border1 clearFloat"></div>
             <div class="marginTop15 marginBottom15">
                 <p class="center gray font16">
@@ -166,21 +164,8 @@
             </div>
         </div>
 
-        <div class="webcam_capture" style="display: none;">
+        <div id="webcamCaptureIds" class="webcam_capture" style="display: none;">
 
-            <div class="border1 clearFloat"></div>
-            <div class="clearFix">
-                <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile font16 ">PASO 1 /  TIPO DE IDENTIFICACIÓN</p>
-                </div>
-                <div class="col4 col12-mob floatLeft ">
-                    <p class="menuTile active_blue gray font16 ">PASO 2 /  CAPTURA FRENTE</p>
-                </div>
-                <div class="col4 col12-mob floatLeft">
-                    <p class="menuTile paddingBottom15 gray font16">PASO 3 /  CAPTURA VUELTA</p>
-                </div>
-            </div>
-            <div class="border1"></div>
             <div id="fotoFrente" class="col12 clearFix">
                 <div class="clearFix padding20">
                     <div class="col6 col12-mob floatLeft mobileDiv">
