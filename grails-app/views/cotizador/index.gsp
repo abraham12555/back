@@ -26,6 +26,10 @@
                     </h1>
                     <h3 id="precioDelProducto" class="darkBluetitle font30 fontWeight400 marginBottom20">
                     </h3>
+<<<<<<< Updated upstream
+=======
+                    <div class="container" style=" ; "><div (../images/nissan/2016-maxima-azul.png) style= background-img=sombrablur; background size: "contain"; background repeat=norepeat;></div></div>
+>>>>>>> Stashed changes
                     <div id="imagenDelProducto" class="cotizador-bg none800"><div id="sisabesno" class="cotizador-bae"></div></div>
                     <div class="paddingAside10">
                         <p id="descripcionDelProducto" class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
@@ -39,7 +43,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col6 col12-mob floatLeft down800">
                 <g:form controller="cotizador" action="procesar">
                     <!-- BEGIN STEP1 -->
