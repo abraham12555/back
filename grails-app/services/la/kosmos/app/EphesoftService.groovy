@@ -165,6 +165,44 @@ class EphesoftService {
             respuestaEphesoft.Result.Batch.Documents.Document.DocumentLevelFields.DocumentLevelField.each { campo ->
                 if(campo.Name.text()?.equals("CustomerAddress")){
                     mapa.direccion = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
+                    def direccion = (mapa.direccion)?.replaceAll("\\.", "")
+                    direccion = (mapa.direccion)?.replaceAll("-", " ")
+                    direccion = direccion?.trim()
+                    if(direccion?.toUpperCase()?.contains("CP")){
+                        direccion = direccion.substring(direccion.toUpperCase().indexOf("CP"), direccion.length())
+                        def cadenas = direccion.tokenize(" ")
+                        cadenas.each {
+                            if(it ==~ /\d{5}/ ){
+                                mapa.codigoPostal = it
+                                def consulta = CodigoPostal.findByCodigo(mapa.codigoPostal)
+                                if(consulta){
+                                    if(!mapa.municipio){
+                                        mapa.municipio = consulta.municipio.id
+                                    }
+                                    if(!mapa.estado){
+                                        mapa.estado = consulta.municipio.estado.id
+                                    }
+                                }
+                            }
+                        }
+                        println "Valor seleccionado para CP: " + mapa.codigoPostal
+                    } else {
+                        def cadenas = direccion.tokenize(" ")
+                        cadenas.each {
+                            if(it ==~ /\d{5}/ && !mapa.codigoPostal){
+                                mapa.codigoPostal = it
+                                def consulta = CodigoPostal.findByCodigo(mapa.codigoPostal)
+                                if(consulta){
+                                    if(!mapa.municipio){
+                                        mapa.municipio = consulta.municipio.id
+                                    }
+                                    if(!mapa.estado){
+                                        mapa.estado = consulta.municipio.estado.id
+                                    }
+                                }
+                            }
+                        }
+                    }
                 } else if(campo.Name.text()?.equals("CustomerName")){
                     mapa.nombrePersona = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                 } else if (campo.Name.text()?.equals("Date")) {
@@ -242,6 +280,24 @@ class EphesoftService {
                     mapa.seccionAlternos = listaSeccionAlternos
                 } else if (campo.Name.text()?.equals("colonia")) {
                     mapa.colonia = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
+                    def colonia = mapa.colonia?.trim()
+                    if(colonia){
+                        def cp = colonia.substring((colonia.length()-5), colonia.length())
+                        if(cp ==~ /\d{5}/ ){
+                            mapa.codigoPostal = cp
+                            mapa.colonia  = colonia.substring(0, (colonia.length()-5))
+                            def consulta = CodigoPostal.findByCodigo(mapa.codigoPostal)
+                            if(consulta){
+                                if(!mapa.municipio){
+                                    mapa.municipio = consulta.municipio.id
+                                }
+                                if(!mapa.estado){
+                                    mapa.estado = consulta.municipio.estado.id
+                                }
+                            }
+                        }
+                        println "Valor seleccionado para CP: " + mapa.codigoPostal
+                    }
                     def listaColoniaAlternos = []
                     campo.AlternateValues?.AlternateValue?.each {
                         if(it.Name.text()?.equals("colonia")){
@@ -250,23 +306,27 @@ class EphesoftService {
                     }
                     mapa.coloniaAlternos = listaColoniaAlternos
                 } else if (campo.Name.text()?.equals("estado")) {
-                    mapa.estado = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
-                    def listaEstadoAlternos = []
-                    campo.AlternateValues?.AlternateValue?.each {
-                        if(it.Name.text()?.equals("estado")){
-                            listaEstadoAlternos << it.Value.text()
+                    if(!mapa.estado){
+                        mapa.estado = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
+                        def listaEstadoAlternos = []
+                        campo.AlternateValues?.AlternateValue?.each {
+                            if(it.Name.text()?.equals("estado")){
+                                listaEstadoAlternos << it.Value.text()
+                            }
                         }
+                        mapa.estadosAlternos = listaEstadoAlternos
                     }
-                    mapa.estadosAlternos = listaEstadoAlternos
                 } else if (campo.Name.text()?.equals("municipio")) {
-                    mapa.municipio = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
-                    def listaMunicipioAlternos = []
-                    campo.AlternateValues?.AlternateValue?.each {
-                        if(it.Name.text()?.equals("municipio")){
-                            listaMunicipioAlternos << it.Value.text()
+                    if(!mapa.municipio){
+                        mapa.municipio = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
+                        def listaMunicipioAlternos = []
+                        campo.AlternateValues?.AlternateValue?.each {
+                            if(it.Name.text()?.equals("municipio")){
+                                listaMunicipioAlternos << it.Value.text()
+                            }
                         }
+                        mapa.municipioAlternos = listaMunicipioAlternos
                     }
-                    mapa.municipioAlternos = listaMunicipioAlternos
                 } else if (campo.Name.text()?.equals("apellidoMaterno")) {
                     mapa.apellidoMaterno = ((campo.Value.text() != null && campo.Value.text().length() > 0) ? campo.Value.text() : null)
                     def listaApMaternoAlternos = []

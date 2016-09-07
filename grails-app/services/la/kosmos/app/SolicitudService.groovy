@@ -33,7 +33,7 @@ class SolicitudService {
             datosPaso.colonia = params.colonia
             datosPaso.codigoPostal = params.codigoPostal
             datosPaso.tipoDelegacion = params.tipoDelegacion
-            datosPaso.delegacion = (params.delegacion ? params.delegacion as long : null)
+            datosPaso.municipio = (params.municipio ? params.municipio as long : null)
             datosPaso.estado = (params.estado ? params.estado as long : null)
             datosPaso.tipoDeVivienda = (params.tipoDeVivienda ?  params.tipoDeVivienda as long : null)
             datosPaso.tiempo = params.tiempo

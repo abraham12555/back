@@ -207,8 +207,8 @@ function verificarCambios(index) {
     var maxIndex = $('.showOnFill').length;
     var filledLength = $('.notEmpty:visible').length;
     var thisLength = $('.formValues:visible').length;
-
-    console.log("not Empty: " + filledLength + " -  total: " + thisLength);
+    var prellenado = $('#pasoPrellenado').val();
+    console.log("Index: " + index + " - not Empty: " + filledLength + " -  total: " + thisLength + " - prellenado: " + prellenado);
 
     if (filledLength === thisLength) {
         if ((index + 1) < maxIndex) {
@@ -218,8 +218,10 @@ function verificarCambios(index) {
         } else {
             //console.log("Else 1");
         }
-    } else {
-        //    console.log("Else 2");
+    } else if (prellenado === "true") {
+        $('.showOnFill').eq(index + 1).fadeIn();
+        $('.showOnFill').eq(index + 1).css({'display': 'inline'});
+        checkInputs();
     }
     var totalLength = $('.formStep:visible .formValues').length;
     //console.log("totalLength: " + totalLength);
@@ -237,7 +239,7 @@ function consultarCodigoPostal(sugerencia) {
         url: '/kosmos-app/solicitud/consultarCodigoPostal',
         success: function (data, textStatus) {
             var response = eval(data)
-            $('#delegacion').append($('<option>', {
+            $('#municipio').append($('<option>', {
                 value: response.municipio.id,
                 text: response.municipio.nombre,
                 selected: true
@@ -249,11 +251,13 @@ function consultarCodigoPostal(sugerencia) {
             }));
             $('.typeahead').addClass('notEmpty');
             $('.typeahead').addClass('headingColor');
-            $('#delegacion').addClass('notEmpty');
-            $('#delegacion').addClass('headingColor');
+            $('#municipio').addClass('notEmpty');
+            $('#municipio').addClass('headingColor');
             $('#estado').addClass('notEmpty');
             $('#estado').addClass('headingColor');
-            verificarCambios(1);
+            $('.showOnFill').each(function (index) {
+                verificarCambios(index);
+            });
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {}
     });
@@ -771,57 +775,105 @@ function actualizarProgreso(paso) {
 }
 
 function fillFB(data) {
+    console.log("Regresa de FB: " + data);
     var json = JSON.parse(data);
-    $("#usuario").html(json["name"]);
-    $("#nombre").val(json["first_name"]);
-    $("#apellidoPaterno").val(json["last_name"]);
-    $("#imagenUsuario").html("<img src=" + json["picture"].data.url + "/>");
-    $("#mes").val(json["birthday"].substring(0, 2));
-    $("#dia").val(json["birthday"].substring(3, 5));
-    $("#anio").val(json["birthday"].substring(6, 12));
-    $("#estadoCivil").val(json["relationship_status"]);
-    if (json["first_name"]) {
-        $("#nombre").addClass('notEmpty');
-        $("#nombre").addClass('headingColor');
+    var x = 0;
+    if (json["picture"]) {
+        $("#imagenUsuario").html("<img class='userPicture floatLeft' src='" + json["picture"].data.url + "'/>");
+        x++;
     }
-    if (json["last_name"]) {
-        $("#apellidoPaterno").addClass('notEmpty');
-        $("#apellidoPaterno").addClass('headingColor');
-    }
-    if (json["birthday"].substring(0, 2)) {
-        $("#mes").addClass('notEmpty');
-        $("#mes").addClass('headingColor');
-    }
-    if (json["birthday"].substring(3, 5)) {
-        $("#dia").addClass('notEmpty');
-        $("#dia").addClass('headingColor');
-    }
-    if (json["birthday"].substring(6, 12)) {
-        $("#anio").addClass('notEmpty');
-        $("#anio").addClass('headingColor');
+    if (json["gender"]) {
+        var sexo = (json["gender"] === "male" ? 1 : (json["gender"] === "female" ? 2 : 0));
+        $("#sexo").val(sexo);
+        $("#sexo").addClass('notEmpty');
+        $("#sexo").addClass('headingColor');
+        x++;
     }
     if (json["relationship_status"]) {
+        var estadoCivil = (json["relationship_status"] === "single" ? 1 : (json["relationship_status"] === "married" ? 2 : 0));
+        $("#estadoCivil").val(estadoCivil);
         $("#estadoCivil").addClass('notEmpty');
         $("#estadoCivil").addClass('headingColor');
+        x++;
     }
-    $('#nombreCliente').html('¡Hola! ' + json["first_name"]);
-    $('.defaultBubble').fadeOut();
-    $('.successBubble').fadeIn();
-    verificarCambios(0);
+    if (json["first_name"]) {
+        $("#nombre").val(json["first_name"]);
+        $("#nombre").addClass('notEmpty');
+        $("#nombre").addClass('headingColor');
+        x++;
+    }
+    if (json["last_name"]) {
+        $("#apellidoPaterno").val(json["last_name"]);
+        $("#apellidoPaterno").addClass('notEmpty');
+        $("#apellidoPaterno").addClass('headingColor');
+        x++;
+    }
+    if (json["birthday"]) {
+        if (json["birthday"].substring(0, 2)) {
+            $("#mes").val(json["birthday"].substring(0, 2));
+            $("#mes").addClass('notEmpty');
+            $("#mes").addClass('headingColor');
+            x++;
+        }
+        if (json["birthday"].substring(3, 5)) {
+            $("#dia").val(json["birthday"].substring(3, 5));
+            $("#dia").addClass('notEmpty');
+            $("#dia").addClass('headingColor');
+            x++;
+        }
+        if (json["birthday"].substring(6, 12)) {
+            $("#anio").val(json["birthday"].substring(6, 12));
+            $("#anio").addClass('notEmpty');
+            $("#anio").addClass('headingColor');
+            x++;
+        }
+    }
+    if (x > 0) {
+        $('#pasoPrellenado').val("true");
+        $('#nombreCliente').html('¡ Hola ' + json["first_name"] + ' !');
+        $('.defaultBubble').fadeOut();
+        $('.successBubble').fadeIn();
+        $('.showOnFill').each(function (index) {
+            verificarCambios(index);
+        });
+    }
 }
 
 function fillGoogle(data) {
+    console.log("Regresa de Google: " + data);
     var json = JSON.parse(data);
-    console.log("JSON-->" + json);
-    console.log("ID: " + json.getId());
-    console.log('Full Name: ' + json.getName());
-    console.log('Given Name: ' + json.getGivenName());
-    console.log('Family Name: ' + json.getFamilyName());
-    console.log("Image URL: " + json.getImageUrl());
-    console.log("Email: " + json.getEmail());
-    $('#nombreCliente').html('¡Hola! ' + json.getName());
-    $('.defaultBubble').fadeOut();
-    $('.successBubble').fadeIn();
+    var x = 0;
+    if (json["Eea"]) { //Id
+        console.log("Id Google: " + json["Eea"]);
+    }
+    if (json["ofa"]) { //Nombre
+        $("#nombre").val(json["ofa"]);
+        $("#nombre").addClass('notEmpty');
+        $("#nombre").addClass('headingColor');
+        x++;
+    }
+    if (json["wea"]) { //Apellidos
+        $("#apellidoPaterno").val(json["wea"]);
+        $("#apellidoPaterno").addClass('notEmpty');
+        $("#apellidoPaterno").addClass('headingColor');
+        x++;
+    }
+    if (json["Paa"]) { //Imagen
+        $("#imagenUsuario").html("<img class='userPicture floatLeft' src='" + json["Paa"] + "' />");
+        x++;
+    }
+    if (json["U3"]) { //correo
+        console.log("Email: " + json["U3"]);
+    }
+    if (x > 0) {
+        $('#pasoPrellenado').val("true");
+        $('#nombreCliente').html('¡ Hola ' + json["ofa"] + ' !');
+        $('.defaultBubble').fadeOut();
+        $('.successBubble').fadeIn();
+        $('.showOnFill').each(function (index) {
+            verificarCambios(index);
+        });
+    }
 }
 
 //Callback para hacer la consulta con el API Bancaria
@@ -1372,7 +1424,7 @@ function inicializarDropzone(elemento, boton) {
         paramName: "archivo",
         params: {'docType': $('#tipoDeDocumento').val()},
         maxFiles: 1,
-        maxFilesize: 5,
+        maxFilesize: 10,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
         autoQueue: true,
         createImageThumbnails: false,
@@ -1394,25 +1446,49 @@ function inicializarDropzone(elemento, boton) {
             if (pasoActual === "0") {
                 $('#formLogin').submit();
             } else {
+                var direccion = (respuesta.calle ? respuesta.calle : respuesta.direccion);
                 if (respuesta.direccion) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombrePersona + "<br/><strong>Dirección: </strong>" + respuesta.direccion + "<br/><strong>Fecha del Recibo: </strong> " + respuesta.fechaRecibo + "</br>", type: "success"});
                     closeModal('comprobante_domicilio');
-                    $('#calle').val(respuesta.direccion);
+                    $('#calle').val(direccion);
                     $('#calle').addClass("notEmpty");
                     $('#calle').addClass("headingColor");
+                    if (respuesta.codigoPostal) {
+                        $('#codigoPostal').val(respuesta.codigoPostal);
+                        $('#codigoPostal').addClass("notEmpty");
+                        $('#codigoPostal').addClass("headingColor");
+                        $('#municipio').val(respuesta.municipio);
+                        $('#municipio').addClass("notEmpty");
+                        $('#municipio').addClass("headingColor");
+                        $('#estado').val(respuesta.estado);
+                        $('#estado').addClass("notEmpty");
+                        $('#estado').addClass("headingColor");
+                    }
                     $('.defaultBubble').fadeOut();
                     $('.successBubble').fadeIn();
                     $('#paso6CompDom').addClass('colorGreen');
+                    $('#pasoPrellenado').val("true");
+                    $('.showOnFill').each(function (index) {
+                        verificarCambios(index);
+                    });
                     habilitarTerminarSolicitud();
                 } else if (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno)) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellido Paterno: </strong>" + respuesta.apellidoPaterno + "<br/><strong>Apellido Materno: </strong> " + respuesta.apellidoMaterno + "</br>", type: "success"});
                     closeModal('identification_oficial');
                     $('#paso6IdOf').addClass('colorGreen');
+                    $('#pasoPrellenado').val("true");
+                    $('.showOnFill').each(function (index) {
+                        verificarCambios(index);
+                    });
                     habilitarTerminarSolicitud();
                 } else if (respuesta.nombre && (respuesta.apellidos || respuesta.noDocumento)) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellidos: </strong>" + respuesta.apellidos + "<br/><strong>Documento No.: </strong> " + respuesta.noDocumento + "</br>", type: "success"});
                     closeModal('identification_oficial');
                     $('#paso6IdOf').addClass('colorGreen');
+                    $('#pasoPrellenado').val("true");
+                    $('.showOnFill').each(function (index) {
+                        verificarCambios(index);
+                    });
                     habilitarTerminarSolicitud();
                 } else if (respuesta.error) {
                     sweetAlert("Oops...", respuesta.error, "error");

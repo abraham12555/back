@@ -384,12 +384,12 @@ class SolicitudController {
         def datosLogin;
         def modelo = [:]
         if(params.origen == 'login'){
-            if(params.datosFb.toString()!= 'null'){
+            if(params.datosFb && params.datosFb?.toString()!= 'null' && params.datosFb?.toString().length() > 0){
                 println(":: Se inicio Sesión con FB ::" + params.datosFb.toString())
                 datosLogin = params.datosFb.toString()
                 tipoLogin="FB";
                 params.remove("datosFb")
-            }else if(params.datosGoogle.toString()!= 'null'){
+            }else if(params.datosGoogle && params.datosGoogle?.toString() != 'null' && params.datosGoogle?.toString().length() > 0){
                 println(":: Se inicio Sesión con Google ::"+params.datosGoogle.toString())
                 datosLogin = params.datosGoogle.toString();
                 tipoLogin="Google";
@@ -615,6 +615,9 @@ class SolicitudController {
             def paso =  params.siguientePaso as int
             def pasoAnterior =  params.pasoAnterior as int
             session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior)
+            if(paso == 1 || paso == 2){
+                session[("datosPaso" + paso)]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
+            } 
             if(paso == 1){
                 modelo = [estadoList:Estado.findAll(),
                     estadoCivilList:EstadoCivil.findAll(),

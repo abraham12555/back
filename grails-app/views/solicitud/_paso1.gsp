@@ -1,4 +1,5 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
+    <input type="hidden" id="pasoPrellenado" value="${generales?.llenadoPrevio}"/>
     <div class="defaultBubble <g:if test="${generales?.llenadoPrevio && (generales?.nombre || generales?.apellidoPaterno || generales?.apellidoMaterno || generales?.nombreCompleto || generales?.apellidos || generales?.sexo || generales?.curp || generales?.rfc)}"> hide </g:if> ">
         <div class="container clearFix relative autoMargin width920">
             <div class="infoBox floatLeft desktop">
@@ -37,10 +38,10 @@
                         <span class="hide showOnFill">, soy
                 <span class="width160 inline selectWrap">
                     <g:if test="${generales?.sexo}">
-                        <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions formValues notEmpty headingColor" name="sexo" from="${generoList}" optionKey="id" value="${generales?.sexo}"/>
+                        <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions formValues notEmpty headingColor" name="sexo" id="sexo" from="${generoList}" optionKey="id" value="${generales?.sexo}"/>
                     </g:if>
                     <g:else>
-                        <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions gray formValues" name="sexo" from="${generoList}" optionKey="id" value="${generales?.sexo}"/>
+                        <g:select style="text-align:center;" noSelection="['':'Sexo']" class="formulariOptions gray formValues" name="sexo" id="sexo" from="${generoList}" optionKey="id" value="${generales?.sexo}"/>
                     </g:else>
                 </span>
             </span>
@@ -105,10 +106,10 @@
                 , mi estado civil es&nbsp;
                 <span class="width220 inline selectWrap">
                     <g:if test="${generales?.entidad}">
-                        <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions formValues notEmpty headingColor" name="estadoCivil" from="${estadoCivilList}" optionKey="id" value="${generales?.estadoCivil}" />
+                        <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions formValues notEmpty headingColor" name="estadoCivil" id="estadoCivil" from="${estadoCivilList}" optionKey="id" value="${generales?.estadoCivil}" />
                     </g:if>
                     <g:else>
-                        <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions gray formValues" name="estadoCivil" from="${estadoCivilList}" optionKey="id" value="${generales?.estadoCivil}" />
+                        <g:select style="text-align:center;" noSelection="['':'Estado Civil']" class="formulariOptions gray formValues" name="estadoCivil" id="estadoCivil" from="${estadoCivilList}" optionKey="id" value="${generales?.estadoCivil}" />
                     </g:else>
                 </span>
                 <span class="afterSelect">
@@ -146,10 +147,10 @@
                 <input type="text" class="inputsFormulario width210 headingColor formValues" name="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)" value="${generales?.numeroCelular}">.
             </span>
             <span class="hide showOnFill"> Mi RFC es
-                <input type="text" class="inputsFormulario width210 headingColor formValues" name="rfc" maxlength="13" placeholder="AAAA000000AZ0" value="${generales?.rfc}">
+                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.rfc} "> notEmpty headingColor </g:if>" name="rfc" maxlength="13" placeholder="AAAA000000AZ0" value="${generales?.rfc}">
             </span>
             <span class="hide showOnFill"> y mi CURP es
-                <input type="text" class="inputsFormulario width300 headingColor formValues" name="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
+                <input type="text" class="inputsFormulario width300 headingColor formValues <g:if test="${generales?.curp} "> notEmpty headingColor </g:if>" name="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
             </span>
             <br/>
             <span class="hide showOnFill"> Mi conyugue es
