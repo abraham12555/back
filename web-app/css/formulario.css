@@ -29,6 +29,11 @@ body{
   background-color: #2c2e3c;
 }
 
+.autoCenter{
+  margin-left:auto;
+  margin-right:auto;
+}
+
 
 /**********************************************************
                     DEFAULTS
@@ -127,6 +132,23 @@ body{
   background-color: #ffffff;
   border: solid 1px #dfe2f4;
   margin: auto;
+}
+
+.searchBox input{
+  color: #a7b2c0;
+  padding: 10px 10px 10px 20px;
+  background: transparent;
+  width: calc(100% - 65px);
+  width: -webkit-calc(100% - 65px);
+}
+
+.searchBox .fa{
+  color:#98a1ae;
+  cursor:pointer;
+}
+
+.searchBox input:focus{
+    outline: none;
 }
 
 .grayBorderBox{
@@ -261,6 +283,8 @@ body{
   border-radius: 4px;
   background-color: #33c56e;
   box-shadow: 0 0 4px 0 rgba(51, 197, 110, 0.5);
+  padding-left:15px;
+  padding-right:15px;
 }
 
 .grayRectangle{
@@ -529,8 +553,12 @@ body{
   width: 474px;
 }
 
+.width480{
+  max-width: 480px;
+}
+
 .width500{
-  width: 500px;
+  max-width: 500px;
 }
 
 .width550{
@@ -594,8 +622,8 @@ body{
   width: 975px;
 }
 
-.width998{
-  width: 998px;
+.width990{
+  max-width: 990px;
 }
 
 .width95{
@@ -812,6 +840,10 @@ body{
   background-image: linear-gradient(to left, #59c4fb, #2d91f6);
 }
 
+.navyBg{
+  background:#252d60;
+}
+
 
 .justify{
   text-align: justify;
@@ -996,7 +1028,6 @@ body{
 }
 
 .graphBox{
-  width: 480px;
   background-color: white;
   margin: 0 15px 43px 15px;
   height: 251px;
@@ -1005,7 +1036,6 @@ body{
 }
 
 .boxTitle{
-  width: 480px;
   border-radius: 2px;
   background-color:#252d60;
 }
@@ -1025,10 +1055,95 @@ body{
 }
 
 .applicationContainers{
-  width: 990px;
   background-color: #ffffff;
   box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);
-  margin: 0 15px 2px 15px;
+  margin: 0 auto 2px auto;
+}
+
+.solicitudes_table{
+  width:100%;
+  border-collapse: collapse;
+
+}
+
+.solicitudes_table td{
+  margin:0;
+  border:solid 1px #c4c7d8;
+  padding: 5px 10px;
+  font-weight:300;
+  font-size:12px;
+
+}
+
+.solicitudes_table.dashboard td{
+  border:solid 2px #e5e5e5;
+  box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);
+}
+
+.solicitudes_table .lightGrayBG td{
+  border-bottom:none;
+  padding: 10px;
+
+}
+
+.solicitudes_table td:first-of-type{
+  border-left:none;
+}
+
+.solicitudes_table td:last-of-type{
+  border-right:none;
+}
+
+.solicitudes_table tr:nth-of-type(2) td{
+  border-top:none;
+}
+.solicitudes_table.dashboard tr:first-of-type td{
+  border-top:none;
+}
+
+.solicitudes_table td .greenBox{
+  text-transform: uppercase;
+  cursor:pointer;
+
+}
+
+.grayBox{
+  max-width: 329px;
+  height: 186px;
+  border-radius: 7.1px;
+  background-color: #d4dbe6;
+}
+
+.boxMargins{
+  margin-left:20px;
+}
+
+.fullInputs input, .fullInputs textarea, .fullInputs select{
+  padding: 10px 20px;
+  width:calc(100% - 40px);
+  width:-webkit-calc(100% - 40px);
+  font-size:14px;
+}
+
+.fullInputs input.paddingBottom15.paddingTop15{
+  padding: 15px 20px;
+}
+
+.fullInputs textarea{
+  height:180px;
+}
+
+.alertError{
+  padding:20px;
+  font-size:14px;
+  width:calc(100% - 118px);
+  width:-webkit-calc(100% - 118px);
+}
+
+.solicitude_submenu li a:hover{
+  background-image: linear-gradient(232deg, #59c4fb, #2d91f6);
+  box-shadow: 0 0 7px 0 #298df5;
+  color: #FFF;
 }
 
 
@@ -1077,6 +1192,10 @@ body{
   position: absolute;
 }
 
+.loginContainer.creditLb{
+  position: fixed;
+}
+
 .loginlogoBox{
   width: 100%;
   height: 30px;
@@ -1100,7 +1219,10 @@ body{
 .mobMenu{
   margin:30px 10px 0 10px;
   cursor:pointer;
+}
 
+.mobMenu.dashboard{
+  margin: 22px 10px 0 10px;
 }
 
 .loginlogo{
@@ -1193,10 +1315,19 @@ body{
   width: 169px;
 }
 
+.logo.dashboard{
+  padding: 18px 0;
+  width: 169px;
+}
+
 .logoMobile {
     padding: 24px 25px;
     width: 30px;
     border-right:1px solid #b4b8d4;
+}
+
+.logoMobile.dashboard{
+  padding: 18px;
 }
 
 .menuBox{
@@ -1248,6 +1379,7 @@ body{
 
 .vermasLine{
   padding: 16px 0 15px 0;
+  font-size:14px;
 }
 
 .solicitudBody{
@@ -1599,11 +1731,20 @@ body{
   margin: 20px 10px 10px 22px;
 }
 
+.userPicture.dashboard{
+      margin: 12px 10px 10px 22px;
+}
+
 .userName{
   font-size: 18px;
   letter-spacing: 1.1px;
   color: #181d3f;
   display: inline-block;
+}
+
+.userName.dashboard{
+  margin-top:20px;
+  padding-right:5px;
 }
 
 .dropBox{
@@ -2154,17 +2295,6 @@ body{
   background-repeat: no-repeat;
   background-size: 100%;
   height: 45vh;
-  position:relative;
-}
-
-.cotizador-bae{
-  width: 890px;
-  height: 172px;
-  background-image: url(../images/sombra0708.png);
-  position: absolute;
-  bottom: 4px;
-  left: -50px;
-  filter: blur(46.6px);
 }
 
 .cotizador-rightside{
@@ -2379,7 +2509,240 @@ body{
 
 
 
+/****** SOLICITUDES *******/
 
+.profileBG {
+    width: 94px;
+    height: 94px;
+    background-color: #f8f9fc;
+    margin-top: 85px;
+    margin-left: 25px;
+}
+
+
+.whiteBg{
+  background:#fff;
+}
+
+.width170{
+  max-width:170px;
+  width: 90%;
+}
+
+.width480{
+  max-width: 480px;
+}
+
+.width998{
+  max-width: 998px;
+}
+
+.solicitudBox{
+  background-color: #ffffff;
+  box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);
+}
+
+.lightGrayBG{
+  background-color: #f8f9fc;
+}
+
+.lightGrayColor{
+  color: #98a1ae;
+}
+
+.pageMarker{
+  padding: 20px 25px;
+  color: #a7b2c0;
+}
+
+.pageSelected{
+  border-radius: 2px;
+  background-color: #33c56e;
+  box-shadow: 0 0 4px 0 rgba(51, 197, 110, 0.5);
+  color: #FFFFFF;
+}
+
+.userImage{
+  width: 49px;
+  padding: 5px 0 0 7px;
+}
+
+.phoneImage{
+  width: 47px;
+}
+
+.height251{
+  height: 251px;
+}
+
+.height243{
+	height: 243px;
+}
+
+.height329{
+  height: 329px;
+}
+
+.height403{
+  height: 403px;
+}
+
+.height477{
+	height: 477px;
+}
+
+.radius2{
+  border-radius: 2px;
+}
+
+.radius4{
+  border-radius: 4px;
+}
+
+.marginTop65{
+  margin-top: 65px;
+}
+
+.radius4{
+  border-radius: 4px;
+}
+
+.colorBox{
+  width: 110px;
+  padding: 3px 0px 3px 3px;
+}
+
+.colors{
+  width: 75px;
+  height: 32px;
+  border-radius: 1px;
+}
+
+.color1{
+  background-color: #298df5;
+}
+
+.color2{
+  background-color: #d4dbe6;
+}
+
+.color3{
+  background-color: #33c56e;
+}
+
+.color4{
+  background-color: #252d60;
+}
+
+.color5{
+  background-color: #fb5e48;
+}
+
+.colorDropdown{
+  font-size: 25px !important;
+  margin-left: 10px;
+  margin-top: 3px;
+}
+
+.buscarBtn{
+  width:calc(100% - 130px);
+  width:-webkit-calc(100% - 130px);
+}
+
+.hoverBtn:hover, .hoverBtn.gray2:hover{
+  background-color: #33c56e;
+  color:#fff;
+}
+
+.cameraBox {
+    background-color: #ffffff;
+    box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);
+    border: solid 1px #d4dbe6;
+}
+
+.height30{
+  height:30px;
+}
+
+.width115 {
+    width: 115px;
+}
+
+.profileImage{
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+  position: absolute;
+  z-index: 1;
+  background-color: #33c56e;
+  left: 50%;
+  top: 0px;
+  transform:translate(-50%, -50%);
+  -webkit-transform:translate(-50%, -50%);
+}
+
+.profileBox{
+  background-color: #ffffff;
+  box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);
+}
+
+.buttonOrange2 {
+    background-color: #fb5e48;
+}
+
+.height260 {
+    height: 260px;
+}
+
+.grayBG-visita {
+    background-color: #d4dbe6;
+}
+
+.radius10 {
+    border-radius: 10px;
+}
+
+.BigGrayBox {
+    position: relative;
+}
+
+.grayBG-visita2 {
+    background-color: #d4dbe6;
+    border: solid 4px #fb5e48;
+}
+.height535 {
+    height: 535px;
+}
+
+.alert-visita {
+    position: absolute;
+    bottom: 15px;
+    right: 10px;
+}
+
+.height47 {
+    height: 47px;
+}
+
+.paddingTop150 {
+    padding-top: 150px;
+}
+
+.colorGrayBG {
+    background-color: #a7b2c0;
+}
+
+.paddingTop110{
+  padding-top: 110px;
+}
+
+.gradientColor{
+  background-color: #d4dbe6;
+}
+
+.width33{
+  width:33px;
+}
 
 /********************  Media **********************/
 
@@ -2426,6 +2789,10 @@ body{
     padding: 15px 10px;
   }
 
+  .tabNoFloat.floatLeft, .tabNoFloat.floatRight{
+    float:none;
+  }
+
 
 
 }
@@ -2447,6 +2814,8 @@ body{
   }
 
 
+
+
 }
 
 
@@ -2462,6 +2831,11 @@ body{
     transform: translate(0,0);
     -webkit-transform: translate(0,0);
     margin:30px auto;
+  }
+  .loginContainer.creditLb{
+        position: fixed;
+        top: 50px;
+      left: 2%;
   }
 
   .font14{
@@ -2572,6 +2946,10 @@ body{
     border-right:none;
   }
 
+  .mobNoFloat.floatLeft, .mobNoFloat.floatRight{
+    float:none;
+  }
+
   .coti h1, .coti h3{
     text-align:center;
   }
@@ -2601,3 +2979,44 @@ body{
   .cotizador-p1-buttons .right, .cotizador-p1-buttons .left{
     text-align:center;
   }
+
+  .formContainer{
+    width: calc(100% - 40px);
+    width: -webkit-calc(100% - 40px);
+
+  }
+
+  .userPicture.dashboard{
+        margin: 12px 10px 10px 12px;
+  }
+
+  .boxMargins{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .mobileAside10{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .width170{
+    max-width:none;
+    width: 90%;
+  }
+
+
+
+
+
+}
+
+@media screen and (max-width:370px){
+
+  .notificationBox.dashboardHeader{
+    display:none;
+  }
+
+
+
+}
