@@ -48,31 +48,31 @@
         <nav class="container menuBox marginBottom28">
       <ul class="clearFix">
         <li class="floatLeft">
-          <a href="#" class="font12">
+          <a href="${createLink(controller:'dashboard', action:'index')}" class="font12 selected">
             <span><img class="menuIcon" src="images/dashboard.png" alt="dashboard" title="dashboard"></span>
             <span>DASHBOARD</span>
           </a>
         </li>
         <li class="floatLeft">
-          <a href="#" class="blueButton font12 selected">
+          <a href="${createLink(controller:'dashboard', action:'solicitudes')}" class="blueButton font12 ">
             <span><img class="menuIcon" src="images/solicitudes.png" alt="solicitudes" title="solicitudes"></span>
             <span>SOLICTUDES</span>
           </a>
         </li>
         <li class="floatLeft">
-          <a href="#" class="font12">
+          <a href="${createLink(controller:'dashboard', action:'analiticas')}" class="font12">
             <span><img class="menuIcon" src="images/analiticas.png" alt="analiticas" title="analiticas"></span>
             <span>ANALITICAS</span>
           </a>
         </li>
         <li class="floatLeft">
-          <a href="#" class="font12">
+          <a href="${createLink(controller:'dashboard', action:'verificaciones')}" class="font12">
             <span><img class="menuIcon" src="images/verification.png" alt="analiticas" title="analiticas"></span>
             <span>VERIFICATIONES</span>
           </a>
         </li>
         <li class="floatLeft">
-          <a href="#" class="font12">
+          <a href="${createLink(controller:'dashboard', action:'configuracion')}" class="font12">
             <span><img class="menuIcon" src="images/configration.png" alt="configration" title="configration"></span>
             <span>CONFIGURATION</span>
           </a>
