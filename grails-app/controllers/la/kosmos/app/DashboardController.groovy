@@ -4,20 +4,19 @@ class DashboardController {
 
     def index() { }
     
-    def solicitudes={
-        
-    } 
+    def solicitudes() { }
     
-    def analiticas={
+    def detalleSolicitud(){ }
+    
+    def analiticas() { }
+    
+    def verificaciones() { }
+    
+    def detalleVerificacion(){ }
+    
+    def configuracion() { }
+    
+    def editarPerfil(){
         
     }
-    
-    def verificaciones={
-        
-    }
-    
-    def configuracion={
-        
-    }
-    
 }
