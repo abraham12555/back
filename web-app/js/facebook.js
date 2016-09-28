@@ -23,7 +23,7 @@ function  fb_login() {
         if (response.authResponse) {
             console.log('Login Sccess!!!.... ');
             //Parametros de Busqueda FB
-            FB.api('/me?fields=id,name,birthday,education,email,first_name,gender,last_name,middle_name,work,location', function (response) {
+            FB.api('/me?fields=id,name,picture,birthday,education,email,first_name,gender,last_name,middle_name,work,location', function (response) {
                 $("#datosFb").val(JSON.stringify(response));
                 $("#formRedesSociales").submit();
                 console.log('Good to see you, ' + response.name + '.');

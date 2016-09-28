@@ -2,6 +2,7 @@ var winH;
 var contentH;
 var headerH;
 var footerH;
+var avancePorPaso = [0, 0, 0, 0, 0, 0, 0, 0];
 $(document).ready(function () {
     winH = $(window).height();
     contentH = $('.contentHeight').outerHeight();
@@ -143,6 +144,8 @@ function operacionesPaso1al3() {
                 $(this).removeClass('headingColor');
             }
             verificarCambios(index);
+            console.log("A punto de calcular el avance....");
+            calcularAvance();
         });
     });
 
@@ -228,6 +231,42 @@ function verificarCambios(index) {
     if (filledLength === totalLength) {
         $('.formStep:visible .confirmDiv').fadeIn();
     }
+}
+
+function calcularAvance() {
+    var percentStep;
+    var avanceTotal = 0;
+    var totalDeCampos = $('.formValues').length;
+    var camposLlenos = $('.notEmpty').length;
+    var porcentajePorPaso = 0;
+    var pasoActual = $('#pasoAnterior').val();
+    if (pasoActual === "1") {
+        percentStep = 25;
+    } else if (pasoActual === "2") {
+        percentStep = 20;
+    } else if (pasoActual === "3") {
+        percentStep = 20;
+    } else if (pasoActual === "4") {
+        percentStep = 25;
+    } else if (pasoActual === "5") {
+        percentStep = 9;
+    } else if (pasoActual === "6") {
+        percentStep = 1;
+    }
+    if (pasoActual === "1" || pasoActual === "2" || pasoActual === "3") {
+        porcentajePorPaso = camposLlenos / totalDeCampos;
+        porcentajePorPaso = porcentajePorPaso * percentStep;
+        porcentajePorPaso = porcentajePorPaso.toFixed();
+        avancePorPaso[Number(pasoActual) - 1] = porcentajePorPaso;
+    }
+    console.log("Paso Actual: " + pasoActual);
+    for (i = 0; i < 6; i++) {
+        console.log("Avance Paso " + (i + 1) + ": " + avancePorPaso[i]);
+        avanceTotal += Number(avancePorPaso[i]);
+    }
+    console.log("Resultado del calculo: totalDeCampos: " + totalDeCampos + " -- camposLlenos: " + camposLlenos + " -- porcentajeCalculado: " + porcentajePorPaso + "  -- avanceTotal: " + avanceTotal);
+    $('.progressPerc').html(avanceTotal + '%');
+    $('.activeProgress').animate({width: avanceTotal + '%'}, {queue: false});
 }
 
 function consultarCodigoPostal(sugerencia) {
@@ -847,7 +886,6 @@ function verificacionSubPaso4() {
 }
 
 function actualizarProgreso(paso) {
-    var percentStep;
     console.log("Actualizando progreso paso " + paso);
     $('.pasoTitle').html('paso ' + paso);
     $('#circuloPaso' + paso).removeClass("grayCircle");
@@ -858,63 +896,30 @@ function actualizarProgreso(paso) {
     $('#pPaso' + paso).removeClass("footerTextColor");
     $('#pPaso' + paso).addClass("paddingTop10");
     if (paso === "1") {
-        percentStep = 5;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Datos Generales');
-        $('.progressPerc').html(percentStep + '%');
     } else if (paso === "2") {
-        percentStep = 25;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Vivienda');
-        $('.progressPerc').html(percentStep + '%');
     } else if (paso === "3") {
-        percentStep = 45;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Empleo');
-        $('.progressPerc').html(percentStep + '%');
     } else if (paso === "4") {
-        percentStep = 65;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Datos Bancarios');
-        $('.progressPerc').html(percentStep + '%');
     } else if (paso === "5") {
-        percentStep = 90;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Historial Crediticio');
-        $('.progressPerc').html(percentStep + '%');
+        avancePorPaso[3] = 25;
+        console.log("Si lo registro? " + avancePorPaso[3]);
     } else if (paso === "6") {
-        percentStep = 99;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Documentos');
-        $('.progressPerc').html(percentStep + '%');
+        avancePorPaso[4] = 9;
+        console.log("Si lo registro? " + avancePorPaso[4]);
     } else if (paso === "7") {
-        percentStep = 5;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
         $('.stepTitle').html('Datos Generales');
-        $('.progressPerc').html(percentStep + '%');
     } else if (paso === "8") {
-        percentStep = 100;
-        $('.activeProgress').css({
-            'width': percentStep + '%'
-        });
+        avancePorPaso[5] = 1;
+        console.log("Si lo registro? " + avancePorPaso[5]);
         $('.pasoTitle').html('');
         $('.stepTitle').html('Tu Crédito');
-        $('.progressPerc').html(percentStep + '%');
     }
+    calcularAvance();
 }
 
 function fillFB(data) {
