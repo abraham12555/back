@@ -310,9 +310,80 @@ function operacionesPaso4() {
             $('img', this).attr('src', thisSrc);
         }
         $(this).addClass('active_green');
+        
+        $('.formLoginBank').removeClass('hide').delay( 1000 ).addClass('animated flipInX');
+        
+        if(bankChoice === "banamex"){
+        	fixLoginView(6);
+        	$('.loginMethodHsbc').fadeOut();
+        	$('.messageLoginBank').text("NÚMERO DE CLIENTE");
+            $('.messagePasswordBank').text("CLAVE DE ACCESO");
+        }else if (bankChoice === "bancomer"){
+        	fixLoginView(6);
+        	$('.loginMethodHsbc').fadeOut();
+        	$('.messageLoginBank').text("TARJETA");
+            $('.messagePasswordBank').text("CONTRASEÑA");
+        }else if (bankChoice === "hsbc"){
+        	fixLoginView(4);
+        	$('.messageLoginBank').text("USUARIO");
+            $('.messagePasswordBank').text("PASSWORD");
+        	$('.messageSelectBank').text("MÉTODO DE AUTENTIFICACIÓN");
+        }else if (bankChoice === "santander"){
+        	fixLoginView(6);
+        	$('.loginMethodHsbc').fadeOut();
+        	$('.messageLoginBank').text("USUARIO");
+            $('.messagePasswordBank').text("CLAVE");
+        }else if (bankChoice === "banorte"){
+        	fixLoginView(6);
+        	$('.loginMethodHsbc').fadeOut();
+        	$('.messageLoginBank').text("USUARIO");
+            $('.messagePasswordBank').text("CONTRASEÑA");
+        }
         $('.bankChoice').val(bankChoice);
         $('.bankChoice').addClass('notEmpty');
     });
+    
+    function fixLoginView(tipo){
+    	if (tipo === 6) {
+    		$('.messageLoginBankDiv').removeClass('col4');
+    		$('.messageLoginBankDiv').removeClass('col4-tab');
+    		$('.messageLoginBankDiv').removeClass('col4-mob');
+    		$('.messageLoginBankDiv').addClass('col6');
+    		$('.messageLoginBankDiv').addClass('col6-tab');
+    		$('.messageLoginBankDiv').addClass('col6-mob');
+    		
+    		$('.messagePasswordBankDiv').removeClass('col4');
+    		$('.messagePasswordBankDiv').removeClass('col4-tab');
+    		$('.messagePasswordBankDiv').removeClass('col4-mob');
+    		$('.messagePasswordBankDiv').addClass('col6');
+    		$('.messagePasswordBankDiv').addClass('col6-tab');
+    		$('.messagePasswordBankDiv').addClass('col6-mob');
+    		
+            $('.messageLoginBankDiv').delay( 2 ).fadeOut().addClass('animated bounce').fadeIn();
+        	$('.messagePasswordBankDiv').delay( 2 ).fadeOut().addClass('animated bounce').fadeIn();
+    		
+        }
+    	if (tipo === 4) {
+    		$('.messageLoginBankDiv').removeClass('col6');
+    		$('.messageLoginBankDiv').removeClass('col6-tab');
+    		$('.messageLoginBankDiv').removeClass('col6-mob');
+    		$('.messageLoginBankDiv').addClass('col4');
+    		$('.messageLoginBankDiv').addClass('col4-tab');
+    		$('.messageLoginBankDiv').addClass('col4-mob');
+    		
+    		$('.messagePasswordBankDiv').removeClass('col6');
+    		$('.messagePasswordBankDiv').removeClass('col6-tab');
+    		$('.messagePasswordBankDiv').removeClass('col6-mob');
+    		$('.messagePasswordBankDiv').addClass('col4');
+    		$('.messagePasswordBankDiv').addClass('col4-tab');
+    		$('.messagePasswordBankDiv').addClass('col4-mob');
+    		
+            $('.messageLoginBankDiv').delay( 2 ).fadeOut().addClass('animated bounce').fadeIn();
+        	$('.messagePasswordBankDiv').delay( 2 ).fadeOut().addClass('animated bounce').fadeIn();
+        	$('.loginMethodHsbc').delay( 2 ).fadeOut().addClass('animated bounce').fadeIn();
+        }
+    }
+    
     $('.consultarBox').click(function () {
 
         if (!$(this).hasClass('exito')) {
@@ -465,15 +536,49 @@ function operacionesPaso5() {
                 if ($(this).hasClass('hasCc') === true) {
                     $('#creditoA').val('SI');
                 } else {
-                    $('#credito').val('NO');
+                    $('#creditoA').val('NO');
                 }
 
             }
         });
     });
-
+    
+    
+    $('#tarjeta_correcto_si').click(function () {
+        $('#tCredito').val("SI");
+        $('.inPuts4a').removeAttr("disabled");
+    });
+    $('#tarjeta_correcto_no').click(function () {
+        $('#tCredito').val("NO");
+    });
+    $('#hipotecario_correcto_si').click(function () {
+        $('#creditoH').val("SI");
+    });
+    $('#hipotecario_correcto_no').click(function () {
+        $('#creditoH').val("NO");
+    });
+    $('#automotriz_correcto_si').click(function () {
+        $('#creditoA').val("SI");
+    });
+    $('#automotriz_correcto_no').click(function () {
+        $('#creditoA').val("NO");
+    });
+    
+    
+    
+    $('.marcoLegalCorrectaBox_SI').click(function () {
+    	$('#autorizacionForm').fadeOut();
+    	$('#autorizacionLoading').delay( 600 ).addClass('animated bounceIn').fadeIn();
+    	consultarBuro();
+    });
+    
+    $('.marcoLegalCorrectaBox_NO').click(function () {
+    	cerrarModal();
+    });
+    
     $('#consultarBuroBtn').click(function () {
-        consultarBuro();
+        validarAutorizacion();
+        $("#fechaAutorizacionConsulta").text(GetTodayDate());
     });
 
     $('.avanzaBtn').click(function () {
@@ -484,6 +589,20 @@ function operacionesPaso5() {
     });
 }
 
+function GetTodayDate() {
+	   
+	  var m_names = new Array("Enero", "Febrero", "Marzo", 
+			"Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", 
+			"Octubre", "Noviembre", "Diciembre");
+	
+	   var tdate = new Date();
+	   var dd = tdate.getDate(); //Dia
+	   var MM = tdate.getMonth(); //Mes
+	   var yyyy = tdate.getFullYear(); //Año
+	   var fecha = dd + " / " +( MM+1) + " / " + yyyy;
+	   var fechaD = dd + " de  " +m_names[(MM)] + " de " + yyyy;
+	   return fechaD;
+	}
 function operacionesPaso6() {
     winH = $(window).height();
     contentH = $('.contentHeight').outerHeight();
@@ -650,10 +769,11 @@ function avanzarPaso(paso) {
             } else if (paso === "4") {
                 console.log("Cargando funciones de paso 4");
                 operacionesPaso4();
-                verificacionSubPaso();
+                verificacionSubPaso4();
             } else if (paso === "5") {
                 console.log("Cargando funciones de paso 5");
                 operacionesPaso5();
+                verificacionSubPaso5();
             } else if (paso === "6") {
                 console.log("Cargando funciones de paso 6");
                 operacionesPaso6();
@@ -670,8 +790,31 @@ function avanzarPaso(paso) {
     });
 }
 
+function verificacionSubPaso5() {
+    if ($("#tCredito").val() === "SI") {
+        $('#tarjeta_correcto_si').addClass('active_green');
+        $('.inPuts4a').removeAttr("disabled");
+    }
+    if ($("#tCredito").val() === "NO") {
+        $('#tarjeta_correcto_no').addClass('active_green');
+    }
+    if ($("#creditoH").val() === "SI") {
+        $('#hipotecario_correcto_si').addClass('active_green');
+    }
+    if ($("#creditoH").val() === "NO") {
+        $('#hipotecario_correcto_no').addClass('active_green');
+    }
+    if ($("#creditoA").val() === "SI") {
+        $('#automotriz_correcto_si').addClass('active_green');
+    }
+    if ($("#creditoA").val() === "NO") {
+        $('#automotriz_correcto_no').addClass('active_green');
+    }
+}
 
-function verificacionSubPaso() {
+
+
+function verificacionSubPaso4() {
     console.log("login_id:" + $("#login_id").val());
     if ($("#login_id").val() != "") {
         $('.loadingActive').hide();
@@ -929,6 +1072,7 @@ function authenticate() {
     data["login"] = $('#login').val();
     data["provider_code"] = $('.bankChoice').val();
     data["customer_id"] = $('#customer_id').val();
+    data["login_method"] = $('#login_method').val();
     console.log("Authenticating....");
     $('#loginInteractiveHtml').fadeIn();
     $.ajax({
@@ -973,7 +1117,13 @@ function authenticate() {
 function loading(bank) {
     $("#spinner").html(spinner(bank));
     $("#spinner").fadeIn();
-    $('#modalloginBank').modal({keyboard: false, backdrop: false})
+    $('#modalloginBank').modal({
+    	keyboard: false, 
+    	backdrop: false,
+    	escapeClose: false,
+        clickClose: false,
+        showClose: false
+    	})
 }
 
 function complete() {
@@ -995,6 +1145,8 @@ function spinner(bank) {
         html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/santander.png\"/></center>";
     } else if (bank == 'banorte') {
         html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banorte.png\"/></center>";
+    } else if (bank == 'hsbc') {
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/hsbc.png\"/></center>";
     }
     return html;
 }
@@ -1102,7 +1254,7 @@ function consultarBancos() {
 
 //Función para consultar el API del buró de crédito
 function consultarBuro() {
-    console.log("Validando seleccion de opciones...");
+    console.log("Consultando WS Buro de Credito...");
     var tarjeta = $('#tCredito').val();
     var hipoteca = $('#creditoH').val();
     var creditoAutomotriz = $('#creditoA').val();
@@ -1113,12 +1265,13 @@ function consultarBuro() {
             sweetAlert("Antes de continuar...", "Por favor proporcione lo últimos 4 digitos de su tarjeta de crédito.", "warning");
         } else {
             console.log("Mostrando barra de progreso...");
-            loadBar();
+            //loadBar();
             $.ajax({
                 type: 'POST',
                 data: 'tarjeta=' + tarjeta + "&numeroTarjeta=" + numeroTarjeta + "&hipoteca=" + hipoteca + "&creditoAutomotriz=" + creditoAutomotriz,
                 url: '/kosmos-app/solicitud/consultarBuroDeCredito',
                 success: function (data, textStatus) {
+                	cerrarModal();
                     var respuesta = checkIfJson(data);
                     $('.loadingBar').fadeOut();
                     $('.creditBtns').fadeOut();
@@ -1130,18 +1283,54 @@ function consultarBuro() {
                         $('#accionesNormales').fadeOut();
                         $('#accionesError').fadeIn();
                     }
-                    restartLoadBar();
+                    //restartLoadBar();
                     showValues();
                     $('.nextBtn').addClass('sendBtn');
                     //submitNextPage();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
+                	cerrarModal();
                     sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
                 }
             });
         }
     } else {
         sweetAlert("Antes de continuar...", "Por favor llena los datos solicitados.", "warning");
+    }
+}
+
+//Funcion para validar campos capturados y Mostrar modal de Autorizacion para Buro de Credito.
+function validarAutorizacion() {
+    console.log("Validando seleccion de opciones...");
+    var tarjeta = $('#tCredito').val();
+    var hipoteca = $('#creditoH').val();
+    var creditoAutomotriz = $('#creditoA').val();
+    var nombre = $("#nombre").val();
+    var apellidoPaterno = $("#apellidoPaterno").val();
+    var apellidoMaterno = $("#apellidoMaterno").val();
+    var fechaNac = $("#fechaNac").val();
+    var rfc = $("#rfc").val();
+    var calle = $("#calle").val();
+    var noExterior = $("#noExterior").val();
+    var noInterior = $("#noInterior").val();
+    var colonia = $("#colonia").val();
+    var municipio = $("#municipio").val();
+    console.log("Validando llenado de campos...");
+    if (tarjeta && hipoteca && creditoAutomotriz && nombre && apellidoPaterno && apellidoMaterno && fechaNac && calle && noExterior && colonia && municipio) {
+        var numeroTarjeta = $('#numeroTarjeta').val();
+        if (tarjeta === 'SI' && !numeroTarjeta) {
+            sweetAlert("Antes de continuar...", "Por favor proporcione lo últimos 4 digitos de su tarjeta de crédito.", "warning");
+        } else {
+        	$('#autorizacionLoading').delay( 200 ).fadeOut();
+        	$('#autorizacionForm').fadeIn();
+        	$('#modalAutorizacion').modal({keyboard: false, backdrop: false})
+        }
+    } else if(!nombre || !apellidoPaterno || !apellidoMaterno || !fechaNac){
+        sweetAlert("Antes de continuar...", "Por favor llena los datos solicitados en el paso 1", "warning");
+    } else if(!calle || !noExterior || !colonia || !municipio){
+    	sweetAlert("Antes de continuar...", "Por favor llena los datos solicitados en el paso 2", "warning");
+    }else{
+    	sweetAlert("Antes de continuar...", "Por favor llena los datos solicitados de este paso", "warning");
     }
 }
 

@@ -27,14 +27,18 @@ class SolicitudController {
     def solicitudService
 	
     def saltEdgeService
+	def buroDeCreditoService
+	
     int timeWait = 500
     def maximumAttempts = 100
     def formatoFecha = "dd-MM-yyyy"
+	def razonSocial = "Kosmos Soluciones Digitales JS, SA de CV"
 		                       
     def jsonSlurper = new JsonSlurper()
     grails.gsp.PageRenderer groovyPageRenderer
     Random rand = new Random() 
 
+	
 	
     def index() { }
 	
@@ -78,11 +82,19 @@ class SolicitudController {
                 credentials.account = request.login
                 credentials.password = request.password
                 break;
+			case "hsbc_mx":
+				credentials.login = request.login
+				credentials.password = request.password
+				credentials.login_method = request.login_method
+				break;
             default:
                 credentials.login = request.login
                 credentials.password = request.password
                 break;
             }
+			
+			println "CREDENCIALES-------"+credentials
+			
             if (login.data == null) {
                 println "Creando Login"
                 login = saltEdgeService.createLogin(request.customer_id, request.provider_code, credentials)
@@ -638,7 +650,12 @@ class SolicitudController {
             } else if(paso == 4){
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
             } else if(paso == 5){
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
+				def municipio = null
+				println "DATPS::"+session["datosPaso2"]
+				if(session["datosPaso2"] != null && session["datosPaso2"].municipio){
+					municipio= Municipio.findById(session["datosPaso2"].municipio)
+				}
+                modelo = [paso:paso, generales: session[("datosPaso" + paso)], personales: session[("datosPaso" + 1)], direccion: session[("datosPaso" + 2)],municipio:municipio,razonSocial:razonSocial]
             } else if(paso == 6){
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]
             }
@@ -703,20 +720,9 @@ class SolicitudController {
     }
     
     def consultarBuroDeCredito(){
-        println params
-        def respuesta = [:]
-        int max = 10  
-        def test = rand.nextInt(max+1)
-        sleep(3000)
-        if(test % 2 == 0){
-            respuesta.status = 200
-            render respuesta as JSON
-        } else {
-            //render(template: "/templates/solicitud/paso4/errorConsultaBancaria", model: [intentos: (params.intentos ? ((params.intentos as int) + 1) : (0))])
-            respuesta.error = 500
-            respuesta.intentos = (params.intentos ? ((params.intentos as int) + 1) : (0))
-            render respuesta as JSON
-        }
+        println "CONSULTA DE BURO DE CREDITO...." 
+		def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["datosPaso1"],session["datosPaso2"])
+        render respuesta as JSON
     }
     
     def cargaDeArchivos(){

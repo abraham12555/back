@@ -52,8 +52,10 @@ class SolicitudService {
             datosPaso.depositoCorrecto=(params.depositoCorrecto ? params.depositoCorrecto:null)
             datosPaso.retiroCorrecto=(params.retiroCorrecto ? params.retiroCorrecto:null)
             datosPaso.saldoCorrecto=(params.saldoCorrecto ? params.saldoCorrecto:null)
-        } else if (pasoEnviado == 5){
-            
+	    } else if (pasoEnviado == 5){
+			datosPaso.tCredito=(params.tCredito ? params.tCredito:null)
+			datosPaso.creditoA=(params.creditoA ? params.creditoA:null)
+			datosPaso.creditoH=(params.creditoH ? params.creditoH:null)
         } else if (pasoEnviado == 6){
             
         }

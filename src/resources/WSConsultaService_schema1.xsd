@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="utf-8"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://bean.consulta.ws.bc.com/" version="1.0" targetNamespace="http://bean.consulta.ws.bc.com/">
+
+  <xs:element name="consultaCC" type="tns:consultaCC"></xs:element>
+
+  <xs:element name="consultaCCResponse" type="tns:consultaCCResponse"></xs:element>
+
+  <xs:element name="consultaPDF" type="tns:consultaPDF"></xs:element>
+
+  <xs:element name="consultaPDFResponse" type="tns:consultaPDFResponse"></xs:element>
+
+  <xs:element name="consultaXML" type="tns:consultaXML"></xs:element>
+
+  <xs:element name="consultaXMLResponse" type="tns:consultaXMLResponse"></xs:element>
+
+  <xs:complexType name="consultaPDF">
+    <xs:sequence>
+      <xs:element name="Consulta" type="tns:ConsultaBC" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConsultaBC">
+    <xs:sequence>
+      <xs:element name="Personas" type="tns:PersonasBC"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonasBC">
+    <xs:sequence>
+      <xs:element name="Persona" type="tns:PersonaBC"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonaBC">
+    <xs:sequence>
+      <xs:element name="Encabezado" type="tns:EncabezadoBC"></xs:element>
+      <xs:element name="Nombre" type="tns:NombreBC" minOccurs="0"></xs:element>
+      <xs:element name="Domicilios" type="tns:DomiciliosBC"></xs:element>
+      <xs:element name="Empleos" type="tns:EmpleosBC" minOccurs="0"></xs:element>
+      <xs:element name="CuentaC" type="tns:CuentaClienteBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+      <xs:element name="Autentica" type="tns:AutenticacionBC" minOccurs="0"></xs:element>
+      <xs:element name="Caracteristicas" type="tns:Caracteristicas" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EncabezadoBC">
+    <xs:sequence>
+      <xs:element name="Version" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroReferenciaOperador" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ProductoRequerido" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClavePais" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IdentificadorBuro" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUsuario" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Password" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoConsulta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoContrato" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUnidadMonetaria" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ImporteContrato" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Idioma" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoSalida" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EncabezadoRespBC">
+    <xs:complexContent>
+      <xs:extension base="tns:EncabezadoBC">
+        <xs:sequence>
+          <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+          <xs:element name="ClaveRetornoConsumidorPrincipal" type="xs:string" minOccurs="0"></xs:element>
+          <xs:element name="ClaveRetornoConsumidorSecundario" type="xs:string" minOccurs="0"></xs:element>
+          <xs:element name="NumeroControlConsulta" type="xs:string"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="NombreBC">
+    <xs:sequence>
+      <xs:element name="ApellidoPaterno" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ApellidoMaterno" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ApellidoAdicional" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="PrimerNombre" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SegundoNombre" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaNacimiento" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="RFC" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Prefijo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Sufijo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Nacionalidad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Residencia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroLicenciaConducir" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EstadoCivil" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Sexo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroCedulaProfesional" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroRegistroElectoral" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveImpuestosOtroPais" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtroPais" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroDependientes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EdadesDependientes" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="NombreRespBC">
+    <xs:complexContent>
+      <xs:extension base="tns:NombreBC">
+        <xs:sequence>
+          <xs:element name="FechaRecepcionInformacionDependientes" type="xs:string" minOccurs="0"></xs:element>
+          <xs:element name="FechaDefuncion" type="xs:string" minOccurs="0"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DomiciliosBC">
+    <xs:sequence>
+      <xs:element name="Domicilio" type="tns:Direccion" nillable="true" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Direccion">
+    <xs:sequence>
+      <xs:element name="Direccion1" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Direccion2" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ColoniaPoblacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="DelegacionMunicipio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Ciudad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Estado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CP" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaResidencia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTelefono" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Extension" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Fax" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoDomicilio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IndicadorEspecialDomicilio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodPais" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DireccionRespBC">
+    <xs:complexContent>
+      <xs:extension base="tns:Direccion">
+        <xs:sequence>
+          <xs:element name="FechaReporteDireccion" type="xs:string" minOccurs="0"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EmpleosBC">
+    <xs:sequence>
+      <xs:element name="Empleo" type="tns:EmpleoBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EmpleoBC">
+    <xs:sequence>
+      <xs:element name="NombreEmpresa" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Direccion1" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Direccion2" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ColoniaPoblacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="DelegacionMunicipio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Ciudad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Estado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CP" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTelefono" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Extension" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Fax" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Cargo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaContratacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveMonedaSalario" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Salario" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="BaseSalarial" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroEmpleado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaUltimoDiaEmpleo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodPais" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EmpleoRespBC">
+    <xs:complexContent>
+      <xs:extension base="tns:EmpleoBC">
+        <xs:sequence>
+          <xs:element name="FechaReportoEmpleo" type="xs:string" minOccurs="0"></xs:element>
+          <xs:element name="FechaVerificacion" type="xs:string" minOccurs="0"></xs:element>
+          <xs:element name="ModoVerificacion" type="xs:string" minOccurs="0"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CuentaClienteBC">
+    <xs:sequence>
+      <xs:element name="NumeroCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NombreOtorgante" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AutenticacionBC">
+    <xs:sequence>
+      <xs:element name="TipoReporte" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoSalidaAU" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ReferenciaOperador" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TarjetaCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="UltimosCuatroDigitos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EjercidoCreditoHipotecario" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EjercidoCreditoAutomotriz" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Caracteristicas">
+    <xs:sequence>
+      <xs:element name="Plantilla" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="consultaPDFResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:ReportePDF" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ReportePDF">
+    <xs:sequence>
+      <xs:element name="Reporte" type="xs:base64Binary" minOccurs="0"></xs:element>
+      <xs:element name="Error" type="tns:ErrorRespBC" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ErrorRespBC">
+    <xs:sequence>
+      <xs:element name="AR" type="tns:AR"></xs:element>
+      <xs:element name="UR" type="tns:UR"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AR">
+    <xs:sequence>
+      <xs:element name="ReferenciaOperador" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SujetoNoAutenticado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOPasswordErroneo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ErrorSistemaBC" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EtiquetaSegmentoErronea" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FaltaCampoRequerido" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UR">
+    <xs:sequence>
+      <xs:element name="NumeroReferenciaOperador" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SolicitudClienteErronea" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="VersionProporcionadaErronea" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ProductoSolicitadoErroneo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="PasswordOClaveErronea" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SegmentoRequeridoNoProporcionado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="UltimaInformacionValidaCliente" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="InformacionErroneaParaConsulta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ValorErroneoCampoRelacionado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ErrorSistemaBuroCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EtiquetaSegmentoErronea" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="OrdenErroneoSegmento" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroErroneoSegmentos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FaltaCampoRequerido" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ErrorReporteBloqueado" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="consultaCC">
+    <xs:sequence>
+      <xs:element name="Consulta" type="tns:consulta" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="consulta">
+    <xs:sequence>
+      <xs:element name="Encabezado" type="tns:Encabezado"></xs:element>
+      <xs:element name="Personas" type="tns:Personas"></xs:element>
+      <xs:element name="Caracteristicas" type="tns:Caracteristicas" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Encabezado">
+    <xs:sequence>
+      <xs:element name="ClaveOtorgante" type="xs:string"></xs:element>
+      <xs:element name="NombreUsuario" type="xs:string"></xs:element>
+      <xs:element name="Password" type="xs:string"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Personas">
+    <xs:sequence>
+      <xs:element name="Persona" type="tns:persona"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="persona">
+    <xs:sequence>
+      <xs:element name="DetalleConsulta" type="tns:DetalleConsulta"></xs:element>
+      <xs:element name="Nombre" type="tns:Nombre"></xs:element>
+      <xs:element name="Domicilios" type="tns:Domicilios"></xs:element>
+      <xs:element name="Empleos" type="tns:Empleos"></xs:element>
+      <xs:element name="CuentasReferencia" type="tns:CuentasReferencia"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DetalleConsulta">
+    <xs:sequence>
+      <xs:element name="FolioConsultaOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ProductoRequerido" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUnidadMonetaria" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ImporteContrato" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroFirma" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Nombre">
+    <xs:sequence>
+      <xs:element name="ApellidoPaterno" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ApellidoMaterno" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ApellidoAdicional" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Nombres" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaNacimiento" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="RFC" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CURP" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Nacionalidad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Residencia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="EstadoCivil" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Sexo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveElectorIFE" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroDependientes" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="NombreResp">
+    <xs:complexContent>
+      <xs:extension base="tns:Nombre">
+        <xs:sequence>
+          <xs:element name="FechaDefuncion" type="xs:string" minOccurs="0"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Domicilios">
+    <xs:sequence>
+      <xs:element name="Domicilio" type="tns:Domicilio" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Domicilio">
+    <xs:sequence>
+      <xs:element name="Direccion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ColoniaPoblacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="DelegacionMunicipio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Ciudad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Estado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CP" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaResidencia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTelefono" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoDomicilio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoAsentamiento" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodPais" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DomicilioResp">
+    <xs:complexContent>
+      <xs:extension base="tns:Domicilio">
+        <xs:sequence>
+          <xs:element name="FechaRegistroDomicilio" type="xs:string" minOccurs="0"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Empleos">
+    <xs:sequence>
+      <xs:element name="Empleo" type="tns:Empleo" nillable="true" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Empleo">
+    <xs:sequence>
+      <xs:element name="NombreEmpresa" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Direccion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ColoniaPoblacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="DelegacionMunicipio" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Ciudad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Estado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CP" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTelefono" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Extension" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Fax" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Puesto" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaContratacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveMoneda" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SalarioMensual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaUltimoDiaEmpleo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodPais" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EmpleoResp">
+    <xs:complexContent>
+      <xs:extension base="tns:Empleo">
+        <xs:sequence>
+          <xs:element name="FechaVerificacionEmpleo" type="xs:string" minOccurs="0"></xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CuentasReferencia">
+    <xs:sequence>
+      <xs:element name="NumeroCuenta" type="xs:string" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="consultaCCResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:respuesta" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="respuesta">
+    <xs:sequence>
+      <xs:element name="Error" type="tns:ErrorResp" minOccurs="0"></xs:element>
+      <xs:element name="Personas" type="tns:PersonasResp"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ErrorResp">
+    <xs:sequence>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FolioConsultaOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ProductoRequerido" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Errores" type="tns:ErroresResp" minOccurs="0"></xs:element>
+      <xs:element name="AR" type="tns:AR" nillable="true"></xs:element>
+      <xs:element name="UR" type="tns:UR" nillable="true"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ErroresResp">
+    <xs:sequence>
+      <xs:element name="DescripcionError" type="xs:string" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonasResp">
+    <xs:sequence>
+      <xs:element name="Persona" type="tns:PersonaResp" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonaResp">
+    <xs:sequence>
+      <xs:element name="Encabezado" type="tns:EncabezadoResp" minOccurs="0"></xs:element>
+      <xs:element name="Nombre" type="tns:NombreResp" minOccurs="0"></xs:element>
+      <xs:element name="Domicilios" type="tns:DomiciliosResp" minOccurs="0"></xs:element>
+      <xs:element name="Empleos" type="tns:EmpleosResp" minOccurs="0"></xs:element>
+      <xs:element name="Mensajes" type="tns:MensajesResp" minOccurs="0"></xs:element>
+      <xs:element name="Cuentas" type="tns:CuentasResp" minOccurs="0"></xs:element>
+      <xs:element name="ConsultasEfectuadas" type="tns:ConsultasEfectuadasResp" minOccurs="0"></xs:element>
+      <xs:element name="DeclaracionesConsumidor" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Caracteristicas" type="tns:CaracteristicasRespBC" minOccurs="0"></xs:element>
+      <xs:element name="ReportePDF" type="tns:ReportePDF" minOccurs="0"></xs:element>
+      <xs:element name="FR" type="tns:FR" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EncabezadoResp">
+    <xs:sequence>
+      <xs:element name="Version" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FolioConsultaOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ExpedienteEncontrado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FolioConsulta" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DomiciliosResp">
+    <xs:sequence>
+      <xs:element name="Domicilio" type="tns:DomicilioResp" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EmpleosResp">
+    <xs:sequence>
+      <xs:element name="Empleo" type="tns:EmpleoResp" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MensajesResp">
+    <xs:sequence>
+      <xs:element name="Mensaje" type="tns:MensajeResp" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MensajeResp">
+    <xs:sequence>
+      <xs:element name="TipoMensaje" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Leyenda" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CuentasResp">
+    <xs:sequence>
+      <xs:element name="Cuenta" type="tns:CuentaResp" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CuentaResp">
+    <xs:sequence>
+      <xs:element name="FechaActualizacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="RegistroImpugnado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NombreOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentaActual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoResponsabilidad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUnidadMonetaria" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ValorActivoValuacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FrecuenciaPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="MontoPagar" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaAperturaCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaUltimoPago" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaUltimaCompra" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaCierreCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaReporte" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="UltimaFechaSaldoCero" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Garantia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CreditoMaximo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SaldoActual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="LimiteCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SaldoVencido" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroPagosVencidos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="PagoActual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="HistoricoPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaRecienteHistoricoPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaAntiguaHistoricoPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClavePrevencion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosReportados" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="PeorAtraso" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaPeorAtraso" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SaldoVencidoPeorAtraso" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="MontoUltimoPago" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConsultasEfectuadasResp">
+    <xs:sequence>
+      <xs:element name="ConsultaEfectuada" type="tns:ConsultaEfectuadaResp" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConsultaEfectuadaResp">
+    <xs:sequence>
+      <xs:element name="FechaConsulta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NombreOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUnidadMonetaria" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ImporteCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoResponsabilidad" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CaracteristicasRespBC">
+    <xs:sequence>
+      <xs:element name="Caracteristica" type="tns:CaracteristicasBC" nillable="true" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CaracteristicasBC">
+    <xs:sequence>
+      <xs:element name="Plantilla" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IdCaracteristica" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroCaracteristica" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Valor" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodigoError" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FR">
+    <xs:sequence>
+      <xs:element name="LeyendaReporteBloqueado" type="xs:string"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="consultaXML">
+    <xs:sequence>
+      <xs:element name="Consulta" type="tns:ConsultaBC" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="consultaXMLResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:RespuestaBC" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RespuestaBC">
+    <xs:sequence>
+      <xs:element name="Personas" type="tns:PersonasRespBC"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonasRespBC">
+    <xs:sequence>
+      <xs:element name="Persona" type="tns:PersonaRespBC" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonaRespBC">
+    <xs:sequence>
+      <xs:element name="Encabezado" type="tns:EncabezadoRespBC" minOccurs="0"></xs:element>
+      <xs:element name="Nombre" type="tns:NombreRespBC" minOccurs="0"></xs:element>
+      <xs:element name="Domicilios" type="tns:DomiciliosRespBC" minOccurs="0"></xs:element>
+      <xs:element name="Empleos" type="tns:EmpleosRespBC" minOccurs="0"></xs:element>
+      <xs:element name="Cuentas" type="tns:CuentasRBC" minOccurs="0"></xs:element>
+      <xs:element name="ConsultasEfectuadas" type="tns:ConsultasEfectuadasRespBC" minOccurs="0"></xs:element>
+      <xs:element name="ResumenReporte" type="tns:ResumenReporteRBC" minOccurs="0"></xs:element>
+      <xs:element name="HawkAlertConsulta" type="tns:HawkAlertCRespBC" minOccurs="0"></xs:element>
+      <xs:element name="HawkAlertBD" type="tns:HawkAlertDBRespBC" minOccurs="0"></xs:element>
+      <xs:element name="DeclaracionesCliente" type="tns:DeclaracionesClienteRespBC" minOccurs="0"></xs:element>
+      <xs:element name="ScoreBuroCredito" type="tns:ScoreBCRespBC" minOccurs="0"></xs:element>
+      <xs:element name="Error" type="tns:ErrorRespBC" minOccurs="0"></xs:element>
+      <xs:element name="ReporteImpreso" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Caracteristicas" type="tns:CaracteristicasRespBC" minOccurs="0"></xs:element>
+      <xs:element name="ReportePDF" type="tns:ReportePDF" minOccurs="0"></xs:element>
+      <xs:element name="FR" type="tns:FR" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DomiciliosRespBC">
+    <xs:sequence>
+      <xs:element name="Domicilio" type="tns:DireccionRespBC" nillable="true" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EmpleosRespBC">
+    <xs:sequence>
+      <xs:element name="Empleo" type="tns:EmpleoRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CuentasRBC">
+    <xs:sequence>
+      <xs:element name="Cuenta" type="tns:CuentasRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CuentasRespBC">
+    <xs:sequence>
+      <xs:element name="FechaActualizacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="RegistroImpugnado" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NombreOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTelefonoOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IdentificadorSociedadInformacionCrediticia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroCuentaActual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IndicadorTipoResponsabilidad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoContrato" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUnidadMonetaria" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ValorActivoValuacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FrecuenciaPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="MontoPagar" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaAperturaCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaUltimoPago" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaUltimaCompra" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaCierreCuenta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaReporte" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ModoReportar" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="UltimaFechaSaldoCero" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Garantia" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CreditoMaximo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SaldoActual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="LimiteCredito" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="SaldoVencido" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroPagosVencidos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FormaPagoActual" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="HistoricoPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaMasRecienteHistoricoPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaMasAntiguaHistoricoPagos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveObservacion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosReportados" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosCalificadosMOP2" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosCalificadosMOP3" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosCalificadosMOP4" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosCalificadosMOP5" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ImporteSaldoMorosidadHistMasGrave" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaHistoricaMorosidadMasGrave" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="MopHistoricoMorosidadMasGrave" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaInicioReestructura" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="MontoUltimoPago" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConsultasEfectuadasRespBC">
+    <xs:sequence>
+      <xs:element name="ConsultaEfectuada" type="tns:ConsultaEfectuadaRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConsultaEfectuadaRespBC">
+    <xs:sequence>
+      <xs:element name="FechaConsulta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IdentificacionBuro" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NombreOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TelefonoOtorgante" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoContrato" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ClaveUnidadMonetaria" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ImporteContrato" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IndicadorTipoResponsabilidad" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ConsumidorNuevo" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ResultadoFinal" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="IdentificadorOrigenConsulta" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ResumenReporteRBC">
+    <xs:sequence>
+      <xs:element name="ResumenReporte" type="tns:ResumenReporteRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ResumenReporteRespBC">
+    <xs:sequence>
+      <xs:element name="FechaIngresoBD" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP7" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP6" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP5" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP4" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP3" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP2" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP1" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP0" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOPUR" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroCuentas" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentasPagosFijosHipotecas" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentasRevolventesAbiertas" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentasCerradas" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentasNegativasActuales" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentasClavesHistoriaNegativa" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CuentasDisputa" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroSolicitudesUltimos6Meses" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NuevaDireccionReportadaUltimos60Dias" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="MensajesAlerta" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ExistenciaDeclaracionesConsumidor" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoMoneda" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalCreditosMaximosRevolventes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalLimitesCreditoRevolventes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalSaldosActualesRevolventes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalSaldosVencidosRevolventes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosRevolventes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="PctLimiteCreditoUtilizadoRevolventes" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalCreditosMaximosPagosFijos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalSaldosActualesPagosFijos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalSaldosVencidosPagosFijos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalPagosPagosFijos" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP96" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP97" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroMOP99" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaAperturaCuentaMasAntigua" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaAperturaCuentaMasReciente" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TotalSolicitudesReporte" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaSolicitudReporteMasReciente" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTotalCuentasDespachoCobranza" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaAperturaCuentaMasRecienteDespachoCobranza" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="NumeroTotalSolicitudesDespachosCobranza" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="FechaSolicitudMasRecienteDespachoCobranza" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HawkAlertCRespBC">
+    <xs:sequence>
+      <xs:element name="HawkAlertC" type="tns:HawkAlertConsultaRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HawkAlertConsultaRespBC">
+    <xs:sequence>
+      <xs:element name="FechaReporte" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodigoClave" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoInstitucion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Mensaje" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HawkAlertDBRespBC">
+    <xs:sequence>
+      <xs:element name="HawkAlertBD" type="tns:HawkAlertBDRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HawkAlertBDRespBC">
+    <xs:sequence>
+      <xs:element name="FechaReporte" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodigoClave" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="TipoInstitucion" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="Mensaje" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DeclaracionesClienteRespBC">
+    <xs:sequence>
+      <xs:element name="DeclaracionConsumidor" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScoreBCRespBC">
+    <xs:sequence>
+      <xs:element name="ScoreBC" type="tns:ScoreBuroCreditoRespBC" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScoreBuroCreditoRespBC">
+    <xs:sequence>
+      <xs:element name="nombreScore" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodigoScore" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="ValorScore" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="CodigoRazon" type="xs:string" maxOccurs="unbounded"></xs:element>
+      <xs:element name="CodigoError" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

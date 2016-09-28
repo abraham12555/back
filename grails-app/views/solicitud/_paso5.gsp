@@ -1,19 +1,30 @@
 <section class="container paddingTop30 paddingBottom20 clearFix contentHeight">
     <div class="padding20">
         <div class="clearFix marginBottom30">
-            <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+            <div  class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
                 <p class="correctaBoxLabel">¿TIENES UNA TARJETA DE CRÉDITO?</p>
-                <div class="correctaBox floatLeft hasCc">
+                <div id="tarjeta_correcto_si" class=" correctaBox floatLeft hasCc">
                     <p class="center paddingTop15 paddingBottom15 ">SI</p>
                 </div>
-                <div class="floatLeft correctaBox">
+                <div  id="tarjeta_correcto_no"  class="floatLeft correctaBox">
                     <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
                 </div>
-                <input type="hidden" name="tCredito" id="tCredito">
+                <input type="hidden" class="formValues textUpper" name="tCredito" id="tCredito" value="${generales?.tCredito}">
             </div>
             <div class="floatLeft col3 col6-tab col12-mob">
                 <p class="gray font14 letterspacing1.1">ÚLTIMOS CUATRO DÍGITOS</p>
-                <input class="inPuts4a marginTop15 headingColor" type="text" disabled id="numeroTarjeta" name="numeroTarjeta" placeholder="0000"/>
+                <input class="inPuts4a marginTop15 headingColor" type="text" disabled id="numeroTarjeta" name="numeroTarjeta" placeholder="0000" maxlength="4"/>
+                
+                <input type="hidden" class="textUpper" disabled id="nombre" name="nombre" value="${personales?.nombre}"/>
+                <input type="hidden" class="textUpper" id="apellidoPaterno" name="apellidoPaterno" value="${personales?.apellidoPaterno}"/>
+                <input type="hidden" class="textUpper" id="apellidoMaterno" name="apellidoMaterno" value="${personales?.apellidoMaterno}"/>
+                <input type="hidden" class="textUpper" id="fechaNac" name="fechaNac" value="${personales?.dia}-${personales?.mes}-${personales?.anio}"/>
+                <input type="hidden" class="textUpper" id="rfc" name="rfc" value="${personales?.rfc}"/>
+                <input type="hidden" class="textUpper" id="calle" name="calle" value="${direccion?.calle}"/>
+                <input type="hidden" class="textUpper" id="noExterior" name="noExterior" value="${direccion?.noExterior}"/>
+                <input type="hidden" class="textUpper" id="noInterior" name="noInterior" value="${direccion?.noInterior}"/>
+                <input type="hidden" class="textUpper" id="colonia" name="colonia" value="${direccion?.colonia}"/>
+                <input type="hidden" class="textUpper" id="municipio" name="municipio" value="${direccion?.municipio}"/>
             </div>
 
             <div class="col5 col12-tab floatLeft marginTop30">
@@ -23,23 +34,23 @@
         <div class="clearFix marginBottom30">
             <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
                 <p class="correctaBoxLabel">¿ERES TÍTULAR DE UN CREDITO HIPOTECARIO?</p>
-                <div class="correctaBox floatLeft hasCc">
+                <div id="hipotecario_correcto_si" class="correctaBox floatLeft hasCc">
                     <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
                 </div>
-                <div class="floatLeft correctaBox">
+                <div id="hipotecario_correcto_no" class="floatLeft correctaBox">
                     <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
                 </div>
-                <input type="hidden" name="creditoH" id="creditoH">
+                <input type="hidden" class="formValues textUpper" name="creditoH" id="creditoH" value="${generales?.creditoH}">
             </div>
             <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
                 <p class="correctaBoxLabel">¿HAZ SIDO TÍTULAR DE UN CREDITO AUTOMOTRIZ EN LOS ÚLTIMOS 24 MESES?</p>
-                <div class="correctaBox floatLeft hasCc">
+                <div id="automotriz_correcto_si" class="correctaBox floatLeft hasCc">
                     <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
                 </div>
-                <div class="floatLeft correctaBox">
+                <div id="automotriz_correcto_no" class="floatLeft correctaBox">
                     <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
                 </div>
-                <input type="hidden" name="creditoA" id="creditoA">
+                <input type="hidden" class="formValues textUpper"  name="creditoA" id="creditoA" value="${generales?.creditoA}">
             </div>
         </div>
         <div id="accionesNormales" class="creditBtns">
@@ -100,3 +111,7 @@
         </div>
     </div>
 </footer>
+
+<div id="modalAutorizacion" class="modal fade" style="display:none;">
+        <g:render template="/templates/solicitud/paso5/autorizacion"/>
+</div>

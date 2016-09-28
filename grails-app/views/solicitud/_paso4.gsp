@@ -40,8 +40,7 @@
                     <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'bancomer.png')}" data-hover="bancomer"/>
                 </div>
                 <div class="width160 brandingBox floatLeft bankButton">
-					<img class="width80 blockAuto"
-						src="${resource(dir:'images', file:'american_express.png')}" data-hover="american_express" />
+					<img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'hsbc.png')}" data-hover="hsbc" />
 				</div>
                 <div class="width160 brandingBox floatLeft bankButton">
                     <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'santander.png')}" data-hover="santander"/>
@@ -54,15 +53,28 @@
                 </div> -->
                 <input type="hidden" name="banco" value="" class="bankChoice formValues"/>
             </div>
-
+            
             <div class="clearFix paddingLeft10">
+                
+            </div>
+
+            <div class="clearFix paddingLeft10 formLoginBank hide" >
                 <input type="hidden" id="intentos" value="0"/>
-                <div class="floatLeft paddingTop20 col6 col6-tab col12-mob">
-                    <p class=" marginBottom15 gray font14">NÚMERO DE CLIENTE</p>
-                    <input class="inPuts4a formValues textUpper headingColor" type="text" id="login" name="login" placeholder="no. de cliente"/>
+                
+                <div class="floatLeft paddingTop20 col4 col4-tab col4-mob loginMethodHsbc hide">
+                    <p class=" marginBottom15 gray font14 messageSelectBank"></p>
+                    <select name="login_method" id="login_method" class="formulariOptions  formValues notEmpty headingColor" style="font-size: 16px;">
+                    	<option value="1">Con OTP</option>
+                    	<option value="2">Sin OTP</option>
+                    </select>
                 </div>
-                <div class="floatLeft paddingTop20 col6 col6-tab col12-mob">
-                    <p class=" marginBottom15 gray font14">CLAVE</p>
+                
+                <div class="floatLeft paddingTop20 col4 col4-tab col4-mob messageLoginBankDiv" >
+                    <p class=" marginBottom15 gray font14 messageLoginBank"></p>
+                    <input class="inPuts4a formValues textUpper headingColor" type="text" id="login" name="login" placeholder=""/>
+                </div>
+                <div class="floatLeft paddingTop20 col4 col4-tab col4-mob messagePasswordBankDiv">
+                    <p class=" marginBottom15 gray font14 messagePasswordBank"></p>
                     <input class="inPuts4a formValues headingColor" type="password" id="password" name="password" placeholder="·······"/>
                 </div>
                 

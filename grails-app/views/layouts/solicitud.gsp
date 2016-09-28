@@ -15,6 +15,7 @@
         <g:external dir="css" file="progressbar.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery-ui.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="animate.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
         <g:external dir="js" file="google.js" />
         <g:external dir="js" file="facebook.js" />

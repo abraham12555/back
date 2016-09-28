@@ -155,6 +155,7 @@ public class SaltEdge {
 		return calendar.getTimeInMillis();
 	}
 
+	/*
 	private String generateSignature(String method, long expires, String url,String postBody) {
 		String signature = String.format("%d|%s|%s|%s", expires, method, url,
 				postBody);
@@ -172,6 +173,7 @@ public class SaltEdge {
 
 		return Base64.toBase64String(shaSignature);
 	}
+	*/
 
 	private byte[] sign(byte[] bytes) throws SignatureException, PEMException {
 		KeyPair keyPair = null;

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="WSConsultaService" targetNamespace="http://bean.consulta.ws.bc.com/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://bean.consulta.ws.bc.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://bean.consulta.ws.bc.com/" schemaLocation="WSConsultaService_schema1.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="consultaCCResponse">
+    <part name="parameters" element="tns:consultaCCResponse">
+    </part>
+  </message>
+  <message name="consultaCC">
+    <part name="parameters" element="tns:consultaCC">
+    </part>
+  </message>
+  <message name="consultaXML">
+    <part name="parameters" element="tns:consultaXML">
+    </part>
+  </message>
+  <message name="consultaXMLResponse">
+    <part name="parameters" element="tns:consultaXMLResponse">
+    </part>
+  </message>
+  <message name="consultaPDFResponse">
+    <part name="parameters" element="tns:consultaPDFResponse">
+    </part>
+  </message>
+  <message name="consultaPDF">
+    <part name="parameters" element="tns:consultaPDF">
+    </part>
+  </message>
+  <portType name="WSConsultaDelegate">
+    <operation name="consultaCC">
+      <input message="tns:consultaCC">
+    </input>
+      <output message="tns:consultaCCResponse">
+    </output>
+    </operation>
+    <operation name="consultaXML">
+      <input message="tns:consultaXML">
+    </input>
+      <output message="tns:consultaXMLResponse">
+    </output>
+    </operation>
+    <operation name="consultaPDF">
+      <input message="tns:consultaPDF">
+    </input>
+      <output message="tns:consultaPDFResponse">
+    </output>
+    </operation>
+  </portType>
+  <binding name="WSConsultaPortBinding" type="tns:WSConsultaDelegate">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="consultaCC">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="consultaXML">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="consultaPDF">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="WSConsultaService">
+    <port name="WSConsultaPort" binding="tns:WSConsultaPortBinding">
+      <soap:address location="http://128.9.55.14:9080/WSConsultaBCC/WSConsultaService"/>
+    </port>
+  </service>
+</definitions>

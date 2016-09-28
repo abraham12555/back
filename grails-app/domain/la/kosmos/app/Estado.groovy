@@ -3,6 +3,7 @@ package la.kosmos.app
 class Estado implements Serializable{
 
     String nombre
+	String siglasrenapo
     
     static constraints = {
         nombre (blank: false)
