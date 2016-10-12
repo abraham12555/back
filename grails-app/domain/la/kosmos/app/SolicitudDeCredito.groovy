@@ -3,13 +3,19 @@ package la.kosmos.app
 class SolicitudDeCredito implements Serializable{
 
     Date fechaDeSolicitud
-    String usuarioQueSolicita//TODO cambiar por el id de usuario resultante 
-    StatusDeSolicitud statusDeSolicitud//del logueo con facebook, linkedin y google
+    Cliente cliente
+    StatusDeSolicitud statusDeSolicitud
+    String folio
+    EntidadFinanciera entidadFinanciera
+    PuntoDeVenta puntoDeVenta
     
     static constraints = {
         fechaDeSolicitud (nullable: false)
-        usuarioQueSolicita (nullable: false)
+        cliente (nullable: false)
         statusDeSolicitud (nullable: false)
+        folio (nullable: false)
+        entidadFinanciera (nullable: false)
+        puntoDeVenta (nullable: false)
     }
     
     static mapping = {
