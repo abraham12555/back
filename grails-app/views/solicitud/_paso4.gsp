@@ -61,27 +61,27 @@
             <div class="clearFix paddingLeft10 formLoginBank hide" >
                 <input type="hidden" id="intentos" value="0"/>
                 
-                <div class="floatLeft paddingTop20 col4 col4-tab col4-mob loginMethodHsbc hide">
+                <div class="floatLeft paddingTop20 col2 col2-tab col2-mob loginMethodHsbc hide">
                     <p class=" marginBottom15 gray font14 messageSelectBank"></p>
                     <select name="login_method" id="login_method" class="formulariOptions  formValues notEmpty headingColor" style="font-size: 16px;">
-                    	<option value="1">Con OTP</option>
-                    	<option value="2">Sin OTP</option>
+                    	<option value="Con OTP">Con OTP</option>
+                    	<option value="Sin OTP">Sin OTP</option>
                     </select>
                 </div>
                 
-                <div class="floatLeft paddingTop20 col4 col4-tab col4-mob messageLoginBankDiv" >
+                <div class="floatLeft paddingTop20 col3 col3-tab col3-mob messageLoginBankDiv" >
                     <p class=" marginBottom15 gray font14 messageLoginBank"></p>
-                    <input class="inPuts4a formValues textUpper headingColor" type="text" id="login" name="login" placeholder=""/>
+                    <input class="inPuts4a formValues  headingColor" type="text" id="login" name="login" placeholder=""/>
                 </div>
-                <div class="floatLeft paddingTop20 col4 col4-tab col4-mob messagePasswordBankDiv">
+                <div class="floatLeft paddingTop20 col3 col3-tab col3-mob messagePasswordBankDiv">
                     <p class=" marginBottom15 gray font14 messagePasswordBank"></p>
                     <input class="inPuts4a formValues headingColor" type="password" id="password" name="password" placeholder="·······"/>
                 </div>
                 
-                <!-- div class="floatLeft paddingTop20 col4 col6-tab col12-mob">
-                    <p class=" marginBottom15 gray font14">TOKEN O PIN</p>
-                    <input class="inPuts4a formValues headingColor" type="text" id="tokenNo" name="tokenNo" placeholder="000000"/>
-                </div-->
+                <div class="floatLeft paddingTop20 col3 col3-tab col3-mob loginMethodHsbc messageMemorableDiv hide">
+                    <p class=" marginBottom15 gray font14 messageMemorable"></p>
+                    <input class="inPuts4a formValues headingColor" type="password" id="memorable" name="memorable" placeholder="DDMMAAAA" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" />
+                </div>
             </div>
 
             <div id="accionesNormal" class="paddingTop20 clearFix">

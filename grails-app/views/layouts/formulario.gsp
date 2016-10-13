@@ -21,6 +21,8 @@
         <g:external dir="js" file="photobooth_min.js" />
         <g:external dir="js" file="dropzone.js" />
         <g:external dir="js" file="formulario.js" />
+        <g:external dir="js" file="jquery.countdown.min.js" />
+        
     </head>
     <body>
         <header class="topHeader">

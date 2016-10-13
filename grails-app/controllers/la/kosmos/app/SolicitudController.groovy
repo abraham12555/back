@@ -77,6 +77,7 @@ class SolicitudController {
             def login = fixJson(saltEdgeService.findLogin(request.customer_id))
             def credentials = [:]
             request.provider_code = request.provider_code + "_mx"
+			println "PARAMETROS:"+request
             switch (request.provider_code) {
             case "bancomer_mx":
                 credentials.account = request.login
@@ -86,6 +87,9 @@ class SolicitudController {
 				credentials.login = request.login
 				credentials.password = request.password
 				credentials.login_method = request.login_method
+				if(request.login_method == "Sin OTP"){
+					credentials.memorable = request.memorable	
+				}
 				break;
             default:
                 credentials.login = request.login
@@ -173,21 +177,36 @@ class SolicitudController {
     def accountsResume(def login_id){
         def accounts_resume = []
         def accounts = saltEdgeService.accounts(login_id)
+		int index=0
         accounts.data.collect { account ->
             def account_temp = 	transactions(account.id)
             def account_resume = [:]
             def datosPaso = [:]
             account_resume.depositoPromedio = account_temp.depositoPromedio
             account_resume.retiroPromedio = account_temp.retiroPromedio
-            account_resume.saldoPromedio = account_temp.saldoPromedio
-            accounts_resume.add(account_resume)
-            if(account_temp.depositoPromedio != 0){  //Verificar Al Momento solo es una cuenta que no este en 0
+			//OBTENEMOS EL SALDO DE LA CUENTA
+            //account_resume.saldoPromedio = account_temp.saldoPromedio
+			account_resume.saldoPromedio = account.balance
+			account_resume.nature = account.nature
+			if(account.balance != 0 && (account.nature == "account" || account.nature == "checking") ){ 
+				//println "SEL CUENTA::"+ account.balance + " TIPO " + account.nature
+				datosPaso.depositoPromedio = account_resume.depositoPromedio
+				datosPaso.retiroPromedio = account_resume.retiroPromedio
+				datosPaso.saldoPromedio = account_resume.saldoPromedio
+				datosPaso.login_id=login_id
+				session["datosPaso4"] = datosPaso
+				account_resume.select=index
+			}
+			accounts_resume.add(account_resume)
+			index++
+			
+			/*if(account_temp.depositoPromedio != 0){  //Verificar Al Momento solo es una cuenta que no este en 0
                 datosPaso.depositoPromedio = account_resume.depositoPromedio
                 datosPaso.retiroPromedio = account_resume.retiroPromedio
                 datosPaso.saldoPromedio = account_resume.saldoPromedio
                 datosPaso.login_id=login_id
                 session["datosPaso4"] = datosPaso
-            }
+            }*/
         }
         return accounts_resume
     }
@@ -651,7 +670,6 @@ class SolicitudController {
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
             } else if(paso == 5){
 				def municipio = null
-				println "DATPS::"+session["datosPaso2"]
 				if(session["datosPaso2"] != null && session["datosPaso2"].municipio){
 					municipio= Municipio.findById(session["datosPaso2"].municipio)
 				}

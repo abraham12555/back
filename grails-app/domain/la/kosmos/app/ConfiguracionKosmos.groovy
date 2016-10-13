@@ -7,13 +7,43 @@ class ConfiguracionKosmos implements Serializable{
     String usuarioEphesoft
     String passwdEphesoft
     String pathDocumentos
-    
+	
+	String urlBuroCredito
+	String encabezadoVersion
+	String encabezadoProductoRequerido
+	String encabezadoClavePais
+	String encabezadoIdentificadorBuro
+	String encabezadoClaveUsuario
+	String encabezadoPassword
+	String encabezadoTipoConsulta
+	String encabezadoTipoContrato
+	String encabezadoClaveUnidadMonetaria
+	String encabezadoIdioma
+	String encabezadoTipoSalida
+	String autenticaTipoReporte
+	String autenticaTipoSalidaAU
+	
+	
     static constraints = {
         urlEphesoft (nullable: false)
         batchClassEphesoft (nullable: false)
         usuarioEphesoft (nullable: false)
         passwdEphesoft (nullable: false)
         pathDocumentos (nullable: false)
+		urlBuroCredito (nullable: true)
+		encabezadoVersion (nullable: true)
+		encabezadoProductoRequerido (nullable: true)
+		encabezadoClavePais (nullable: true)
+		encabezadoIdentificadorBuro (nullable: true)
+		encabezadoClaveUsuario (nullable: true)
+		encabezadoPassword (nullable: true)
+		encabezadoTipoConsulta (nullable: true)
+		encabezadoTipoContrato (nullable: true)
+		encabezadoClaveUnidadMonetaria (nullable: true)
+		encabezadoIdioma (nullable: true)
+		encabezadoTipoSalida (nullable: true)
+		autenticaTipoReporte (nullable: true)
+		autenticaTipoSalidaAU (nullable: true)
     }
     
     static mapping = {

@@ -5,6 +5,7 @@ class SolicitudDeCredito implements Serializable{
     Date fechaDeSolicitud
     String usuarioQueSolicita//TODO cambiar por el id de usuario resultante 
     StatusDeSolicitud statusDeSolicitud//del logueo con facebook, linkedin y google
+	ReporteBuroCredito reporteBuroCredito
     
     static constraints = {
         fechaDeSolicitud (nullable: false)
