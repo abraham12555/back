@@ -368,7 +368,6 @@ function operacionesPaso4() {
             $('img', this).attr('src', thisSrc);
         }
         $(this).addClass('active_green');
-<<<<<<< HEAD
         
         $('.formLoginBank').removeClass('hide').delay( 1000 ).addClass('animated flipInX');
         
@@ -393,42 +392,11 @@ function operacionesPaso4() {
         }else if (bankChoice === "banorte"){
         	fixLoginView(6);
         	$('.messageLoginBank').text("USUARIO");
-=======
-
-        $('.formLoginBank').removeClass('hide').delay(1000).addClass('animated flipInX');
-
-        if (bankChoice === "banamex") {
-            fixLoginView(6);
-            $('.loginMethodHsbc').fadeOut();
-            $('.messageLoginBank').text("NÚMERO DE CLIENTE");
-            $('.messagePasswordBank').text("CLAVE DE ACCESO");
-        } else if (bankChoice === "bancomer") {
-            fixLoginView(6);
-            $('.loginMethodHsbc').fadeOut();
-            $('.messageLoginBank').text("TARJETA");
-            $('.messagePasswordBank').text("CONTRASEÑA");
-        } else if (bankChoice === "hsbc") {
-            fixLoginView(4);
-            $('.messageLoginBank').text("USUARIO");
-            $('.messagePasswordBank').text("PASSWORD");
-            $('.messageSelectBank').text("MÉTODO DE AUTENTIFICACIÓN");
-        } else if (bankChoice === "santander") {
-            fixLoginView(6);
-            $('.loginMethodHsbc').fadeOut();
-            $('.messageLoginBank').text("USUARIO");
-            $('.messagePasswordBank').text("CLAVE");
-        } else if (bankChoice === "banorte") {
-            fixLoginView(6);
-            $('.loginMethodHsbc').fadeOut();
-            $('.messageLoginBank').text("USUARIO");
->>>>>>> origin/master
             $('.messagePasswordBank').text("CONTRASEÑA");
         }
         $('.bankChoice').val(bankChoice);
         $('.bankChoice').addClass('notEmpty');
-    });
-<<<<<<< HEAD
-    
+    });    
     function fixLoginView(tipo){
     	if (tipo === 6) {
     		$('.messageLoginBankDiv').removeClass('col3');
@@ -445,9 +413,7 @@ function operacionesPaso4() {
     		$('.messagePasswordBankDiv').addClass('col6-tab');
     		$('.messagePasswordBankDiv').addClass('col6-mob');
     		
-            //$('.messageLoginBankDiv').delay( 2 ).fadeOut().fadeIn();
-        	//$('.messagePasswordBankDiv').delay( 2 ).fadeOut().fadeIn();
-    		$('.loginMethodHsbc').fadeOut();
+            $('.loginMethodHsbc').fadeOut();
     		
         }
     	if (tipo === 3) {
@@ -487,8 +453,6 @@ function operacionesPaso4() {
 	        $('.messageMemorableDiv').fadeIn();
     	}
     }
-    
-=======
 
     function fixLoginView(tipo) {
         if (tipo === 6) {
@@ -531,7 +495,6 @@ function operacionesPaso4() {
         }
     }
 
->>>>>>> origin/master
     $('.consultarBox').click(function () {
 
         if (!$(this).hasClass('exito')) {
@@ -737,15 +700,7 @@ function operacionesPaso5() {
     $('#automotriz_correcto_no').click(function () {
         $('#creditoA').val("NO");
     });
-<<<<<<< HEAD
-    
-    
     //@Deprecated
-=======
-
-
-
->>>>>>> origin/master
     $('.marcoLegalCorrectaBox_SI').click(function () {
         $('#autorizacionForm').fadeOut();
         $('#autorizacionLoading').delay(600).addClass('animated bounceIn').fadeIn();
