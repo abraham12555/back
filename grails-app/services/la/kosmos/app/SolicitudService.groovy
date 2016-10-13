@@ -1,9 +1,12 @@
 package la.kosmos.app
 
 import grails.transaction.Transactional
+import groovy.sql.Sql
 
 @Transactional
 class SolicitudService {
+    
+    def dataSource
 
     def construirDatosTemporales(def params, def pasoEnviado, def idCliente) {
         println "Parametros Enviados: "+ params +" - Paso Enviado: " +pasoEnviado + " - Para el Cliente: " + idCliente
@@ -30,8 +33,14 @@ class SolicitudService {
             if(idCliente){
                 cliente = Cliente.get(idCliente as long)
             } else {
-                cliente = new Cliente()
-                clienteNuevo = true
+                cliente = Cliente.findByCurp(datosPaso.curp)
+                if(!cliente) {
+                    cliente = Cliente.findByRfc(datosPaso.rfc)
+                    if(!cliente) {
+                        cliente = new Cliente()
+                        clienteNuevo = true
+                    }
+                }
             }
             cliente.nombre = datosPaso.nombre
             cliente.apellidoPaterno = datosPaso.apellidoPaterno
@@ -49,8 +58,41 @@ class SolicitudService {
             if(cliente.save(flush:true)){
                 println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
                 if(clienteNuevo){
+                    def telefonoCasa = new TelefonoCliente()
+                    def telefonoCelular = new TelefonoCliente()
+                    def solicitudDeCredito = new SolicitudDeCredito()
+                    def sql = new Sql(dataSource)
+                    telefonoCasa.cliente = cliente
+                    telefonoCasa.numeroTelefonico = datosPaso.numeroCasa
+                    telefonoCasa.vigente = true
+                    telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
+                    telefonoCelular.cliente = cliente
+                    telefonoCelular.numeroTelefonico = datosPaso.numeroCelular
+                    telefonoCelular.vigente = true
+                    telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
+                    solicitudDeCredito.fechaDeSolicitud = new Date()
+                    solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
+                    solicitudDeCredito.entidadFinanciera = EntidadFinanciera.get(1)
+                    solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
+                    solicitudDeCredito.cliente = cliente
+                    telefonoCasa.save(flush: true)
+                    telefonoCelular.save(flush: true)
+                    solicitudDeCredito.save(flush: true)
                     datosPaso.clienteGenerado = true
                     datosPaso.idCliente = cliente.id
+                    datosPaso.idSolicitud = solicitudDeCredito.id
+
+                } else {
+                    def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
+                    telefonosCliente?.each {
+                        if(it.tipoDeTelefono.id == 1) {
+                            it.numeroTelefonico = datosPaso.numeroCasa
+                            it.save(flush:true)
+                        } else if(it.tipoDeTelefono.id == 2) {
+                            it.numeroTelefonico = datosPaso.numeroCelular
+                            it.save(flush:true)
+                        }
+                    }
                 }
             } else {
                 if (cliente.hasErrors()) {

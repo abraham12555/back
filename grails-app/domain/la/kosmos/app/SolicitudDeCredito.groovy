@@ -15,7 +15,7 @@ class SolicitudDeCredito implements Serializable{
         statusDeSolicitud (nullable: false)
         folio (nullable: false)
         entidadFinanciera (nullable: false)
-        puntoDeVenta (nullable: false)
+        puntoDeVenta (nullable: true)
     }
     
     static mapping = {

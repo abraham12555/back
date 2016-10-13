@@ -49,6 +49,9 @@ class SolicitudController {
         session["datosPaso6"] = null
         session.respuestaEphesoft = null
         session.tiposDeDocumento = null
+        session.idCliente = null
+        session.datosLogin = null
+        session.yaUsoLogin = null
         redirect action: "formulario"
     }
 	
@@ -463,9 +466,10 @@ class SolicitudController {
             def modelo = [:]
             def paso =  params.siguientePaso as int
             def pasoAnterior =  params.pasoAnterior as int
-            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.idCLiente)
+            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.idCliente)
             if(session[("datosPaso" + pasoAnterior)]?.clienteGenerado){
-                session.idCLiente = session[("datosPaso" + pasoAnterior)]?.idCliente
+                session.idCliente = session[("datosPaso" + pasoAnterior)]?.idCliente
+                session.idSolicitud = session[("datosPaso" + pasoAnterior)]?.idSolicitud
             }
             if(paso == 1 || paso == 2){
                 session[("datosPaso" + paso)]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
