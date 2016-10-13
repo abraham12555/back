@@ -27,12 +27,12 @@ class SolicitudController {
     def solicitudService
 	
     def saltEdgeService
-	def buroDeCreditoService
+    def buroDeCreditoService
 	
     int timeWait = 500
     def maximumAttempts = 100
     def formatoFecha = "dd-MM-yyyy"
-	def razonSocial = "Kosmos Soluciones Digitales JS, SA de CV"
+    def razonSocial = "Kosmos Soluciones Digitales JS, SA de CV"
 		                       
     def jsonSlurper = new JsonSlurper()
     grails.gsp.PageRenderer groovyPageRenderer
@@ -40,7 +40,20 @@ class SolicitudController {
 
 	
 	
-    def index() { }
+    def index() {
+        session["datosPaso1"] = null
+        session["datosPaso2"] = null
+        session["datosPaso3"] = null
+        session["datosPaso4"] = null
+        session["datosPaso5"] = null
+        session["datosPaso6"] = null
+        session.respuestaEphesoft = null
+        session.tiposDeDocumento = null
+        session.idCliente = null
+        session.datosLogin = null
+        session.yaUsoLogin = null
+        redirect action: "formulario"
+    }
 	
     def login(){
         session["datosPaso1"] = null
@@ -97,7 +110,7 @@ class SolicitudController {
                 break;
             }
 			
-			println "CREDENCIALES-------"+credentials
+            println "CREDENCIALES-------"+credentials
 			
             if (login.data == null) {
                 println "Creando Login"
@@ -383,32 +396,6 @@ class SolicitudController {
         return accountResume 
     }
 	
-    def paso_1(){
-        //params.datos_fb="{\"id\": \"1273758305972971\",\"name\": \"Jorge Medina\",\"birthday\": \"04/24/1985\",\"education\": [{\"school\": {\"id\": \"329234880539960\",\"name\": \"Instituto Tecnológico de Toluca\"},\"type\": \"High School\",\"year\": {\"id\": \"141778012509913\",\"name\": \"2008\"},\"id\": \"360611733954304\"},{\"concentration\": [{\"id\": \"149668418423502\",\"name\": \"Sistemas Computacionales\"}],\"degree\": {\"id\": \"195120407185348\",\"name\": \"13/02/2009\"},\"school\": {\"id\": \"113846665298870\",\"name\": \"Instituto Tecnologico de Toluca\"},\"type\": \"College\",\"id\": \"208314902517322\"}],\"email\": \"tazvoit@hotmail.com\",\"first_name\": \"Jorge\",\"gender\": \"male\",\"last_name\": \"Medina\",\"picture\": {\"data\": {\"is_silhouette\": false,\"url\": \"https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/13100952_1327839547231513_1803219328987116718_n.jpg?oh=3d8f6deb02926a473ac77bebcf2ddb85&oe=57F1E029\"}},\"relationship_status\": \"Casado\"}";
-        def tipo_login;
-        def datos_login;
-        if(params.datos_fb.toString()!= 'null'){
-            System.out.println(":: Se inicio Sesión con FB ::"+params.datos_fb.toString());
-            datos_login = params.datos_fb.toString()
-            tipo_login="FB";
-        }else if(params.datos_google.toString()!= 'null'){
-            System.out.println(":: Se inicio Sesión con Google ::"+params.datos_google.toString());
-            datos_login = params.datos_google.toString();
-            tipo_login="Google";
-        }else{
-            System.out.println(":: No se inicio Sesión ::");
-            tipo_login="none";
-        }
-
-        [nacionalidadList:Nacionalidad.findAll(),
-            estadoCivilList:EstadoCivil.findAll(),
-            estadoList:Estado.findAll(),
-            municipioList:Municipio.findAll(),
-            temporalidadList:Temporalidad.findAll(),
-            datos_login:datos_login,
-            tipo_login:tipo_login]
-    }
-    
     def formulario() {
         println params
         def tipoLogin;
@@ -426,217 +413,70 @@ class SolicitudController {
                 tipoLogin="Google";
                 params.remove("datosGoogle")
             }
+            session.yaUsoLogin=true
         } else if (params.origen == 'noLogin'){
             println(":: No se inicio Sesión ::");
             tipoLogin="none";
+            session.yaUsoLogin=true
         }
+        def paso
+        def templateContent
         if(params.paso) {
             println "Paso a mostrar: " + params.paso
-            def paso = params.paso as int
-            def templateContent
-            switch (paso) {
-            case 1:
-                println "paso1"
-                modelo = [estadoList:Estado.findAll(),
-                    estadoCivilList:EstadoCivil.findAll(),
-                    temporalidadList:Temporalidad.findAll(),
-                    escolaridadList:NivelEducativo.findAll(),
-                    generoList: Genero.list(),
-                    datosLogin:datosLogin,
-                    tipoLogin:tipoLogin,
-                    paso:paso, generales:  (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
-                break;
-            case 2:
-                println "paso2"
-                modelo = [estadoList:Estado.findAll(),
-                    municipioList:Municipio.findAll(),
-                    tiposDeVivienda: TipoDeVivienda.findAllWhere(activo:true),
-                    temporalidadList:Temporalidad.findAll(),
-                    paso:paso, generales: (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
-                break;
-            case 3:
-                println "paso3"
-                modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso, generales: session[("datosPaso" + paso)]]
-                break;
-            case 4:
-                println "paso4"
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
-                break;
-            case 5:
-                println "paso5"
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
-                break;
-            case 6:
-                println "paso6"
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]
-                break;
-            case 7:
-                println "paso7"
-                modelo = [paso:paso]
-                break;
-            case 8:
-                println "paso8"
-                modelo = [paso:paso]
-                break;
-            }
-            params.remove("origen")
-            params.remove("paso")
-            modelo
+            paso = params.paso as int
         } else {
             println "No se recibio el parametro ...."
-            modelo = [error: "La ruta especificada no existe"]
-            render(template: "error", model: modelo)
+            paso = 1
         }
-    }
-
-    def paso1_1() {
-        //DATOS DE USUARIO.
-        Cliente cliente;
-        if (session["cliente"] instanceof Cliente) {
-            System.out.println("Variable en Sesion");
-            cliente = session["cliente"]
-        } else {
-            System.out.println("Creando Variable");
-            cliente = new Cliente();
-        }
-
-        String[] nombre = params.NOMBRE_USUARIO.toString().split(" ");
-        int num = nombre.size()
-        switch (num) {
+        switch (paso) {
         case 1:
-            cliente.setNombre(nombre[0]);
+            println "paso1"
+            modelo = [estadoList:Estado.findAll(),
+                estadoCivilList:EstadoCivil.findAll(),
+                temporalidadList:Temporalidad.findAll(),
+                escolaridadList:NivelEducativo.findAll(),
+                generoList: Genero.list(),
+                datosLogin:datosLogin,
+                tipoLogin:tipoLogin,
+                logueado: session.yaUsoLogin,
+                paso:paso, generales:  (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
             break;
-
         case 2:
-            cliente.setNombre(nombre[0]);
-            cliente.setApellidoPaterno(nombre[1]);
+            println "paso2"
+            modelo = [estadoList:Estado.findAll(),
+                municipioList:Municipio.findAll(),
+                tiposDeVivienda: TipoDeVivienda.findAllWhere(activo:true),
+                temporalidadList:Temporalidad.findAll(),
+                paso:paso, generales: (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
             break;
-
         case 3:
-            cliente.setNombre(nombre[0]);
-            cliente.setApellidoPaterno(nombre[1]);
-            cliente.setApellidoMaterno(nombre[2]);
+            println "paso3"
+            modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso, generales: session[("datosPaso" + paso)]]
             break;
-
+        case 4:
+            println "paso4"
+            modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
+            break;
+        case 5:
+            println "paso5"
+            modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
+            break;
+        case 6:
+            println "paso6"
+            modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]
+            break;
+        case 7:
+            println "paso7"
+            modelo = [paso:paso]
+            break;
+        case 8:
+            println "paso8"
+            modelo = [paso:paso]
+            break;
         }
-
-        System.out.println("Nacionalidad" + params);
-        String date_s = params.ANIO + "/" + params.MES + "/" + params.DIA;
-        SimpleDateFormat dt = new SimpleDateFormat("yyyyy/mm/dd");
-        Date fechaNacimiento = dt.parse(date_s);
-        cliente.fechaDeNacimiento = fechaNacimiento;
-        cliente.nacionalidad = Nacionalidad.findById(new Integer(params.nacionalidad))
-        cliente.genero = Genero.findById(1);
-        cliente.estadoCivil = EstadoCivil.findByNombre(params.ESTADO_CIVIL);
-        session["cliente"] = cliente;
-
-        render "paso1_1"
-    }
-
-    def paso1_2(){
-        //DATOS COMPLEMENTARIOS CLIENTE
-        ArrayList<TelefonoCliente> telefonos
-        if( session["telefonosCliente"] instanceof ArrayList){
-            telefonos = session["telefonosCliente"]
-        }else{
-            telefonos = new ArrayList<TelefonoCliente>();
-        }
-
-        TelefonoCliente  telefonoCliente = new TelefonoCliente()
-        telefonoCliente.setNumeroTelefonico(params.telephone);
-        telefonoCliente.setTipoDeTelefono(TipoDeTelefono.findById(1));
-        //telefonoCliente.setCliente(cliente);
-        telefonos.add(telefonoCliente);
-        telefonoCliente = new TelefonoCliente();
-        telefonoCliente.setNumeroTelefonico(params.cellphone);
-        telefonoCliente.setTipoDeTelefono(TipoDeTelefono.findById(2));
-        //telefonoCliente.setCliente(cliente);
-        telefonos.add(telefonoCliente);
-
-        session["telefonosCliente"] = telefonos;
-        System.out.println("NUMEROS TELEFONICOS CLIENTE OK" +params);
-
-        render "paso1_2"
-    }
-
-    def paso2_1(){
-        //DIRECCION DEL CLIENTE
-        DireccionCliente  direccion = new DireccionCliente();
-        if( session["direccion"] instanceof DireccionCliente){
-            System.out.println("Variable en Sesion");
-            direccion =  session["direccion"];
-        }else{
-            direccion = new DireccionCliente();
-        }
-
-        direccion.setCalle(params.calle);
-        direccion.setNumeroExterior(params.noexterior);
-        direccion.setNumeroInterior(params.nointerior);
-        direccion.setCodigoPostal(params.codigopostal);
-
-        //Colonia colonia=Colonia.findById(new Integer(params.colonia));
-        Municipio municipio = colonia.getMunicipio()
-        direccion.setColonia(colonia);
-        direccion.setMunicipio(municipio)
-        direccion.setEstado(municipio.getEstado())
-        //direccion.cliente=cliente;
-
-        session["direccion"] = direccion;
-
-        render "paso2_1"
-    }
-
-    def paso3_1(){
-        EmpleoCliente empleoCliente =  new EmpleoCliente();
-        if( session["empleoCliente"] instanceof EmpleoCliente){
-            System.out.println("Variable en Sesion");
-            empleoCliente  = session["empleoCliente"]
-        }else{
-            empleoCliente =  new EmpleoCliente();
-        }
-        empleoCliente.nombreDeLaEmpresa=params.empresa;
-        empleoCliente.puesto=params.puesto;
-        empleoCliente.antiguedad=new Integer(params.periodo);
-        empleoCliente.temporalidad=Temporalidad.findById(new Integer(params.contrato));
-
-        session["empleoCliente"] = empleoCliente;
-        System.out.println( "EMPLEO CLIENTE OK" +params)
-        redirect(action: "guardarCliente" )
-
-
-    }
-
-    def guardarCliente(){
-        if( session["cliente"] instanceof Cliente){
-            System.out.println("Variable en Sesion Final ");
-
-            Cliente cliente = session["cliente"]
-            cliente.save(flush:true);
-            System.out.println("REGISTROS cliente" + cliente.toString());
-            EmpleoCliente empleoCliente = session["empleoCliente"]
-            empleoCliente.cliente=cliente;
-            empleoCliente.save(flush:true);
-            System.out.println("REGISTROS empleoCliente" + empleoCliente.toString());
-            DireccionCliente  direccion = session["direccion"]
-            direccion.cliente=cliente;
-            direccion.save(flush:true);
-            System.out.println("REGISTROS direccion" + direccion.toString());
-            ArrayList<TelefonoCliente> telefonos = session["telefonosCliente"]
-            for(int i=0;i<telefonos.size();i++){
-                TelefonoCliente tel = telefonos.get(i);
-                tel.cliente=cliente;
-                tel.save(flush:true);
-                System.out.println("REGISTROS tel" + tel.toString());
-            }
-            System.out.println("REGISTROS GUARDADO" + cliente.toString());
-            redirect(action: "paso4_1")
-
-        }else{
-            System.out.println("ERROR NO SE PUE GUARDAR")
-            redirect(action: "error")
-        }
-        render "paso3_1"
-
+        params.remove("origen")
+        params.remove("paso")
+        modelo
     }
 
     def cambiarPaso(){
@@ -645,7 +485,11 @@ class SolicitudController {
             def modelo = [:]
             def paso =  params.siguientePaso as int
             def pasoAnterior =  params.pasoAnterior as int
-            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior)
+            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.idCliente)
+            if(session[("datosPaso" + pasoAnterior)]?.clienteGenerado){
+                session.idCliente = session[("datosPaso" + pasoAnterior)]?.idCliente
+                session.idSolicitud = session[("datosPaso" + pasoAnterior)]?.idSolicitud
+            }
             if(paso == 1 || paso == 2){
                 session[("datosPaso" + paso)]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
             } 
@@ -657,6 +501,7 @@ class SolicitudController {
                     generoList: Genero.list(),
                     datosLogin:session.datosLogin,
                     tipoLogin:session.tipoLogin,
+                    logueado: session.yaUsoLogin,
                     paso:paso, generales: (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
             } else if(paso == 2){
                 modelo = [estadoList:Estado.findAll(),
@@ -676,6 +521,8 @@ class SolicitudController {
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)], personales: session[("datosPaso" + 1)], direccion: session[("datosPaso" + 2)],municipio:municipio,razonSocial:razonSocial]
             } else if(paso == 6){
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]
+            }  else if(paso == 8){
+                //TODO guardar todo
             }
             render(template: ("paso"+params.siguientePaso), model: modelo)
         }
@@ -739,7 +586,7 @@ class SolicitudController {
     
     def consultarBuroDeCredito(){
         println "CONSULTA DE BURO DE CREDITO...." 
-		def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["datosPaso1"],session["datosPaso2"])
+        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["datosPaso1"],session["datosPaso2"])
         render respuesta as JSON
     }
     

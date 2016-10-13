@@ -62,10 +62,10 @@
                     de&nbsp;
                     <span class="width200 inline selectWrap">
                         <g:if test="${generales?.mes}">
-                            <g:select id="mes" name="mes" class="formulariOptions formValues notEmpty headingColor"  from="${['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']}" noSelection="['':'Mes']" value="${generales?.mes}"/>
+                            <g:select id="mes" name="mes" class="formulariOptions formValues notEmpty headingColor" from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?.mes}"/>
                         </g:if>
                         <g:else>
-                            <g:select id="mes" name="mes" class="formulariOptions gray formValues "  from="${['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']}" noSelection="['':'Mes']" value="${generales?.mes}"/>
+                            <g:select id="mes" name="mes" class="formulariOptions gray formValues " from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?.mes}"/>
                         </g:else>
                     </span>
                     <span class="afterSelect">
@@ -153,10 +153,10 @@
                 <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.numeroCelular}"> notEmpty headingColor </g:if>" name="celular" id="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)" value="${generales?.numeroCelular}">.
                 </span>
                 <span class="hide showOnFill"> Mi RFC es
-                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.rfc}"> notEmpty headingColor </g:if>" name="rfc" id="rfc" maxlength="13" placeholder="AAAA000000AZ0" value="${generales?.rfc}">
+                <input type="text" style="width:240px;" class="inputsFormulario headingColor formValues <g:if test="${generales?.rfc}"> notEmpty headingColor </g:if>" name="rfc" id="rfc" maxlength="13" placeholder="AAAA000000AZ0" value="${generales?.rfc}">
                 </span>
                 <span class="hide showOnFill"> y mi CURP es
-                <input type="text" class="inputsFormulario width300 headingColor formValues <g:if test="${generales?.curp}"> notEmpty headingColor </g:if>" name="curp" id="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
+                <input type="text"  style="width:440px;" class="inputsFormulario headingColor formValues <g:if test="${generales?.curp}"> notEmpty headingColor </g:if>" name="curp" id="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
                 </span>
                 <br/>
                 <span class="hide showOnFill"> Mi conyugue es
@@ -187,7 +187,6 @@
             </div>
         </div>
     </div>
-
 </section>
 <footer class="footerContainer">
     <g:render template="stepBar"/>
@@ -198,6 +197,9 @@
         </div>
     </div>
 </footer>
+<g:if test="${!logueado}">
+    <g:render template="login"/>
+</g:if>
 <script>
     $(document).ready(function() {
         if("${tipoLogin}" == 'FB'){

@@ -13,16 +13,16 @@
             <p class="center cross"><i class="fa fa-times" aria-hidden="true"></i></p>
         </div>
     </div>
-    <div class="padding20 formStep lastStep">
+    <div class="padding20 formStep">
         <p class="font35 marginTop28 letterspacing1 formTitleColor lineHeight60">
             <span class="showOnFill">Trabajo en
                 <input type="text" class="inputsFormulario width150 formValues <g:if test="${generales?.empresa}"> notEmpty headingColor </g:if>" name="empresa" placeholder="Empresa" value="${generales?.empresa}">
-            </span>
-            <span class="hide showOnFill">,
+                </span>
+                <span class="hide showOnFill">,
                 y mi puesto es
                 <input type="text" class="inputsFormulario width180 formValues <g:if test="${generales?.puesto}"> notEmpty headingColor </g:if>" name="puesto" placeholder="Puesto" value="${generales?.puesto}">
-            </span>
-            <span class="showOnFill hide">, laboro en esta empresa desde hace
+                </span>
+                <span class="showOnFill hide">, laboro en esta empresa desde hace
                 <span class="width40 inline selectWrap">
                     <g:if test="${generales?.periodo}">
                         <g:select id="noPeriodo" name="noPeriodo" class="formulariOptions width100 gray formValues notEmpty headingColor"  from="${1..30}" noSelection="['':'0']" value="${generales?.periodo}"/>
@@ -55,6 +55,51 @@
                         <i class="fa fa-caret-down" aria-hidden="true"></i>
                     </span>.
                 </span>
+            </span>
+        </p>
+
+        <div class="confirmDiv hide col7 col12-tab floatRight marginTop28 clearFix">
+            <div class="floatLeft marginBottom20">
+                <p class="font25 marginTop5 headingColor marginRight10"> Mi información es correcta</p>
+            </div>
+            <div class="clearFloat mobile"></div>
+            <div class="buttonM mobileAuto lightBlueBg floatLeft colorWhite textUpper letterspacing0.8 radius100">
+                confirmar
+            </div>
+        </div>
+    </div>
+    <div class="padding20 clearFix hide formStep lastStep">
+        <p class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
+            <span class="showOnFill">Está ubicada en
+                <input type="text" style="text-align:center; width: 700px;" class="inputsFormulario formValues <g:if test="${generales?.calle ?: generales?.direccion}"> notEmpty headingColor </g:if>" id="calle" name="calle" placeholder="Calle" value="${generales?.calle ?: generales?.direccion}">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.noExterior}"> notEmpty headingColor </g:if>" id="noExterior" name="noExterior" placeholder="No. Exterior" value="${generales?.noExterior}">,
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width200 <g:if test="${generales?.noInterior}"> notEmpty headingColor </g:if>" id="noInterior" name="noInterior" placeholder="No. Interior" value="${generales?.noInterior}">,
+                </span>
+                <span class="hide showOnFill" id="cpRemote"> C. P.
+                <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input <g:if test="${generales?.codigoPostal}"> notEmpty headingColor </g:if>" name="codigoPostal" id="codigoPostal" placeholder="00000" value="${generales?.codigoPostal}"/>,
+                </span> 
+                <span class="hide showOnFill">
+                Colonia
+                <input type="text" style="text-align:center; width: 385px;" class="inputsFormulario formValues <g:if test="${generales?.colonia}"> notEmpty headingColor </g:if>" name="colonia" placeholder="Colonia" value="${generales?.colonia}"/>, en
+                </span>
+                <span class="hide showOnFill">
+                    <span style="width: 450px;" class="inline selectWrap">
+                    <g:if test="${generales?.municipio}">
+                        <g:select noSelection="['':'Delegación/Municipio']" class="formulariOptions gray formValues notEmpty headingColor" optionKey="id" optionValue="nombre" name="municipio" from="${municipioList}" value="${generales?.municipio}" />
+                    </g:if>
+                    <g:else>
+                        <g:select noSelection="['':'Delegación/Municipio']" class="formulariOptions gray formValues" optionKey="id" optionValue="nombre" name="municipio" from="${municipioList}" />
+                    </g:else>
+                </span>
+                en el estado de
+                <span style="width: 450px;" class="inline selectWrap">
+                    <g:if test="${generales?.estado}">
+                        <g:select noSelection="['':'Estado']" class="formulariOptions formValues gray notEmpty headingColor"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" value="${generales?.estado}"/>
+                    </g:if>
+                    <g:else>
+                        <g:select noSelection="['':'Estado']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="estado" from="${estadoList}" />
+                    </g:else>
+                </span>.
             </span>
         </p>
 

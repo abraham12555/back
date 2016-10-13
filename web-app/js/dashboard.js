@@ -71,3 +71,30 @@ function verificarDatos(campo, respuesta) {
         $('#' + campo).removeClass('headingColor');
     }
 }
+
+function listarSolicitudesPor(criterio) {
+    seleccionarTemporalidad(criterio);
+}
+
+function genererarEstadisticasPor(criterio) {
+    seleccionarTemporalidad(criterio);
+}
+
+function seleccionarTemporalidad(opcion) {
+    $('.elementoSubMenu').removeClass('blueButton');
+    $('.elementoSubMenu').addClass('gray');
+    $('#subMenuOpc' + opcion).addClass('blueButton');
+    $('#subMenuOpc' + opcion).removeClass('gray');
+}
+
+function mostrarModal(idModal){
+    $('#' + idModal).fadeIn();
+}
+
+function cerrarModal(idModal){
+    $('#' + idModal).fadeOut();
+}
+
+function cambiarEstatus(estatus){
+    
+}

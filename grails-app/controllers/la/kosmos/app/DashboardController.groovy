@@ -19,4 +19,12 @@ class DashboardController {
     def editarPerfil(){
         
     }
+    
+    def autorizarSolicitud(){
+        
+    }
+    
+    def cambiarEstadoSolicitud(){
+        
+    }
 }
