@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource
 
 import java.io.File;
-import java.text.BreakDictionary;
+//import java.text.BreakDictionary;
 
 //@Transactional
 class BuroDeCreditoService {
