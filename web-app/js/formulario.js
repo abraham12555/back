@@ -453,48 +453,6 @@ function operacionesPaso4() {
 	        $('.messageMemorableDiv').fadeIn();
     	}
     }
-
-    function fixLoginView(tipo) {
-        if (tipo === 6) {
-            $('.messageLoginBankDiv').removeClass('col4');
-            $('.messageLoginBankDiv').removeClass('col4-tab');
-            $('.messageLoginBankDiv').removeClass('col4-mob');
-            $('.messageLoginBankDiv').addClass('col6');
-            $('.messageLoginBankDiv').addClass('col6-tab');
-            $('.messageLoginBankDiv').addClass('col6-mob');
-
-            $('.messagePasswordBankDiv').removeClass('col4');
-            $('.messagePasswordBankDiv').removeClass('col4-tab');
-            $('.messagePasswordBankDiv').removeClass('col4-mob');
-            $('.messagePasswordBankDiv').addClass('col6');
-            $('.messagePasswordBankDiv').addClass('col6-tab');
-            $('.messagePasswordBankDiv').addClass('col6-mob');
-
-            $('.messageLoginBankDiv').delay(2).fadeOut().addClass('animated bounce').fadeIn();
-            $('.messagePasswordBankDiv').delay(2).fadeOut().addClass('animated bounce').fadeIn();
-
-        }
-        if (tipo === 4) {
-            $('.messageLoginBankDiv').removeClass('col6');
-            $('.messageLoginBankDiv').removeClass('col6-tab');
-            $('.messageLoginBankDiv').removeClass('col6-mob');
-            $('.messageLoginBankDiv').addClass('col4');
-            $('.messageLoginBankDiv').addClass('col4-tab');
-            $('.messageLoginBankDiv').addClass('col4-mob');
-
-            $('.messagePasswordBankDiv').removeClass('col6');
-            $('.messagePasswordBankDiv').removeClass('col6-tab');
-            $('.messagePasswordBankDiv').removeClass('col6-mob');
-            $('.messagePasswordBankDiv').addClass('col4');
-            $('.messagePasswordBankDiv').addClass('col4-tab');
-            $('.messagePasswordBankDiv').addClass('col4-mob');
-
-            $('.messageLoginBankDiv').delay(2).fadeOut().addClass('animated bounce').fadeIn();
-            $('.messagePasswordBankDiv').delay(2).fadeOut().addClass('animated bounce').fadeIn();
-            $('.loginMethodHsbc').delay(2).fadeOut().addClass('animated bounce').fadeIn();
-        }
-    }
-
     $('.consultarBox').click(function () {
 
         if (!$(this).hasClass('exito')) {
@@ -609,6 +567,38 @@ function resetCountdown(){
 }
 
 
+
+function validarConsultaBuroCredito(){
+	var reporteBuro = $('#reporteBuroCredito').val();
+	var errorConsulta = $('#errorConsulta').val();
+	if( reporteBuro != ""){
+		if(errorConsulta == ""){
+			$('#accionesNormales').fadeOut();
+            $('#accionesSuccess').fadeIn();
+            $('#divAutorizacionBuro').fadeOut();
+		}else if( errorConsulta.indexOf("ERR") >= 0){
+			$('#accionesNormales').fadeOut();
+            $('#accionesError').fadeIn();
+            $('#divAutorizacionBuro').fadeOut();
+            setCountdown()
+            resetCountdown()
+            resumeCountdown();
+		}
+	}
+}
+
+function get2MinutesFromNow() {
+    return new Date(new Date().valueOf() + 2 * 60 * 1000);
+  }
+
+function setCountdown(){
+	 var $clock = $('#clock');
+	    $clock.countdown(get2MinutesFromNow(), function(event) {
+	      $(this).html(event.strftime('%M:%S'));
+	    });
+	
+}
+
 function operacionesPaso5() {
     winH = $(window).height();
     contentH = $('.contentHeight').outerHeight();
@@ -618,17 +608,9 @@ function operacionesPaso5() {
     $("#fechaAutorizacionConsulta").text(GetTodayDate());
     $("#divAutorizacionBuro").fadeIn();
 
-     
-    function get2MinutesFromNow() {
-      return new Date(new Date().valueOf() + 2 * 60 * 1000);
-    }
-    
-
-    var $clock = $('#clock');
-
-    $clock.countdown(get2MinutesFromNow(), function(event) {
-      $(this).html(event.strftime('%M:%S'));
-    });
+    validarConsultaBuroCredito(); 
+    setCountdown()
+   
 
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();

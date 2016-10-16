@@ -73,6 +73,9 @@ class SolicitudService {
                     solicitudDeCredito.fechaDeSolicitud = new Date()
                     solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
                     solicitudDeCredito.entidadFinanciera = EntidadFinanciera.get(1)
+					println "Query: " + "select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')"
+					println "Entidad financiera: " + solicitudDeCredito.entidadFinanciera.id
+					println "SECUENCIAAAA::"+ (sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
                     solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
                     solicitudDeCredito.cliente = cliente
                     telefonoCasa.save(flush: true)

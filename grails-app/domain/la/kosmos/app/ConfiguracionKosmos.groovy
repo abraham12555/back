@@ -22,7 +22,8 @@ class ConfiguracionKosmos implements Serializable{
 	String encabezadoTipoSalida
 	String autenticaTipoReporte
 	String autenticaTipoSalidaAU
-	
+	boolean habilitarMockBuroCredito
+	boolean habilitarMockBuroCreditoSuccess
 	
     static constraints = {
         urlEphesoft (nullable: false)
@@ -44,6 +45,8 @@ class ConfiguracionKosmos implements Serializable{
 		encabezadoTipoSalida (nullable: true)
 		autenticaTipoReporte (nullable: true)
 		autenticaTipoSalidaAU (nullable: true)
+		habilitarMockBuroCredito (nullable: true)
+		habilitarMockBuroCreditoSuccess (nullable: true)
     }
     
     static mapping = {

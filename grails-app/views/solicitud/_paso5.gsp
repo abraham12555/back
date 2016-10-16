@@ -1,6 +1,9 @@
 <section
 	class="container paddingTop30 paddingBottom20 clearFix contentHeight">
 	<div class="padding20">
+		<input type="hidden" id="errorConsulta" value="${errorConsulta}" />
+		<input type="hidden" id="reporteBuroCredito"  value="${reporteBuroCredito}" />
+		
 		<div class="clearFix marginBottom30">
 			<div
 				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
@@ -88,15 +91,13 @@
 				y uso que <span id="razonSocial" class="headingColor"> ${razonSocial}
 				</span> har&aacute; de tal informaci&oacute;n?
 			</p>
-		</div>
-
-
+		</div>		
 		<div id="accionesNormales" class="creditBtns">
 			<div class="col5half col12-mob floatLeft">
 				<a id="consultarBuroBtn">
 					<div
 						class="colorGreen buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc"
-						style="cursor: pointer;">AUTORIZÓ, CONSULTAR MI BURÓ DE CRÉDITO</div>
+						style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
 				</a>
 			</div>
 			<div
