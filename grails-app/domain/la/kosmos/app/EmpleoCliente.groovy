@@ -4,6 +4,7 @@ class EmpleoCliente implements Serializable{
     
     String puesto
     String actividad
+    String explicacionActividad
     String profesion
     TipoDeContrato tipoDeContrato
     GiroEmpresarial giroEmpresarial
@@ -24,6 +25,7 @@ class EmpleoCliente implements Serializable{
 
         puesto (blank: false)
         actividad (nullable: true)
+        explicacionActividad (nullable: true)
         profesion (nullable: true)
         giroEmpresarial (nullable: true)
         nombreDeLaEmpresa (blank: false)

@@ -2,26 +2,20 @@ package la.kosmos.app
 
 class ReferenciaPersonalCliente implements Serializable{
     
-    String nombre
-    String apellidoPaterno
-    String apellidoMaterno
-    Genero genero
-    EstadoCivil estadoCivil
+    String nombreCompleto
     String telefonoParticular
     String telefonoCelular
     String emailPersonal
     Cliente cliente
+    TipoDeReferenciaPersonal tipoDeReferencia
     
     static constraints = {
-        nombre (blank: false)
-        apellidoPaterno (blank: false)
-        apellidoMaterno (blank: false)
-        genero (nullable: false)
-        estadoCivil (nullable: false)
+        nombreCompleto (blank: false)
         telefonoParticular (blank: false, maxSize: 10)
-        telefonoCelular (blank: false, maxSize: 10, unique: true)
-        emailPersonal (blank: false, unique: true)
+        telefonoCelular (blank: false, maxSize: 10)
+        emailPersonal (blank: false)
         cliente (nullable: false)
+        tipoDeReferencia (nullable: false)
     }
     
     static mapping = {

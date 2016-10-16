@@ -10,6 +10,7 @@ class ProductoSolicitud implements Serializable{
     boolean seguroFinanciado
     SeguroProducto seguro
     SolicitudDeCredito solicitud
+    float montoDelCredito
     
     static constraints = {
         colorModelo (nullable: false)

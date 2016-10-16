@@ -38,4 +38,8 @@ class Cliente implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_cliente', params:[sequence:'cliente_id_seq']
     }
+    
+    String toString(){
+        "${nombre} ${apellidoPaterno} ${apellidoMaterno}"
+    }
 }

@@ -109,7 +109,9 @@
                     <div class="boxTitle">
                         <h1 class="graphHeading colorWhite letterspacing2 textUpper">volumen</h1>
                         <div class="grayDashboardBox floatRight">
-                            <p class="vermasLine center colorWhite">VER MÁS</p>
+                            <a href="${createLink(controller:'dashboard', action:'analiticas')}">
+                                <p class="vermasLine center colorWhite">VER MÁS</p>
+                            </a>
                         </div>
                         <div id="grafica1" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
                     </div>
@@ -120,7 +122,9 @@
                     <div class="boxTitle">
                         <h1 class="graphHeading colorWhite letterspacing2 textUpper">origen</h1>
                         <div class="grayDashboardBox floatRight">
-                            <p class="vermasLine center colorWhite">VER MÁS</p>
+                            <a href="${createLink(controller:'dashboard', action:'analiticas')}">
+                                <p class="vermasLine center colorWhite">VER MÁS</p>
+                            </a>
                         </div>
                         <div id="grafica2" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
                     </div>
@@ -169,11 +173,11 @@
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     FECHA <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.fechaDeSolicitud}</span>
+                                    <span class="font14 textlower tableDescriptionColor"><g:formatDate format="dd/MM/yyyy" date="${solicitud.fechaDeSolicitud}"/></span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     MONTO <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.montoCredito}</span>
+                                    <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud.montoCredito}" format="\044###,###,###.##"/></span>
                                 </td>
                                 <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id});">ver detalle</button>

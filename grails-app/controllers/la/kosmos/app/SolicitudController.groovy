@@ -1,19 +1,13 @@
 package la.kosmos.app
 
 import grails.converters.JSON
-
 import java.awt.image.BufferedImage
 import java.text.SimpleDateFormat
-
 import javax.imageio.ImageIO
-
 import java.util.Date;
 import java.util.Random
-
 import org.apache.commons.codec.binary.Base64
-
 import javax.xml.bind.DatatypeConverter
-
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.client.ClientProtocolException;
@@ -23,7 +17,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.aspectj.apache.bcel.classfile.annotation.NameValuePair
-
 import groovy.json.JsonSlurper
 import groovy.time.TimeCategory
 import static java.lang.Double.parseDouble
@@ -57,7 +50,7 @@ class SolicitudController {
         session["datosPaso6"] = null
         session.respuestaEphesoft = null
         session.tiposDeDocumento = null
-        session.idCliente = null
+        session.identificadores = null
         session.datosLogin = null
         session.yaUsoLogin = null
         redirect action: "formulario"
@@ -76,123 +69,123 @@ class SolicitudController {
 
 	
     def authenticate() {
-		SolicitudDeCredito solicitud = SolicitudDeCredito.get(session["idSolicitud"])
-		if(solicitud.vinculacionBanco != null){
-			borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
-		}
-	    def customer = null
-	    def request = JSON.parse(params.data)
-	    def response = [:]
-	        try {
-	            println "Creando Usuario"
-	            int attempt = 0
-	            while (customer == null && attempt <= maximumAttempts) {
-	                customer = saltEdgeService.createUser()
-					attempt++
-	                if (customer.error_class == null) {
-	                    request.customer_id = customer.data.id
-	                    session["customer_id"] = request.customer_id
-						session["secuenciaSe"] = customer.data.identifier
-	                }
-	            }
-	            if (!request.containsKey("customer_id")) {
-	                response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
-	                render response as JSON
-	            }
-		
-	            def login = fixJson(saltEdgeService.findLogin(request.customer_id))
-	            def credentials = [:]
-	            request.provider_code = request.provider_code + "_mx"
+        SolicitudDeCredito solicitud = SolicitudDeCredito.get(session["idSolicitud"])
+        if(solicitud.vinculacionBanco != null){
+            borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+        }
+        def customer = null
+        def request = JSON.parse(params.data)
+        def response = [:]
+        try {
+            println "Creando Usuario"
+            int attempt = 0
+            while (customer == null && attempt <= maximumAttempts) {
+                customer = saltEdgeService.createUser()
+                attempt++
+                if (customer.error_class == null) {
+                    request.customer_id = customer.data.id
+                    session["customer_id"] = request.customer_id
+                    session["secuenciaSe"] = customer.data.identifier
+                }
+            }
+            if (!request.containsKey("customer_id")) {
+                response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
+                render response as JSON
+            }
+	
+            def login = fixJson(saltEdgeService.findLogin(request.customer_id))
+            def credentials = [:]
+            request.provider_code = request.provider_code + "_mx"
 				
-				println "PARAMETROS:"+request
-	            switch (request.provider_code) {
-	            case "bancomer_mx":
-	                credentials.account = request.login
-	                credentials.password = request.password
-	                break;
-				case "hsbc_mx":
-					credentials.login = request.login
-					credentials.password = request.password
-					credentials.login_method = request.login_method
-					if(request.login_method == "Sin OTP"){
-						credentials.memorable = request.memorable	
-					}
-					break;
-	            default:
-	                credentials.login = request.login
-	                credentials.password = request.password
-	                break;
-	            }
-				
-	            //println "CREDENCIALES-------"+credentials
-				
-	            if (login.data == null) {
-	                println "Creando Login"
-	                login = saltEdgeService.createLogin(request.customer_id, request.provider_code, credentials)
-	                if (login.error_class) {
-	                    def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-	                    response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
-						borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+            println "PARAMETROS:"+request
+            switch (request.provider_code) {
+            case "bancomer_mx":
+                credentials.account = request.login
+                credentials.password = request.password
+                break;
+            case "hsbc_mx":
+                credentials.login = request.login
+                credentials.password = request.password
+                credentials.login_method = request.login_method
+                if(request.login_method == "Sin OTP"){
+                    credentials.memorable = request.memorable	
+                }
+                break;
+            default:
+                credentials.login = request.login
+                credentials.password = request.password
+                break;
+            }
+			
+            //println "CREDENCIALES-------"+credentials
+			
+            if (login.data == null) {
+                println "Creando Login"
+                login = saltEdgeService.createLogin(request.customer_id, request.provider_code, credentials)
+                if (login.error_class) {
+                    def deleteUser = saltEdgeService.deleteUser(request.customer_id)
+                    response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
+                    borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
 						
-	                    render response as JSON
-	                }
-	            }
-				VinculacionBanco vinculacion = new VinculacionBanco()
-				vinculacion.customer_id_SE = session["customer_id"]
-				vinculacion.banco = request.provider_code
-				vinculacion.secuenciaSe = session["secuenciaSe"]
-				vinculacion.login_id_SE = login.data.id
-				vinculacion.status = StatusSaltEdge.findByNombre("success")
+                    render response as JSON
+                }
+            }
+            VinculacionBanco vinculacion = new VinculacionBanco()
+            vinculacion.customer_id_SE = session["customer_id"]
+            vinculacion.banco = request.provider_code
+            vinculacion.secuenciaSe = session["secuenciaSe"]
+            vinculacion.login_id_SE = login.data.id
+            vinculacion.status = StatusSaltEdge.findByNombre("success")
 				
 				
-	            println "Esperando a conectar con la cuenta"
-	            login = requestWait("connect_account",request.customer_id)
-	            println "Cuenta Conectada... Interactive:" + login.data.last_attempt.interactive + " Name:" + login.data.last_attempt.last_stage.name
-	            if (login.data.last_attempt.interactive == true) {
-	                def reconnect = saltEdgeService.reconnectLogin(login.data.id, credentials)
-	                def fields = [:]
-	                println "Consultado login Interactive"
-	                login = requestWait("login_interactive",request.customer_id)
-	                response.loginInteractiveHtml = login.data.last_attempt.last_stage.interactive_html
-	                login.data.last_attempt.last_stage.interactive_fields_names.collect { component -> fields.put("${component}", "${component}") }
-	                if (fields.size() > 0) {
-	                    response.interactiveFieldsName = fields
-	                    response.customer_id = request.customer_id
-						vinculacion.save(flush:true)
-						solicitud.vinculacionBanco = vinculacion
-						solicitud.save(flush:true)
-	                    render response as JSON
-	                } else {
-	                    response.params = params
-	                    def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-						borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
-	                    session["login_id"] = null
-	                    session["customer_id"] = null
-	                    response.error_class = "No se pudo obtener Token de Acceso."
-	                    render response as JSON
-	                }
-	            } else {
-	                //Esperamos para realizar la consulta de Login
-	                println "Consultando Cuenta..."
-	                login = requestWait("check_account",request.customer_id)
-	                response.login_id = login.data.id
-	                session["login_id"] = login.data.id
-					vinculacion.save(flush:true)
-					solicitud.vinculacionBanco = vinculacion
-					solicitud.save(flush:true)
-	                response.accounts_resume = accountsResume(login.data.id)
-	                render response as JSON
-	            }
-	        } catch (Exception e) {
-	            println "Exception:" + e
-	            def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-				borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
-	            session["login_id"] = null
-	            session["customer_id"] = null
-				session["secuenciaSe"] = null
-	            response.error_class = "Error al Autentificar al usuario. Favor de intentarlo mas tarde."
-	            render response as JSON
-	        }
+            println "Esperando a conectar con la cuenta"
+            login = requestWait("connect_account",request.customer_id)
+            println "Cuenta Conectada... Interactive:" + login.data.last_attempt.interactive + " Name:" + login.data.last_attempt.last_stage.name
+            if (login.data.last_attempt.interactive == true) {
+                def reconnect = saltEdgeService.reconnectLogin(login.data.id, credentials)
+                def fields = [:]
+                println "Consultado login Interactive"
+                login = requestWait("login_interactive",request.customer_id)
+                response.loginInteractiveHtml = login.data.last_attempt.last_stage.interactive_html
+                login.data.last_attempt.last_stage.interactive_fields_names.collect { component -> fields.put("${component}", "${component}") }
+                if (fields.size() > 0) {
+                    response.interactiveFieldsName = fields
+                    response.customer_id = request.customer_id
+                    vinculacion.save(flush:true)
+                    solicitud.vinculacionBanco = vinculacion
+                    solicitud.save(flush:true)
+                    render response as JSON
+                } else {
+                    response.params = params
+                    def deleteUser = saltEdgeService.deleteUser(request.customer_id)
+                    borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+                    session["login_id"] = null
+                    session["customer_id"] = null
+                    response.error_class = "No se pudo obtener Token de Acceso."
+                    render response as JSON
+                }
+            } else {
+                //Esperamos para realizar la consulta de Login
+                println "Consultando Cuenta..."
+                login = requestWait("check_account",request.customer_id)
+                response.login_id = login.data.id
+                session["login_id"] = login.data.id
+                vinculacion.save(flush:true)
+                solicitud.vinculacionBanco = vinculacion
+                solicitud.save(flush:true)
+                response.accounts_resume = accountsResume(login.data.id)
+                render response as JSON
+            }
+        } catch (Exception e) {
+            println "Exception:" + e
+            def deleteUser = saltEdgeService.deleteUser(request.customer_id)
+            borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+            session["login_id"] = null
+            session["customer_id"] = null
+            session["secuenciaSe"] = null
+            response.error_class = "Error al Autentificar al usuario. Favor de intentarlo mas tarde."
+            render response as JSON
+        }
     }
 	
     def loginInteractive() {
@@ -213,7 +206,7 @@ class SolicitudController {
         } else {
             def deleteLogin = saltEdgeService.deleteLogin(login.data.id)
             def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-			borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+            borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
             response.error_class = login.data.last_attempt.fail_message
         }
 		
@@ -222,72 +215,72 @@ class SolicitudController {
     }
 	
 	
-	def borrarVinculacion(SolicitudDeCredito solicitud){
-		if(solicitud?.vinculacionBanco != null){
-			List<CuentaSaltEdge> cuentas= CuentaSaltEdge.findAllByVinculacion(solicitud.vinculacionBanco)
-			if(cuentas.size() > 0){
-				cuentas.each { cuenta ->
-					List<TransaccionSaltEdge> transacciones= TransaccionSaltEdge.findAllByAccount(cuenta)
-					if(transacciones.size()>0){
-						transacciones.each { transaccion ->
-							transaccion.delete(flush:true)
-						}
-					}
-					cuenta.delete(flush:true)
-				}
-			}
-			VinculacionBanco vinculacionBanco =  solicitud.vinculacionBanco
-			solicitud.vinculacionBanco = null
-			solicitud.save(flush:true)
-			vinculacionBanco.delete(flush:true)
-		}
-	}
+    def borrarVinculacion(SolicitudDeCredito solicitud){
+        if(solicitud?.vinculacionBanco != null){
+            List<CuentaSaltEdge> cuentas= CuentaSaltEdge.findAllByVinculacion(solicitud.vinculacionBanco)
+            if(cuentas.size() > 0){
+                cuentas.each { cuenta ->
+                    List<TransaccionSaltEdge> transacciones= TransaccionSaltEdge.findAllByAccount(cuenta)
+                    if(transacciones.size()>0){
+                        transacciones.each { transaccion ->
+                            transaccion.delete(flush:true)
+                        }
+                    }
+                    cuenta.delete(flush:true)
+                }
+            }
+            VinculacionBanco vinculacionBanco =  solicitud.vinculacionBanco
+            solicitud.vinculacionBanco = null
+            solicitud.save(flush:true)
+            vinculacionBanco.delete(flush:true)
+        }
+    }
 	
 	
     def accountsResume(def login_id){
-		SolicitudDeCredito solicitud = SolicitudDeCredito.get(session["idSolicitud"])
+        SolicitudDeCredito solicitud = SolicitudDeCredito.get(session["idSolicitud"])
         def accounts_resume = []
         def accounts = saltEdgeService.accounts(login_id)
-		int index=0
+        int index=0
         accounts.data.collect { account ->
-			CuentaSaltEdge cuenta = new CuentaSaltEdge()
-			cuenta.nature= account.nature
-			cuenta.name = account.name
-			cuenta.currency_code = account.currency_code
-			try{
-				cuenta.balance = new Double("${account.balance}")
-			}catch(Exception e){
-				println "Exception accountsResume.solicitudController" +e
-			}
-			cuenta.vinculacion = solicitud.vinculacionBanco
-			cuenta.save(flush:true)
+            CuentaSaltEdge cuenta = new CuentaSaltEdge()
+            cuenta.nature= account.nature
+            cuenta.name = account.name
+            cuenta.currency_code = account.currency_code
+            try{
+                cuenta.balance = new Double("${account.balance}")
+            }catch(Exception e){
+                println "Exception accountsResume.solicitudController" +e
+            }
+            cuenta.vinculacion = solicitud.vinculacionBanco
+            cuenta.save(flush:true)
             def account_temp = 	transactions(account.id,cuenta)
             def account_resume = [:]
             def datosPaso = [:]
             account_resume.depositoPromedio = account_temp.depositoPromedio
             account_resume.retiroPromedio = account_temp.retiroPromedio
-			//OBTENEMOS EL SALDO DE LA CUENTA
+            //OBTENEMOS EL SALDO DE LA CUENTA
             //account_resume.saldoPromedio = account_temp.saldoPromedio
-			account_resume.saldoPromedio = account.balance
-			account_resume.nature = account.nature
-			if(account.balance != 0 && (account.nature == "account" || account.nature == "checking") ){ 
-				//println "SEL CUENTA::"+ account.balance + " TIPO " + account.nature
-				datosPaso.depositoPromedio = account_resume.depositoPromedio
-				datosPaso.retiroPromedio = account_resume.retiroPromedio
-				datosPaso.saldoPromedio = account_resume.saldoPromedio
-				datosPaso.login_id=login_id
-				session["datosPaso4"] = datosPaso
-				account_resume.select=index
-			}
-			accounts_resume.add(account_resume)
-			index++
-			
-			/*if(account_temp.depositoPromedio != 0){  //Verificar Al Momento solo es una cuenta que no este en 0
+            account_resume.saldoPromedio = account.balance
+            account_resume.nature = account.nature
+            if(account.balance != 0 && (account.nature == "account" || account.nature == "checking") ){ 
+                //println "SEL CUENTA::"+ account.balance + " TIPO " + account.nature
                 datosPaso.depositoPromedio = account_resume.depositoPromedio
                 datosPaso.retiroPromedio = account_resume.retiroPromedio
                 datosPaso.saldoPromedio = account_resume.saldoPromedio
                 datosPaso.login_id=login_id
                 session["datosPaso4"] = datosPaso
+                account_resume.select=index
+            }
+            accounts_resume.add(account_resume)
+            index++
+			
+            /*if(account_temp.depositoPromedio != 0){  //Verificar Al Momento solo es una cuenta que no este en 0
+            datosPaso.depositoPromedio = account_resume.depositoPromedio
+            datosPaso.retiroPromedio = account_resume.retiroPromedio
+            datosPaso.saldoPromedio = account_resume.saldoPromedio
+            datosPaso.login_id=login_id
+            session["datosPaso4"] = datosPaso
             }*/
         }
         return accounts_resume
@@ -342,28 +335,28 @@ class SolicitudController {
         def dataList = [:]
         def accountResume = [:]
         transactions.data.collect { component ->
-			TransaccionSaltEdge transaccion = new TransaccionSaltEdge()
-			transaccion.idTransaction = component.id
-			if(component.made_on){
-				try{
-					transaccion.madeOn = new Date().parse('yyyy-MM-dd', "${component.made_on}")
-				}catch(Exception e){
-					println "Exception transactions.solicitudController" +e
-				}
-			}
-			transaccion.category = component.category
-			transaccion.description = component.description
-			if(component.amount){
-				try{
-					transaccion.amount = new Double("${component.amount}")
-				}catch(Exception e){
-					println "Exception transactions.solicitudController" +e
-				}
-			}
-			transaccion.currency = component.currency
-			transaccion.account = cuenta
-			println "TRANSACCION A GUARDAR " + transaccion.toString()
-			transaccion.save(flush:true)
+            TransaccionSaltEdge transaccion = new TransaccionSaltEdge()
+            transaccion.idTransaction = component.id
+            if(component.made_on){
+                try{
+                    transaccion.madeOn = new Date().parse('yyyy-MM-dd', "${component.made_on}")
+                }catch(Exception e){
+                    println "Exception transactions.solicitudController" +e
+                }
+            }
+            transaccion.category = component.category
+            transaccion.description = component.description
+            if(component.amount){
+                try{
+                    transaccion.amount = new Double("${component.amount}")
+                }catch(Exception e){
+                    println "Exception transactions.solicitudController" +e
+                }
+            }
+            transaccion.currency = component.currency
+            transaccion.account = cuenta
+            println "TRANSACCION A GUARDAR " + transaccion.toString()
+            transaccion.save(flush:true)
 			
             def transactionDate  = new Date().parse('yyyy-MM-dd', "${component.made_on}")
             switch(transactionDate[Calendar.MONTH]){
@@ -543,7 +536,12 @@ class SolicitudController {
             break;
         case 3:
             println "paso3"
-            modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso, generales: session[("datosPaso" + paso)]]
+            modelo = [estadoList:Estado.findAll(),
+                municipioList:Municipio.findAll(),
+                tipoDeContratoList: TipoDeContrato.list(),
+                giroEmpresarialList: GiroEmpresarial.list(),
+                temporalidadList:Temporalidad.findAll(),
+                paso:paso, generales: session[("datosPaso" + paso)]]
             break;
         case 4:
             println "paso4"
@@ -577,10 +575,22 @@ class SolicitudController {
             def modelo = [:]
             def paso =  params.siguientePaso as int
             def pasoAnterior =  params.pasoAnterior as int
-            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.idCliente)
+            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.identificadores)
             if(session[("datosPaso" + pasoAnterior)]?.clienteGenerado){
-                session.idCliente = session[("datosPaso" + pasoAnterior)]?.idCliente
-                session.idSolicitud = session[("datosPaso" + pasoAnterior)]?.idSolicitud
+                if(!session.identificadores){
+                    session.identificadores = [:]
+                }
+                if(pasoAnterior == 1){
+                    session.identificadores.idCliente = session[("datosPaso" + pasoAnterior)]?.idCliente
+                    session.identificadores.idSolicitud = session[("datosPaso" + pasoAnterior)]?.idSolicitud
+                } else if(pasoAnterior == 2){
+                    session.identificadores.idDireccion = session[("datosPaso" + pasoAnterior)]?.idDireccion
+                } else if(pasoAnterior == 3){
+                    session.identificadores.idEmpleo = session[("datosPaso" + pasoAnterior)]?.idEmpleo
+                    session.identificadores.idReferencia1 = session[("datosPaso" + pasoAnterior)]?.idReferencia1
+                    session.identificadores.idReferencia2 = session[("datosPaso" + pasoAnterior)]?.idReferencia2
+                    session.identificadores.idReferencia3 = session[("datosPaso" + pasoAnterior)]?.idReferencia3
+                }
             }
             if(paso == 1 || paso == 2){
                 session[("datosPaso" + paso)]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
@@ -602,15 +612,20 @@ class SolicitudController {
                     temporalidadList:Temporalidad.findAll(),
                     paso:paso, generales: (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
             } else if(paso == 3){
-                modelo = [tipoDeContratoList: TipoDeContrato.list(), paso:paso, generales: session[("datosPaso" + paso)]]
+                modelo = [estadoList:Estado.findAll(),
+                    municipioList:Municipio.findAll(),
+                    tipoDeContratoList: TipoDeContrato.list(), 
+                    giroEmpresarialList: GiroEmpresarial.list(),
+                    temporalidadList:Temporalidad.findAll(),
+                    paso:paso, generales: session[("datosPaso" + paso)]]
             } else if(paso == 4){
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
             } else if(paso == 5){
-				def municipio = null
-				if(session["datosPaso2"] != null && session["datosPaso2"].municipio){
-					municipio= Municipio.findById(session["datosPaso2"].municipio)
-				}	
-				def solicitud = SolicitudDeCredito.get(session["idSolicitud"])
+                def municipio = null
+                if(session["datosPaso2"] != null && session["datosPaso2"].municipio){
+                    municipio= Municipio.findById(session["datosPaso2"].municipio)
+                }
+                def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)], personales: session[("datosPaso" + 1)], direccion: session[("datosPaso" + 2)],municipio:municipio,razonSocial:razonSocial,reporteBuroCredito:solicitud?.reporteBuroCredito?.id,errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
             } else if(paso == 6){
                 modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]

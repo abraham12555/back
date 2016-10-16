@@ -11,9 +11,10 @@
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />       
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
+        <g:external dir="js" file="jquery-3.0.0.min.js" />
+        <g:external dir="js" file="sweetalert.min.js" />
         <g:external dir="js" file="dashboard.js" />
-
 
         <g:layoutHead/>
     </head>

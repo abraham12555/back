@@ -16,4 +16,8 @@ class EmailCliente implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_email', params:[sequence:'email_id_seq']
     }
+    
+    String toString(){
+        "${direccionDeCorreo}"
+    }
 }
