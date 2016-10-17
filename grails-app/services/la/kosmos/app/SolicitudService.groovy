@@ -348,4 +348,29 @@ class SolicitudService {
         }
         return respuesta 
     }
+    
+    def registrarProducto (def datosCotizador, def identificadores){
+        if(datosCotizador){
+            def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
+            def productoSolicitud =  new ProductoSolicitud()
+            productoSolicitud.colorModelo = ColorModelo.get(datosCotizador.color)
+            productoSolicitud.enganche = datosCotizador.enganche
+            productoSolicitud.mensualidad = (datosCotizador.enganche / datosCotizador.plazo)
+            productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo)
+            productoSolicitud.plazo = Plazo.get(1)
+            productoSolicitud.seguroFinanciado = false
+            productoSolicitud.solicitud = solicitud
+            productoSolicitud.montoDelCredito = (productoSolicitud.colorModelo.modelo.precio - productoSolicitud.enganche)
+            if(productoSolicitud.save(flush:true)){
+                println("El producto se ha registrado correctamente")
+            } else {
+                println("No se guardo nada")
+                if (productoSolicitud.hasErrors()) {
+                    productoSolicitud.errors.allErrors.each {
+                        println it
+                    }
+                }
+            }
+        }
+    }
 }

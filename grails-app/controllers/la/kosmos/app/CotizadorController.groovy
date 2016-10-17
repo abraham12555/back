@@ -5,6 +5,7 @@ import grails.converters.JSON
 class CotizadorController {
 
     def index() {
+        session.cotizador = null
         [productos: Producto.findAllByActivo(true)]
     }
 
@@ -27,14 +28,13 @@ class CotizadorController {
 
     def procesar() {
 
-        println params.productElement
-        println params.modelElement
-        println params.colorElement
-        println params.financiamientoElement
-        println params.periodoElement
-        println params.plazoElement
-        println params.seguroElement
-
+        println params
+        session.cotizador = [:]
+        session.cotizador.modelo = params.txtModelo as long
+        session.cotizador.color = params.txtColor as long
+        session.cotizador.enganche = params.txtEnganche as float
+        session.cotizador.plazo = params.txtPlazo as long
+        session.cotizador.periodo = params.txtPeriodo as long
         redirect(controller: "solicitud", action: "formulario")
     }
 }

@@ -806,13 +806,14 @@
                         </div>
                     </div>
                     <!-- END STEP 7 -->
-                    <g:hiddenField name="txtProducto" value=""/>
-                    <g:hiddenField name="txtModelo" value=""/>
-                    <g:hiddenField name="txtColor" value=""/>
-                    <g:hiddenField name="txtEnganche" value=""/>
-                    <g:hiddenField name="txtPlazo" value=""/>
-                    <g:hiddenField name="txtPago" value=""/>
-                    <g:hiddenField name="txtSeguro" value=""/>
+                    <g:hiddenField id="txtProducto" name="txtProducto" value=""/>
+                    <g:hiddenField id="txtModelo" name="txtModelo" value=""/>
+                    <g:hiddenField id="txtColor" name="txtColor" value=""/>
+                    <g:hiddenField id="txtEnganche" name="txtEnganche" value=""/>
+                    <g:hiddenField id="txtPlazo" name="txtPlazo" value=""/>
+                    <g:hiddenField id="txtPago" name="txtPago" value=""/>
+                    <g:hiddenField id="txtSeguro" name="txtSeguro" value=""/>
+                    <g:hiddenField id="txtPeriodo" name="txtPeriodo" value=""/>
                 </g:form>
             </div>
         </div>

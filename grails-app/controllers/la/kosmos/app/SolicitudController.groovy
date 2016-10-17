@@ -583,6 +583,7 @@ class SolicitudController {
                 if(pasoAnterior == 1){
                     session.identificadores.idCliente = session[("datosPaso" + pasoAnterior)]?.idCliente
                     session.identificadores.idSolicitud = session[("datosPaso" + pasoAnterior)]?.idSolicitud
+                    solicitudService.registrarProducto(session.cotizador, session.identificadores)
                 } else if(pasoAnterior == 2){
                     session.identificadores.idDireccion = session[("datosPaso" + pasoAnterior)]?.idDireccion
                 } else if(pasoAnterior == 3){
