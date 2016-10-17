@@ -147,7 +147,7 @@ class SolicitudService {
             datosPaso.profesion = params.profesion
             datosPaso.empresa = params.empresa
             datosPaso.puesto = params.puesto
-            datosPaso.periodo = (params.noPeriodo ? params.noPeriodo : null)
+            datosPaso.periodo = (params.noPeriodo ? params.noPeriodo : 0)
             datosPaso.plazo = (params.plazo ? params.plazo : null)
             datosPaso.contrato = (params.contrato ? params.contrato : null)
             datosPaso.jefeInmediato = params.jefeInmediato
@@ -232,13 +232,13 @@ class SolicitudService {
                     referencia2.emailPersonal = datosPaso.referencia2Email
                     referencia2.telefonoCelular = datosPaso.referencia2Celular
                     referencia2.telefonoParticular = datosPaso.referencia2Particular
-                    referencia1.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
+                    referencia2.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
                     referencia2.cliente = cliente
                     referencia3.nombreCompleto = datosPaso.referencia3NombreCompleto
                     referencia3.emailPersonal = datosPaso.referencia3Email
                     referencia3.telefonoCelular = datosPaso.referencia3Celular
                     referencia3.telefonoParticular = datosPaso.referencia3Particular
-                    referencia1.tipoDeReferencia = TipoDeReferenciaPersonal.get(3)
+                    referencia3.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
                     referencia3.cliente = cliente
                     if(referencia1.save(flush:true)){
                         datosPaso.idReferencia1 = referencia1.id
@@ -306,5 +306,46 @@ class SolicitudService {
             listaDeDoctos.identificacion = true
         }
         return listaDeDoctos
+    }
+    
+        
+    def guardarDocumento(def archivo, def solicitudId, def tipoDeDocumento){
+        def respuesta = [:]
+        if(solicitudId){
+            def solicitud = SolicitudDeCredito.get(solicitudId as long)
+            def documento = new DocumentoSolicitud()
+            documento.fechaDeSubida = new Date()
+            documento.solicitud = solicitud
+            if(tipoDeDocumento == "UtilityBill"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(1)
+            } else if(tipoDeDocumento == "Identicaciones" || tipoDeDocumento == "Pasaportes"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(2)
+            } 
+            documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + archivo.nombreDelArchivo + ".pdf"
+            if(documento.save(flush:true)){
+                def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
+                subdir.mkdir()
+                println (documento.rutaDelArchivo)
+                /*File file = new File(documento.rutaDelArchivo)
+                if (file.exists() || file.createNewFile()) {
+                file.withOutputStream{fos->
+                fos << archivo.archivo
+                }
+                }*/
+                def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
+                def fos = new FileOutputStream(documento.rutaDelArchivo)
+                fos << fis
+                fis.close()
+                fos.close()
+                respuesta.idArchivo = documento.id
+                respuesta.exito = true
+                respuesta.mensaje = "El archivo se ha registrado exitosamente."
+            } else {
+                respuesta.nombreArchivo = archivoJuicio.nombreArchivo
+                respuesta.exito = false
+                respuesta.mensaje = "Ocurrio un error al registrar el documento. Intentelo nuevamente."
+            }
+        }
+        return respuesta 
     }
 }

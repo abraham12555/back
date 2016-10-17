@@ -103,4 +103,20 @@ class DashboardController {
         }
         render respuesta as JSON
     }
+    
+    def descargarArchivo(){
+        println params
+        if(params.id){
+            def archivo = DocumentoSolicitud.get(params.id as long)
+            println "Ruta: " + archivo.rutaDelArchivo
+            def file = new File(archivo.rutaDelArchivo)
+            if (file.exists()){
+                response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
+                response.setHeader("Content-disposition", "attachment;filename=\""+archivo.tipoDeDocumento+"-" + archivo.solicitud.id + ".pdf\"")
+                response.outputStream << file.bytes
+            } else {
+                render "Error!"
+            }
+        }
+    }
 }

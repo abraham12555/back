@@ -285,7 +285,7 @@
             series: [{
             name: 'Origen',
             colorByPoint: true,
-          //data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
+            //data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
             data: desgloseTipoCredito
             }]
             });
@@ -321,7 +321,7 @@
 
 
 
-            
+
             var desglose = ${raw(segmentoHistorialDeCredito.graficaDesglocePrestamosJ)};
             $('#graficaPrestamos').highcharts({
             chart: {
@@ -349,7 +349,7 @@
             series: [{
             name: 'Origen',
             colorByPoint: true,
-          //data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
+            //data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
             data: desglose
             }]
             });
@@ -473,57 +473,57 @@
             });
             var ingresoVsPagos = ${raw(segmentoHistorialDeCredito.graficaIngvsPagosBuroJ)};
             $('#graficaIngPagos').highcharts({
-                chart: {
-                type: 'column'
-                },
-                title: {
-                text: ''
-                },
-                subtitle: {
-                text: ''
-                },
-                xAxis: {
-                type: 'category'
-                },
-                yAxis: {
-                title: {
-                text: ''
-                }
+            chart: {
+            type: 'column'
+            },
+            title: {
+            text: ''
+            },
+            subtitle: {
+            text: ''
+            },
+            xAxis: {
+            type: 'category'
+            },
+            yAxis: {
+            title: {
+            text: ''
+            }
 
-                },
-                legend: {
-                enabled: false
-                },
-                plotOptions: {
-                series: {
-                borderWidth: 0,
-                dataLabels: {
-                enabled: true,
-                format: '$ {point.y}'
-                }
-                }
-                },
+            },
+            legend: {
+            enabled: false
+            },
+            plotOptions: {
+            series: {
+            borderWidth: 0,
+            dataLabels: {
+            enabled: true,
+            format: '$ {point.y}'
+            }
+            }
+            },
 
-                tooltip: {
+            tooltip: {
                 headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
                 pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>$ {point.y}</b> of total<br/>'
-                },
+            },
 
-                series: [{
-                name: 'Brands',
-                colorByPoint: true,
-                data: [{
-                name: 'Ingresos',
-                y: ingresoVsPagos.totalIngreso,
-                }, {
-                name: 'Pagos',
-                y: ingresoVsPagos.totalPago
-                }]
-                }]
+            series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+            name: 'Ingresos',
+            y: ingresoVsPagos.totalIngreso,
+            }, {
+            name: 'Pagos',
+            y: ingresoVsPagos.totalPago
+            }]
+            }]
             });
-                });
+            });
 
-            
+
         </script>
         <title>Sample title</title>
     </head>
@@ -897,27 +897,27 @@
                                         </div>
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">SCORE</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.score}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.score}</p>
                                         </div>
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">MOP MAS ALTO</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.mopMasAltoDesc}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.mopMasAltoDesc}</p>
                                         </div>
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">DESTINO</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.destino}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.destino}</p>
                                         </div>
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">JUICIOS AP</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.juicios}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.juicios}</p>
                                         </div>
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">SALDO ACTUAL</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldoActual}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldoActual}</p>
                                         </div>
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">SALDO VENCIDO</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldosVencidos}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldosVencidos}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -936,19 +936,19 @@
                                         </div>
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">PAGO A REALIZAR</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.pagoARealizar}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.pagoARealizar}</p>
                                         </div>
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">CRÉDITO MÁS ALTO</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.creditoMasAlto}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.creditoMasAlto}</p>
                                         </div>
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">CUENTAS AP</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.numeroCuentas} </p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.numeroCuentas} </p>
                                         </div>
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">CONSULTAS</p>
-                                        <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.numeroSolicitudesInformeBuro}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.numeroSolicitudesInformeBuro}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -961,7 +961,7 @@
                             <div class="col6 col12-mob floatLeft">
                                 <div class="mobileAside10 solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom1">
                                     <div class="navyBg radius2">
-                                    <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DESGLOSE DE PRESTAMOS POR OTORGANTE</p>
+                                        <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DESGLOSE DE PRESTAMOS POR OTORGANTE</p>
                                     </div>
                                     <div id="graficaPrestamos" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
                                 </div>
@@ -969,10 +969,10 @@
                             <div class="col6 col12-mob floatLeft">
                                 <div class="boxMargins solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom15">
                                     <div class="navyBg radius2">
-                                    <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DESGLOSE DE PRESTAMOS POR TIPO DE CREDITO</p>
+                                        <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DESGLOSE DE PRESTAMOS POR TIPO DE CREDITO</p>
                                     </div>
-                                <div id="graficaPrestamosSeg" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
-                                
+                                    <div id="graficaPrestamosSeg" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
+
                                 </div>
                             </div>
                             <div class="col6 col12-mob floatLeft">
@@ -980,15 +980,15 @@
                                     <div class="navyBg radius2">
                                         <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">INGRESOS VS. PAGOS EN BURÓ</p>
                                     </div>
-                                <div id="graficaIngPagos" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
+                                    <div id="graficaIngPagos" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
                                 </div>
                             </div>
                             <div class="col6 col12-mob floatLeft">
                                 <div class="boxMargins solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom1">
                                     <div class="navyBg radius2">
-                                    <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">% EN MOP</p>
+                                        <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">% EN MOP</p>
                                     </div>
-                                <div id="graficaMop" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
+                                    <div id="graficaMop" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
                                 </div>
                             </div>
                         </div>
@@ -1105,62 +1105,17 @@
             <div class="solicitudTab" id='documentacion' style='margin-top: 30px; display: none;'>
                 <section class="container">
                     <div class="clearFix width928 autoMargin">
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Recibo Nómina</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Contrato</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Linked In</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Recibo Nómina</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Contrato</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Linked In</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Recibo Nómina</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Contrato</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Recibo Nómina</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Contrato</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Linked In</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Recibo Nómina</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Contrato</p>
-                        </a>
-                        <a href="#" title="" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                            <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                            <p class="lightGrayColor font12 fontWeight300">Linked In</p>
-                        </a>
+                        <g:if test="${datosSolicitud.documentosSolicitud}">
+                            <g:each var='documento' in='${datosSolicitud.documentosSolicitud}' status='i'>
+                                <g:link controller="dashboard" action="descargarArchivo" id="${documento.id}" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
+                                    <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
+                                    <p class="lightGrayColor font12 fontWeight300">${documento?.tipoDeDocumento?.nombre}</p>
+                                </g:link>
+                            </g:each>
+                        </g:if>
+                        <g:else>
+                            <p class="lightGrayColor font12 fontWeight300">No hay documentos disponibles</p>
+                        </g:else>
                     </div>
                 </section>
             </div>

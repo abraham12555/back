@@ -368,90 +368,90 @@ function operacionesPaso4() {
             $('img', this).attr('src', thisSrc);
         }
         $(this).addClass('active_green');
-        
-        $('.formLoginBank').removeClass('hide').delay( 1000 ).addClass('animated flipInX');
-        
-        if(bankChoice === "banamex"){
-        	fixLoginView(6);
-        	$('.messageLoginBank').text("NÚMERO DE CLIENTE");
+
+        $('.formLoginBank').removeClass('hide').delay(1000).addClass('animated flipInX');
+
+        if (bankChoice === "banamex") {
+            fixLoginView(6);
+            $('.messageLoginBank').text("NÚMERO DE CLIENTE");
             $('.messagePasswordBank').text("CLAVE DE ACCESO");
-        }else if (bankChoice === "bancomer"){
-        	fixLoginView(6);
-        	$('.messageLoginBank').text("TARJETA");
+        } else if (bankChoice === "bancomer") {
+            fixLoginView(6);
+            $('.messageLoginBank').text("TARJETA");
             $('.messagePasswordBank').text("CONTRASEÑA");
-        }else if (bankChoice === "hsbc"){
-        	fixLoginView(3);
-        	$('.messageLoginBank').text("USUARIO");
+        } else if (bankChoice === "hsbc") {
+            fixLoginView(3);
+            $('.messageLoginBank').text("USUARIO");
             $('.messagePasswordBank').text("PASSWORD");
-        	$('.messageSelectBank').text("AUTENTIFICACIÓN");
-        	$('.messageMemorable').text("FECHA MEMORABLE");
-        }else if (bankChoice === "santander"){
-        	fixLoginView(6);
-        	$('.messageLoginBank').text("USUARIO");
+            $('.messageSelectBank').text("AUTENTIFICACIÓN");
+            $('.messageMemorable').text("FECHA MEMORABLE");
+        } else if (bankChoice === "santander") {
+            fixLoginView(6);
+            $('.messageLoginBank').text("USUARIO");
             $('.messagePasswordBank').text("CLAVE");
-        }else if (bankChoice === "banorte"){
-        	fixLoginView(6);
-        	$('.messageLoginBank').text("USUARIO");
+        } else if (bankChoice === "banorte") {
+            fixLoginView(6);
+            $('.messageLoginBank').text("USUARIO");
             $('.messagePasswordBank').text("CONTRASEÑA");
         }
         $('.bankChoice').val(bankChoice);
         $('.bankChoice').addClass('notEmpty');
-    });    
-    function fixLoginView(tipo){
-    	if (tipo === 6) {
-    		$('.messageLoginBankDiv').removeClass('col3');
-    		$('.messageLoginBankDiv').removeClass('col3-tab');
-    		$('.messageLoginBankDiv').removeClass('col3-mob');
-    		$('.messageLoginBankDiv').addClass('col6');
-    		$('.messageLoginBankDiv').addClass('col6-tab');
-    		$('.messageLoginBankDiv').addClass('col6-mob');
-    		
-    		$('.messagePasswordBankDiv').removeClass('col3');
-    		$('.messagePasswordBankDiv').removeClass('col3-tab');
-    		$('.messagePasswordBankDiv').removeClass('col3-mob');
-    		$('.messagePasswordBankDiv').addClass('col6');
-    		$('.messagePasswordBankDiv').addClass('col6-tab');
-    		$('.messagePasswordBankDiv').addClass('col6-mob');
-    		
+    });
+    function fixLoginView(tipo) {
+        if (tipo === 6) {
+            $('.messageLoginBankDiv').removeClass('col3');
+            $('.messageLoginBankDiv').removeClass('col3-tab');
+            $('.messageLoginBankDiv').removeClass('col3-mob');
+            $('.messageLoginBankDiv').addClass('col6');
+            $('.messageLoginBankDiv').addClass('col6-tab');
+            $('.messageLoginBankDiv').addClass('col6-mob');
+
+            $('.messagePasswordBankDiv').removeClass('col3');
+            $('.messagePasswordBankDiv').removeClass('col3-tab');
+            $('.messagePasswordBankDiv').removeClass('col3-mob');
+            $('.messagePasswordBankDiv').addClass('col6');
+            $('.messagePasswordBankDiv').addClass('col6-tab');
+            $('.messagePasswordBankDiv').addClass('col6-mob');
+
             $('.loginMethodHsbc').fadeOut();
-    		
+
         }
-    	if (tipo === 3) {
-    		$('.messageLoginBankDiv').removeClass('col6');
-    		$('.messageLoginBankDiv').removeClass('col6-tab');
-    		$('.messageLoginBankDiv').removeClass('col6-mob');
-    		$('.messageLoginBankDiv').addClass('col3');
-    		$('.messageLoginBankDiv').addClass('col3-tab');
-    		$('.messageLoginBankDiv').addClass('col3-mob');
-    		
-    		$('.messagePasswordBankDiv').removeClass('col6');
-    		$('.messagePasswordBankDiv').removeClass('col6-tab');
-    		$('.messagePasswordBankDiv').removeClass('col6-mob');
-    		$('.messagePasswordBankDiv').addClass('col3');
-    		$('.messagePasswordBankDiv').addClass('col3-tab');
-    		$('.messagePasswordBankDiv').addClass('col3-mob');
-    		
+        if (tipo === 3) {
+            $('.messageLoginBankDiv').removeClass('col6');
+            $('.messageLoginBankDiv').removeClass('col6-tab');
+            $('.messageLoginBankDiv').removeClass('col6-mob');
+            $('.messageLoginBankDiv').addClass('col3');
+            $('.messageLoginBankDiv').addClass('col3-tab');
+            $('.messageLoginBankDiv').addClass('col3-mob');
+
+            $('.messagePasswordBankDiv').removeClass('col6');
+            $('.messagePasswordBankDiv').removeClass('col6-tab');
+            $('.messagePasswordBankDiv').removeClass('col6-mob');
+            $('.messagePasswordBankDiv').addClass('col3');
+            $('.messagePasswordBankDiv').addClass('col3-tab');
+            $('.messagePasswordBankDiv').addClass('col3-mob');
+
             //$('.messageLoginBankDiv').delay( 2 ).fadeOut().fadeIn();
-        	//$('.messagePasswordBankDiv').delay( 2 ).fadeOut().fadeIn();
-        	$('.loginMethodHsbc').delay( 2 ).fadeOut().fadeIn();
-        	validarFechaMemorable($('#login_method').val());
+            //$('.messagePasswordBankDiv').delay( 2 ).fadeOut().fadeIn();
+            $('.loginMethodHsbc').delay(2).fadeOut().fadeIn();
+            validarFechaMemorable($('#login_method').val());
         }
     }
-    $('#login_method').on('click', function() {
-    	validarFechaMemorable($(this).val());	
+    $('#login_method').on('click', function () {
+        validarFechaMemorable($(this).val());
     });
-    
-    
-    function validarFechaMemorable(tipo){
-    	if(tipo == "Con OTP"){
-			// Disable #x
-			$('#memorable').attr('disabled', 'disabled');
-			$('.messageMemorableDiv').fadeOut();
-    	}else{
-	        // Enable #x
-	        $('#memorable').removeAttr('disabled');
-	        $('.messageMemorableDiv').fadeIn();
-    	}
+
+
+    function validarFechaMemorable(tipo) {
+        if (tipo == "Con OTP") {
+            // Disable #x
+            $('#memorable').attr('disabled', 'disabled');
+            $('.messageMemorableDiv').fadeOut();
+        } else {
+            // Enable #x
+            $('#memorable').removeAttr('disabled');
+            $('.messageMemorableDiv').fadeIn();
+        }
     }
     $('.consultarBox').click(function () {
 
@@ -556,47 +556,47 @@ function operacionesPaso4() {
 
 }
 
-function resumeCountdown(){
-	var $clock = $('#clock');
-	$clock.countdown('resume');
+function resumeCountdown() {
+    var $clock = $('#clock');
+    $clock.countdown('resume');
 }
 
-function resetCountdown(){
-	var $clock = $('#clock');
-	$clock.countdown(get2MinutesFromNow());
+function resetCountdown() {
+    var $clock = $('#clock');
+    $clock.countdown(get2MinutesFromNow());
 }
 
 
 
-function validarConsultaBuroCredito(){
-	var reporteBuro = $('#reporteBuroCredito').val();
-	var errorConsulta = $('#errorConsulta').val();
-	if( reporteBuro != ""){
-		if(errorConsulta == ""){
-			$('#accionesNormales').fadeOut();
+function validarConsultaBuroCredito() {
+    var reporteBuro = $('#reporteBuroCredito').val();
+    var errorConsulta = $('#errorConsulta').val();
+    if (reporteBuro != "") {
+        if (errorConsulta == "") {
+            $('#accionesNormales').fadeOut();
             $('#accionesSuccess').fadeIn();
             $('#divAutorizacionBuro').fadeOut();
-		}else if( errorConsulta.indexOf("ERR") >= 0){
-			$('#accionesNormales').fadeOut();
+        } else if (errorConsulta.indexOf("ERR") >= 0) {
+            $('#accionesNormales').fadeOut();
             $('#accionesError').fadeIn();
             $('#divAutorizacionBuro').fadeOut();
             setCountdown()
             resetCountdown()
             resumeCountdown();
-		}
-	}
+        }
+    }
 }
 
 function get2MinutesFromNow() {
     return new Date(new Date().valueOf() + 2 * 60 * 1000);
-  }
+}
 
-function setCountdown(){
-	 var $clock = $('#clock');
-	    $clock.countdown(get2MinutesFromNow(), function(event) {
-	      $(this).html(event.strftime('%M:%S'));
-	    });
-	
+function setCountdown() {
+    var $clock = $('#clock');
+    $clock.countdown(get2MinutesFromNow(), function (event) {
+        $(this).html(event.strftime('%M:%S'));
+    });
+
 }
 
 function operacionesPaso5() {
@@ -608,9 +608,9 @@ function operacionesPaso5() {
     $("#fechaAutorizacionConsulta").text(GetTodayDate());
     $("#divAutorizacionBuro").fadeIn();
 
-    validarConsultaBuroCredito(); 
+    validarConsultaBuroCredito();
     setCountdown()
-   
+
 
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
@@ -1137,12 +1137,12 @@ function loginInteractive() {
                 $("#spinner").html("");
                 var index = 0;
                 $.each(respuesta.accounts_resume, function (i, item) {
-                	if (respuesta.accounts_resume[i].select) {
+                    if (respuesta.accounts_resume[i].select) {
                         index = respuesta.accounts_resume[i].select;
                     }
-                	/*if (respuesta.accounts_resume[i].depositoPromedio > 0) {
-                        index = i;
-                    }*/
+                    /*if (respuesta.accounts_resume[i].depositoPromedio > 0) {
+                     index = i;
+                     }*/
                 });
                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
                 $('#ret90').val(formatCurrency(respuesta.accounts_resume[index].retiroPromedio, "$"));
@@ -1190,14 +1190,14 @@ function authenticate() {
                 cerrarModal();
                 var index = 0;
                 $.each(respuesta.accounts_resume, function (i, item) {
-                	if (respuesta.accounts_resume[i].select) {
+                    if (respuesta.accounts_resume[i].select) {
                         index = respuesta.accounts_resume[i].select;
                     }
-                	/*
-                	if (respuesta.accounts_resume[i].saldoPromedio > 0 && (respuesta.accounts_resume[i].nature == "account" || respuesta.accounts_resume[i].nature == "checking")) {
-                        index = i;
-                    }
-                    */
+                    /*
+                     if (respuesta.accounts_resume[i].saldoPromedio > 0 && (respuesta.accounts_resume[i].nature == "account" || respuesta.accounts_resume[i].nature == "checking")) {
+                     index = i;
+                     }
+                     */
                 });
                 console.log("DATOS::" + respuesta.accounts_resume[index].depositoPromedio);
                 $('#dep90').val(formatCurrency(respuesta.accounts_resume[index].depositoPromedio, "$"));
@@ -1395,8 +1395,8 @@ function consultarBuro() {
                 data: 'tarjeta=' + tarjeta + "&numeroTarjeta=" + numeroTarjeta + "&hipoteca=" + hipoteca + "&creditoAutomotriz=" + creditoAutomotriz,
                 url: '/kosmos-app/solicitud/consultarBuroDeCredito',
                 success: function (data, textStatus) {
-                	loadBar("100%");
-                	//cerrarModal();
+                    loadBar("100%");
+                    //cerrarModal();
                     var respuesta = checkIfJson(data);
                     $('.loadingBar').fadeOut();
                     $('.creditBtns').fadeOut();
@@ -1416,9 +1416,9 @@ function consultarBuro() {
                     //submitNextPage();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
-                	restartLoadBar();
-                	$('.loadingBar').fadeOut();
-                	sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                    restartLoadBar();
+                    $('.loadingBar').fadeOut();
+                    sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
                 }
             });
         }
@@ -1449,10 +1449,10 @@ function validarAutorizacion() {
         if (tarjeta === 'SI' && !numeroTarjeta) {
             sweetAlert("Antes de continuar...", "Por favor proporcione lo últimos 4 digitos de su tarjeta de crédito.", "warning");
         } else {
-        	consultarBuro();
-        	//$('#autorizacionLoading').delay( 200 ).fadeOut();
-        	//$('#autorizacionForm').fadeIn();
-        	//$('#modalAutorizacion').modal({keyboard: false, backdrop: false})
+            consultarBuro();
+            //$('#autorizacionLoading').delay( 200 ).fadeOut();
+            //$('#autorizacionForm').fadeIn();
+            //$('#modalAutorizacion').modal({keyboard: false, backdrop: false})
         }
     } else if (!nombre || !apellidoPaterno || !apellidoMaterno || !fechaNac) {
         sweetAlert("Antes de continuar...", "Por favor llena los datos solicitados en el paso 1", "warning");
@@ -1810,8 +1810,10 @@ function inicializarDropzone(elemento, boton) {
                     habilitarTerminarSolicitud();
                 } else if (respuesta.error) {
                     sweetAlert("Oops...", respuesta.error, "error");
+                    this.removeAllFiles();
                 } else if (respuesta.fatal) {
                     sweetAlert("Oops...", "Ocurrio un error al procesar el documento: " + respuesta.error, "error");
+                    this.removeAllFiles();
                 } else {
                     sweetAlert("¡Advertencia!", "No se recuperaron datos legibles", "warning");
                     this.removeAllFiles();
