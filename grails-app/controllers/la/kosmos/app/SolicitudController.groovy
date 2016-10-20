@@ -69,9 +69,9 @@ class SolicitudController {
 
 	
     def authenticate() {
-        SolicitudDeCredito solicitud = SolicitudDeCredito.get(session["idSolicitud"])
+        SolicitudDeCredito solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
         if(solicitud.vinculacionBanco != null){
-            borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+            borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
         }
         def customer = null
         def request = JSON.parse(params.data)
@@ -125,7 +125,7 @@ class SolicitudController {
                 if (login.error_class) {
                     def deleteUser = saltEdgeService.deleteUser(request.customer_id)
                     response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
-                    borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+                    borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
 						
                     render response as JSON
                 }
@@ -158,7 +158,7 @@ class SolicitudController {
                 } else {
                     response.params = params
                     def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-                    borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+                    borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
                     session["login_id"] = null
                     session["customer_id"] = null
                     response.error_class = "No se pudo obtener Token de Acceso."
@@ -179,7 +179,7 @@ class SolicitudController {
         } catch (Exception e) {
             println "Exception:" + e
             def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-            borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+            borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
             session["login_id"] = null
             session["customer_id"] = null
             session["secuenciaSe"] = null
@@ -206,7 +206,7 @@ class SolicitudController {
         } else {
             def deleteLogin = saltEdgeService.deleteLogin(login.data.id)
             def deleteUser = saltEdgeService.deleteUser(request.customer_id)
-            borrarVinculacion(SolicitudDeCredito.get(session["idSolicitud"]))
+            borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
             response.error_class = login.data.last_attempt.fail_message
         }
 		
@@ -238,7 +238,7 @@ class SolicitudController {
 	
 	
     def accountsResume(def login_id){
-        SolicitudDeCredito solicitud = SolicitudDeCredito.get(session["idSolicitud"])
+        SolicitudDeCredito solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
         def accounts_resume = []
         def accounts = saltEdgeService.accounts(login_id)
         int index=0
@@ -702,7 +702,7 @@ class SolicitudController {
     
     def consultarBuroDeCredito(){
         println "CONSULTA DE BURO DE CREDITO...." 
-        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["datosPaso1"],session["datosPaso2"],SolicitudDeCredito.get(session["idSolicitud"]))
+        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["datosPaso1"],session["datosPaso2"],SolicitudDeCredito.get(session.identificadores.idSolicitud))
         render respuesta as JSON
     }
     
