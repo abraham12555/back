@@ -1790,6 +1790,9 @@ function inicializarDropzone(elemento, boton) {
                         verificarCambios(index);
                     });
                     habilitarTerminarSolicitud();
+                    if (document.getElementById('login')) {
+                        $('#submitLogin').click();
+                    }
                 } else if (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno)) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellido Paterno: </strong>" + respuesta.apellidoPaterno + "<br/><strong>Apellido Materno: </strong> " + respuesta.apellidoMaterno + "</br>", type: "success"});
                     closeModal('identification_oficial');
@@ -1799,6 +1802,9 @@ function inicializarDropzone(elemento, boton) {
                         verificarCambios(index);
                     });
                     habilitarTerminarSolicitud();
+                    if (document.getElementById('login')) {
+                        $('#submitLogin').click();
+                    }
                 } else if (respuesta.nombre && (respuesta.apellidos || respuesta.noDocumento)) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellidos: </strong>" + respuesta.apellidos + "<br/><strong>Documento No.: </strong> " + respuesta.noDocumento + "</br>", type: "success"});
                     closeModal('identification_oficial');
@@ -1808,6 +1814,9 @@ function inicializarDropzone(elemento, boton) {
                         verificarCambios(index);
                     });
                     habilitarTerminarSolicitud();
+                    if (document.getElementById('login')) {
+                        $('#submitLogin').click();
+                    }
                 } else if (respuesta.error) {
                     sweetAlert("Oops...", respuesta.error, "error");
                     this.removeAllFiles();

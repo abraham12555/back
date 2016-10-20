@@ -77,10 +77,19 @@ class SolicitudService {
                     solicitudDeCredito.cliente = cliente
                     telefonoCasa.save(flush: true)
                     telefonoCelular.save(flush: true)
-                    solicitudDeCredito.save(flush: true)
+                    if(solicitudDeCredito.save(flush: true)){
+                        println "Si se guardo la solicitud: " + solicitudDeCredito?.id
+                        datosPaso.idSolicitud = solicitudDeCredito.id
+                    } else {
+                        println ":( no se guardo la solicitud"
+                        if (solicitudDeCredito.hasErrors()) {
+                            solicitudDeCredito.errors.allErrors.each {
+                                println it
+                            }
+                        }
+                    }
                     datosPaso.clienteGenerado = true
                     datosPaso.idCliente = cliente.id
-                    datosPaso.idSolicitud = solicitudDeCredito.id
                 } else {
                     def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
                     telefonosCliente?.each {
@@ -344,6 +353,40 @@ class SolicitudService {
                 respuesta.nombreArchivo = archivoJuicio.nombreArchivo
                 respuesta.exito = false
                 respuesta.mensaje = "Ocurrio un error al registrar el documento. Intentelo nuevamente."
+            }
+        }
+        return respuesta 
+    }
+    
+    def guardarDocumentoTemporal(def archivo, def tipoDeDocumento){
+        def respuesta = null
+        if(archivo){
+            def documento = new DocumentoTemporal()
+            documento.fechaDeSubida = new Date()
+            if(tipoDeDocumento == "UtilityBill"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(1)
+            } else if(tipoDeDocumento == "Identicaciones" || tipoDeDocumento == "Pasaportes"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(2)
+            } 
+            documento.rutaDelArchivo = "/var/uploads/kosmos/temporales" + "/" + archivo.nombreDelArchivo + ".pdf"
+            if(documento.save(flush:true)){
+                def subdir = new File("/var/uploads/kosmos/temporales/")
+                subdir.mkdir()
+                println (documento.rutaDelArchivo)
+                /*File file = new File(documento.rutaDelArchivo)
+                if (file.exists() || file.createNewFile()) {
+                file.withOutputStream{fos->
+                fos << archivo.archivo
+                }
+                }*/
+                def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
+                def fos = new FileOutputStream(documento.rutaDelArchivo)
+                fos << fis
+                fis.close()
+                fos.close()
+                respuesta = documento.id
+            } else {
+                respuesta = null
             }
         }
         return respuesta 

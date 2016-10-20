@@ -688,7 +688,13 @@ class SolicitudController {
         if(respuesta?.vigente == true){
             session.respuestaEphesoft = respuesta
             session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
-            solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+            if(session.identificadores){
+                solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+            } else if(session.archivoTemporal){
+                
+            } else {
+                session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType)
+            }
         }
         println respuesta
         render respuesta as JSON
