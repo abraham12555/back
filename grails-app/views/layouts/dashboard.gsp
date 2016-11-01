@@ -12,8 +12,12 @@
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />       
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="spectrum.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
         <g:external dir="js" file="sweetalert.min.js" />
+        <g:external dir="js" file="dropzone.js" />
+        <g:external dir="js" file="spectrum.js" />
+        <g:external dir="js" file="dateFormat.min.js" />
         <g:external dir="js" file="dashboard.js" />
 
         <g:layoutHead/>
@@ -46,7 +50,7 @@
                     </div>
                     <div class="floatRight notificationBox dashboardHeader marginTop15 paddingTop5 paddingRight5 paddingLeft5">
                         <img class="floatLeft paddingLeft10 paddingTop5" src="${resource(dir:'images', file:'bell.png')}" alt="bell" title="bell">
-                        <p class="floatLeft colorWhite font16 paddingLeft10">99</p>
+                        <p class="floatLeft colorWhite font16 paddingLeft10">${(session.solicitudesPendientes ?: 0)}</p>
                     </div>
                 </div>
             </div>
@@ -84,6 +88,14 @@
                         <span>CONFIGURACIÓN</span>
                     </a>
                 </li>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMIN_GRAL'>  
+                    <li class="floatLeft">
+                        <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'administracion')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administracion"></span>
+                            <span>ADMINISTRACIÓN</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>  
             </ul>
         </nav>
 

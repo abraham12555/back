@@ -39,7 +39,7 @@
                         <g:select id="plazo" name="plazo" class="formulariOptions gray formValues notEmpty headingColor" from="${temporalidadList}" optionKey="id" optionValue="nombre" noSelection="['':'Tipo']" value="${generales?.plazo}"/>
                     </g:if>
                     <g:else>
-                        <g:select id="plazo" name="plazo" class="formulariOptions gray formValues"  from="${temporalidadList}" optionKey="id" optionValue="nombre" noSelection="['':'Tipo']"/>
+                        <g:select id="plazo" name="plazo" class="formulariOptions gray formValues notEmpty headingColor"  from="${temporalidadList}" optionKey="id" optionValue="nombre" noSelection="['':'Tipo']" value="3"/>
                     </g:else>
                 </span>
                 <span class="afterSelect">
@@ -141,7 +141,7 @@
                 </span>.
             </span>
                         <span class="hide showOnFill"> El número telefónico es el
-                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.telefono}"> notEmpty headingColor </g:if>" name="telefono" id="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)" value="${generales?.telefono}">
+                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.telefono}"> notEmpty headingColor </g:if>" name="telefono" id="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)" value="${generales?.telefono}" onKeyPress="return numbersonly(this, event)">
                 </span>
         </p>
 

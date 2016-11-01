@@ -1,4 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=Nunito:400,300,700);
+@import url(https://fonts.googleapis.com/css?family=Nunito:400,300,700,900);
+@import url(https://fonts.googleapis.com/css?family=Lato:300,400,700,900);
 /** LOGIN **/
 *{
     padding: 0;
@@ -11,6 +12,10 @@ body{
     font-family: "Nunito", sans-serif;
     font-weight:300;
     background-color: #F1F3FA;
+}
+
+.lato{
+  font-family:'Lato', sans-serif;
 }
 
 .clearFloat{
@@ -2238,6 +2243,10 @@ body{
     margin-left:20px;
 }
 
+.cotizadorForm{
+  margin-top: 15px;
+}
+
 .conatinerWhite550{
     width: 550px;
     border-radius: 2px;
@@ -2295,22 +2304,41 @@ body{
 }
 
 .cotizador-bg{
-    background-image: url(../images/nissan/2016-maxima-azul.png);
+    background-image: url(../images/nissan/2016-maxima-azul-v1.png);
     background-position: left bottom;
     background-repeat: no-repeat;
     background-size: 100%;
-    height: 45vh;
+    height: 320px;
+}
+
+.cotizadorStep{
+  position:relative;
 }
 
 .cotizador-rightside{
     position: relative;
+    z-index:2;
 }
 
+.cotizador-box-shadow{
+  box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.5);
+}
 .cotizador-box-container{
     border-radius: 2px;
     background-color: #f8f9ff;
-    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.5);
     position: relative;
+
+    margin-bottom:30px;
+}
+
+.relative100{
+  position:relative;
+  z-index:100;
+}
+
+.cotWrap{
+  /*height:80vh;
+  overflow-y:hidden;*/
 }
 
 .cotizador-box{
@@ -2322,6 +2350,15 @@ body{
     letter-spacing: 1px;
     font-weight: 300;
     padding:20px 0;
+    background: #f8f9ff;
+}
+
+#submitCotizador{
+  display:none;  
+}
+
+.cotizador-box.seguro{
+  padding:5px 0;
 }
 
 .cotizador-box-container .cotizador-box.blueButton,.cotizador-box-container .cotizador-box:hover{
@@ -2372,7 +2409,7 @@ body{
 
 
 .elige-un-modelo{
-    margin-top: 10px;
+    margin-top: 0px;
     position: relative;
 }
 
@@ -2447,11 +2484,16 @@ body{
 }
 
 .inner .loading-bar-line {
-    height: 12px;
-    border-radius: 3px;
-    background-color: #fff;
-    border: 1px solid #aaa;
     position:relative;
+    width: 375px;
+    height: 6px;
+    border-radius: 100px;
+    background-color: #c4c7d8;
+}
+
+.ui-widget-content.loading-bar-line {
+      background-image: none;
+      box-shadow: none;
 }
 
 .loading-bar-box{
@@ -2467,9 +2509,58 @@ body{
     color: #252d60;
 }
 
+#slider{
+  opacity: 1 !important;
+}
+.stepShadow{
+  /*width:100%;
+  box-shadow:0 0 5px 5px rgba(0,0,0,0.5);*/
+  margin-top: -65px;
+  transform: translate(0,10px);
+  -webkit-transform: translate(0,10px);
+  width: 100%;
+  height: 59px;
+  opacity: 0.49;
+  mix-blend-mode: multiply;
+  border-radius: 7px;
+  -webkit-filter: blur(10px);
+  filter: blur(10px);
+  background-color: #9da2be;
+  position: relative;
+  z-index: 1;
+}
+
+/*.cotizador-p1-buttons .ui-slider-handle.ui-state-default.ui-corner-all{
+  background-color: #2d91f6 !important;
+  background-image: linear-gradient(244deg, #59c4fb, #2d91f6) !important;
+  /*background-image: linear-gradient(244deg, var(--sky-blue), var(--dodger-blue))!important;*/
+  /*width: 87px !important;
+  height: 39px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 15px 0 #298df5 !important;
+  margin-top: -10px;
+}*/
+
+.ui-slider-horizontal .ui-state-default {
+  width: 87px !important;
+  height: 29px !important;
+  margin-left: -50px !important;
+  top: 15px;
+  background-color: #2d91f6 !important;
+  background-image: linear-gradient(244deg, #59c4fb, #2d91f6) !important;
+  border: 0;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 15px 0 #298df5 !important;
+  margin-top: -10px;
+  color:#FFF !important;
+  text-align:center;
+  padding-top:10px;
+  outline:none !important;
+}
+
 .loading-bar-container{
     position: relative;
-    margin-bottom: 50px;
+    margin: 50px 0 20px;
     padding: 0 15px;
 }
 

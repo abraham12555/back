@@ -88,7 +88,7 @@
                         <g:select noSelection="['':'Elija']" class="formulariOptions formValues gray notEmpty headingColor"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" value="${generales?.temporalidad}" />
                     </g:if>
                     <g:else>
-                        <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" />
+                        <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues notEmpty headingColor"  optionKey="id" optionValue="nombre" name="temporalidad" from="${temporalidadList}" value="3"/>
                     </g:else>
                 </span>.
             </span>

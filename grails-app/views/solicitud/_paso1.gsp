@@ -147,16 +147,16 @@
                 </span>
             </span>
             <span class="hide showOnFill"> y mi número telefónico es el
-                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.numeroCasa}"> notEmpty headingColor </g:if>" name="telefono" id="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)" value="${generales?.numeroCasa}">
+                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.numeroCasa}"> notEmpty headingColor </g:if>" name="telefono" id="telefono" maxlength="10" minlength="10" min placeholder="(55)4185 2233)" value="${generales?.numeroCasa}" onKeyPress="return numbersonly(this, event)">
                 </span>
                 <span class="hide showOnFill"> y mi celular es el
-                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.numeroCelular}"> notEmpty headingColor </g:if>" name="celular" id="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)" value="${generales?.numeroCelular}">.
+                <input type="text" class="inputsFormulario width210 headingColor formValues <g:if test="${generales?.numeroCelular}"> notEmpty headingColor </g:if>" name="celular" id="celular" maxlength="10" minlength="10" placeholder="(55)2345 2345)" value="${generales?.numeroCelular}" onKeyPress="return numbersonly(this, event)">.
                 </span>
                 <span class="hide showOnFill"> Mi RFC es
                 <input type="text" style="width:240px;" class="inputsFormulario headingColor formValues <g:if test="${generales?.rfc}"> notEmpty headingColor </g:if>" name="rfc" id="rfc" maxlength="13" placeholder="AAAA000000AZ0" value="${generales?.rfc}">
                 </span>
                 <span class="hide showOnFill"> y mi CURP es
-                <input type="text"  style="width:440px;" class="inputsFormulario headingColor formValues <g:if test="${generales?.curp}"> notEmpty headingColor </g:if>" name="curp" id="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
+                <input type="text"  style="width:43%;" class="inputsFormulario headingColor formValues <g:if test="${generales?.curp}"> notEmpty headingColor </g:if>" name="curp" id="curp" maxlength="18" placeholder="CURP" value="${generales?.curp}">.
                 </span>
                 <br/>
                 <span class="hide showOnFill"> Mi conyugue es
@@ -166,10 +166,10 @@
                 , de mi dependen&nbsp;
                 <span class="width80 inline selectWrap">
                     <g:if test="${generales?.dependientes}">
-                        <g:select id="dependientes" name="dependientes" class="formulariOptions width80 gray formValues notEmpty headingColor"  from="${1..20}" noSelection="['':'0']" value="${generales?.dependientes}" />
+                        <g:select id="dependientes" name="dependientes" class="formulariOptions width80 gray formValues notEmpty headingColor"  from="${0..20}" noSelection="['':'Cantidad']" value="${generales?.dependientes}" />
                     </g:if>
                     <g:else>
-                        <g:select id="dependientes" name="dependientes" class="formulariOptions width80 gray formValues"  from="${1..20}" noSelection="['':'0']" />
+                        <g:select id="dependientes" name="dependientes" class="formulariOptions width80 gray formValues" from="${0..20}" noSelection="['':'Cantidad']"/>
                     </g:else>
                 </span>
                 <span class="afterSelect">

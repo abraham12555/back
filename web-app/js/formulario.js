@@ -132,14 +132,14 @@ function operacionesPaso1al3() {
     $('.showOnFill').each(function (index) {
         var thisStep = $(this);
         var maxIndex = $('.showOnFill').length;
-        console.log("Indice: " + index);
+        //console.log("Indice: " + index);
         $('.formValues', this).change(function () {
-            console.log("Registrando: " + $(this).val());
+            //console.log("Registrando: " + $(this).val());
             if ($(this).val() !== '') {
-                console.log("No esta vacio");
+                //console.log("No esta vacio");
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
-                console.log("--->" + $(this).attr('id'));
+                //console.log("--->" + $(this).attr('id'));
                 if ($(this).attr('id') === 'nombre') {
                     console.log("Si entraaaaaaaa");
                     $('#nombreCliente').html('¡Hola! ' + $(this).val());
@@ -153,7 +153,8 @@ function operacionesPaso1al3() {
             console.log("A punto de calcular el avance....");
             calcularAvance();
         });
-        $('.formValues', this).focusout(function () {
+        $('.formValues', this).focusin(function () {
+            console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
             verificarCambios(index);
         });
     });
@@ -225,11 +226,13 @@ function verificarCambios(index) {
 
     if (filledLength === thisLength) {
         if ((index + 1) < maxIndex) {
+            console.log("Mostrando el siguiente paso....");
             $('.showOnFill').eq(index + 1).fadeIn();
             $('.showOnFill').eq(index + 1).css({'display': 'inline'});
+            $('.showOnFill').eq(index + 1).children('.formValues').focus();
             checkInputs();
         } else {
-            //console.log("Else 1");
+            console.log("Else 1");
         }
     } else if (prellenado === "true") {
         $('.showOnFill').eq(index + 1).fadeIn();
@@ -278,9 +281,7 @@ function calcularAvance() {
         porcentajePorPaso = porcentajePorPaso.toFixed();
         avancePorPaso[Number(pasoActual) - 1] = porcentajePorPaso;
     }
-    console.log("Paso Actual: " + pasoActual);
     for (i = 0; i < 6; i++) {
-        console.log("Avance Paso " + (i + 1) + ": " + avancePorPaso[i]);
         avanceTotal += Number(avancePorPaso[i]);
     }
     console.log("Resultado del calculo: totalDeCampos: " + totalDeCampos + " -- camposLlenos: " + camposLlenos + " -- porcentajeCalculado: " + porcentajePorPaso + "  -- avanceTotal: " + avanceTotal);
@@ -797,9 +798,9 @@ function showValues() {
     var allInputs = $(".formValues").serializeArray();
     //$(".sendValues").html('');
     $.each(allInputs, function (i, field) {
-        console.log("Añadiendo: " + field.name);
-        console.log("Ya existe? " + $('#formPaso input[name=' + field.name + ']').val());
-        console.log("Es indefinido? " + ($('#formPaso input[name=' + field.name + ']').val() === undefined));
+        //console.log("Añadiendo: " + field.name);
+        //console.log("Ya existe? " + $('#formPaso input[name=' + field.name + ']').val());
+        //console.log("Es indefinido? " + ($('#formPaso input[name=' + field.name + ']').val() === undefined));
         if ($('#formPaso input[name=' + field.name + ']').val() === undefined) {
             $(".sendValues").append('<input type="hidden" name="' + field.name + '" value="' + field.value + '" />');
         }

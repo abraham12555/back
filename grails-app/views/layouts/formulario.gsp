@@ -25,6 +25,7 @@
         <g:external dir="js" file="formulario.js" />
         <g:external dir="js" file="jquery.countdown.min.js" />
         <g:external dir="js" file="curp.js" />
+        <g:external dir="js" file="numbersOnly.js" />
         <g:external dir="js" file="google.js" />
         <g:external dir="js" file="facebook.js" />
     </head>

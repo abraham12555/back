@@ -42,6 +42,7 @@ class SolicitudController {
 	
 	
     def index() {
+        if(session.cotizador) {
         session["datosPaso1"] = null
         session["datosPaso2"] = null
         session["datosPaso3"] = null
@@ -54,6 +55,9 @@ class SolicitudController {
         session.datosLogin = null
         session.yaUsoLogin = null
         redirect action: "formulario"
+        } else {
+            redirect controller: "cotizador", action: "index"
+        }
     }
 	
     def login(){
@@ -65,6 +69,9 @@ class SolicitudController {
         session["datosPaso6"] = null
         session.respuestaEphesoft = null
         session.tiposDeDocumento = null
+        session.identificadores = null
+        session.datosLogin = null
+        session.yaUsoLogin = null
     }
 
 	
@@ -576,7 +583,7 @@ class SolicitudController {
             def paso =  params.siguientePaso as int
             def pasoAnterior =  params.pasoAnterior as int
             session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.identificadores)
-            if(session[("datosPaso" + pasoAnterior)]?.clienteGenerado){
+            if(session[("datosPaso" + pasoAnterior)]?.clienteGuardado || session.identificadores?.idSolicitud){
                 if(!session.identificadores){
                     session.identificadores = [:]
                 }

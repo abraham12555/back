@@ -14,6 +14,7 @@ class DashboardController {
     
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
+        session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
         println "Regresando: " + solicitudes
         [solicitudes: solicitudes]
     }
@@ -60,8 +61,35 @@ class DashboardController {
     
     def configuracion() { }
     
+    def administracion(){
+        [entidadesList: EntidadFinanciera.list()]
+    }
+    
     def editarPerfil(){
         
+    }
+    
+    def subirImagen(){
+        println params
+        def fileNames = request.getFileNames()
+        def listaDeArchivos = []
+        def mapa
+        fileNames.each { fileName ->
+            def uploadedFile = request.getFile(fileName)
+            def fileLabel = ".${uploadedFile.originalFilename.split("\\.")[-1]}"
+            println uploadedFile
+            println "File name :"+ uploadedFile.originalFilename
+            println "File size :"+ uploadedFile.size
+            println "File label :"+ fileLabel
+            InputStream inputStream = uploadedFile.inputStream
+            mapa = [:]
+            mapa.archivo = inputStream
+            mapa.nombreDelArchivo = uploadedFile.originalFilename
+            mapa.extension = fileLabel.toLowerCase()
+            listaDeArchivos << mapa
+        }
+        def respuesta = dashboardService.subirImagen(params.imgType, listaDeArchivos)
+        render respuesta as JSON
     }
     
     def autorizarSolicitud(){

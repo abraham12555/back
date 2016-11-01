@@ -83,6 +83,15 @@ class DashboardService {
         return respuesta
     }
     
+    def obtenerCantidadDeSolicitudesPendientes(){
+        def respuesta = 0
+        def usuario = springSecurityService.currentUser
+        def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " AND ps.solicitud.statusDeSolicitud.id NOT IN (5,7)"
+        def resultados = ProductoSolicitud.executeQuery(query)
+        respuesta = resultados.size()
+        return respuesta
+    }
+    
     def obtenerDatosDeLaSolicitud(def id){
         def respuesta = [:]
         def solicitud = SolicitudDeCredito.get(id as long)
@@ -138,5 +147,49 @@ class DashboardService {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(fecha);
         return calendar;
+    }
+    
+    def subirImagen(tipoDeImagen, listaDeArchivos){
+        def respuesta = [:]
+        def usuario = springSecurityService.currentUser
+        listaDeArchivos.each { archivo ->
+            def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: usuario.entidadFinanciera)
+            def nombreEmpresa = usuario.entidadFinanciera.nombre
+            def ruta = "/var/uploads/kosmos/config/" + nombreEmpresa 
+            nombreEmpresa = nombreEmpresa.replaceAll("[^a-zA-Z0-9]+","")
+            if(configuracion){
+                println ""
+                configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
+            } else {
+                configuracion = new ConfiguracionEntidadFinanciera()
+                configuracion.entidadFinanciera = usuario.entidadFinanciera
+                configuracion.nombreComercial = usuario.entidadFinanciera.nombre
+                configuracion.slogan = "Coloque su slogan aquí"
+                configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
+            }
+            if(configuracion.save(flush:true)){
+                def subdir = new File(ruta)
+                subdir.mkdir()
+                println (configuracion.rutaLogotipo)
+                File file = new File(configuracion.rutaLogotipo)
+                if (file.exists() || file.createNewFile()) {
+                    file.withOutputStream{fos->
+                        fos << archivo.archivo
+                    }
+                }
+                respuesta.idConfig = configuracion.id
+                respuesta.exito = true
+                respuesta.mensaje = "El logo se ha subido exitosamente."
+            } else {
+                if (configuracion.hasErrors()) {
+                    configuracion.errors.allErrors.each {
+                        println it
+                    }
+                }
+                respuesta.error = true
+                respuesta.mensaje = "Ocurrio un error al subir el logotipo."
+            }
+        }
+        return respuesta
     }
 }

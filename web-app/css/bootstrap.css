@@ -687,6 +687,9 @@ html,body
 .marginLeft80{
   margin-left: 80px;
 }*/
+.marginAuto{
+    margin: auto;
+}
 
 .marginLeft30{
     margin-left: 30px;

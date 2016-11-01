@@ -56,12 +56,12 @@ class SolicitudService {
             cliente.dependientesEconomicos = datosPaso.dependientes
             cliente.nombreDelConyugue = datosPaso.conyugue
             if(cliente.save(flush:true)){
+                datosPaso.clienteGuardado = true
+                datosPaso.idCliente = cliente.id
                 println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
                 if(clienteNuevo){
                     def telefonoCasa = new TelefonoCliente()
                     def telefonoCelular = new TelefonoCliente()
-                    def solicitudDeCredito = new SolicitudDeCredito()
-                    def sql = new Sql(dataSource)
                     telefonoCasa.cliente = cliente
                     telefonoCasa.numeroTelefonico = datosPaso.numeroCasa
                     telefonoCasa.vigente = true
@@ -70,26 +70,8 @@ class SolicitudService {
                     telefonoCelular.numeroTelefonico = datosPaso.numeroCelular
                     telefonoCelular.vigente = true
                     telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
-                    solicitudDeCredito.fechaDeSolicitud = new Date()
-                    solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
-                    solicitudDeCredito.entidadFinanciera = EntidadFinanciera.get(1)
-                    solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
-                    solicitudDeCredito.cliente = cliente
                     telefonoCasa.save(flush: true)
                     telefonoCelular.save(flush: true)
-                    if(solicitudDeCredito.save(flush: true)){
-                        println "Si se guardo la solicitud: " + solicitudDeCredito?.id
-                        datosPaso.idSolicitud = solicitudDeCredito.id
-                    } else {
-                        println ":( no se guardo la solicitud"
-                        if (solicitudDeCredito.hasErrors()) {
-                            solicitudDeCredito.errors.allErrors.each {
-                                println it
-                            }
-                        }
-                    }
-                    datosPaso.clienteGenerado = true
-                    datosPaso.idCliente = cliente.id
                 } else {
                     def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
                     telefonosCliente?.each {
@@ -99,6 +81,28 @@ class SolicitudService {
                         } else if(it.tipoDeTelefono.id == 2) {
                             it.numeroTelefonico = datosPaso.numeroCelular
                             it.save(flush:true)
+                        }
+                    }
+                }
+                if(identificadores?.idSolicitud) {
+                    println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
+                } else {
+                    def sql = new Sql(dataSource)
+                    def solicitudDeCredito = new SolicitudDeCredito()
+                    solicitudDeCredito.fechaDeSolicitud = new Date()
+                    solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
+                    solicitudDeCredito.entidadFinanciera = EntidadFinanciera.get(1)
+                    solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
+                    solicitudDeCredito.cliente = cliente
+                    if(solicitudDeCredito.save(flush: true)){
+                        println "Si se guardo la solicitud: " + solicitudDeCredito?.id
+                        datosPaso.idSolicitud = solicitudDeCredito.id
+                    } else {
+                        println ":( no se guardo la solicitud"
+                        if (solicitudDeCredito.hasErrors()) {
+                            solicitudDeCredito.errors.allErrors.each {
+                                println it
+                            }
                         }
                     }
                 }
@@ -393,6 +397,7 @@ class SolicitudService {
     }
     
     def registrarProducto (def datosCotizador, def identificadores){
+        println "Datos del Cotizador: " + datosCotizador
         if(datosCotizador){
             def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
             def productoSolicitud =  new ProductoSolicitud()

@@ -5,9 +5,9 @@
             <div class="floatLeft marginRight15 whiteBox paddingTop30 paddingBottom30 paddingLeft25 paddingRight25">
                 <img src="${resource(dir:'images', file:'photo-place.svg')}" alt="Photo Place">
             </div>
-            <div class="floatLeft buscarBtn">
+            <div id="divDropzone" class="floatLeft buscarBtn">
                 <h5 class="font14 fontWeight500 gray marginBottom10 marginTop25">SUBE TU LOGO</h5>
-                <a href="#" title="BUSCAR EN MI PC" class="block whiteBox center gray2 paddingTop15 paddingBottom15 paddingLeft80 paddingRight80">BUSCAR EN MI PC</a>
+                <a id="subirLogo" title="BUSCAR EN MI PC" class="block whiteBox center gray2 paddingTop15 paddingBottom15 paddingLeft80 paddingRight80 pointer">BUSCAR EN MI PC</a>
             </div>
         </div>
     </div>
@@ -18,36 +18,31 @@
         <h5 class="font14 fontWeight500 gray paddingTop15 paddingBottom15 paddingLeft25">COLORES</h5>
         <div class="lightGrayBG paddingTop10 paddingBottom10 paddingLeft25 clearFix">
             <div class="whiteBox colorBox floatLeft clearFix marginRight25">
-                <div class="colors color1 floatLeft"></div>
-                <i class="fa fa-angle-down colorDropdown floatLeft font20 gray2" aria-hidden="true"></i>
+                <input type="text" id="colorBase" name="colorBase">
             </div>
             <p class="floatLeft gray marginTop10">COLOR 1 (BASE)</p>
         </div>
         <div class="paddingTop10 paddingBottom10 paddingLeft25 clearFix">
             <div class="whiteBox colorBox floatLeft clearFix marginRight25">
-                <div class="colors color2 floatLeft"></div>
-                <i class="fa fa-angle-down colorDropdown floatLeft font20 gray2" aria-hidden="true"></i>
+                <input type="text" id="colorFondo" name="colorFondo">
             </div>
             <p class="floatLeft gray marginTop10">COLOR 2 (FONDO)</p>
         </div>
         <div class="lightGrayBG paddingTop10 paddingBottom10 paddingLeft25 clearFix">
             <div class="whiteBox colorBox floatLeft clearFix marginRight25">
-                <div class="colors color3 floatLeft"></div>
-                <i class="fa fa-angle-down colorDropdown floatLeft font20 gray2" aria-hidden="true"></i>
+                <input type="text" id="colorHighlight" name="colorHighlight">
             </div>
             <p class="floatLeft gray marginTop10">COLOR 3 (HIGHLIGHT)</p>
         </div>
         <div class="paddingTop10 paddingBottom10 paddingLeft25 clearFix">
             <div class="whiteBox colorBox floatLeft clearFix marginRight25">
-                <div class="colors color4 floatLeft"></div>
-                <i class="fa fa-angle-down colorDropdown floatLeft font20 gray2" aria-hidden="true"></i>
+                <input type="text" id="colorTexto" name="colorTexto">
             </div>
             <p class="floatLeft gray marginTop10">COLOR 4 (TEXTO)</p>
         </div>
         <div class="lightGrayBG paddingTop10 paddingBottom10 paddingLeft25 clearFix">
             <div class="whiteBox colorBox floatLeft clearFix marginRight25">
-                <div class="colors color5 floatLeft"></div>
-                <i class="fa fa-angle-down colorDropdown floatLeft font20 gray2" aria-hidden="true"></i>
+                <input type="text" id="colorErrores" name="colorErrores">
             </div>
             <p class="floatLeft gray marginTop10">COLOR 5 (ERROR Y NOTIFICACIONES)</p>
         </div>
