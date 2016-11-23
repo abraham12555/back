@@ -577,14 +577,14 @@ function validarConsultaBuroCredito() {
             $('#accionesNormales').fadeOut();
             $('#accionesSuccess').fadeIn();
             $('#divAutorizacionBuro').fadeOut();
-        } else if (errorConsulta.indexOf("ERR") >= 0) {
+        }/* else if (errorConsulta.indexOf("ERR") >= 0) {
             $('#accionesNormales').fadeOut();
             $('#accionesError').fadeIn();
             $('#divAutorizacionBuro').fadeOut();
             setCountdown()
             resetCountdown()
             resumeCountdown();
-        }
+        }*/
     }
 }
 

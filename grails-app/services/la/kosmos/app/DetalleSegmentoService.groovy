@@ -15,7 +15,7 @@ class DetalleSegmentoService {
         def reporteBuro = [:]
         SolicitudDeCredito solicitud = SolicitudDeCredito.get(solicitud_id)
         ResumenBuroCredito resumenBuroCredito = ResumenBuroCredito.findByReporteBuroCredito(solicitud?.reporteBuroCredito)
-        ScoreBuroCredito score = ScoreBuroCredito.findByReporteBuroCredito(solicitud?.reporteBuroCredito)
+        ScoreBuroCredito score = ScoreBuroCredito.findByReporteBuroCreditoAndCodigoScore(solicitud?.reporteBuroCredito,'007 ')
         List<AlertaBuroCredito> alertas = AlertaBuroCredito.findAllByReporteBuroCreditoAndTipoUsuario(solicitud?.reporteBuroCredito,"INF DE JUICIOS   ")
         List<CreditoClienteBuroCredito> creditos = CreditoClienteBuroCredito.findAllByReporteBuroCredito(solicitud?.reporteBuroCredito)
 		
@@ -56,32 +56,27 @@ class DetalleSegmentoService {
             prestamos.add(datosPrestamo)
             prestamosPorTipoCredito.add(datosPrestamoPorTipoCredito)
 			
+			
+			
+			
             if(credito.totalPagosConMop05oMayor != null){
                 if(reporteBuro.mopMasAlto <= 5){
-                    reporteBuro.mopMasAltoDesc = "Mop5oMayor"
-                    reporteBuro.mopMasAlto = 5
                     reporteBuro.credito=credito.id
                     reporteBuro.destino = credito.nombreUsuario
 					
                 }
             }else if(credito.totalPagosConMop04 != null){
                 if(reporteBuro.mopMasAlto <= 4){
-                    reporteBuro.mopMasAltoDesc = "Mop04"
-                    reporteBuro.mopMasAlto = 4
                     reporteBuro.credito=credito.id
                     reporteBuro.destino = credito.nombreUsuario
                 }
             }else if(credito.totalPagosConMop03 != null){
                 if(reporteBuro.mopMasAlto <= 3){
-                    reporteBuro.mopMasAltoDesc = "Mop03"
-                    reporteBuro.mopMasAlto = 3
                     reporteBuro.credito=credito.id
                     reporteBuro.destino = credito.nombreUsuario
                 }
             }else if(credito.totalPagosConMop02 != null){
                 if(reporteBuro.mopMasAlto <= 2){
-                    reporteBuro.mopMasAltoDesc = "Mop02"
-                    reporteBuro.mopMasAlto = 2
                     reporteBuro.credito=credito.id
                     reporteBuro.destino = credito.nombreUsuario
                 }
@@ -113,6 +108,40 @@ class DetalleSegmentoService {
         int cuentaMop96 = calcularValor(resumenBuroCredito?.numeroCuentaMop96)
         int cuentaMop97 = calcularValor(resumenBuroCredito?.numeroCuentaMop97)
         int cuentaMop99 = calcularValor(resumenBuroCredito?.numeroCuentaMop99)
+		
+		
+		if(cuentaMop99>0){
+			reporteBuro.mopMasAltoDesc = "Mop99"
+			reporteBuro.mopMasAlto = 99
+		}else if(cuentaMop97){
+			reporteBuro.mopMasAltoDesc = "Mop97"
+			reporteBuro.mopMasAlto = 97
+		}else if(cuentaMop96){
+			reporteBuro.mopMasAltoDesc = "Mop96"
+			reporteBuro.mopMasAlto = 96
+		}else if(cuentaMop07){
+			reporteBuro.mopMasAltoDesc = "Mop07"
+			reporteBuro.mopMasAlto = 07
+		}else if(cuentaMop06){
+			reporteBuro.mopMasAltoDesc = "Mop06"
+			reporteBuro.mopMasAlto = 06
+		}else if(cuentaMop05){
+			reporteBuro.mopMasAltoDesc = "Mop05"
+			reporteBuro.mopMasAlto = 05
+		}else if(cuentaMop04){
+			reporteBuro.mopMasAltoDesc = "Mop04"
+			reporteBuro.mopMasAlto = 04
+		}else if(cuentaMop03){
+			reporteBuro.mopMasAltoDesc = "Mop03"
+			reporteBuro.mopMasAlto = 03
+		}else if(cuentaMop02){
+			reporteBuro.mopMasAltoDesc = "Mop02"
+			reporteBuro.mopMasAlto = 02
+		}else if(cuentaMop01){
+			reporteBuro.mopMasAltoDesc = "Mop01"
+			reporteBuro.mopMasAlto = 01
+		}
+		
         //int cuentaMopUR = Integer.parseInt(resumenBuroCredito.numeroCuentaMopUR)
         int totalMops = cuentaMop01 + cuentaMop02+ cuentaMop03+ cuentaMop04+ cuentaMop05+ cuentaMop06+ cuentaMop07+ cuentaMop96+ cuentaMop97+ cuentaMop99
         if(totalMops != 0){

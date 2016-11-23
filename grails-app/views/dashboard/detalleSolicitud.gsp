@@ -903,10 +903,11 @@
                                             <p class="font12 fontWeight500 gray paddingTop10">MOP MAS ALTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.mopMasAltoDesc}</p>
                                         </div>
-                                        <div class="marginLeft32">
+                                        
+                                        <!-- div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">DESTINO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.destino}</p>
-                                        </div>
+                                        </div-->
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">JUICIOS AP</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.juicios}</p>
