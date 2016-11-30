@@ -5,10 +5,14 @@ class TipoDeDocumento implements Serializable{
     String nombre
     String formatosPermitidos
     boolean activo
+    boolean usoEnCotizador
+    boolean usoEnSolicitud
+    TipoDeIngresos tipoDeIngresos
 
     static constraints = {
         nombre (blank: false)
         formatosPermitidos (nullable: false)
+        tipoDeIngresos (nullable: true)
     }
     
     static mapping = {

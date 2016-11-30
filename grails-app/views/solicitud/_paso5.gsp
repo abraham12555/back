@@ -1,167 +1,87 @@
-<section
-	class="container paddingTop30 paddingBottom20 clearFix contentHeight">
-	<div class="padding20">
-		<input type="hidden" id="errorConsulta" value="${errorConsulta}" />
-		<input type="hidden" id="reporteBuroCredito"  value="${reporteBuroCredito}" />
-		
-		<div class="clearFix marginBottom30">
-			<div
-				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
-				<p class="correctaBoxLabel">¿TIENES UNA TARJETA DE CRÉDITO?</p>
-				<div id="tarjeta_correcto_si" class=" correctaBox floatLeft hasCc">
-					<p class="center paddingTop15 paddingBottom15 ">SI</p>
-				</div>
-				<div id="tarjeta_correcto_no" class="floatLeft correctaBox">
-					<p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-				</div>
-				<input type="hidden" class="formValues textUpper" name="tCredito"
-					id="tCredito" value="${generales?.tCredito}">
-			</div>
-			<div class="floatLeft col3 col6-tab col12-mob">
-				<p class="gray font14 letterspacing1.1">ÚLTIMOS CUATRO DÍGITOS</p>
-				<input class="inPuts4a marginTop15 headingColor" type="text"
-					disabled id="numeroTarjeta" name="numeroTarjeta" placeholder="0000"
-					maxlength="4" /> <input type="hidden" class="textUpper" disabled
-					id="nombre" name="nombre" value="${personales?.nombre}" /> <input
-					type="hidden" class="textUpper" id="apellidoPaterno"
-					name="apellidoPaterno" value="${personales?.apellidoPaterno}" /> <input
-					type="hidden" class="textUpper" id="apellidoMaterno"
-					name="apellidoMaterno" value="${personales?.apellidoMaterno}" /> <input
-					type="hidden" class="textUpper" id="fechaNac" name="fechaNac"
-					value="${personales?.dia}-${personales?.mes}-${personales?.anio}" />
-				<input type="hidden" class="textUpper" id="rfc" name="rfc"
-					value="${personales?.rfc}" /> <input type="hidden"
-					class="textUpper" id="calle" name="calle"
-					value="${direccion?.calle}" /> <input type="hidden"
-					class="textUpper" id="noExterior" name="noExterior"
-					value="${direccion?.noExterior}" /> <input type="hidden"
-					class="textUpper" id="noInterior" name="noInterior"
-					value="${direccion?.noInterior}" /> <input type="hidden"
-					class="textUpper" id="colonia" name="colonia"
-					value="${direccion?.colonia}" /> <input type="hidden"
-					class="textUpper" id="municipio" name="municipio"
-					value="${direccion?.municipio}" />
-			</div>
-
-			<div class="col5 col12-tab floatLeft marginTop30">
-				<div class="rectangleRound font11 letterspacing0.5 center">LAS
-					TARJETAS DE DÉBITO Y TIENDAS DEPARTAMENTALES NO SON CONSIDERADAS
-					TARJETAS DE CRÉDITO</div>
-			</div>
-		</div>
-		<div class="clearFix marginBottom30">
-			<div
-				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
-				<p class="correctaBoxLabel">¿ERES TÍTULAR DE UN CREDITO
-					HIPOTECARIO?</p>
-				<div id="hipotecario_correcto_si"
-					class="correctaBox floatLeft hasCc">
-					<p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-				</div>
-				<div id="hipotecario_correcto_no" class="floatLeft correctaBox">
-					<p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-				</div>
-				<input type="hidden" class="formValues textUpper" name="creditoH"
-					id="creditoH" value="${generales?.creditoH}">
-			</div>
-			<div
-				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
-				<p class="correctaBoxLabel">¿HAZ SIDO TÍTULAR DE UN CREDITO
-					AUTOMOTRIZ EN LOS ÚLTIMOS 24 MESES?</p>
-				<div id="automotriz_correcto_si" class="correctaBox floatLeft hasCc">
-					<p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-				</div>
-				<div id="automotriz_correcto_no" class="floatLeft correctaBox">
-					<p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-				</div>
-				<input type="hidden" class="formValues textUpper" name="creditoA"
-					id="creditoA" value="${generales?.creditoA}">
-			</div>
-		</div>
-
-		<div id="divAutorizacionBuro"
-			class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
-			<p class="font18 gray letterspacing1 justify">
-				Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">
-					${fechaActual}
-				</span>, Autoriza a <span id="razonSocial" class="headingColor"> ${razonSocial}
-				</span> a consultar sus antecedentes crediticios por &uacute;nica
-				ocasi&oacute;n ante las Sociedades de Informaci&oacute;n Crediticia
-				que estime conveniente, declarando que conoce la naturaleza, alcance
-				y uso que <span id="razonSocial" class="headingColor"> ${razonSocial}
-				</span> har&aacute; de tal informaci&oacute;n?
-			</p>
-		</div>		
-		<div id="accionesNormales" class="creditBtns">
-			<div class="col5half col12-mob floatLeft">
-				<a id="consultarBuroBtn">
-					<div
-						class="colorGreen buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc"
-						style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
-				</a>
-			</div>
-			<div
-				class="col1 col12-mob center gray floatLeft padingAside20 marginTop15 marginBottom15 block">Ó</div>
-			<div class="col5half col12-mob floatLeft">
-				<div
-					class="buttonM darkGray radius100 font16 colorWhite letterspacing1.5 mobileAuto"
-					style="cursor: pointer;">SUBIR MI PDF DE BURÓ DE CRÉDITO</div>
-			</div>
-			<div class="loadingContainer clearFix clearFloat">
-				<div class="loadingBar marginTop50 hide">
-					<div class="loadingActive"></div>
-					<p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU
-						BURÓ DE CRÉDITO</p>
-				</div>
-			</div>
-		</div>
-		<div id="accionesSuccess" style="display: none;"
-			class="clearFix clearFloat">
-			<div
-				class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto"
-				style="cursor: pointer;">CONSULTA EXITOSA</div>
-		</div>
-		<div id="accionesError" style="display: none;" class="clearFix">
-			<div class="col5 col12-tab floatLeft">
-				<div
-					class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto"
-					style="cursor: pointer;">CONSULTA FALLIDA</div>
-			</div>
-			<div class="clearFloat tablet mobile"></div>
-			<div
-				class="phoneStaus col6 col8-tab col12-mob blockAuto floatRight clearFix">
-				<div class="col9  col8-mob floatLeft">
-					<div class="clearFix paddingAside15">
-						<img class="floatLeft"
-							src="${resource(dir:'images', file:'phone.png')}" alt="contact"
-							title="contact" />
-						<div class="floatLeft marginLeft10">
-							<p class="formTitleColor font16 letterspacing1.5">NOS
-								COMUNICAREMOS</p>
-							<p class="formTitleColor font16 letterspacing1.5">CONTIGO VIA
-								TELEFONICA EN:</p>
-						</div>
-					</div>
-				</div>
-				<div class="col3 col4-mob floatLeft">
-					<p class="buttonM colorGreen radius100 colorWhite letterspacing1.5"
-						id="clock">2:00 min</p>
-				</div>
-			</div>
-
-		</div>
-	</div>
+<section class="container paddingTop30 paddingBottom20 contentHeight">
+    <div class="padding20">
+        <img class="happines" src="${resource(dir:'images', file:'happines.png')}" alt="happines" title="happines"/>
+        <p class="center marginLeft24 font25 formTitleColor letterspacing2.3">¡FELICIDADES!</p>
+        <p class="center marginLeft24 font16 formTitleColor letterspacing1.5 marginTop12">Has terminado tu solicitúd, estás a un click de saber tu resultado.</p>
+        <p class="center marginLeft24 font16 colorblue letterspacing1.5 marginTop12">Solo te falta subir tu documentación, toma una foto de tus documentos</p>
+        <p class="center marginLeft24 font16 colorblue letterspacing1.5 marginTop12">desde tu smartphone.</p>
+        <div class="marginTop50 clearFix">
+            <div class="floatLeft col5 col6-tab col12-mob">
+                <div class="paddingAside15">
+                    <div id="paso6IdOf" class="colorWhite <g:if test="${documentosSubidos?.identificacion}"> colorGreen </g:if><g:else> darkGray </g:else> radius100 buttonM mobileAuto greenClick pointer">SUBE TU IDENTIFICACIÓN OFICIAL</div>
+                </div>
+            </div>
+            <div class="floatRight col5 col6-tab col12-mob">
+                <div class="paddingAside15">
+                    <div id="paso6CompDom" class="colorWhite <g:if test="${documentosSubidos?.comprobanteDeDomicilio}"> colorGreen </g:if><g:else> darkGray </g:else> radius100 buttonM mobileAuto greenClick pointer">SUBE TU COMPROBANTE DE DOMICILIO</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 <footer class="footerContainer">
-	<g:render template="stepBar" />
-	<div class="mobile">
-		<div class="paddingAside15 clearFix">
-			<div class="grayrectangle floatLeft marginRight10">Atras</div>
-			<div class="greenrectangle floatLeft nextBtn">Ir al paso 6</div>
-		</div>
-	</div>
+    <g:render template="stepBar"/>
 </footer>
 
-<div id="modalAutorizacion" class="modal fade" style="display: none;">
-	<g:render template="/templates/solicitud/paso5/autorizacion" />
+<div class="solicitudLightbox hide" id="resumen_solicitud">
+    <div class="overlay"></div>
+    <div class="resumenSolicitud lightboxPos">
+        <div class="padding20">
+            <h2 class="fontWeight500 darkBluetitle font25 center paddingTop10 paddingBottom10">RESUMEN DE SOLICITUD</h2>
+            <div class="borderLine marginTop12 marginBottom25"></div>
+            <div class="padding20">
+                <div class="fontWeight500 font18 darkBluetitle">
+                    <p>ESTÁS SOLICITANDO UN CRÉDITO DE
+                        <span class="headingColor">NISSAN MAXIMA </span>
+                        POR
+                        <span class="headingColor">$350,000.00.MX.</span>
+                    </p>
+                    <p class="paddingTop20 ">A UNA TAZA ORDINARIA DEL
+                        <span class="headingColor"> 7% ANUAL </span>
+                    </p>
+                    <p class="paddingTop20 ">TUS PAGOS SERÁN MENSUALES</p>
+                    <p> POR
+                        <span class="headingColor"> $10,500.00 MXN </span>
+                        A TU CUENTA
+                        <span class="headingColor"> BBVA</span>
+                    </p>
+                    <p>
+                        <span class="headingColor">TERMINACIÓN 4435 </span>
+                        POR UN PERIODO DE
+                        <span class="headingColor"> 24 MESES.</span>
+                    </p>
+                </div>
+                <div class="greenTitle paddingTop20">
+                    <p>Es posible que más adelante se te solicite compartir esta</p>
+                    <p>solicitud con un aval para minimizar el riesgo y ofrecerte</p>
+                    <p>mejores condiciones </p>
+                </div>
+
+            </div>
+            <div class="borderLine marginTop12 marginBottom25"></div>
+            <div class="padding20">
+                <div class=" clearFix marginBottom10">
+                    <div class="checkBox whiteCheckBox">
+                        <i class="fa fa-check colorWhite hide" aria-hidden="true"></i>
+                    </div>
+                    <div class="checkboxLabel">
+                        <p class="gray font12 paddingLeft20">ACEPTO TERMINOS Y CONDICIONES</p>
+                    </div>
+                </div>
+                <div class="clearFix marginBottom10">
+                    <div class="checkBox whiteCheckBox">
+                        <i class="fa fa-check colorWhite hide" aria-hidden="true"></i>
+                    </div>
+                    <div class="checkboxLabel">
+                        <p class="gray font12 paddingLeft20">AUTORIZO EL MANEJO CONFIDENCIAL DE MIS DATOS </p>
+                    </div>
+                </div>
+            </div>
+            <div class="marginBottom25">
+                <div id="terminarSolicitud" class="width350 blockAuto rectangleRound marginTop30 center font20 letterspacing1.8 textUpper enviarSolicitud">
+                    enviar mi solicitud
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

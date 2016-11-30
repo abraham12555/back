@@ -8,6 +8,13 @@ class Producto implements Serializable {
     TipoDeProducto tipoDeProducto
     String rutaImagenDefault
     String descripcion = ""
+    String tituloEnCotizador
+    float montoMinimo = 0
+    float montoMaximo = 0
+    float tasaDeInteres  = 0
+    TipoDeTasaDeInteres tipoDeTasa
+    String claveDeProducto
+    Esquema esquema
 
     boolean activo = true
 
@@ -17,7 +24,11 @@ class Producto implements Serializable {
         entidadFinanciera(blank: false)
         tipoDeProducto(nullable: false)
         rutaImagenDefault(blank: false)
-        descripcion(blank: false)
+        descripcion (blank: false)
+        tituloEnCotizador (blank: false)
+        tipoDeTasa(nullable: true)
+        claveDeProducto(nullable: true)
+        esquema(nullable: true)
     }
 
     static mapping = {

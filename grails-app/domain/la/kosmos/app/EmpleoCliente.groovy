@@ -5,7 +5,7 @@ class EmpleoCliente implements Serializable{
     String puesto
     String actividad
     String explicacionActividad
-    String profesion
+    Profesion profesion
     TipoDeContrato tipoDeContrato
     GiroEmpresarial giroEmpresarial
     String nombreDeLaEmpresa
@@ -20,25 +20,33 @@ class EmpleoCliente implements Serializable{
     String colonia
     String ciudad
     Cliente cliente
+    Ocupacion ocupacion
+    String fechaIngreso
+    float ingresosFijos
+    float ingresosVariables
+    float gastos
     
     static constraints = {
 
-        puesto (blank: false)
+        puesto (nullable: true)
         actividad (nullable: true)
         explicacionActividad (nullable: true)
         profesion (nullable: true)
         giroEmpresarial (nullable: true)
         nombreDeLaEmpresa (blank: false)
         nombreDelJefeInmediato (nullable: true)
-        temporalidad (nullable: false)
+        temporalidad (nullable: true)
         telefono (nullable: true, maxSize: 10)
         calle (nullable: true)
         numeroExterior (nullable: true)
         numeroInterior (nullable: true)
         codigoPostal (nullable: true)
+        colonia (nullable: true)
         ciudad (nullable: true)
         cliente (nullable: true)
         tipoDeContrato (nullable: true)
+        ocupacion (nullable: true)
+        fechaIngreso (nullable: true)
     }
     
     static mapping = {

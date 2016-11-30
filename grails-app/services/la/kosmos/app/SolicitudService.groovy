@@ -8,300 +8,299 @@ class SolicitudService {
     
     def dataSource
 
-    def construirDatosTemporales(def params, def pasoEnviado, def identificadores) {
-        println "Parametros Enviados: "+ params +" - Paso Enviado: " +pasoEnviado + " - Para el Cliente: " + identificadores?.idCliente
+    def construirDatosTemporales(def datosPreguardados, def params, def pasoEnviado, def identificadores, entidadFinanciera) {
+        println "Contenido del Mapa: " + datosPreguardados + " - Parametros Enviados:" + params +" - Paso Enviado: " +pasoEnviado + " - Identificadores: " + identificadores
 	def cliente
         def clienteNuevo = false
         def datosPaso = [:]
-        if(pasoEnviado == 1){
-            datosPaso.nombre = params.nombre
-            datosPaso.apellidoPaterno = params.apellidoPaterno
-            datosPaso.apellidoMaterno = params.apellidoMaterno
-            datosPaso.sexo =  (params.sexo ? params.sexo as long : null)
-            datosPaso.dia = (params.dia ? params.dia as int : null)
-            datosPaso.mes = (params.mes ? params.mes as int : null)
-            datosPaso.anio = (params.anio ? params.anio as int : null)
-            datosPaso.entidad = (params.estado ? params.estado as long : null)
-            datosPaso.estadoCivil = (params.estadoCivil ? params.estadoCivil as long : null)
-            datosPaso.nivelEscolar = (params.nivelEscolar ? params.nivelEscolar as long : null)
-            datosPaso.numeroCasa = params.telefono
-            datosPaso.numeroCelular = params.celular
-            datosPaso.rfc = params.rfc
-            datosPaso.curp = params.curp
-            datosPaso.conyugue = params.nombreConyugue
-            datosPaso.dependientes = (params.dependientes ? params.dependientes as int : 0)
-            if(identificadores?.idCliente){
-                cliente = Cliente.get(identificadores.idCliente as long)
-            } else {
-                cliente = Cliente.findByCurp(datosPaso.curp)
-                if(!cliente) {
-                    cliente = Cliente.findByRfc(datosPaso.rfc)
+        if(datosPreguardados){
+            datosPaso = datosPreguardados
+        }
+        if(pasoEnviado.tipoDePaso.nombre == "pasoFormulario") {
+            def camposFormulario = CampoFormulario.list();
+            camposFormulario.each { campo ->
+                println("asdfad fasdfasdfsa: " + (campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo) + "------" + params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo)])
+                if(params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo)]){
+                    if(datosPaso."$campo.claseAsociada.nombre"){
+                        datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo)]
+                    } else {
+                        datosPaso."$campo.claseAsociada.nombre" = [:]
+                        datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo)]
+                    }
+                } else if((campo.nombreDelCampo == "fechaDeNacimiento" || campo.nombreDelCampo == "fechaDeNacimientoDelConyugue") && (params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_dia" )] && params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_mes" )] && params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_anio" )] )) {
+                    if(!datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"){
+                        datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo" = [:]
+                    }
+                    datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."dia" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_dia" )]
+                    datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."mes" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_mes")]
+                    datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."anio" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_anio")]
+                } else if((campo.nombreDelCampo == "tiempoDeVivir" || campo.nombreDelCampo == "tiempoDeResidencia" || campo.nombreDelCampo == "antiguedad") && (params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_mes")] || params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_anio")])){
+                    if(!datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"){
+                        datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo" = [:]
+                        datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."mes" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_mes")]
+                        datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."anio" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_anio")]
+                    }
+                }
+            }
+
+            println "Datos Recuperados: " + datosPaso
+            if(datosPaso.cliente){
+                if(identificadores?.idCliente){
+                    cliente = Cliente.get(identificadores.idCliente as long)
+                } else {
+                    cliente = Cliente.findByCurp(datosPaso.cliente.curp)
                     if(!cliente) {
-                        cliente = new Cliente()
-                        clienteNuevo = true
-                    }
-                }
-            }
-            cliente.nombre = datosPaso.nombre
-            cliente.apellidoPaterno = datosPaso.apellidoPaterno
-            cliente.apellidoMaterno = datosPaso.apellidoMaterno
-            cliente.nacionalidad =  ( datosPaso.entidad ? ((datosPaso.entidad < 33) ? Nacionalidad.get(1) : Nacionalidad.get(2)) : null)
-            cliente.fechaDeNacimiento = ((datosPaso.dia && datosPaso.mes && datosPaso.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.dia + "/" + datosPaso.mes + "/" + datosPaso.anio))) : null)
-            cliente.lugarDeNacimiento = (datosPaso.entidad ? Estado.get(datosPaso.entidad) : null)
-            cliente.curp = datosPaso.curp
-            cliente.genero = (datosPaso.sexo ? Genero.get(datosPaso.sexo) : null)
-            cliente.rfc = datosPaso.rfc
-            cliente.estadoCivil = (datosPaso.estadoCivil ? EstadoCivil.get(datosPaso.estadoCivil) : null)
-            cliente.nivelEducativo = (datosPaso.nivelEscolar ? NivelEducativo.get(datosPaso.nivelEscolar) : null)
-            cliente.dependientesEconomicos = datosPaso.dependientes
-            cliente.nombreDelConyugue = datosPaso.conyugue
-            if(cliente.save(flush:true)){
-                datosPaso.clienteGuardado = true
-                datosPaso.idCliente = cliente.id
-                println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
-                if(clienteNuevo){
-                    def telefonoCasa = new TelefonoCliente()
-                    def telefonoCelular = new TelefonoCliente()
-                    telefonoCasa.cliente = cliente
-                    telefonoCasa.numeroTelefonico = datosPaso.numeroCasa
-                    telefonoCasa.vigente = true
-                    telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
-                    telefonoCelular.cliente = cliente
-                    telefonoCelular.numeroTelefonico = datosPaso.numeroCelular
-                    telefonoCelular.vigente = true
-                    telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
-                    telefonoCasa.save(flush: true)
-                    telefonoCelular.save(flush: true)
-                } else {
-                    def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
-                    telefonosCliente?.each {
-                        if(it.tipoDeTelefono.id == 1) {
-                            it.numeroTelefonico = datosPaso.numeroCasa
-                            it.save(flush:true)
-                        } else if(it.tipoDeTelefono.id == 2) {
-                            it.numeroTelefonico = datosPaso.numeroCelular
-                            it.save(flush:true)
+                        cliente = Cliente.findByRfc(datosPaso.cliente.rfc)
+                        if(!cliente) {
+                            cliente = new Cliente()
+                            clienteNuevo = true
                         }
                     }
                 }
-                if(identificadores?.idSolicitud) {
-                    println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
-                } else {
-                    def sql = new Sql(dataSource)
-                    def solicitudDeCredito = new SolicitudDeCredito()
-                    solicitudDeCredito.fechaDeSolicitud = new Date()
-                    solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
-                    solicitudDeCredito.entidadFinanciera = EntidadFinanciera.get(1)
-                    solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
-                    solicitudDeCredito.cliente = cliente
-                    if(solicitudDeCredito.save(flush: true)){
-                        println "Si se guardo la solicitud: " + solicitudDeCredito?.id
-                        datosPaso.idSolicitud = solicitudDeCredito.id
+                cliente.nombre = datosPaso.cliente.nombre
+                cliente.apellidoPaterno = datosPaso.cliente.apellidoPaterno
+                cliente.apellidoMaterno = datosPaso.cliente.apellidoMaterno
+                cliente.nacionalidad = (datosPaso.cliente.nacionalidad ? (Nacionalidad.get(datosPaso.cliente.nacionalidad as long)) : null)
+                cliente.fechaDeNacimiento = ((datosPaso.cliente.fechaDeNacimiento.dia && datosPaso.cliente.fechaDeNacimiento.mes && datosPaso.cliente.fechaDeNacimiento.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.cliente.fechaDeNacimiento.dia + "/" + datosPaso.cliente.fechaDeNacimiento.mes + "/" + datosPaso.cliente.fechaDeNacimiento.anio))) : null)
+                cliente.lugarDeNacimiento = (datosPaso.cliente.lugarDeNacimiento ? Estado.get(datosPaso.cliente.lugarDeNacimiento) : null)
+                cliente.curp = datosPaso.cliente.curp
+                cliente.genero = (datosPaso.cliente.genero ? Genero.get(datosPaso.cliente.genero) : null)
+                cliente.rfc = datosPaso.cliente.rfc
+                cliente.estadoCivil = (datosPaso.cliente.estadoCivil ? EstadoCivil.get(datosPaso.cliente.estadoCivil as long) : null)
+                cliente.nivelEducativo = (datosPaso.cliente.nivelEducativo ? NivelEducativo.get(datosPaso.cliente.nivelEducativo as long) : null)
+                cliente.dependientesEconomicos = (datosPaso.cliente.dependientesEconomicos ? (datosPaso.cliente.dependientesEconomicos as int) : 0)
+                cliente.nombreDelConyugue = datosPaso.cliente.nombreDelConyugue
+                cliente.regimenMatrimonial = (datosPaso.cliente.regimenMatrimonial ? RegimenMatrimonial.get(datosPaso.cliente.regimenMatrimonial as long) : null)
+                cliente.apellidoPaternoDelConyugue = datosPaso.cliente.apellidoPaternoDelConyugue
+                cliente.apellidoMaternoDelConyugue = datosPaso.cliente.apellidoMaternoDelConyugue
+                cliente.fechaDeNacimientoDelConyugue = ((datosPaso.cliente.fechaDeNacimientoDelConyugue?.dia && datosPaso.cliente.fechaDeNacimientoDelConyugue?.mes && datosPaso.cliente.fechaDeNacimientoDelConyugue?.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.cliente.fechaDeNacimientoDelConyugue.dia + "/" + datosPaso.cliente.fechaDeNacimientoDelConyugue.mes + "/" + datosPaso.cliente.fechaDeNacimientoDelConyugue.anio))) : null)
+                cliente.rfcDelConyugue = datosPaso.cliente.rfcDelConyugue
+                cliente.curpDelConyugue = datosPaso.cliente.curpDelConyugue
+                cliente.lugarDeNacimientoDelConyugue = (datosPaso.cliente.lugarDeNacimientoDelConyugue ? Estado.get(datosPaso.cliente.lugarDeNacimientoDelConyugue) : null)
+                cliente.nacionalidadDelConyugue = (datosPaso.cliente.nacionalidadDelConyugue ? (Nacionalidad.get(datosPaso.cliente.nacionalidadDelConyugue as long)) : null)
+                if(cliente.save(flush:true)){
+                    datosPaso.cliente.clienteGuardado = true
+                    datosPaso.cliente.idCliente = cliente.id
+                    println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
+                    if(clienteNuevo && datosPaso.telefonoCliente){
+                        def telefonoCasa
+                        def telefonoCelular
+                        if(datosPaso.telefonoCliente.telefonoCasa){
+                            telefonoCasa = new TelefonoCliente()
+                            telefonoCasa.cliente = cliente
+                            telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
+                            telefonoCasa.vigente = true
+                            telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
+                            telefonoCasa.save(flush: true)
+                        }
+                        if(datosPaso.telefonoCliente.telefonoCelular){
+                            telefonoCelular = new TelefonoCliente()
+                            telefonoCelular.cliente = cliente
+                            telefonoCelular.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
+                            telefonoCelular.vigente = true
+                            telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
+                            telefonoCelular.save(flush: true)
+                        }
                     } else {
-                        println ":( no se guardo la solicitud"
-                        if (solicitudDeCredito.hasErrors()) {
-                            solicitudDeCredito.errors.allErrors.each {
-                                println it
+                        def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
+                        telefonosCliente?.each {
+                            if(it.tipoDeTelefono.id == 1) {
+                                it.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
+                                it.save(flush:true)
+                            } else if(it.tipoDeTelefono.id == 2) {
+                                it.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
+                                it.save(flush:true)
                             }
                         }
                     }
-                }
-            } else {
-                if (cliente.hasErrors()) {
-                    cliente.errors.allErrors.each {
-                        println it
+                    if(identificadores?.idSolicitud) {
+                        println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
+                    } else {
+                        def sql = new Sql(dataSource)
+                        def solicitudDeCredito = new SolicitudDeCredito()
+                        solicitudDeCredito.fechaDeSolicitud = new Date()
+                        solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
+                        solicitudDeCredito.entidadFinanciera = entidadFinanciera
+                        solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
+                        solicitudDeCredito.cliente = cliente
+                        if(solicitudDeCredito.save(flush: true)){
+                            println "Si se guardo la solicitud: " + solicitudDeCredito?.id
+                            datosPaso.cliente.idSolicitud = solicitudDeCredito.id
+                        } else {
+                            println ":( no se guardo la solicitud"
+                            if (solicitudDeCredito.hasErrors()) {
+                                solicitudDeCredito.errors.allErrors.each {
+                                    println it
+                                }
+                            }
+                        }
                     }
-                }
-            }
-        } else if (pasoEnviado == 2){
-            datosPaso.calle = params.calle
-            datosPaso.noExterior = params.noExterior
-            datosPaso.noInterior = params.noInterior
-            datosPaso.colonia = params.colonia
-            datosPaso.codigoPostal = params.codigoPostal
-            datosPaso.tipoDelegacion = params.tipoDelegacion
-            datosPaso.municipio = (params.municipio ? params.municipio as long : null)
-            datosPaso.estado = (params.estado ? params.estado as long : null)
-            datosPaso.tipoDeVivienda = (params.tipoDeVivienda ?  params.tipoDeVivienda as long : null)
-            datosPaso.tiempo = (params.tiempo ? params.tiempo as int : 0)
-            datosPaso.temporalidad = (params.temporalidad ? params.temporalidad as long : null)
-            if(identificadores?.idCliente) {
-                cliente = Cliente.get(identificadores.idCliente as long)
-                def direccionCliente
-                if(identificadores?.idDireccion){
-                    direccionCliente = DireccionCliente.get(identificadores.idDireccion as long)
                 } else {
-                    direccionCliente = new DireccionCliente()
-                }
-                direccionCliente.calle = datosPaso.calle
-                direccionCliente.numeroExterior = datosPaso.noExterior
-                direccionCliente.numeroInterior = datosPaso.noInterior
-                direccionCliente.codigoPostal = (datosPaso.codigoPostal ? CodigoPostal.findByCodigo(datosPaso.codigoPostal) : null)
-                direccionCliente.colonia = datosPaso.colonia
-                direccionCliente.ciudad  = (datosPaso.municipio ? Municipio.get(datosPaso.municipio) : null)
-                direccionCliente.tipoDeVivienda = (datosPaso.tipoDeVivienda ? TipoDeVivienda.get(datosPaso.tipoDeVivienda) : null)
-                direccionCliente.temporalidad = (datosPaso.temporalidad ? Temporalidad.get(datosPaso.temporalidad) : null)
-                direccionCliente.cliente = cliente
-                direccionCliente.tiempoDeResidencia = datosPaso.tiempo
-                direccionCliente.latitud = 0
-                direccionCliente.longitud = 0
-                if(direccionCliente.save(flush:true)){
-                    println("La dirección se ha registrado correctamente")
-                    datosPaso.idDireccion = direccionCliente.id
-                } else {
-                    if (direccionCliente.hasErrors()) {
-                        direccionCliente.errors.allErrors.each {
+                    if (cliente.hasErrors()) {
+                        cliente.errors.allErrors.each {
                             println it
                         }
                     }
                 }
             }
-        } else if (pasoEnviado == 3){
-            datosPaso.profesion = params.profesion
-            datosPaso.empresa = params.empresa
-            datosPaso.puesto = params.puesto
-            datosPaso.periodo = (params.noPeriodo ? params.noPeriodo : 0)
-            datosPaso.plazo = (params.plazo ? params.plazo : null)
-            datosPaso.contrato = (params.contrato ? params.contrato : null)
-            datosPaso.jefeInmediato = params.jefeInmediato
-            datosPaso.giroEmpresarial = (params.giroEmpresarial ? params.giroEmpresarial : null)
-            datosPaso.actividad = params.actividad
-            datosPaso.explicacionActividad = params.explicacionActividad
-            datosPaso.calle = params.calle
-            datosPaso.noExterior = params.noExterior
-            datosPaso.noInterior = params.noInterior
-            datosPaso.colonia = params.colonia
-            datosPaso.codigoPostal = params.codigoPostal
-            datosPaso.tipoDelegacion = params.tipoDelegacion
-            datosPaso.municipio = (params.municipio ? params.municipio as long : null)
-            datosPaso.estado = (params.estado ? params.estado as long : null)
-            datosPaso.telefono = params.telefono
-            datosPaso.referencia1NombreCompleto = params.referencia1NombreCompleto
-            datosPaso.referencia1Email = params.referencia1Email
-            datosPaso.referencia1Celular = params.referencia1Celular
-            datosPaso.referencia1Particular = params.referencia1Particular
-            datosPaso.referencia2NombreCompleto = params.referencia2NombreCompleto
-            datosPaso.referencia2Email = params.referencia2Email
-            datosPaso.referencia2Celular = params.referencia2Celular
-            datosPaso.referencia2Particular = params.referencia2Particular
-            datosPaso.referencia3NombreCompleto = params.referencia3NombreCompleto
-            datosPaso.referencia3Email = params.referencia3Email
-            datosPaso.referencia3Celular = params.referencia3Celular
-            datosPaso.referencia3Particular = params.referencia3Particular
-            if(identificadores?.idCliente) {
-                cliente = Cliente.get(identificadores.idCliente as long)
-                def empleoCliente
-                if(identificadores?.idEmpleo){
-                    empleoCliente = EmpleoCliente.get(identificadores.idEmpleo as long)
-                } else {
-                    empleoCliente = new EmpleoCliente()
-                }
-                empleoCliente.puesto = datosPaso.puesto
-                empleoCliente.actividad = datosPaso.actividad
-                empleoCliente.explicacionActividad = datosPaso.explicacionActividad
-                empleoCliente.profesion = datosPaso.profesion
-                empleoCliente.tipoDeContrato = (datosPaso.contrato ? TipoDeContrato.get(datosPaso.contrato) : null)
-                empleoCliente.giroEmpresarial = (datosPaso.giroEmpresarial ? GiroEmpresarial.get(datosPaso.giroEmpresarial) : null)
-                empleoCliente.nombreDeLaEmpresa = datosPaso.empresa
-                empleoCliente.nombreDelJefeInmediato = datosPaso.jefeInmediato
-                empleoCliente.antiguedad = datosPaso.periodo
-                empleoCliente.temporalidad = (datosPaso.plazo ? Temporalidad.get(datosPaso.plazo) : null)
-                empleoCliente.telefono = datosPaso.telefono
-                empleoCliente.calle = datosPaso.calle
-                empleoCliente.numeroExterior = datosPaso.noExterior
-                empleoCliente.numeroInterior = datosPaso.noInterior
-                empleoCliente.codigoPostal = (datosPaso.codigoPostal ? CodigoPostal.findByCodigo(datosPaso.codigoPostal) : null)
-                empleoCliente.colonia = datosPaso.colonia
-                empleoCliente.ciudad = (datosPaso.municipio ? Municipio.get(datosPaso.municipio) : null)
-                empleoCliente.cliente = cliente
-                if(empleoCliente.save(flush:true)){
-                    println("El empleo se ha registrado correctamente")
-                    datosPaso.idEmpleo = empleoCliente.id
-                    def referencia1
-                    if(identificadores?.idReferencia1){
-                        referencia = ReferenciaPersonalCliente.get(identificadores.idReferencia1 as long)
+            if(datosPaso.direccionCliente) {
+                if(identificadores?.idCliente) {
+                    cliente = Cliente.get(identificadores.idCliente as long)
+                    def direccionCliente
+                    if(identificadores?.idDireccion){
+                        direccionCliente = DireccionCliente.get(identificadores.idDireccion as long)
                     } else {
-                        referencia1 = new ReferenciaPersonalCliente()
+                        direccionCliente = new DireccionCliente()
                     }
-                    def referencia2
-                    if(identificadores?.idReferencia2){
-                        referencia2 = ReferenciaPersonalCliente.get(identificadores?.idReferencia2 as long)
+                    direccionCliente.calle = datosPaso.direccionCliente.calle
+                    direccionCliente.ciudad = datosPaso.direccionCliente.ciudad
+                    direccionCliente.numeroExterior = datosPaso.direccionCliente.numeroExterior
+                    direccionCliente.numeroInterior = datosPaso.direccionCliente.numeroInterior
+                    direccionCliente.codigoPostal = (datosPaso.direccionCliente.codigoPostal ? CodigoPostal.findByCodigo(datosPaso.direccionCliente.codigoPostal) : null)
+                    direccionCliente.colonia = datosPaso.direccionCliente.colonia
+                    direccionCliente.ciudad  = (datosPaso.direccionCliente.municipio ? Municipio.get(datosPaso.direccionCliente.municipio) : null)
+                    direccionCliente.tipoDeVivienda = (datosPaso.direccionCliente.tipoDeVivienda ? TipoDeVivienda.get(datosPaso.direccionCliente.tipoDeVivienda) : null)
+                    direccionCliente.temporalidad = (datosPaso.direccionCliente.temporalidad ? Temporalidad.get(datosPaso.direccionCliente.temporalidad) : null)
+                    direccionCliente.cliente = cliente
+                    direccionCliente.tiempoDeResidencia = (datosPaso.direccionCliente.tiempo ?: 0)
+                    direccionCliente.latitud = 0
+                    direccionCliente.longitud = 0
+                    direccionCliente.tiempoDeEstadia = (datosPaso.direccionCliente.tiempoDeResidencia.mes + "/" + datosPaso.direccionCliente.tiempoDeResidencia.anio)
+                    direccionCliente.tiempoDeVivienda = (datosPaso.direccionCliente.tiempoDeVivir.mes + "/" + datosPaso.direccionCliente.tiempoDeVivir.anio)
+                    if(direccionCliente.save(flush:true)){
+                        println("La dirección se ha registrado correctamente")
+                        datosPaso.direccionCliente.idDireccion = direccionCliente.id
                     } else {
-                        referencia2 = new ReferenciaPersonalCliente()
-                    }
-                    def referencia3
-                    if(identificadores?.idReferencia3){
-                        referencia3 = ReferenciaPersonalCliente.get(identificadores.idReferencia3 as long)
-                    } else {
-                        referencia3 = new ReferenciaPersonalCliente()
-                    }
-                    referencia1.nombreCompleto = datosPaso.referencia1NombreCompleto
-                    referencia1.emailPersonal = datosPaso.referencia1Email
-                    referencia1.telefonoCelular = datosPaso.referencia1Celular
-                    referencia1.telefonoParticular = datosPaso.referencia1Particular
-                    referencia1.tipoDeReferencia = TipoDeReferenciaPersonal.get(1)
-                    referencia1.cliente = cliente
-                    referencia2.nombreCompleto = datosPaso.referencia2NombreCompleto
-                    referencia2.emailPersonal = datosPaso.referencia2Email
-                    referencia2.telefonoCelular = datosPaso.referencia2Celular
-                    referencia2.telefonoParticular = datosPaso.referencia2Particular
-                    referencia2.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
-                    referencia2.cliente = cliente
-                    referencia3.nombreCompleto = datosPaso.referencia3NombreCompleto
-                    referencia3.emailPersonal = datosPaso.referencia3Email
-                    referencia3.telefonoCelular = datosPaso.referencia3Celular
-                    referencia3.telefonoParticular = datosPaso.referencia3Particular
-                    referencia3.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
-                    referencia3.cliente = cliente
-                    if(referencia1.save(flush:true)){
-                        datosPaso.idReferencia1 = referencia1.id
-                    } else {
-                        if (referencia1.hasErrors()) {
-                            referencia1.errors.allErrors.each {
+                        if (direccionCliente.hasErrors()) {
+                            direccionCliente.errors.allErrors.each {
                                 println it
                             }
-                        }
-                    }
-                    if(referencia2.save(flush:true)){
-                        datosPaso.idReferencia2 = referencia2.id
-                    } else {
-                        if (referencia2.hasErrors()) {
-                            referencia2.errors.allErrors.each {
-                                println it
-                            }
-                        }
-                    }
-                    if(referencia3.save(flush:true)){
-                        datosPaso.idReferencia3 = referencia3.id
-                    } else {
-                        if (referencia3.hasErrors()) {
-                            referencia3.errors.allErrors.each {
-                                println it
-                            }
-                        }   
-                    }
-                } else {
-                    if (empleoCliente.hasErrors()) {
-                        empleoCliente.errors.allErrors.each {
-                            println it
                         }
                     }
                 }
             }
+            if (datosPaso.empleoCliente){
+                if(identificadores?.idCliente) {
+                    cliente = Cliente.get(identificadores.idCliente as long)
+                    def empleoCliente
+                    if(identificadores?.idEmpleo){
+                        empleoCliente = EmpleoCliente.get(identificadores.idEmpleo as long)
+                    } else {
+                        empleoCliente = new EmpleoCliente()
+                    }
+                    empleoCliente.puesto = (datosPaso.empleoCliente.puesto ?: null)
+                    empleoCliente.actividad = (datosPaso.empleoCliente.actividad ?: null)
+                    empleoCliente.explicacionActividad = (datosPaso.empleoCliente.explicacionActividad ?: null)
+                    empleoCliente.profesion = (datosPaso.empleoCliente.profesion ? Profesion.get(datosPaso.empleoCliente.profesion as long) : null)
+                    empleoCliente.tipoDeContrato = (datosPaso.empleoCliente.contrato ? TipoDeContrato.get(datosPaso.empleoCliente.contrato as long) : null)
+                    empleoCliente.giroEmpresarial = (datosPaso.giroEmpresarial ? GiroEmpresarial.get(datosPaso.giroEmpresarial) : null)
+                    empleoCliente.nombreDeLaEmpresa = datosPaso.empleoCliente.empresa
+                    empleoCliente.nombreDelJefeInmediato = (datosPaso.empleoCliente.jefeInmediato)
+                    empleoCliente.antiguedad = (datosPaso.empleoCliente.periodo ? datosPaso.empleoCliente.periodo as int : 0)
+                    empleoCliente.temporalidad = (datosPaso.empleoCliente.plazo ? Temporalidad.get(datosPaso.empleoCliente.plazo) : null)
+                    empleoCliente.telefono = (datosPaso.empleoCliente.telefono ?: null)
+                    empleoCliente.calle = (datosPaso.empleoCliente.calle ?: null)
+                    empleoCliente.numeroExterior = (datosPaso.empleoCliente.noExterior ?: null)
+                    empleoCliente.numeroInterior = (datosPaso.empleoCliente.noInterior ?: null)
+                    empleoCliente.codigoPostal = (datosPaso.empleoCliente.codigoPostal ? CodigoPostal.findByCodigo(datosPaso.empleoCliente.codigoPostal) : null)
+                    empleoCliente.colonia = (datosPaso.empleoCliente.colonia ?: null)
+                    empleoCliente.ciudad = (datosPaso.empleoCliente.municipio ? Municipio.get(datosPaso.empleoCliente.municipio) : null)
+                    empleoCliente.cliente = cliente
+                    empleoCliente.ocupacion = ( datosPaso.empleoCliente.ocupacion ? Ocupacion.get(datosPaso.empleoCliente.ocupacion as long) : null)
+                    empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? (datosPaso.empleoCliente.antiguedad?.mes + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
+                    empleoCliente.ingresosFijos = (datosPaso.empleoCliente.ingresosFIjos ? datosPaso.empleoCliente.ingresosFijos as float : 0)
+                    empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
+                    empleoCliente.gastos = (datosPaso.empleoCliente.gastos ? datosPaso.empleoCliente.gastos as int : 0)
+                    if(empleoCliente.save(flush:true)){
+                        println("El empleo se ha registrado correctamente")
+                        datosPaso.empleoCliente.idEmpleo = empleoCliente.id
+                    } else {
+                        if (empleoCliente.hasErrors()) {
+                            empleoCliente.errors.allErrors.each {
+                                println it
+                            }
+                        }
+                    }
+                }
             
-        } else if (pasoEnviado == 4){
-            datosPaso.depositoPromedio = (params.depositos ? params.depositos :null)
-            datosPaso.retiroPromedio = (params.retiros ? params.retiros :null)
-            datosPaso.saldoPromedio = (params.saldo ? params.saldo :null)
-            datosPaso.login_id = params.login_id
-            datosPaso.depositoCorrecto=(params.depositoCorrecto ? params.depositoCorrecto:null)
-            datosPaso.retiroCorrecto=(params.retiroCorrecto ? params.retiroCorrecto:null)
-            datosPaso.saldoCorrecto=(params.saldoCorrecto ? params.saldoCorrecto:null)
-        } else if (pasoEnviado == 5){
-            datosPaso.tCredito=(params.tCredito ? params.tCredito:null)
-            datosPaso.creditoA=(params.creditoA ? params.creditoA:null)
-            datosPaso.creditoH=(params.creditoH ? params.creditoH:null)
-        } else if (pasoEnviado == 6){
+            } else if(datosPaso.referenciaPersonalCliente){
+                def referencia1
+                if(identificadores?.idReferencia1){
+                    referencia1 = ReferenciaPersonalCliente.get(identificadores.idReferencia1 as long)
+                } else {
+                    referencia1 = new ReferenciaPersonalCliente()
+                }
+                def referencia2
+                if(identificadores?.idReferencia2){
+                    referencia2 = ReferenciaPersonalCliente.get(identificadores?.idReferencia2 as long)
+                } else {
+                    referencia2 = new ReferenciaPersonalCliente()
+                }
+                def referencia3
+                if(identificadores?.idReferencia3){
+                    referencia3 = ReferenciaPersonalCliente.get(identificadores.idReferencia3 as long)
+                } else {
+                    referencia3 = new ReferenciaPersonalCliente()
+                }
+                referencia1.nombreCompleto = datosPaso.referenciaPersonalCliente.referencia1NombreCompleto
+                referencia1.emailPersonal = datosPaso.referenciaPersonalCliente.referencia1Email
+                referencia1.telefonoCelular = datosPaso.referenciaPersonalCliente.referencia1Celular
+                referencia1.telefonoParticular = datosPaso.referenciaPersonalCliente.referencia1Particular
+                referencia1.tipoDeReferencia = TipoDeReferenciaPersonal.get(1)
+                referencia1.cliente = cliente
+                referencia2.nombreCompleto = datosPaso.referenciaPersonalCliente.referencia2NombreCompleto
+                referencia2.emailPersonal = datosPaso.referenciaPersonalCliente.referencia2Email
+                referencia2.telefonoCelular = datosPaso.referenciaPersonalCliente.referencia2Celular
+                referencia2.telefonoParticular = datosPaso.referenciaPersonalCliente.referencia2Particular
+                referencia2.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
+                referencia2.cliente = cliente
+                referencia3.nombreCompleto = datosPaso.referenciaPersonalCliente.referencia3NombreCompleto
+                referencia3.emailPersonal = datosPaso.referenciaPersonalCliente.referencia3Email
+                referencia3.telefonoCelular = datosPaso.referenciaPersonalCliente.referencia3Celular
+                referencia3.telefonoParticular = datosPaso.referenciaPersonalCliente.referencia3Particular
+                referencia3.tipoDeReferencia = TipoDeReferenciaPersonal.get(2)
+                referencia3.cliente = cliente
+                if(referencia1.save(flush:true)){
+                    datosPaso.referenciaPersonalCliente.idReferencia1 = referencia1.id
+                } else {
+                    if (referencia1.hasErrors()) {
+                        referencia1.errors.allErrors.each {
+                            println it
+                        }
+                    }
+                }
+                if(referencia2.save(flush:true)){
+                    datosPaso.referenciaPersonalCliente.idReferencia2 = referencia2.id
+                } else {
+                    if (referencia2.hasErrors()) {
+                        referencia2.errors.allErrors.each {
+                            println it
+                        }
+                    }
+                }
+                if(referencia3.save(flush:true)){
+                    datosPaso.referenciaPersonalCliente.idReferencia3 = referencia3.id
+                } else {
+                    if (referencia3.hasErrors()) {
+                        referencia3.errors.allErrors.each {
+                            println it
+                        }
+                    }   
+                }
+            }
+        } else if (pasoEnviado.tipoDePaso.nombre == "consultaBancaria"){
+            datosPaso.consultaBancaria.depositoPromedio = (params.depositos ? params.depositos :null)
+            datosPaso.consultaBancaria.retiroPromedio = (params.retiros ? params.retiros :null)
+            datosPaso.consultaBancaria.saldoPromedio = (params.saldo ? params.saldo :null)
+            datosPaso.consultaBancaria.login_id = params.login_id
+            datosPaso.consultaBancaria.depositoCorrecto=(params.depositoCorrecto ? params.depositoCorrecto:null)
+            datosPaso.consultaBancaria.retiroCorrecto=(params.retiroCorrecto ? params.retiroCorrecto:null)
+            datosPaso.consultaBancaria.saldoCorrecto=(params.saldoCorrecto ? params.saldoCorrecto:null)
+        } else if (pasoEnviado.tipoDePaso.nombre == "consultaBuro"){
+            datosPaso.consultaBuro.tCredito=(params.tCredito ? params.tCredito:null)
+            datosPaso.consultaBuro.creditoA=(params.creditoA ? params.creditoA:null)
+            datosPaso.consultaBuro.creditoH=(params.creditoH ? params.creditoH:null)
+        } else if (pasoEnviado.tipoDePaso.nombre == "resumen"){
             
         }
         return datosPaso
@@ -401,14 +400,26 @@ class SolicitudService {
         if(datosCotizador){
             def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
             def productoSolicitud =  new ProductoSolicitud()
-            productoSolicitud.colorModelo = ColorModelo.get(datosCotizador.color)
-            productoSolicitud.enganche = datosCotizador.enganche
-            productoSolicitud.mensualidad = (datosCotizador.enganche / datosCotizador.plazo)
-            productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo)
-            productoSolicitud.plazo = Plazo.get(1)
-            productoSolicitud.seguroFinanciado = false
+            if(datosCotizador.rubro){
+                productoSolicitud.rubroDeAplicacion = RubroDeAplicacionDeCredito.get(datosCotizador.rubro as long)
+                productoSolicitud.producto = Producto.get(datosCotizador.producto as long)
+                productoSolicitud.documentoElegido = TipoDeDocumento.get(datosCotizador.documento as long);
+                productoSolicitud.montoDelCredito = datosCotizador.montoCredito as float
+                productoSolicitud.montoDelSeguroDeDeuda = datosCotizador.montoSeguro as float
+                productoSolicitud.montoDelPago = datosCotizador.pagos as float
+                productoSolicitud.haTenidoAtrasos = datosCotizador.atrasos
+                productoSolicitud.seguroFinanciado = true
+            } else {
+                productoSolicitud.montoDelPago = datosCotizador.pagos as float
+                productoSolicitud.montoDelSeguroDeDeuda = 0
+                productoSolicitud.colorModelo = ColorModelo.get(datosCotizador.color)
+                productoSolicitud.seguroFinanciado = false
+                productoSolicitud.montoDelCredito = (productoSolicitud.colorModelo.modelo.precio - productoSolicitud.enganche)
+            }
+            productoSolicitud.enganche = datosCotizador.enganche as float
+            productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
+            productoSolicitud.plazos = datosCotizador.plazo as int
             productoSolicitud.solicitud = solicitud
-            productoSolicitud.montoDelCredito = (productoSolicitud.colorModelo.modelo.precio - productoSolicitud.enganche)
             if(productoSolicitud.save(flush:true)){
                 println("El producto se ha registrado correctamente")
             } else {
@@ -419,6 +430,20 @@ class SolicitudService {
                     }
                 }
             }
+        }
+    }
+    
+    def generarMapa(def mapa, def lista, def valor, def x){
+        println ("Enviando-> mapa: " + mapa + ", lista: " + lista + ", valor: " + valor + ", x: "+ x)
+        if((x+1 == lista.size())){
+            return mapa[(lista[x])] = ((x+1 == lista.size()) ? valor : generarMapa(mapa[(lista[x])], lista, valor, (x+1)))
+        }
+    }
+    
+    def combine( Map... m ) {
+        m.collectMany { it.entrySet() }.inject( [:] ) { result, e ->
+            println ("-" + e.key + " - " + e.value + "------" +result[ e.key ])
+            result << [ (e.key):e.value ]
         }
     }
 }

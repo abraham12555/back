@@ -22,11 +22,11 @@
     <div id="circuloPaso5" class="grayCircle center floatLeft">
         <p id="pPaso5" class="paddingTop5 footerTextColor font18">5</p>
     </div>
-    <div class="line20 floatLeft"></div>
+    <!--<div class="line20 floatLeft"></div>
     <div id="circuloPaso6" class="grayCircle center floatLeft">
         <p id="pPaso6" class="paddingTop5 footerTextColor font18">6</p>
-    </div>
-    <g:if test="${paso == 6}">
+    </div>-->
+    <g:if test="${paso == 5}">
         <div class="line20 floatLeft"></div>
         <div class="center floatLeft width250  solicitud_modal <g:if test="${documentosSubidos?.comprobanteDeDomicilio && documentosSubidos?.identificacion}"> blueButton colorWhite pointer </g:if>" style="width: 250px; height: 45px; background-color: #d4dbe6; border-radius: 50px;">
             <p class="paddingTop10 colorWhite font18">

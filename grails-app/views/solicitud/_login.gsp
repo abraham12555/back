@@ -75,7 +75,7 @@
                             </div>
                             <div class="borderTopResumen">
                                 <div class="marginTop20 marginBottom20">
-                                    <form id="formLogin" method="POST" action="formulario">
+                                    <form id="formLogin" method="POST" action="test">
                                         <input type="hidden" name="origen" value="noLogin" />
                                         <input type="hidden" name="paso" value="1" />
                                     </form>

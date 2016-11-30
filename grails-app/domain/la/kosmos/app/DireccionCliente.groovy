@@ -15,6 +15,8 @@ class DireccionCliente implements Serializable{
     float latitud
     float longitud
     boolean vigente = true
+    String tiempoDeVivienda
+    String tiempoDeEstadia
     
     static constraints = {
         calle (blank: false)
@@ -26,7 +28,8 @@ class DireccionCliente implements Serializable{
         tipoDeVivienda (nullable: true)
         temporalidad (nullable: true)
         cliente (nullable: false)
-
+        tiempoDeVivienda (nullable: true)
+        tiempoDeEstadia (nullable: true)
     }
     
     static mapping = {

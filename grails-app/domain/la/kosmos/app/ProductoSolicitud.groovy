@@ -3,19 +3,30 @@ package la.kosmos.app
 class ProductoSolicitud implements Serializable{
 
     ColorModelo colorModelo
+    Modelo modelo
+    Producto producto
+    RubroDeAplicacionDeCredito rubroDeAplicacion
     Periodicidad periodicidad
     Plazo plazo
+    TipoDeDocumento documentoElegido
     float enganche
-    float mensualidad
     boolean seguroFinanciado
     SeguroProducto seguro
     SolicitudDeCredito solicitud
     float montoDelCredito
+    float montoDelSeguroDeDeuda
+    float montoDelPago
+    int plazos
+    boolean haTenidoAtrasos
     
     static constraints = {
-        colorModelo (nullable: false)
+        colorModelo (nullable: true)
+        modelo (nullable: true)
+        producto (nullable: true)
+        rubroDeAplicacion (nullable: true)
+        documentoElegido (nullable: true)
         periodicidad (nullable: false)
-        plazo (nullable: false)
+        plazo (nullable: true)
         seguro (nullable: true)
         solicitud (nullable: false)
     }

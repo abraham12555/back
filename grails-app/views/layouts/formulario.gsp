@@ -62,8 +62,8 @@
                 <div class="container clearFix">
                     <div class="floatLeft col4 col6-tab col10-mob">
                         <div class="paddingTop15 paddingBottom15 borderGrayRight">
-                            <p class="gray textUpper letterspacing1 font16 pasoTitle"></p>
-                            <p class="headingColor textUpper letterspacing1.5 font25 paddingRight15 stepTitle"></p>
+                            <p class="gray textUpper letterspacing1 font16 pasoTitle"> PASO ${pasoActual?.numeroDePaso}</p>
+                            <p class="headingColor textUpper letterspacing1.5 font25 paddingRight15 stepTitle">${pasoActual?.titulo}</p>
                         </div>
                     </div>
                     <div class="floatRight col8 col6-tab col2-mob center">

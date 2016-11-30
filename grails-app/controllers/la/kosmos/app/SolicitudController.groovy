@@ -43,18 +43,17 @@ class SolicitudController {
 	
     def index() {
         if(session.cotizador) {
-        session["datosPaso1"] = null
-        session["datosPaso2"] = null
-        session["datosPaso3"] = null
-        session["datosPaso4"] = null
-        session["datosPaso5"] = null
-        session["datosPaso6"] = null
-        session.respuestaEphesoft = null
-        session.tiposDeDocumento = null
-        session.identificadores = null
-        session.datosLogin = null
-        session.yaUsoLogin = null
-        redirect action: "formulario"
+            session.respuestaEphesoft = null
+            session.tiposDeDocumento = null
+            session.identificadores = null
+            session.datosLogin = null
+            session.yaUsoLogin = null
+            session.pasosDelCliente = null
+            session["pasoFormulario"] = null
+            session["consultaBancos"] = null
+            session["consultaBuro"] = null
+            //redirect action: "formulario"
+            redirect action: "test"
         } else {
             redirect controller: "cotizador", action: "index"
         }
@@ -554,11 +553,11 @@ class SolicitudController {
             println "paso4"
             modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
             break;
-        case 5:
+        case 9://temporal
             println "paso5"
             modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
             break;
-        case 6:
+        case 5://temporal
             println "paso6"
             modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]
             break;
@@ -580,67 +579,100 @@ class SolicitudController {
 	println params
         if(params.siguientePaso){
             def modelo = [:]
-            def paso =  params.siguientePaso as int
+            def siguientePaso =  params.siguientePaso as int
             def pasoAnterior =  params.pasoAnterior as int
-            session[("datosPaso" + pasoAnterior)] = solicitudService.construirDatosTemporales(params, pasoAnterior, session.identificadores)
-            if(session[("datosPaso" + pasoAnterior)]?.clienteGuardado || session.identificadores?.idSolicitud){
+            def ultimoPaso
+            def pasosDeSolicitud
+            def parrafos
+            def pasoActual
+            def entidadFinanciera = session.ef
+            def configuracion = session.configuracion
+            if(session.pasosDelCliente){
+                pasosDeSolicitud = session.pasosDelCliente
+            } else {
+                pasosDeSolicitud = PasoSolicitudEntidadFinanciera.findAllWhere(entidadFinanciera: entidadFinanciera);
+                pasosDeSolicitud = pasosDeSolicitud.sort { it.numeroDePaso }
+            }
+            pasosDeSolicitud.each { paso ->
+                if(paso.numeroDePaso == siguientePaso){
+                    pasoActual = paso
+                } else if(paso.numeroDePaso == pasoAnterior){
+                    ultimoPaso = paso
+                }
+            }
+            println("Paso a avanzar: " + pasoActual);
+            session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef)
+            if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
                 if(!session.identificadores){
                     session.identificadores = [:]
                 }
                 if(pasoAnterior == 1){
-                    session.identificadores.idCliente = session[("datosPaso" + pasoAnterior)]?.idCliente
-                    session.identificadores.idSolicitud = session[("datosPaso" + pasoAnterior)]?.idSolicitud
+                    session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
+                    session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
                     solicitudService.registrarProducto(session.cotizador, session.identificadores)
                 } else if(pasoAnterior == 2){
-                    session.identificadores.idDireccion = session[("datosPaso" + pasoAnterior)]?.idDireccion
+                    session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
                 } else if(pasoAnterior == 3){
-                    session.identificadores.idEmpleo = session[("datosPaso" + pasoAnterior)]?.idEmpleo
-                    session.identificadores.idReferencia1 = session[("datosPaso" + pasoAnterior)]?.idReferencia1
-                    session.identificadores.idReferencia2 = session[("datosPaso" + pasoAnterior)]?.idReferencia2
-                    session.identificadores.idReferencia3 = session[("datosPaso" + pasoAnterior)]?.idReferencia3
+                    session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
+                    session.identificadores.idReferencia1 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia1
+                    session.identificadores.idReferencia2 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia2
+                    session.identificadores.idReferencia3 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia3
                 }
             }
-            if(paso == 1 || paso == 2){
-                session[("datosPaso" + paso)]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
-            } 
-            if(paso == 1){
-                modelo = [estadoList:Estado.findAll(),
-                    estadoCivilList:EstadoCivil.findAll(),
-                    temporalidadList:Temporalidad.findAll(),
-                    escolaridadList:NivelEducativo.findAll(),
-                    generoList: Genero.list(),
-                    datosLogin:session.datosLogin,
-                    tipoLogin:session.tipoLogin,
+            def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
+            camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
+            parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
+            if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
+                modelo = [configuracion: configuracion,
                     logueado: session.yaUsoLogin,
-                    paso:paso, generales: (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
-            } else if(paso == 2){
-                modelo = [estadoList:Estado.findAll(),
-                    municipioList:Municipio.findAll(),
-                    tiposDeVivienda: TipoDeVivienda.findAllWhere(activo:true),
-                    temporalidadList:Temporalidad.findAll(),
-                    paso:paso, generales: (session[("datosPaso" + paso)]?:session.respuestaEphesoft)]
-            } else if(paso == 3){
-                modelo = [estadoList:Estado.findAll(),
-                    municipioList:Municipio.findAll(),
-                    tipoDeContratoList: TipoDeContrato.list(), 
-                    giroEmpresarialList: GiroEmpresarial.list(),
-                    temporalidadList:Temporalidad.findAll(),
-                    paso:paso, generales: session[("datosPaso" + paso)]]
-            } else if(paso == 4){
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)]]
-            } else if(paso == 5){
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    parrafos: parrafos,
+                    pasoActual:pasoActual,
+                    generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
+            } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
+                modelo = [configuracion: configuracion,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    pasoActual:pasoActual, 
+                    generales: session["consultaBancaria"]]
+            } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
                 def municipio = null
-                if(session["datosPaso2"] != null && session["datosPaso2"].municipio){
-                    municipio= Municipio.findById(session["datosPaso2"].municipio)
+                if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
+                    municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
                 }
                 def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)], personales: session[("datosPaso" + 1)], direccion: session[("datosPaso" + 2)],municipio:municipio,razonSocial:razonSocial,reporteBuroCredito:solicitud?.reporteBuroCredito?.id,errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
-            } else if(paso == 6){
-                modelo = [paso:paso, generales: session[("datosPaso" + paso)], documentosSubidos: session.tiposDeDocumento]
-            }  else if(paso == 8){
-                //TODO guardar todo
+                modelo = [configuracion: configuracion,
+                    logueado: session.yaUsoLogin,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    pasoActual:pasoActual,
+                    generales: session["consultaBuro"],
+                    personales: session["pasoFormulario"].cliente,
+                    direccion: session["pasoFormulario"].direccionCliente,
+                    municipio:municipio,
+                    razonSocial:configuracion.razonSocial,
+                    reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
+                    errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
+            } else if(pasoActual.tipoDePaso.nombre == "resumen"){
+                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
+                modelo = [configuracion: configuracion,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    pasoActual:pasoActual,
+                    mediosDeContacto: mediosDeContacto,
+                    productoSolicitud:productoSolicitud,
+                    documentosSubidos: session.tiposDeDocumento]
+            }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
+                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                modelo = [configuracion: configuracion,
+                    productoSolicitud: productoSolicitud,
+                    pasoActual:pasoActual]
             }
-            render(template: ("paso"+params.siguientePaso), model: modelo)
+            render(template: pasoActual.tipoDePaso.nombre, model: modelo)
+        } else {
+            println ("Que segun no llego el parametro del paso siguiente :S")
+            redirect action: "test"
         }
     }
     
@@ -781,5 +813,125 @@ class SolicitudController {
         }
         println respuesta
         render respuesta as JSON
+    }
+    
+    def obtenerOpciones(){
+        println params
+        def respuesta = [:]
+        if(params.opcionElegida){
+            def medio = MedioDeContacto.get(params.opcionElegida as long)
+            if(medio?.nombre == "Sucursales"){
+                respuesta = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef);
+            } else {
+                respuesta = OpcionMedioDeContacto.findAllWhere(medioDeContacto: medio)
+                if(!respuesta){
+                    respuesta = [:]
+                }
+            }
+        }
+        render respuesta as JSON
+    }
+    
+    def test(){
+        if(session.cotizador){
+            def tipoLogin;
+            def datosLogin;
+            def modelo = [:]
+            if(params.origen == 'login'){
+                if(params.datosFb && params.datosFb?.toString()!= 'null' && params.datosFb?.toString().length() > 0){
+                    println(":: Se inicio Sesión con FB ::" + params.datosFb.toString())
+                    datosLogin = params.datosFb.toString()
+                    tipoLogin="FB";
+                    params.remove("datosFb")
+                }else if(params.datosGoogle && params.datosGoogle?.toString() != 'null' && params.datosGoogle?.toString().length() > 0){
+                    println(":: Se inicio Sesión con Google ::"+params.datosGoogle.toString())
+                    datosLogin = params.datosGoogle.toString();
+                    tipoLogin="Google";
+                    params.remove("datosGoogle")
+                }
+                session.yaUsoLogin=true
+            } else if (params.origen == 'noLogin'){
+                println(":: No se inicio Sesión ::");
+                tipoLogin="none";
+                session.yaUsoLogin=true
+            }
+            def pasoActual
+            def siguientePaso
+            def entidadFinanciera = session.ef//EntidadFinanciera.get((params.ef ? (params.ef as long) : 13))
+            def pasosDeSolicitud
+            def ponderaciones = [:]
+            def parrafos
+            def configuracion = session.configuracion//ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+            println entidadFinanciera
+            if(session.pasosDelCliente){
+                pasosDeSolicitud = session.pasosDelCliente
+            } else {
+                pasosDeSolicitud = PasoSolicitudEntidadFinanciera.findAllWhere(entidadFinanciera: entidadFinanciera);
+                pasosDeSolicitud = pasosDeSolicitud.sort { it.numeroDePaso }
+            }
+            if(params.paso){
+                siguientePaso = params.paso as int
+            } else {
+                siguientePaso = 1
+            }
+            pasosDeSolicitud.each { paso ->
+                if(paso.numeroDePaso == siguientePaso){
+                    pasoActual = paso
+                }
+                ponderaciones."paso$paso.numeroDePaso" = paso.ponderacion
+            }
+            def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
+            camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
+            parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
+            if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                modelo = [configuracion: configuracion,
+                    logueado: session.yaUsoLogin,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    parrafos: parrafos,
+                    ponderaciones: ponderaciones as JSON,
+                    pasoActual:pasoActual,
+                    generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
+            } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
+                modelo = [configuracion: configuracion,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    pasoActual:pasoActual,
+                    ponderaciones: ponderaciones as JSON,
+                    generales: session["consultaBancaria"]]
+            } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
+                def municipio = null
+                if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
+                    municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
+                }
+                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                modelo = [configuracion: configuracion,
+                    logueado: session.yaUsoLogin,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    pasoActual:pasoActual,
+                    ponderaciones: ponderaciones as JSON,
+                    generales: session["consultaBuro"],
+                    personales: session["pasoFormulario"]?.cliente,
+                    direccion: session["pasoFormulario"]?.direccionCliente,
+                    municipio:municipio,
+                    razonSocial:configuracion.razonSocial,
+                    reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
+                    errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
+            } else if(pasoActual.tipoDePaso.nombre == "resumen"){
+                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
+                modelo = [configuracion: configuracion,
+                    pasosDeSolicitud: pasosDeSolicitud,
+                    pasoActual:pasoActual,
+                    mediosDeContacto: mediosDeContacto,
+                    ponderaciones: ponderaciones as JSON,
+                    documentosSubidos: session.tiposDeDocumento,
+                    productoSolicitud: productoSolicitud]
+            }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
+                //TODO guardar todo
+            }
+            modelo
+        } else{
+            redirect action: "index"
+        }
     }
 }

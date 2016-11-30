@@ -7,6 +7,10 @@ class SeguroProducto implements Serializable{
     TipoDeSeguro tipoDeSeguro
     Periodicidad periodicidad
     Plazo plazo
+    String nombre
+    String descripcion
+    String cobertura
+    String detalleImporte
     float importe
 
     static constraints = {
@@ -15,6 +19,10 @@ class SeguroProducto implements Serializable{
         tipoDeSeguro (nullable: false)
         periodicidad (nullable: false)
         plazo (nullable: false)
+        nombre (blank: false)
+        descripcion (blank: false)
+        detalleImporte (blank: false)
+        nombre (blank: false)
     }
     
     static mapping = {

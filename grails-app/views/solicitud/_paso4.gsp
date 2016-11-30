@@ -1,287 +1,165 @@
-<section id="consultaBancaria" class="container paddingTop30 paddingBottom20 clearFix contentHeight">
-    <div class="defaultBubble">
-        <div class="container clearFix relative autoMargin width920">
-            <div class="infoBox  desktop ">
-                <div class="width850 autoMargin">
-                    <p class="displayInline width570 floatLeft letterspacing0.5 font11 paddingLeft15 paddingTop15 paddingBottom10">CONECTAR TU CUENTA DE BANCO NOS PERMITE <span class="headingColor">APROBAR TU SOLICITUD EN MINUTOS</span>  O PUEDES SUBIR TUS ESTADOS DE CUENTA Y ESPERAR A QUE EL EQUIPO DE KOSMOS LO REVISÉ LO MAS RÁPIDO POSIBLE  </p>
-                    <div class="blueBox1 width235 floatRight marginTop12">
-                        <p class="textUpper colorWhite center font11 paddingTop10 paddingBottom10">SUBIR MI ESTADO DE CUENTA</p>
-                    </div>
-                </div>
-            </div>
-            <div class="line18 floatLeft"></div>
-            <div class="crosCircle floatLeft">
-                <p class="center cross"><i class="fa fa-times" aria-hidden="true"></i></p>
-            </div>
-        </div>
-    </div>
-    <div class="successBubble hide">
-        <div class="container clearFix relative autoMargin width920">
-            <div class="infoBoxGreen floatLeft">
-                <div class="infoContainer4c">
-                    <p class="center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5">TUS DATOS BANCARIOS SE RECIBIERON EXITOSAMENTE, POR FAVOR VERIFICA QUE TU INFORMACIÓN SEA CORRECTA</p>
-                </div>
-            </div>
-            <div class="line18 colorGreen floatLeft"></div>
-            <div class="crosCircle colorGreen floatLeft">
-                <p class="center cross colorWhite"><i class="fa fa-times colorWhite" aria-hidden="true"></i></p>
-            </div>
-        </div>
-    </div>
-
-    <div class="box4B marginBottom30 marginTop30">
-        <div id="consultarInfo" class="bankStep">
-            <p class="gray font14 paddingTop20 paddingLeft20 marginLeft15 marginBottom10">ELIGE TU BANCO</p>
-            <div class="clearFix padding10">
-                <div class="width160 brandingBox  floatLeft bankButton">
-                    <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'banamex.png')}" data-hover="banamex"/>
-                </div>
-                <div class="width160 brandingBox floatLeft bankButton">
-                    <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'bancomer.png')}" data-hover="bancomer"/>
-                </div>
-                <div class="width160 brandingBox floatLeft bankButton">
-					<img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'hsbc.png')}" data-hover="hsbc" />
+<section
+	class="container paddingTop30 paddingBottom20 clearFix contentHeight">
+	<div class="padding20">
+		<input type="hidden" id="errorConsulta" value="${errorConsulta}" />
+		<input type="hidden" id="reporteBuroCredito"  value="${reporteBuroCredito}" />
+		
+		<div class="clearFix marginBottom30">
+			<div
+				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+				<p class="correctaBoxLabel">¿TIENES UNA TARJETA DE CRÉDITO?</p>
+				<div id="tarjeta_correcto_si" class=" correctaBox floatLeft hasCc">
+					<p class="center paddingTop15 paddingBottom15 ">SI</p>
 				</div>
-                <div class="width160 brandingBox floatLeft bankButton">
-                    <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'santander.png')}" data-hover="santander"/>
-                </div>
-                <div class="width160 brandingBox floatLeft bankButton">
-                    <img class="width120 blockAuto paddingTop20" src="${resource(dir:'images', file:'banorte.png')}" data-hover="banorte"/>
-                </div>
-		<!-- div class="width66 brandingBox floatLeft">
-                    <p class="center font14 paddingTop30">OTRO</p>
-                </div> -->
-                <input type="hidden" name="banco" value="" class="bankChoice formValues"/>
-            </div>
-            
-            <div class="clearFix paddingLeft10">
-                
-            </div>
+				<div id="tarjeta_correcto_no" class="floatLeft correctaBox">
+					<p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
+				</div>
+				<input type="hidden" class="formValues textUpper" name="tCredito"
+					id="tCredito" value="${generales?.tCredito}">
+			</div>
+			<div class="floatLeft col3 col6-tab col12-mob">
+				<p class="gray font14 letterspacing1.1">ÚLTIMOS CUATRO DÍGITOS</p>
+				<input class="inPuts4a marginTop15 headingColor" type="text"
+					disabled id="numeroTarjeta" name="numeroTarjeta" placeholder="0000"
+					maxlength="4" /> <input type="hidden" class="textUpper" disabled
+					id="nombre" name="nombre" value="${personales?.nombre}" /> <input
+					type="hidden" class="textUpper" id="apellidoPaterno"
+					name="apellidoPaterno" value="${personales?.apellidoPaterno}" /> <input
+					type="hidden" class="textUpper" id="apellidoMaterno"
+					name="apellidoMaterno" value="${personales?.apellidoMaterno}" /> <input
+					type="hidden" class="textUpper" id="fechaNac" name="fechaNac"
+					value="${personales?.dia}-${personales?.mes}-${personales?.anio}" />
+				<input type="hidden" class="textUpper" id="rfc" name="rfc"
+					value="${personales?.rfc}" /> <input type="hidden"
+					class="textUpper" id="calle" name="calle"
+					value="${direccion?.calle}" /> <input type="hidden"
+					class="textUpper" id="noExterior" name="noExterior"
+					value="${direccion?.noExterior}" /> <input type="hidden"
+					class="textUpper" id="noInterior" name="noInterior"
+					value="${direccion?.noInterior}" /> <input type="hidden"
+					class="textUpper" id="colonia" name="colonia"
+					value="${direccion?.colonia}" /> <input type="hidden"
+					class="textUpper" id="municipio" name="municipio"
+					value="${direccion?.municipio}" />
+			</div>
 
-            <div class="clearFix paddingLeft10 formLoginBank hide" >
-                <input type="hidden" id="intentos" value="0"/>
-                
-                <div class="floatLeft paddingTop20 col2 col2-tab col2-mob loginMethodHsbc hide">
-                    <p class=" marginBottom15 gray font14 messageSelectBank"></p>
-                    <select name="login_method" id="login_method" class="formulariOptions  formValues notEmpty headingColor" style="font-size: 16px;">
-                    	<option value="Con OTP">Con OTP</option>
-                    	<option value="Sin OTP">Sin OTP</option>
-                    </select>
-                </div>
-                
-                <div class="floatLeft paddingTop20 col3 col3-tab col3-mob messageLoginBankDiv" >
-                    <p class=" marginBottom15 gray font14 messageLoginBank"></p>
-                    <input class="inPuts4a formValues  headingColor" type="text" id="login" name="login" placeholder=""/>
-                </div>
-                <div class="floatLeft paddingTop20 col3 col3-tab col3-mob messagePasswordBankDiv">
-                    <p class=" marginBottom15 gray font14 messagePasswordBank"></p>
-                    <input class="inPuts4a formValues headingColor" type="password" id="password" name="password" placeholder="·······"/>
-                </div>
-                
-                <div class="floatLeft paddingTop20 col3 col3-tab col3-mob loginMethodHsbc messageMemorableDiv hide">
-                    <p class=" marginBottom15 gray font14 messageMemorable"></p>
-                    <input class="inPuts4a formValues headingColor" type="password" id="memorable" name="memorable" placeholder="DDMMAAAA" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" />
-                </div>
-            </div>
+			<div class="col5 col12-tab floatLeft marginTop30">
+				<div class="rectangleRound font11 letterspacing0.5 center">LAS
+					TARJETAS DE DÉBITO Y TIENDAS DEPARTAMENTALES NO SON CONSIDERADAS
+					TARJETAS DE CRÉDITO</div>
+			</div>
+		</div>
+		<div class="clearFix marginBottom30">
+			<div
+				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+				<p class="correctaBoxLabel">¿ERES TÍTULAR DE UN CREDITO HIPOTECARIO?</p>
+				<div id="hipotecario_correcto_si"
+					class="correctaBox floatLeft hasCc">
+					<p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
+				</div>
+				<div id="hipotecario_correcto_no" class="floatLeft correctaBox">
+					<p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
+				</div>
+				<input type="hidden" class="formValues textUpper" name="creditoH"
+					id="creditoH" value="${generales?.creditoH}">
+			</div>
+			<div
+				class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+				<p class="correctaBoxLabel">¿HAZ SIDO TÍTULAR DE UN CREDITO AUTOMOTRIZ EN LOS ÚLTIMOS 24 MESES?</p>
+				<div id="automotriz_correcto_si" class="correctaBox floatLeft hasCc">
+					<p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
+				</div>
+				<div id="automotriz_correcto_no" class="floatLeft correctaBox">
+					<p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
+				</div>
+				<input type="hidden" class="formValues textUpper" name="creditoA"
+					id="creditoA" value="${generales?.creditoA}">
+			</div>
+		</div>
 
-            <div id="accionesNormal" class="paddingTop20 clearFix">
-                <div class="floatLeft col6 col12-mob">
-                    <div class="padding10">
-                        <div class="consultarBox marginLeft15 center colorWhite letterspacing1 font16">
-                            CONSULTAR DE FORMA SEGURA
-                        </div>
-                    </div>
-                </div>
-                <div class="floatLeft col6 col12-mob">
-                    <div class="padding10">
-                        <div class="floatLeft loadingBar hide marginTop50 ">
-                            <div class="loadingActive"></div>
-							<center>
-								<span style="color: #dfe2f4;">Conectando con tu banco...</span>
-							</center>
-                        </div>
-                    </div>
-                </div>
-            </div>
+		<div id="divAutorizacionBuro"
+			class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
+			<p class="font18 gray letterspacing1 justify">
+				Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">
+					${fechaActual}
+				</span>, Autoriza a <span id="razonSocial" class="headingColor"> ${razonSocial}
+				</span> a consultar sus antecedentes crediticios por &uacute;nica
+				ocasi&oacute;n ante las Sociedades de Informaci&oacute;n Crediticia
+				que estime conveniente, declarando que conoce la naturaleza, alcance
+				y uso que <span id="razonSocial" class="headingColor"> ${razonSocial}
+				</span> har&aacute; de tal informaci&oacute;n?
+			</p>
+		</div>		
+		<div id="accionesNormales" class="creditBtns">
+			<div class="col5half col12-mob floatLeft">
+				<a id="consultarBuroBtn">
+					<div
+						class="colorGreen buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc"
+						style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
+				</a>
+			</div>
+			<div
+				class="col1 col12-mob center gray floatLeft padingAside20 marginTop15 marginBottom15 block">Ó</div>
+			<div class="col5half col12-mob floatLeft">
+				<div
+					class="buttonM darkGray radius100 font16 colorWhite letterspacing1.5 mobileAuto"
+					style="cursor: pointer;">SUBIR MI PDF DE BURÓ DE CRÉDITO</div>
+			</div>
+			<div class="loadingContainer clearFix clearFloat">
+				<div class="loadingBar marginTop50 hide">
+					<div class="loadingActive"></div>
+					<p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU
+						BURÓ DE CRÉDITO</p>
+				</div>
+			</div>
+		</div>
+		<div id="accionesSuccess" style="display: none;"
+			class="clearFix clearFloat">
+			<div
+				class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto"
+				style="cursor: pointer;">CONSULTA EXITOSA</div>
+		</div>
+		<div id="accionesError" style="display: none;" class="clearFix">
+			<div class="col5 col12-tab floatLeft">
+				<div
+					class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto"
+					style="cursor: pointer;">CONSULTA FALLIDA</div>
+			</div>
+			<div class="clearFloat tablet mobile"></div>
+			<div
+				class="phoneStaus col6 col8-tab col12-mob blockAuto floatRight clearFix">
+				<div class="col9  col8-mob floatLeft">
+					<div class="clearFix paddingAside15">
+						<img class="floatLeft"
+							src="${resource(dir:'images', file:'phone.png')}" alt="contact"
+							title="contact" />
+						<div class="floatLeft marginLeft10">
+							<p class="formTitleColor font16 letterspacing1.5">NOS
+								COMUNICAREMOS</p>
+							<p class="formTitleColor font16 letterspacing1.5">CONTIGO VIA
+								TELEFONICA EN:</p>
+						</div>
+					</div>
+				</div>
+				<div class="col3 col4-mob floatLeft">
+					<p class="buttonM colorGreen radius100 colorWhite letterspacing1.5"
+						id="clock">2:00 min</p>
+				</div>
+			</div>
 
-            <div id="accionesError" style="padding-top: 50px;" class="padding10 clearFix marginTop15 hide">
-                <div class="col6 col12-tab col12-mob floatLeft">
-                    <div class="paddingAside10">
-                        <div class="coneccionFallida center colorWhite .letterspacing1.5 font16">CONEXIÓN FALLIDA</div>
-                    </div>
-                </div>
-                <div class="col6 col12-tab col12-mob floatLeft clearFix">
-                    <div class="col5 col12-mob floatLeft">
-                        <div class="paddingAside10">
-                            <a id="reintentarBtn">
-                                <div class="darkGray buttonM radius100 colorWhite font16 .letterspacing1.5 mobileAuto">reintentar</div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col7 col12-mob floatLeft">
-                        <div class="paddingAside10">
-                            <a id="subirEstadosDeCuentaBtn">
-                                <div class="colorGreen radius100 buttonM colorWhite font16 .letterspacing1.5 mobileAuto">subir estados de cuenta</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="confirmarConsulta" style="display:none;" class="bankStep hide">
-            <p class="gray font14 paddingTop20 paddingLeft20 center marginBottom10">DATOS RECIBIDOS</p>
-
-            <div class="clearFix padding15">
-
-                <div class="floatLeft paddingTop20 col4 col12-mob">
-                    <p class="marginBottom15 gray font14">DEPOSITOS PROMEDIO (90 DÍAS)</p>
-                    <input type="hidden" class="inputsFormulario  formValues" name="customer_id" id="customer_id" value="${customer_id}"/>
-                	<input type="hidden" class="inputsFormulario  formValues" name="login_id" id="login_id" value="${generales?.login_id}"/>
-                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="dep90" name="depositos" placeholder="$55,000.00 MXN" value="${generales?.depositoPromedio}"/>
-                    <div class="paddingTop20 clearFix confirmInfo">
-                        <p class="marginBottom15 gray font14">¿ESTA INFORMACIÓN ES CORRECTA?</p>
-                        <div id="deposito_correcto_si" class="correctaBox floatLeft">
-                            <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-                        </div>
-                        <div id="deposito_correcto_no" class="floatLeft correctaBox">
-                            <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="floatLeft paddingTop20 col4 col12-mob">
-                    <p class="marginBottom15 gray font14">RETIROS PROMEDIO (90 DÍAS)</p>
-                     <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="ret90" name="retiros" placeholder="$55,000.00 MXN" value="${generales?.retiroPromedio}"/>
-                 
-                    <div class="paddingTop20 clearFix confirmInfo">
-                        <p class="marginBottom15 gray font14">¿ESTA INFORMACIÓN ES CORRECTA?</p>
-                        <div id="retiro_correcto_si" class="correctaBox floatLeft">
-                            <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-                        </div>
-                        <div id="retiro_correcto_no" class="floatLeft correctaBox">
-                            <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="floatLeft paddingTop20 col4 col12-mob ">
-                    <p class="marginBottom15 gray font14">SALDO PROMEDIO (90 DÍAS)</p>
-                    <input class="inPuts4B paddingLeft15 headingColor formValues" type="text" id="saldo90" name="saldo" placeholder="$55,000.00 MXN" value="${generales?.saldoPromedio}"/>
-                    <input class="formValues" type="hidden" id="saldoCorrecto" name="saldoCorrecto"  value="${generales?.saldoCorrecto}"/>
-                    <input class="formValues" type="hidden" id="retiroCorrecto" name="retiroCorrecto" value="${generales?.retiroCorrecto}"/>
-                    <input class="formValues" type="hidden" id="depositoCorrecto" name="depositoCorrecto" value="${generales?.depositoCorrecto}"/>
-                    
-                    <div class="paddingTop20 clearFix confirmInfo">
-                        <p class="marginBottom15 gray font14">¿ESTA INFORMACIÓN ES CORRECTA?</p>
-                        <div id="saldo_correcto_si" class="correctaBox floatLeft">
-                            <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-                        </div>
-                        <div id="saldo_correcto_no" class="floatLeft correctaBox">
-                            <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="paddingTop20 clearFix">
-                    <div class="floatLeft col6 col12-mob">
-                        <div class="paddingAside15">
-                            <div class="consultarBox exito marginLeft15 center colorWhite letterspacing1 font16" style="cursor:default">
-                                CONEXIÓN EXITOSA
-                            </div>
-                        </div>
-                    </div>
-                    <div class="floatLeft col6 col12-mob">
-                        <div class="paddingAside15">
-                            <div class="confirmDb buttonM hide mobileAuto pointer colorGreen radius100 marginTop35 colorWhite letterspacing1 font16">
-                                CONFIRMAR MI INFORMACIÓN
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="padding20 width920 clearFix">
-        <div class="floatLeft col5 col12-mob clearFix paddingBottom50">
-            <div class="floatLeft">
-                <img alt="Protection" src="${resource(dir:'images', file:'protection.png')}"/>
-            </div>
-            <div class="floatRight marginLeft10 paddingTop5 rightTxt">
-                <p class="formTitleColor font16 letterspacing1">PROTEGEMOS TU INFORMACIÓN</p>
-                <p class="colorRed font14">Kosmos no guarda ningún dato bancario.</p>
-            </div>
-        </div>
-        <div class="floatRight  col7 col12-mob clearFix paddingBottom50">
-            <div class="floatLeft">
-                <img alt="Key" src="${resource(dir:'images', file:'key.png')}"/>
-            </div>
-            <div class="floatLeft marginLeft10 paddingTop5 rightTxt">
-                <p class="formTitleColor font16 letterspacing1">SOMOS MÁS SEGUROS QUE LOS BANCOS</p>
-                <p class="colorRed font14">Todos tus datos están 100% protegidos con la mejor seguridad en la red</p>
-            </div>
-        </div>
-    </div>
-</section>
-<section id="recibosUpload" style="display: none;" class="container paddingTop30 paddingBottom20 clearFix contentHeight">
-    <div class="box4B padding20 clearFix">
-        <p class="center font14 letterspacing1.1 gray paddingTop36 paddingBottom38">SUBE TUS ÚLTIMOS 4 RECIBOS DE NÓMINA O TUS 3 ULTIMOS ESTADOS DE CUENTA</p>
-        <div class="col3 col6-tab col12-mob floatLeft">
-            <div class="paddingAside15">
-                <div class="folderContainer marginTop15 mobileAuto ">
-                    <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder" title="folder"/>
-                    <p class="center letterspacing1.4 gray">Mes 1</p>
-                </div>
-                <div class="colorGreen radius100 buttonM marginTop20 colorWhite font16 mobileAuto ">
-                    subir
-                </div>
-            </div>
-        </div>
-        <div class="col3 col6-tab col12-mob floatLeft">
-            <div class="paddingAside15">
-                <div class="folderContainer marginTop15 mobileAuto ">
-                    <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder" title="folder"/>
-                    <p class="center letterspacing1.4 gray">Mes 2</p>
-                </div>
-                <div class="colorGreen radius100 buttonM marginTop20 colorWhite font16 mobileAuto ">
-                    subir
-                </div>
-            </div>
-        </div>
-        <div class="col3 col6-tab col12-mob floatLeft">
-            <div class="paddingAside15">
-                <div class="folderContainer marginTop15 mobileAuto ">
-                    <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder" title="folder"/>
-                    <p class="center letterspacing1.4 gray">Mes 3</p>
-                </div>
-                <div class="colorGreen radius100 buttonM marginTop20 colorWhite font16 mobileAuto ">
-                    subir
-                </div>
-            </div>
-        </div>
-        <div class="col3 col6-tab col12-mob floatLeft">
-            <div class="paddingAside15">
-                <div class="folderContainer marginTop15 mobileAuto ">
-                    <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder" title="folder"/>
-                    <p class="center letterspacing1.4 gray">Mes 4</p>
-                </div>
-                <div class="colorGreen radius100 buttonM marginTop20 colorWhite font16 mobileAuto ">
-                    subir
-                </div>
-            </div>
-        </div>		
-    </div>
+		</div>
+	</div>
 </section>
 <footer class="footerContainer">
-    <g:render template="stepBar"/>
-    <div class="mobile">
-        <div class="paddingAside15 clearFix">
-            <div class="grayrectangle floatLeft marginRight10">Atras</div>
-            <div class="greenrectangle floatLeft nextBtn">Ir al paso 4</div>
-        </div>
-    </div>
+	<g:render template="stepBar" />
+	<div class="mobile">
+		<div class="paddingAside15 clearFix">
+			<div class="grayrectangle floatLeft marginRight10">Atras</div>
+			<div class="greenrectangle floatLeft nextBtn">Ir al paso 5</div>
+		</div>
+	</div>
 </footer>
-<div id="modalloginBank" class="modal fade" style="display:none;">
-        <g:render template="/templates/solicitud/paso4/loginBank"/>
-</div>
 
+<div id="modalAutorizacion" class="modal fade" style="display: none;">
+	<g:render template="/templates/solicitud/paso5/autorizacion" />
+</div>

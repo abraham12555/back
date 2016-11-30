@@ -3,9 +3,12 @@ package la.kosmos.app
 class Periodicidad implements Serializable{
 
     String nombre
+    String nomenclatura
+    int periodosAnuales
     
     static constraints = {
         nombre (blank:false)
+        nomenclatura (blank:false)
     }
 
     static mapping = {
