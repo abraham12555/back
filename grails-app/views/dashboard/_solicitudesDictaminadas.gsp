@@ -2,7 +2,12 @@
 
     <table class="applicationContainers solicitudes_table width990 autoMargin">
         <thead>
-        <th colspan="9" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes dictaminadas</h1></th>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
+            <th colspan="9" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes dictaminadas</h1></th>
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles='ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+            <th colspan="8" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes dictaminadas</h1></th>
+        </sec:ifAnyGranted>
         </thead>
         <tr class="lightGrayBG">
             <td class="gray left">FOLIO <i class="fa fa-caret-down" aria-hidden="true"></i></td>
@@ -13,7 +18,9 @@
             <td class="gray left">PRODUCTO <i class="fa fa-caret-down" aria-hidden="true"></i></td>
             <td class="grayleft">FECHA <i class="fa fa-caret-down" aria-hidden="true"></i></td>
             <td class="grayleft">MONTO <i class="fa fa-caret-down" aria-hidden="true"></i></td>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
             <td class="gray"></td>
+        </sec:ifAnyGranted>
         </tr>
         <g:if test="${solicitudesDictaminadas}">
             <g:each var='solicitud' in='${solicitudesDictaminadas}'>
@@ -50,9 +57,11 @@
                         MONTO <br>
                         <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud.montoCredito}" format="\044###,###,###.##"/></span>
                     </td>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
                     <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                         <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id});">ver detalle</button>
                     </td>
+                </sec:ifAnyGranted>
                 </tr>
             </g:each>
         </g:if>

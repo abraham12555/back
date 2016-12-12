@@ -52,8 +52,14 @@
                             <g:hiddenField id="txtPeriodo" name="txtPeriodo" value=""/>
                             <div class="marginTop40 marginBottom20" id="submitCotizador">
                                 <div class="paddingAside20">
-                                    <input type="submit" value="SOLICITAR MI CREDITO" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" />
+                                    <input type="submit" value="Comenzar mi Solicitud" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" />
                                 </div>
+                            </div>
+                            <div class="paddingAside10" style="margin-top: 10%;">
+                                <p id="terminosYCondiciones" class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
+                                    Al dar clic en <strong>Comenzar mi Solicitud</strong> aceptas los <a class="pointer" onclick="openModal('modalTerminosCondiciones');" style="text-decoration: underline;">Términos y Condiciones
+                                    y Aviso de Privacidad</a>
+                                </p>
                             </div>
                         </g:form>
                     </div>
@@ -63,5 +69,6 @@
                 El contenido no está disponible. Póngase en contacto con su tienda para reportar el incidente.
             </g:else>
         </div>
+        <g:render template="terminosYCondiciones"/>
     </body>
 </html>

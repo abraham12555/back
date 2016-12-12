@@ -25,8 +25,8 @@
 
                 <div class="cotizador-box-container padding20">
                     <h1 class="darkBluetitle font20 fontWeight400 letterspacing1 marginBottom20">
-                        <span class="visibleMob">${paso.numeroDePaso}.</span>${paso.tituloDelPaso}
-                    </h1>
+                        <span class="visibleMob">${paso.numeroDePaso}.</span>${paso.tituloDelPaso} <g:if test="${paso.tieneAyuda}"><div class="help-tip" title="${paso.textoAyuda}"></div></g:if>
+                        </h1>
 
                     <g:if test="${paso.tipoDePaso.nombre == "stepEnganche"}">
                         <p id="engancheElegido2" class="lightBlue floatRight font20"></p>

@@ -36,7 +36,7 @@ class EmpleoCliente implements Serializable{
         nombreDeLaEmpresa (blank: false)
         nombreDelJefeInmediato (nullable: true)
         temporalidad (nullable: true)
-        telefono (nullable: true, maxSize: 10)
+        telefono (nullable: true, maxSize: 14)
         calle (nullable: true)
         numeroExterior (nullable: true)
         numeroInterior (nullable: true)

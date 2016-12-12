@@ -7,16 +7,16 @@
         <title>Cotizador</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="utf-8">
-
-        <g:external dir="css" file="font-awesome.min.css" title="text/css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <!--<g:external dir="css" file="font-awesome.min.css" title="text/css" rel="stylesheet" />-->
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />
-        <g:external dir="css" file="jquery-ui.css" />
+        <g:external dir="css" file="jquery-ui-kosmos.css" />
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="sweetalert.min.js" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
         <g:external dir="js" file="cotizador.js" />
-        <g:external dir="js" file="jquery-ui.js" />
+        <g:external dir="js" file="jquery-ui-kosmos.js" />
 
         <g:layoutHead/>
     </head>

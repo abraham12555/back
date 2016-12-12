@@ -7,6 +7,7 @@ var elementos;
 var ponderaciones;
 var slideIndex = 1;
 var listaDeControl
+var generoConyugue;
 showSlides(slideIndex);
 
 function inicializarFormulario() {
@@ -21,14 +22,14 @@ function inicializarFormulario() {
     for (var i = 0; i < length; i++) {
         listaDeControl[i] = 0;
     }
-    console.log(listaDeControl);
+    //console.log(listaDeControl);
 
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
     });
 
     $('.overlay').click(function () {
-        console.log("Click fuera del modal");
+        //console.log("Click fuera del modal");
         //$(this).parent().fadeOut();
         return false;
     });
@@ -37,7 +38,7 @@ function inicializarFormulario() {
     operacionesModal();
     //submitNextPage();
     actualizarProgreso(pasoInicial);
-    console.log(tipoDePaso);
+    //console.log(tipoDePaso);
     if (tipoDePaso === "pasoFormulario") {
         if (pasoInicial === "1") {
             operacionesLogin();
@@ -46,7 +47,6 @@ function inicializarFormulario() {
     } else if (tipoDePaso === "consultaBancaria") {
         operacionesBancos();
     } else if (tipoDePaso === "consultaBuro") {
-        console.log("Si entraaaaaa!!!!");
         operacionesBuro();
     } else if (tipoDePaso === "resumen") {
         operacionesResumen();
@@ -68,8 +68,6 @@ function inicializarFormulario() {
 }
 
 function plusSlides(n) {
-    console.log("Indice de parrafo: " + slideIndex);
-    console.log("Indice de n: " + n);
     showSlides(slideIndex += n);
 }
 
@@ -79,7 +77,6 @@ function currentSlide(n) {
 
 function showSlides(n) {
     var i;
-    console.log("Resultado: " + n);
     var slides = $('.formStep').length;
     if (n > slides) {
         slideIndex = 1
@@ -90,13 +87,11 @@ function showSlides(n) {
     for (i = 0; i < slides; i++) {
         $('.formStep').eq(i).slideUp();
     }
-    console.log("Indice de parrafo: " + slideIndex);
     $('.formStep').eq(slideIndex - 1).slideDown();
 }
 
 function cargarPonderaciones(listaDePonderaciones) {
     ponderaciones = JSON.parse(listaDePonderaciones);
-    console.log(ponderaciones);
     if (avancePorPaso === undefined) {
         var length = Object.keys(ponderaciones).length;
         avancePorPaso = new Array(length);
@@ -140,21 +135,39 @@ function operacionesFormulario() {
         var maxIndex = $('.showOnFill').length;
         //console.log("Indice: " + index);
         $('.formValues', this).change(function () {
-            console.log("Registrando: " + $(this).val() + " -adfafdadfsa:  " + $(this));
+            //console.log("Registrando: " + $(this).val() + " -adfafdadfsa:  " + $(this));
             if ($(this).val() !== '') {
                 //console.log("No esta vacio");
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
-                //console.log("--->" + $(this).attr('id'));
+                console.log("--->" + $(this).attr('id'));
                 if ($(this).attr('id') === 'cliente_nombre') {
-                    console.log("Si entraaaaaaaa");
+                    //console.log("Si entraaaaaaaa");
                     $('#nombreCliente').html('¡Hola! ' + $(this).val());
+                } else if ($(this).attr('id') === 'cliente_nacionalidad') {
+                    console.log("Id-->" + $('#cliente_nacionalidad').val());
+                    if ($('#cliente_nacionalidad').val() === '2') {
+                        swal({
+                            title: "¡Importante!",
+                            text: "Por favor, asista a una sucursal para continuar con su trámite.",
+                            type: "warning",
+                            showCancelButton: true,
+                            cancelButtonText: "Me equivoque en la selección",
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Ok, Enterado",
+                            closeOnConfirm: false
+                        }, function () {
+                            avanzarPaso(0);
+                            window.location.href = "http://nuuptech.xyz/kosmos-app";
+                            return false;
+                        });
+                    }
                 } else if ($(this).attr('id') === 'cliente_estadoCivil') {
                     var estadoCivilTmp = $(this).val();
                     var listaElementos = $(".showOnFill[data-depende-de='cliente_estadoCivil']");
-                    console.log("La lista resultante es: " + listaElementos.length + " - " + estadoCivilTmp);
+                    //console.log("La lista resultante es: " + listaElementos.length + " - " + estadoCivilTmp);
                     $(listaElementos).each(function () {
-                        console.log("EstadoCivilTmp:" + estadoCivilTmp + " - " + $(this).data('valorDependencia') + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
+                        //console.log("EstadoCivilTmp:" + estadoCivilTmp + " - " + $(this).data('valorDependencia') + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
                         if (Number(estadoCivilTmp) === Number($(this).data('valorDependencia'))) {
                             $(this).children('.formValues').removeClass('notEmpty');
                             $(this).children('.formValues').removeClass('noMostrar');
@@ -166,7 +179,7 @@ function operacionesFormulario() {
                             $(this).children('.formValues').addClass('noMostrar');
                             $(this).children().children('.formValues').addClass('notEmpty');
                             $(this).children().children('.formValues').addClass('noMostrar');
-                            console.log("Indice de conyugue: " + (index + $(this).data('id')));
+                            //console.log("Indice de conyugue: " + (index + $(this).data('id')));
                             listaDeControl[(index + $(this).data('id'))] = -1;
                         }
                     });
@@ -174,9 +187,9 @@ function operacionesFormulario() {
                 } else if ($(this).attr('id') === 'direccionCliente_tipoDeVivienda') {
                     var tipoDeViviendaTmp = $(this).val();
                     var listaElementos = $(".showOnFill[data-depende-de='direccionCliente_tipoDeVivienda']");
-                    console.log("La lista resultante es: " + listaElementos.length + " - " + tipoDeViviendaTmp);
+                    //console.log("La lista resultante es: " + listaElementos.length + " - " + tipoDeViviendaTmp);
                     $(listaElementos).each(function () {
-                        console.log("tipoDeViviendaTmp:" + tipoDeViviendaTmp + " - " + $(this).data('valorDependencia') + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
+                        //console.log("tipoDeViviendaTmp:" + tipoDeViviendaTmp + " - " + $(this).data('valorDependencia') + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
                         if (Number(tipoDeViviendaTmp) === Number($(this).data('valorDependencia'))) {
                             $(this).children('.formValues').removeClass('notEmpty');
                             $(this).children('.formValues').removeClass('noMostrar');
@@ -188,22 +201,22 @@ function operacionesFormulario() {
                             $(this).children('.formValues').addClass('noMostrar');
                             $(this).children().children('.formValues').addClass('notEmpty');
                             $(this).children().children('.formValues').addClass('noMostrar');
-                            console.log("Indice de conyugue: " + ($(this).data('id')));
+                            //console.log("Indice de conyugue: " + ($(this).data('id')));
                             listaDeControl[$(this).data('id')] = -1;
                         }
                     });
-                    console.log(listaDeControl);
+                    //console.log(listaDeControl);
                 } else if (($('#cliente_rfc').val() === '') && ($('#cliente_curp').val() === '')) {
                     if (($('#cliente_nombre').val() !== '' && $('#cliente_nombre').val() !== undefined) && ($('#cliente_apellidoPaterno').val() !== '' && $('#cliente_apellidoPaterno').val() !== undefined) && ($('#cliente_apellidoMaterno').val() !== '' && $('#cliente_apellidoMaterno').val() !== undefined) && ($('#cliente_genero').val() !== '' && $('#cliente_genero').val() !== undefined) && ($('#cliente_lugarDeNacimiento').val() !== '' && $('#cliente_nombre').val() !== undefined)) {
-                        generarClaves();
+                        generarClaves('cliente');
                     } else {
-                        console.log("No entra a la validación");
+                        //console.log("No entra a la validación");
                     }
                 } else if (($('#cliente_rfcDelConyugue').val() === '') && ($('#cliente_curpDelConyugue').val() === '')) {
-                    if (($('#cliente_nombreDelConyugue').val() !== '' && $('#cliente_nombreDelConyugue').val() !== undefined) && ($('#cliente_apellidoPaternoDelConyugue').val() !== '' && $('#cliente_apellidoPaternoDelConyugue').val() !== undefined) && ($('#cliente_apellidoMaternoDelConyugue').val() !== '' && $('#cliente_apellidoMaternoDelConyugue').val() !== undefined) && ($('#cliente_generoDelConyugue').val() !== '' && $('#cliente_generoDelConyugue').val() !== undefined) && ($('#cliente_lugarDeNacimientoDelConyugue').val() !== '' && $('#cliente_lugarDeNacimientoDelConyugue').val() !== undefined)) {
-                        generarClaves();
+                    if (($('#cliente_nombreDelConyugue').val() !== '' && $('#cliente_nombreDelConyugue').val() !== undefined) && ($('#cliente_apellidoPaternoDelConyugue').val() !== '' && $('#cliente_apellidoPaternoDelConyugue').val() !== undefined) && ($('#cliente_apellidoMaternoDelConyugue').val() !== '' && $('#cliente_apellidoMaternoDelConyugue').val() !== undefined) && (generoConyugue) && ($('#cliente_lugarDeNacimientoDelConyugue').val() !== '' && $('#cliente_lugarDeNacimientoDelConyugue').val() !== undefined)) {
+                        generarClaves('conyugue');
                     } else {
-                        console.log("No entra a la validación");
+                        //console.log("No entra a la validación");
                     }
                 } else if (($('#empleoCliente_ingresosFijos').val() !== '') && ($('#empleoCliente_ingresosVariables').val() !== '')) {
                     var sumatoria = Number($('#empleoCliente_ingresosFijos').val()) + Number($('#empleoCliente_ingresosVariables').val());
@@ -211,31 +224,31 @@ function operacionesFormulario() {
                     $('#empleoCliente_ingresosTotales').addClass('notEmpty');
                     $('#empleoCliente_ingresosTotales').addClass('headingColor');
                     listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
-                    console.log(listaDeControl);
+                    //console.log(listaDeControl);
                 }
             } else {
-                console.log("Si esta vacio");
+                //console.log("Si esta vacio");
                 $(this).removeClass('notEmpty');
                 $(this).removeClass('headingColor');
             }
             //verificarCambios(index);
             mostrarSiguienteCampo(index);
-            console.log("A punto de calcular el avance....");
+            //console.log("A punto de calcular el avance....");
             calcularAvance();
         });
         $('.formValues', this).focusin(function () {
-            console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
+            //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
             //verificarCambios(index);
         });
     });
 
     $('.formStep .confirmDiv .buttonM').click(function () {
-        console.log("Si entraaaaa al click");
+        //console.log("Si entraaaaa al click");
         if ($(this).parent().parent().is(':hidden') === true) {
-            console.log("Pos que esta oculto!!!");
+            //console.log("Pos que esta oculto!!!");
         } else {
             if ($(this).parent().parent().hasClass('lastStep') === true) {
-                console.log("Preparando el armado del form...");
+                //console.log("Preparando el armado del form...");
                 //$(".formValues").on("change", showValues);
                 //showValues();
                 $('.nextBtn').addClass('sendBtn');
@@ -274,6 +287,7 @@ function operacionesFormulario() {
             wildcard: '%QUERY'
         }
     });
+    console.log("Inicializando typeahead....");
     $('#direccionCliente_codigoPostal_remote .typeahead').typeahead({minLength: 3}, {
         name: 'codigos',
         display: 'value',
@@ -311,7 +325,7 @@ function mostrarSiguienteCampo(index) {
             elementosLLenosPorGrupo = $('.showOnFill').eq(index).children().children().children('.notEmpty').length;
         }
     }
-    console.log("index: " + index + " - elementosPorGrupo:" + elementosPorGrupo + " - elementosLLenosPorGrupo: " + elementosLLenosPorGrupo);
+    //console.log("index: " + index + " - elementosPorGrupo:" + elementosPorGrupo + " - elementosLLenosPorGrupo: " + elementosLLenosPorGrupo);
     if (elementosPorGrupo === elementosLLenosPorGrupo) {
         listaDeControl[index] = 1;
         if ((index + 1) < elementos.length) {
@@ -319,20 +333,29 @@ function mostrarSiguienteCampo(index) {
             var elementoMostrado = false;
             while ((indice + 1) < elementos.length && elementoMostrado === false) {
                 if (listaDeControl[indice + 1] === 0) {
-                    console.log("Mostrando el siguiente paso....");
+                    //console.log("Mostrando el siguiente paso....");
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
-                    $('.showOnFill').eq(indice + 1).children('.formValues').focus();
+                    if ($('.showOnFill').eq(indice + 1).children('.formValues')) {
+                        $('.showOnFill').eq(indice + 1).children('.formValues').focus();
+                    } else if ($('.showOnFill').eq(indice + 1).children().children('.formValues')) {
+                        $('.showOnFill').eq(indice + 1).children().children('.formValues').focus();
+                    } else if ($('.showOnFill').eq(indice + 1).children().children().children('.formValues')) {
+                        $('.showOnFill').eq(indice + 1).children().children().children('.formValues').focus();
+                    }
                     checkInputs();
-                    elementoMostrado = true;
+                    //console.log("El siguiente campo es requerido?? " + $('.showOnFill').eq(indice + 1).hasClass('required'));
+                    if ($('.showOnFill').eq(indice + 1).hasClass('required')) {
+                        elementoMostrado = true;
+                    }
                 } else if (listaDeControl[indice + 1] === 1) {
-                    console.log("Mostrando el siguiente paso....");
+                    //console.log("Mostrando el siguiente paso....");
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
                     $('.showOnFill').eq(indice + 1).children('.formValues').focus();
                     checkInputs();
                 } else if (listaDeControl[indice + 1] === -1) {
-                    console.log("Mostrando el siguiente paso....");
+                    //console.log("Mostrando el siguiente paso....");
                     $('.showOnFill').eq(indice + 1).fadeOut();
                     $('.showOnFill').eq(indice + 1).css({'display': 'none'});
                     checkInputs();
@@ -343,20 +366,22 @@ function mostrarSiguienteCampo(index) {
     }
     var elementosLlenosVisibles = $('.notEmpty:visible').length;
     var totalElementosVisibles = $('.formStep:visible .formValues').length;
+    var totalElementosRequeridos = $('.required .formValues').length;
+    var totalElementosRequeridosLLenos = $('.required .notEmpty').length;
     totalElementosVisibles -= $('.formStep:visible .noMostrar').length;
-    console.log("index: " + index + " - elementosLlenosVisibles:" + elementosLlenosVisibles + " - totalElementosVisibles: " + totalElementosVisibles);
-    if (elementosLlenosVisibles === totalElementosVisibles) {
+    //console.log("index: " + index + " - elementosLlenosVisibles:" + elementosLlenosVisibles + " - totalElementosVisibles: " + totalElementosVisibles + " - totalElementosRequeridos: " + totalElementosRequeridos + " - totalElementosRequeridosLLenos: " + totalElementosRequeridosLLenos);
+    if ((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridos === totalElementosRequeridosLLenos)) {
         if (prellenado === "true") {
-            console.log("Mostrar el boton de confirmacion");
+            //console.log("Mostrar el boton de confirmacion");
             $('.formStep:visible .confirmDiv').fadeIn();
         } else {
-            console.log("Hacer click en el boton de confirmacion");
+            //console.log("Hacer click en el boton de confirmacion");
             //$('.formStep:visible .confirmDiv').fadeIn();
             $('.formStep:visible .confirmDiv .buttonM').click();
         }
-        if (pasoActual === "1" && index === 6) {
-            generarClaves();
-        }
+        /*if (pasoActual === "1" && index === 6) {
+         generarClaves();
+         }*/
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
@@ -375,17 +400,17 @@ function verificarCambios(index) {
     var thisLength = $('.formValues:visible').length;
     var prellenado = $('#pasoPrellenado').val();
     var pasoActual = $('#pasoAnterior').val();
-    console.log("Index: " + index + " - not Empty: " + filledLength + " -  total: " + thisLength + " - prellenado: " + prellenado);
+    //console.log("Index: " + index + " - not Empty: " + filledLength + " -  total: " + thisLength + " - prellenado: " + prellenado);
 
     if (filledLength === thisLength) {
         if ((index + 1) < maxIndex) {
-            console.log("Mostrando el siguiente paso....");
+            //console.log("Mostrando el siguiente paso....");
             $('.showOnFill').eq(index + 1).fadeIn();
             $('.showOnFill').eq(index + 1).css({'display': 'inline'});
             $('.showOnFill').eq(index + 1).children('.formValues').focus();
             checkInputs();
         } else {
-            console.log("Else 1");
+            //console.log("Else 1");
         }
     } else if (prellenado === "true") {
         if ($('.showOnFill').eq(index + 1).hasClass('noMostrar') === false) {
@@ -398,16 +423,16 @@ function verificarCambios(index) {
     //console.log("totalLength: " + totalLength);
     if (filledLength === totalLength) {
         if (prellenado === "true") {
-            console.log("Mostrar el boton de confirmacion");
+            //console.log("Mostrar el boton de confirmacion");
             $('.formStep:visible .confirmDiv').fadeIn();
         } else {
-            console.log("Hacer click en el boton de confirmacion");
+            //console.log("Hacer click en el boton de confirmacion");
             //$('.formStep:visible .confirmDiv').fadeIn();
             $('.formStep:visible .confirmDiv .buttonM').click();
         }
-        if (pasoActual === "1" && index === 6) {
-            generarClaves();
-        }
+        /*if (pasoActual === "1" && index === 6) {
+         generarClaves();
+         }*/
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
@@ -445,7 +470,7 @@ function calcularAvance() {
     for (var j = 0; j < avancePorPaso.length; j++) {
         avanceTotal += Number(avancePorPaso[j]);
     }
-    console.log("Resultado del calculo: totalDeCampos: " + totalDeCampos + " -- camposLlenos: " + camposLlenos + " -- porcentajeCalculado: " + porcentajePorPaso + "  -- avanceTotal: " + avanceTotal);
+    //console.log("Resultado del calculo: totalDeCampos: " + totalDeCampos + " -- camposLlenos: " + camposLlenos + " -- porcentajeCalculado: " + porcentajePorPaso + "  -- avanceTotal: " + avanceTotal);
     $('.progressPerc').html(avanceTotal + '%');
     $('.activeProgress').animate({width: avanceTotal + '%'}, {queue: false});
 }
@@ -985,11 +1010,11 @@ function cargarOpcionesDeContacto(opcion) {
         success: function (data, textStatus) {
             var resultado = eval(data);
             var html = "";
-            if(resultado.length > 0){
-            html += "<option value=''>Elija una opción...</option>";
-        } else {
-            html += "<option value=''>No hay opciones disponibles</option>";
-        }
+            if (resultado.length > 0) {
+                html += "<option value=''>Elija una opción...</option>";
+            } else {
+                html += "<option value=''>No hay opciones disponibles</option>";
+            }
             for (var x = 0; x < resultado.length; x++) {
                 html += "<option value='" + resultado[x].id + "'>" + resultado[x].nombre + "</option>";
             }
@@ -1087,7 +1112,7 @@ function avanzarPaso(paso) {
     //cerrarModal();
     var paso = paso;
     $('#siguientePaso').val(paso);
-    console.log("Avanzando a paso " + paso);
+    //console.log("Avanzando a paso " + paso);
     //alert("Datos::"+$('.sendValues').serialize());
     $.ajax({
         type: 'POST',
@@ -1098,10 +1123,10 @@ function avanzarPaso(paso) {
             $('#pasoActual').html(data);
             $('#pasoActual').fadeIn();
             var tipoDePaso = $('#tipoDePaso').val();
-            console.log("Cargando funciones de paso " + paso);
+            //console.log("Cargando funciones de paso " + paso);
             if (tipoDePaso === "pasoFormulario") {
                 inicializarFormulario();
-                operacionesFormulario();
+                //operacionesFormulario();
                 $('.showOnFill').each(function (index) {
                     //verificarCambios(index);
                 });
@@ -1114,7 +1139,7 @@ function avanzarPaso(paso) {
             } else if (tipoDePaso === "resumen") {
                 operacionesResumen();
             } else {
-                console.log("Paso desconocido " + paso);
+                //console.log("Paso desconocido " + paso);
             }
             setFooter();
             actualizarProgreso(paso);
@@ -1182,7 +1207,7 @@ function verificacionSubPaso4() {
 }
 
 function actualizarProgreso(paso) {
-    console.log("Actualizando progreso paso " + paso);
+    //console.log("Actualizando progreso paso " + paso);
     $('.pasoTitle').html('paso ' + paso);
     $('.stepTitle').html($('#tituloDelPaso').val());
     calcularAvance();
@@ -1394,26 +1419,49 @@ function authenticate() {
     });
 }
 
-function generarClaves() {
-    console.log("A por la generacion de llaves!!!");
-    var curp = generaCurp({
-        nombre: $('#cliente_nombre').val(),
-        apellido_paterno: $('#cliente_apellidoPaterno').val(),
-        apellido_materno: $('#cliente_apellidoMaterno').val(),
-        sexo: 'H',
-        estado: 'DF',
-        fecha_nacimiento: [$('#cliente_fechaDeNacimiento_dia').val(), $('#cliente_fechaDeNacimiento_mes').val(), $('#cliente_fechaDeNacimiento_anio').val()]
-    });
-    $('#cliente_curp').val(curp);
-    $('#cliente_rfc').val(curp.substring(0, 10));
-    $("#cliente_curp").addClass('notEmpty');
-    $("#cliente_curp").addClass('headingColor');
-    $("#cliente_rfc").addClass('notEmpty');
-    $("#cliente_rfc").addClass('headingColor');
-    listaDeControl[$(".showOnFill").index($('#cliente_curp').closest('.showOnFill'))] = 1;
-    listaDeControl[$(".showOnFill").index($('#cliente_rfc').closest('.showOnFill'))] = 1;
-    //$('.showOnFill').each(function (index) {
-    console.log(curp);
+function generarClaves(persona) {
+    console.log("A por la generacion de llaves!!! --->" + persona);
+    if (persona === 'cliente') {
+        console.log($('#cliente_nombre').val() + ', ' + $('#cliente_apellidoPaterno').val() + ', ' + $('#cliente_apellidoMaterno').val() + ', ' + $('#cliente_genero').val() + ',' + $('#cliente_fechaDeNacimiento_dia').val() + '/' + $('#cliente_fechaDeNacimiento_mes').val() + '/' +  $('#cliente_fechaDeNacimiento_anio').val());
+        var curp = generaCurp({
+            nombre: $('#cliente_nombre').val(),
+            apellido_paterno: $('#cliente_apellidoPaterno').val(),
+            apellido_materno: $('#cliente_apellidoMaterno').val(),
+            sexo: ($('#cliente_genero').val() === '1' ? 'H' : 'M'),
+            estado: 'DF',
+            fecha_nacimiento: [$('#cliente_fechaDeNacimiento_dia').val(), $('#cliente_fechaDeNacimiento_mes').val(), $('#cliente_fechaDeNacimiento_anio').val()]
+        });
+        if ($('#cliente_genero').val() === '1') {
+            generoConyugue = '2';
+        } else {
+            conyugue = '1';
+        }
+        $('#cliente_curp').val(curp);
+        $('#cliente_rfc').val(curp.substring(0, 10));
+        $("#cliente_curp").addClass('notEmpty');
+        $("#cliente_curp").addClass('headingColor');
+        $("#cliente_rfc").addClass('notEmpty');
+        $("#cliente_rfc").addClass('headingColor');
+        listaDeControl[$(".showOnFill").index($('#cliente_curp').closest('.showOnFill'))] = 1;
+        listaDeControl[$(".showOnFill").index($('#cliente_rfc').closest('.showOnFill'))] = 1;
+    } else if (persona === 'conyugue') {
+        var curp = generaCurp({
+            nombre: $('#cliente_nombreDelConyugue').val(),
+            apellido_paterno: $('#cliente_apellidoPaternoDelConyugue').val(),
+            apellido_materno: $('#cliente_apellidoMaternoDelConyugue').val(),
+            sexo: (generoConyugue === '1' ? 'H' : 'M'),
+            estado: 'DF',
+            fecha_nacimiento: [$('#cliente_fechaDeNacimientoDelConyugue_dia').val(), $('#cliente_fechaDeNacimientoDelConyugue_mes').val(), $('#cliente_fechaDeNacimientoDelConyugue_anio').val()]
+        });
+        $('#cliente_curpDelConyugue').val(curp);
+        $('#cliente_rfcDelConyugue').val(curp.substring(0, 10));
+        $("#cliente_curpDelConyugue").addClass('notEmpty');
+        $("#cliente_curpDelConyugue").addClass('headingColor');
+        $("#cliente_rfcDelConyugue").addClass('notEmpty');
+        $("#cliente_rfcDelConyugue").addClass('headingColor');
+        listaDeControl[$(".showOnFill").index($('#cliente_curpDelConyugue').closest('.showOnFill'))] = 1;
+        listaDeControl[$(".showOnFill").index($('#cliente_rfcDelConyugue').closest('.showOnFill'))] = 1;
+    }
 }
 
 function loading(bank) {
@@ -1667,7 +1715,7 @@ function formatCurrency(n, currency) {
 }
 
 function inicializarCamara(cara) {
-    console.log("Inicializando camara...");
+    //console.log("Inicializando camara...");
     $('#webcam' + cara).html("");
     $('#webcam' + cara).photobooth().on("image", function (event, dataUrl) {
         $('#webcam' + cara).data('photobooth').destroy();
@@ -1906,7 +1954,7 @@ function habilitarTerminarSolicitud() {
 
     if (no_active === no_buttons) {
         avancePorPaso[Number(pasoActual - 1)] = Number(ponderaciones[("paso" + pasoActual)]);
-        console.log("Si lo registro? " + avancePorPaso[Number(pasoActual - 1)]);
+        //console.log("Si lo registro? " + avancePorPaso[Number(pasoActual - 1)]);
         $('.solicitud_modal').addClass('blueButton colorWhite pointer');
     } else {
         avancePorPaso[Number(pasoActual - 1)] = 0;
@@ -1933,16 +1981,16 @@ function inicializarDropzone(elemento, boton) {
         clickable: boton
     });
     kosmosDropzone.on("addedfile", function (file) {
-        console.log("Archivo enviado: " + file);
+        //console.log("Archivo enviado: " + file);
         $('.dz-preview').hide();
         $('#progresoConsultaComp').fadeIn();
         $('#progresoConsultaIds').fadeIn();
     });
     kosmosDropzone.on("success", function (file, response) {
         var respuesta = eval(response);
-        console.log("Respuesta recibida: " + respuesta);
+        //console.log("Respuesta recibida: " + respuesta);
         $('#progresoConsultaComp').fadeOut();
-        console.log("Documento Vigente? " + respuesta.vigente);
+        //console.log("Documento Vigente? " + respuesta.vigente);
         if (respuesta.vigente === true) {
             var pasoActual = $('#pasoInicial').val();
             if (pasoActual === "0") {
@@ -2024,7 +2072,7 @@ function inicializarDropzone(elemento, boton) {
         $('#progresoConsultaIds').fadeOut();
     });
     kosmosDropzone.on("error", function (file, response) {
-        console.log(response);
+        //console.log(response);
         sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
         this.removeAllFiles();
     });

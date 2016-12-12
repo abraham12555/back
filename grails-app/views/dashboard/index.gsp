@@ -134,14 +134,21 @@
         <section class="container paddingBottom38">
             <table class="applicationContainers solicitudes_table dashboard">
                 <thead>
-                <th colspan="8" class="left navyBg">
-                    <h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes</h1>
-                </th>
-                <th class="darkGray">
-                    <a href="${createLink(controller:'dashboard', action:'solicitudes')}">
-                        <p class=" vermasLine center colorWhite fontWeight300">VER TODAS</p>
-                    </a>
-                </th>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
+                    <th colspan="8" class="left navyBg">
+                        <h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes</h1>
+                    </th>
+                    <th class="darkGray">
+                        <a href="${createLink(controller:'dashboard', action:'solicitudes')}">
+                            <p class=" vermasLine center colorWhite fontWeight300">VER TODAS</p>
+                        </a>
+                    </th>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMINISTRADOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                    <th colspan="9" class="left navyBg">
+                        <h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes</h1>
+                    </th>
+                </sec:ifAnyGranted>
                 </thead>
                 <tbody>
                     <g:if test="${solicitudes}">
@@ -179,19 +186,21 @@
                                     MONTO <br>
                                     <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud.montoCredito}" format="\044###,###,###.##"/></span>
                                 </td>
-                                <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                                    <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id});">ver detalle</button>
-                                </td>
-                            </tr>
-                        </g:each>
-                    </g:if>
-                    <g:else>
-                        <tr>
-                            <td colspan="9"  class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                                <span class="font14 textlower tableDescriptionColor">No hay solicitudes registradas</span>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
+                            <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
+                                <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id});">ver detalle</button>
                             </td>
+                        </sec:ifAnyGranted>
                         </tr>
-                    </g:else>
+                    </g:each>
+                </g:if>
+                <g:else>
+                    <tr>
+                        <td colspan="9"  class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
+                            <span class="font14 textlower tableDescriptionColor">No hay solicitudes registradas</span>
+                        </td>
+                    </tr>
+                </g:else>
                 </tbody>
             </table>
         </section>

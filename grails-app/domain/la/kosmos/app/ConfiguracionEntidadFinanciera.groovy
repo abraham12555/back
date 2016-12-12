@@ -18,6 +18,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String colorTitulos
     String colorGradienteInferior
     String colorGradienteSuperior
+    String terminosCondiciones
     boolean aplicacionVariable = false
     
     static constraints = {
@@ -36,6 +37,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         colorTitulos (blank: false)
         colorGradienteInferior (blank: false)
         colorGradienteSuperior (blank: false)
+        terminosCondiciones (blank: false)
     }
 
     static mapping = {

@@ -23,9 +23,9 @@
         <g:layoutHead/>
     </head>
     <body>
-        <header class="appHeader">
-            <div class="container clearFix">
-                <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file:'kosmos-logo.png')}" alt="Logo" title="Logo" />
+        <header class="appHeader" style="border-top: solid 5px ${session.configuracion?.colorBordeSuperior}; background-color: ${session.configuracion?.colorEncabezado};">
+            <div class="container clearFix" >
+                <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file: session.configuracion?.rutaLogotipo )}" alt="Logo" title="Logo" />
                 <img class="logoMobile dashboard floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" title="Logo" />
                 <div class="floatingHeader floatRight clearFix">
                     <div class="floatRight clearFix">
@@ -64,31 +64,39 @@
                         <span>DASHBOARD</span>
                     </a>
                 </li>
-                <li class="floatLeft">
-                    <a id="principalOpc2" href="${createLink(controller:'dashboard', action:'solicitudes')}" class="elementoMenuPrincipal font12 ">
-                        <span><img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"></span>
-                        <span>SOLICTUDES</span>
-                    </a>
-                </li>
-                <li class="floatLeft">
-                    <a id="principalOpc3" href="${createLink(controller:'dashboard', action:'analiticas')}" class="elementoMenuPrincipal font12">
-                        <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"></span>
-                        <span>ANALITICAS</span>
-                    </a>
-                </li>
-                <li class="floatLeft">
-                    <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'verificaciones')}" class="elementoMenuPrincipal font12">
-                        <span><img class="menuIcon" src="${resource(dir:'images', file:'verification.png')}" alt="verificacion" title="verificaciones"></span>
-                        <span>VERIFICACIONES</span>
-                    </a>
-                </li>
-                <li class="floatLeft">
-                    <a id="principalOpc5" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
-                        <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"></span>
-                        <span>CONFIGURACIÓN</span>
-                    </a>
-                </li>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMIN_GRAL'>  
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                    <li class="floatLeft">
+                        <a id="principalOpc2" href="${createLink(controller:'dashboard', action:'solicitudes')}" class="elementoMenuPrincipal font12 ">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"></span>
+                            <span>SOLICTUDES</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                    <li class="floatLeft">
+                        <a id="principalOpc3" href="${createLink(controller:'dashboard', action:'analiticas')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"></span>
+                            <span>ANALITICAS</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR'>
+                    <li class="floatLeft">
+                        <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'verificaciones')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'verification.png')}" alt="verificacion" title="verificaciones"></span>
+                            <span>VERIFICACIONES</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_DISENO'>
+                    <li class="floatLeft">
+                        <a id="principalOpc5" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"></span>
+                            <span>CONFIGURACIÓN</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>  
                     <li class="floatLeft">
                         <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'administracion')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administracion"></span>

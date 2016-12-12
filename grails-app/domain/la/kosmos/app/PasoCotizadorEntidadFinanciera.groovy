@@ -4,13 +4,14 @@ class PasoCotizadorEntidadFinanciera implements Serializable{
 
     EntidadFinanciera entidadFinanciera
     String tituloDelPaso
-    String claseIconoPaso
     int numeroDePaso
     String tituloResumen
     String idListaAjax
     String variableValorSeleccionado
     TipoDePasoCotizador tipoDePaso
     boolean cargaInicial = true
+    boolean tieneAyuda = false
+    String textoAyuda
     
     static constraints = {
         entidadFinanciera (nullable: false)
@@ -18,9 +19,9 @@ class PasoCotizadorEntidadFinanciera implements Serializable{
         tituloResumen  (blank: false)
         idListaAjax (blank: false)
         variableValorSeleccionado (blank: false)
-        claseIconoPaso (nullable: true)
         numeroDePaso (min: 1)
         tipoDePaso (nullable: false)
+        textoAyuda (nullable: true)
     }
     
     static mapping = {

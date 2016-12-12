@@ -27,16 +27,19 @@ class CotizadorService {
                         mapa.id = it.id
                         mapa.nombreDelProducto = it.nombre
                         mapa.descripcion = it.descripcion
+                        mapa.claseIconoPaso = it.claseIconoPaso
                         rubros << mapa
                     }
                     productos = rubros
-                    documentos =  TipoDeDocumento.findAllWhere(usoEnCotizador: true)
+                    documentos =  TipoDeDocumento.findAllWhere(usoEnCotizador: true, activo: true)
+                    documentos = documentos.sort { it.id }
                 } else {
                     productos = Producto.findAllWhere(activo: true, entidadFinanciera: entidadFinanciera)
                 }
             }
             x++
         }
+        productos = productos.sort { it.id }
         pasosCotizador = pasosCotizador.sort { it.numeroDePaso }
         [productos: productos, documentos: documentos, tiposDeProducto: tiposDeProducto, entidadFinanciera: entidadFinanciera, pasosCotizador: pasosCotizador, periodicidadList: Periodicidad.list(), configuracion: configuracion]
     }

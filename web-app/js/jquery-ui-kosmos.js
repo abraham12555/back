@@ -14812,7 +14812,6 @@
                 this._change( null, 0 );
                 return;
             }
-
             return this._value();
         },
 
@@ -15076,7 +15075,7 @@
                 valueMax = this._valueMax();
                 valPercent = ( valueMax !== valueMin ) ?
                 ( value - valueMin ) / ( valueMax - valueMin ) * 100 :
-                    0;
+                    50;
                 _set[ this.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
                 this.handle.stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
 

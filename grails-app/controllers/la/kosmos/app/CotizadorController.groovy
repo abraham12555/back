@@ -173,6 +173,9 @@ class CotizadorController {
                 session.cotizador.atrasos = params.txtTieneAtrasos
                 session.cotizador.enganche = (params.txtEnganche ? (params.txtEnganche as float) : 0)
             } else {
+                session.cotizador.producto = (params.txtProducto ? (params.txtProducto as long) : 0)
+                session.cotizador.periodo = (params.txtPeriodo ? (params.txtPeriodo as long) : 0)
+                session.cotizador.pagos = (params.txtPago ? (params.txtPago as float) : 0)
                 session.cotizador.modelo = params.txtModelo as long
                 session.cotizador.color = params.txtColor as long
                 session.cotizador.enganche = params.txtEnganche as float

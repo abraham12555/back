@@ -254,3 +254,25 @@ function inicializarDropzone(elemento, boton) {
         sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
     });
 }
+
+function openModal(divModal) {
+    $('#' + divModal).fadeIn();
+}
+
+function closeModal(divModal) {
+    console.log("Cerrando modal");
+    $('#' + divModal).fadeOut();
+}
+
+function mostrarDetalleProducto(idProducto) {
+    jQuery.ajax({
+        type: 'POST',
+        data: 'id=' + idProducto,
+        url: '/kosmos-app/producto/obtenerDetalleProducto',
+        success: function (data, textStatus) {
+        $('#detalleProducto').html(data);
+        openModal('modalDetalleProducto');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {}
+    });
+}

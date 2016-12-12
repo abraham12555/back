@@ -1,35 +1,90 @@
-<section class="container clearFix marginTop20">
-    <div class="width990 autoMargin solicitudWhiteBox clearFix paddingBottom20">
-        <div class="padding20 clearFix borderGrayBottom">
-            <p class="floatLeft font14 fontWeight500 letterspacing1 gray paddingTop5 marginRight25">NOMBRE DEL PRODUCTO</p>
-            <input class="floatLeft cameraBox width258 height30 font14 lightGray " type="text" name="NOMBRE DEL PRODUCTO" value="">
+<g:if test="listaDeProductos">
+    <g:each var="producto" in="${listaDeProductos}">
+        <section class="container marginBottom20">
+            <div class="width990 solicitudBox autoMargin radius2">
+                <div class="clearFix">
+                    <div class="col1fifth col2-tab col12-mob floatLeft">
+                        <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
+                            <p class="font12 gray2 marginBottom5"><strong>CLAVE DEL PRODUCTO</strong></p>
+                            <p class="font14 gray2" style='text-align: center;margin-left: -30px;'>${producto.claveDeProducto}</p>
+                        </div>
+                    </div>
+                    <div class="col1fifth col3-tab col12-mob floatLeft">
+                        <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
+                            <p class="font12 gray2 marginBottom5"><strong>NOMBRE</strong></p>
+                            <p class="font14 gray2">${producto.nombreDelProducto}</p>
+                        </div>
+                    </div>
+                    <div class="col1fifth col3-tab col12-mob floatLeft">
+                        <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
+                            <p class="font12 gray2 marginBottom5"><strong>MARCA</strong></p>
+                            <p class="font14 gray2">${producto.marca}</p>
+                        </div>
+                    </div>
+                    <div class="col1fifth col6-tab col12-mob floatLeft">
+                        <div class="marginLeft30 paddingTop15 paddingBottom10">
+                            <p class="font12 gray2 marginBottom5"><strong>DESCRIPCION</strong></p>
+                            <p class="font14 gray2">${producto.descripcion}</p>
+                        </div>
+                    </div>
+                    <div class="col1fifth col12-tab col12-mob floatLeft">
+                        <div class="marginTop10 marginBottom10 clearFix paddingAside10">
+                            <a title="Ver Detalle" onclick="mostrarDetalleProducto(${producto.id});" class="tabNoFloat floatRight marginLeft20 block width115 blueButton center radius4 paddingTop10 paddingBottom10 pointer">VER DETALLE</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </g:each>
+    <section class="container">
+        <div class="width480 autoMargin solicitudBox marginBottom84">
+            <div class="autoMargin">
+                <ul class="clearFix">
+                    <li class="floatLeft">
+                        <a href="#" title="Previous Page" class="font14 fontWeight600 displayInline pageMarker">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="Page 1" class="font14 fontWeight400 displayInline pageMarker pageSelected">1</a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="Page 2" class="font14 fontWeight400 displayInline pageMarker">2</a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="Page 3" class="font14 fontWeight400 displayInline pageMarker">3</a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="Page 4" class="font14 fontWeight400 displayInline pageMarker">4</a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="..." class="font14 fontWeight400 displayInline pageMarker">...</a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="Page 12" class="font14 fontWeight400 displayInline pageMarker">12</a>
+                    </li>
+                    <li class="floatLeft">
+                        <a href="#" title="Next Page" class="font14 fontWeight600 displayInline pageMarker">
+                            <i class="fa fa-angle-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="col6 floatLeft marginTop20">
-            <p class="gray font14 fontWeight500 letterspacing1 marginLeft20">Monto</p>
-            <p class="gray font14 fontWeight500 letterspacing1 paddingTop15 marginLeft20">Plazos</p>
-            <p class="gray font14 fontWeight500 letterspacing1 paddingTop15 marginLeft20">Periodicidad</p>
+    </section>
+</g:if>
+<g:else>
+    <section class="container marginBottom20">
+        <div class="width990 solicitudBox autoMargin radius2">
+            <div class="clearFix">
+                <div class="col1fifth col6-tab col12-mob floatLeft">
+                    <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
+                        <p class="font12 gray2 marginBottom5">NO HAY PRODUCTOS REGISTRADOS</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col6 blanks floatLeft paddingTop10">
-            <input class="block cameraBox width150 height30 radius2 font14 lightGray" type="text" name="Monto" value="">
-            <input class="block cameraBox width150 height30 radius2 font14 lightGray marginTop5" type="text" name="Plazos" value="">
-            <input class="block cameraBox width150 height30 radius2 font14 lightGray marginTop5" type="text" name="Periodicidad" value="">
-        </div>
-        <div class="col6 floatLeft marginTop20">
-            <p class="gray font14 fontWeight500 letterspacing1 marginLeft20">Enganche Mínimo</p>
-            <p class="gray font14 fontWeight500 letterspacing1 paddingTop15 marginLeft20">Tasas</p>
-            <p class="gray font14 fontWeight500 letterspacing1 paddingTop15 marginLeft20">Comisiones</p>
-        </div>
-        <div class="col6 blanks floatLeft paddingTop10">
-            <input class="block cameraBox width150 height30 radius2 font14 lightGray" type="text" name="Enganche Mínimo" value="">
-            <input class="block cameraBox width150 height30 radius2 font14 lightGray marginTop5" type="text" name="Tasas" value="">
-            <input class="block cameraBox width150 height30 radius2 font14 lightGray marginTop5" type="text" name="Comisiones" value="">
-        </div>
-    </div>
-</section>
-<section class="container clearFix">
-    <div class="marginTop40">
-        <div class="colorGreen radius4 width240 autoMargin">
-            <p class="fontWeight300 letterspacing2 pointer font16 paddingTop20 paddingBottom18 center colorWhite">NUEVO PRODUCTO</p>
-        </div>
-    </div>
-</section>
+    </section>
+</g:else>
+<g:render template="configuracion/producto/altaProducto"/>
+<div id="detalleProducto"></div>

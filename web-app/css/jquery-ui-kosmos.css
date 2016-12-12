@@ -883,7 +883,7 @@ body .ui-tooltip {
 /* Component containers
 ----------------------------------*/
 .ui-widget {
-    font-family: Arial,Helvetica,sans-serif;
+    font-family: Verdana,Arial,sans-serif;
     font-size: 1em;
 }
 .ui-widget .ui-widget {
@@ -893,7 +893,7 @@ body .ui-tooltip {
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-    font-family: Arial,Helvetica,sans-serif;
+    font-family: Verdana,Arial,sans-serif;
     font-size: 1em;
 }
 .ui-widget.ui-widget-content {
@@ -924,13 +924,13 @@ body .ui-tooltip {
 .ui-widget-header .ui-state-default,
 .ui-button,
 
-    /* We use html here because we need a greater specificity to make sure disabled
-    works properly when clicked or hovered */
+/* We use html here because we need a greater specificity to make sure disabled
+works properly when clicked or hovered */
 html .ui-button.ui-state-disabled:hover,
 html .ui-button.ui-state-disabled:active {
     border: 1px solid #c5c5c5;
     background: #f6f6f6;
-    font-weight: normal;
+    font-weight: bold;
     color: #454545;
 }
 .ui-state-default a,
@@ -953,7 +953,7 @@ a:visited.ui-button,
 .ui-button:focus {
     border: 1px solid #cccccc;
     background: #ededed;
-    font-weight: normal;
+    font-weight: bold;
     color: #2b2b2b;
 }
 .ui-state-hover a,
@@ -981,7 +981,7 @@ a.ui-button:active,
 .ui-button.ui-state-active:hover {
     border: 1px solid #003eff;
     background: #007fff;
-    font-weight: normal;
+    font-weight: bold;
     color: #ffffff;
 }
 .ui-icon-background,
@@ -1309,4 +1309,84 @@ a.ui-button:active,
 .ui-widget-shadow {
     -webkit-box-shadow: 0px 0px 5px #666666;
     box-shadow: 0px 0px 5px #666666;
+}
+
+/*Extras - Kosmos*/
+
+.ui-slider-centered-button {
+    left: 50%;
+}
+
+.ui-tooltip, .arrow:after {
+    background-image: linear-gradient(244deg, #59c4fb, #005398) !important;
+    border: 2px solid #ffcb00;
+}
+.ui-tooltip {
+    padding: 10px 20px;
+    color: white;
+    border-radius: 20px;
+    font: bold 14px "Nunito", sans-serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 7px #ffcb00;
+}
+.arrow {
+    width: 70px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    margin-left: -35px;
+    bottom: -16px;
+}
+.arrow.top {
+    top: -16px;
+    bottom: auto;
+}
+.arrow.left {
+    left: 20%;
+}
+.arrow:after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: -20px;
+    width: 25px;
+    height: 25px;
+    box-shadow: 6px 5px 9px -9px #ffcb00;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.arrow.top:after {
+    bottom: -20px;
+    top: auto;
+}
+
+.help-tip{
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    text-align: center;
+    background-color: #005398;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    line-height: 26px;
+    cursor: default;
+}
+
+.help-tip:before{
+    content:'?';
+    font-weight: bold;
+    color:#fff;
+}
+
+.help-tip:hover p{
+    display:block;
+    transform-origin: 100% 0%;
+
+    -webkit-animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
+
 }

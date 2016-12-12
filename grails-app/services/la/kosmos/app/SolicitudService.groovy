@@ -40,6 +40,9 @@ class SolicitudService {
                         datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."mes" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_mes")]
                         datosPaso."$campo.claseAsociada.nombre"."$campo.nombreDelCampo"?."anio" = params[(campo?.claseAsociada?.nombre + "_" + campo?.nombreDelCampo + "_anio")]
                     }
+                } else if((campo.nombreDelCampo == "tiempoEnVivienda") && ((params[(campo?.claseAsociada?.nombre + "_tiempo")]) && (params[(campo?.claseAsociada?.nombre + "_temporalidad")]))){
+                    datosPaso."$campo.claseAsociada.nombre"."tiempo" = params[(campo?.claseAsociada?.nombre + "_tiempo")]
+                    datosPaso."$campo.claseAsociada.nombre"."temporalidad" = params[(campo?.claseAsociada?.nombre + "_temporalidad")]
                 }
             }
 
@@ -60,9 +63,17 @@ class SolicitudService {
                 cliente.nombre = datosPaso.cliente.nombre
                 cliente.apellidoPaterno = datosPaso.cliente.apellidoPaterno
                 cliente.apellidoMaterno = datosPaso.cliente.apellidoMaterno
-                cliente.nacionalidad = (datosPaso.cliente.nacionalidad ? (Nacionalidad.get(datosPaso.cliente.nacionalidad as long)) : null)
-                cliente.fechaDeNacimiento = ((datosPaso.cliente.fechaDeNacimiento.dia && datosPaso.cliente.fechaDeNacimiento.mes && datosPaso.cliente.fechaDeNacimiento.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.cliente.fechaDeNacimiento.dia + "/" + datosPaso.cliente.fechaDeNacimiento.mes + "/" + datosPaso.cliente.fechaDeNacimiento.anio))) : null)
                 cliente.lugarDeNacimiento = (datosPaso.cliente.lugarDeNacimiento ? Estado.get(datosPaso.cliente.lugarDeNacimiento) : null)
+                if(datosPaso.cliente.nacionalidad){
+                    cliente.nacionalidad = Nacionalidad.get(datosPaso.cliente.nacionalidad as long)
+                } else if(datosPaso.cliente.lugarDeNacimiento){
+                    if(datosPaso.cliente.lugarDeNacimiento > 32){
+                        cliente.nacionalidad = Nacionalidad.get(2 as long)
+                    } else {
+                        cliente.nacionalidad = Nacionalidad.get(1 as long)
+                    }
+                }
+                cliente.fechaDeNacimiento = ((datosPaso.cliente.fechaDeNacimiento.dia && datosPaso.cliente.fechaDeNacimiento.mes && datosPaso.cliente.fechaDeNacimiento.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.cliente.fechaDeNacimiento.dia + "/" + datosPaso.cliente.fechaDeNacimiento.mes + "/" + datosPaso.cliente.fechaDeNacimiento.anio))) : null)
                 cliente.curp = datosPaso.cliente.curp
                 cliente.genero = (datosPaso.cliente.genero ? Genero.get(datosPaso.cliente.genero) : null)
                 cliente.rfc = datosPaso.cliente.rfc
@@ -159,14 +170,14 @@ class SolicitudService {
                     direccionCliente.codigoPostal = (datosPaso.direccionCliente.codigoPostal ? CodigoPostal.findByCodigo(datosPaso.direccionCliente.codigoPostal) : null)
                     direccionCliente.colonia = datosPaso.direccionCliente.colonia
                     direccionCliente.ciudad  = (datosPaso.direccionCliente.municipio ? Municipio.get(datosPaso.direccionCliente.municipio) : null)
-                    direccionCliente.tipoDeVivienda = (datosPaso.direccionCliente.tipoDeVivienda ? TipoDeVivienda.get(datosPaso.direccionCliente.tipoDeVivienda) : null)
-                    direccionCliente.temporalidad = (datosPaso.direccionCliente.temporalidad ? Temporalidad.get(datosPaso.direccionCliente.temporalidad) : null)
+                    direccionCliente.tipoDeVivienda = (datosPaso.direccionCliente.tipoDeVivienda ? TipoDeVivienda.get(datosPaso.direccionCliente.tipoDeVivienda as long) : null)
+                    direccionCliente.temporalidad = (datosPaso.direccionCliente.temporalidad ? Temporalidad.get(datosPaso.direccionCliente.temporalidad as long) : null)
                     direccionCliente.cliente = cliente
-                    direccionCliente.tiempoDeResidencia = (datosPaso.direccionCliente.tiempo ?: 0)
+                    direccionCliente.tiempoDeResidencia = (datosPaso.direccionCliente.tiempo ? (datosPaso.direccionCliente.tiempo as int) : 0)
                     direccionCliente.latitud = 0
                     direccionCliente.longitud = 0
-                    direccionCliente.tiempoDeEstadia = (datosPaso.direccionCliente.tiempoDeResidencia.mes + "/" + datosPaso.direccionCliente.tiempoDeResidencia.anio)
-                    direccionCliente.tiempoDeVivienda = (datosPaso.direccionCliente.tiempoDeVivir.mes + "/" + datosPaso.direccionCliente.tiempoDeVivir.anio)
+                    direccionCliente.tiempoDeEstadia = ((datosPaso.direccionCliente.tiempoDeResidencia?.mes && datosPaso.direccionCliente.tiempoDeResidencia?.anio) ? (datosPaso.direccionCliente.tiempoDeResidencia?.mes + "/" + datosPaso.direccionCliente.tiempoDeResidencia?.anio) : null)
+                    direccionCliente.tiempoDeVivienda = ((datosPaso.direccionCliente.tiempoDeVivir?.mes && datosPaso.direccionCliente.tiempoDeVivir?.anio) ? (datosPaso.direccionCliente.tiempoDeVivir?.mes + "/" + datosPaso.direccionCliente.tiempoDeVivir?.anio) : null)
                     if(direccionCliente.save(flush:true)){
                         println("La dirección se ha registrado correctamente")
                         datosPaso.direccionCliente.idDireccion = direccionCliente.id
@@ -397,7 +408,8 @@ class SolicitudService {
     
     def registrarProducto (def datosCotizador, def identificadores){
         println "Datos del Cotizador: " + datosCotizador
-        if(datosCotizador){
+        def respuesta = null
+        if(datosCotizador && !identificadores.idProductoSolicitud){
             def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
             def productoSolicitud =  new ProductoSolicitud()
             if(datosCotizador.rubro){
@@ -422,6 +434,7 @@ class SolicitudService {
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
                 println("El producto se ha registrado correctamente")
+                return productoSolicitud.id
             } else {
                 println("No se guardo nada")
                 if (productoSolicitud.hasErrors()) {
@@ -429,7 +442,10 @@ class SolicitudService {
                         println it
                     }
                 }
+                return null
             }
+        } else {
+            return null
         }
     }
     

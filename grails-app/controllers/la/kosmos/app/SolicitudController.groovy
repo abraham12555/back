@@ -609,7 +609,7 @@ class SolicitudController {
                 if(pasoAnterior == 1){
                     session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
                     session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
-                    solicitudService.registrarProducto(session.cotizador, session.identificadores)
+                    session.identificadores.idProductoSolicitud = solicitudService.registrarProducto(session.cotizador, session.identificadores)
                 } else if(pasoAnterior == 2){
                     session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
                 } else if(pasoAnterior == 3){
@@ -619,57 +619,62 @@ class SolicitudController {
                     session.identificadores.idReferencia3 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia3
                 }
             }
-            def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
-            camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
-            parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
-            if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
-                session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
-                modelo = [configuracion: configuracion,
-                    logueado: session.yaUsoLogin,
-                    pasosDeSolicitud: pasosDeSolicitud,
-                    parrafos: parrafos,
-                    pasoActual:pasoActual,
-                    generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
-            } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
-                modelo = [configuracion: configuracion,
-                    pasosDeSolicitud: pasosDeSolicitud,
-                    pasoActual:pasoActual, 
-                    generales: session["consultaBancaria"]]
-            } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
-                def municipio = null
-                if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
-                    municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
+            if(siguientePaso == 0){
+                session.invalidate()
+                render modelo as JSON
+            } else {
+                def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
+                camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
+                parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
+                if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                    session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
+                    modelo = [configuracion: configuracion,
+                        logueado: session.yaUsoLogin,
+                        pasosDeSolicitud: pasosDeSolicitud,
+                        parrafos: parrafos,
+                        pasoActual:pasoActual,
+                        generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
+                } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
+                    modelo = [configuracion: configuracion,
+                        pasosDeSolicitud: pasosDeSolicitud,
+                        pasoActual:pasoActual, 
+                        generales: session["consultaBancaria"]]
+                } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
+                    def municipio = null
+                    if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
+                        municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
+                    }
+                    def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
+                    modelo = [configuracion: configuracion,
+                        logueado: session.yaUsoLogin,
+                        pasosDeSolicitud: pasosDeSolicitud,
+                        pasoActual:pasoActual,
+                        generales: session["consultaBuro"],
+                        personales: session["pasoFormulario"].cliente,
+                        direccion: session["pasoFormulario"].direccionCliente,
+                        municipio:municipio,
+                        razonSocial:configuracion.razonSocial,
+                        reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
+                        errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
+                } else if(pasoActual.tipoDePaso.nombre == "resumen"){
+                    def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                    def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                    def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
+                    modelo = [configuracion: configuracion,
+                        pasosDeSolicitud: pasosDeSolicitud,
+                        pasoActual:pasoActual,
+                        mediosDeContacto: mediosDeContacto,
+                        productoSolicitud:productoSolicitud,
+                        documentosSubidos: session.tiposDeDocumento]
+                }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
+                    def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                    def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                    modelo = [configuracion: configuracion,
+                        productoSolicitud: productoSolicitud,
+                        pasoActual:pasoActual]
                 }
-                def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
-                modelo = [configuracion: configuracion,
-                    logueado: session.yaUsoLogin,
-                    pasosDeSolicitud: pasosDeSolicitud,
-                    pasoActual:pasoActual,
-                    generales: session["consultaBuro"],
-                    personales: session["pasoFormulario"].cliente,
-                    direccion: session["pasoFormulario"].direccionCliente,
-                    municipio:municipio,
-                    razonSocial:configuracion.razonSocial,
-                    reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
-                    errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
-            } else if(pasoActual.tipoDePaso.nombre == "resumen"){
-                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
-                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
-                def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
-                modelo = [configuracion: configuracion,
-                    pasosDeSolicitud: pasosDeSolicitud,
-                    pasoActual:pasoActual,
-                    mediosDeContacto: mediosDeContacto,
-                    productoSolicitud:productoSolicitud,
-                    documentosSubidos: session.tiposDeDocumento]
-            }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
-                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
-                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
-                modelo = [configuracion: configuracion,
-                    productoSolicitud: productoSolicitud,
-                    pasoActual:pasoActual]
+                render(template: pasoActual.tipoDePaso.nombre, model: modelo)
             }
-            render(template: pasoActual.tipoDePaso.nombre, model: modelo)
         } else {
             println ("Que segun no llego el parametro del paso siguiente :S")
             redirect action: "test"

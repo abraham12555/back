@@ -15,6 +15,7 @@ class Producto implements Serializable {
     TipoDeTasaDeInteres tipoDeTasa
     String claveDeProducto
     Esquema esquema
+    String claseIconoPaso
 
     boolean activo = true
 
@@ -29,6 +30,7 @@ class Producto implements Serializable {
         tipoDeTasa(nullable: true)
         claveDeProducto(nullable: true)
         esquema(nullable: true)
+        claseIconoPaso (nullable: true)
     }
 
     static mapping = {

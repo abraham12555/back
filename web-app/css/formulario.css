@@ -1745,6 +1745,10 @@ body{
     letter-spacing: 1.1px;
     color: #181d3f;
     display: inline-block;
+    border-radius: 2px;
+    background-color: #f1f3fa;
+    border: solid 1px #71758e;
+    padding: 7px;
 }
 
 .userName.dashboard{
@@ -2163,6 +2167,28 @@ body{
 }
 
 .identificationLb .lbHeader{
+    padding: 20px;
+    width: calc(100% - 200px);
+    width: -webkit-calc(100% - 200px);
+    font-size:25px;
+}
+
+.altaUsuario{
+    max-width:30%;
+}
+
+.altaUsuario .altaUsuarioHeader{
+    padding: 20px;
+    width: calc(100% - 200px);
+    width: -webkit-calc(100% - 200px);
+    font-size:25px;
+}
+
+.detalleProducto{
+    max-width:50%;
+}
+
+.detalleProducto .detalleProductoHeader{
     padding: 20px;
     width: calc(100% - 200px);
     width: -webkit-calc(100% - 200px);

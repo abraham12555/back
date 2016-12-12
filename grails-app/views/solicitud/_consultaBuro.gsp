@@ -92,18 +92,16 @@
                     <div  class="colorGreen buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
                 </a>
             </div>
-            <div
-            class="col1 col12-mob center gray floatLeft padingAside20 marginTop15 marginBottom15 block">Ó</div>
+            <!--<div class="col1 col12-mob center gray floatLeft padingAside20 marginTop15 marginBottom15 block">Ó</div>
         <div class="col5half col12-mob floatLeft">
             <div class="buttonM darkGray radius100 font16 colorWhite letterspacing1.5 mobileAuto" style="cursor: pointer;">SUBIR MI PDF DE BURÓ DE CRÉDITO</div>
-        </div>
-        <div class="loadingContainer clearFix clearFloat">
-            <div class="loadingBar marginTop50 hide">
-                <div class="loadingActive"></div>
-                <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU
-                    BURÓ DE CRÉDITO</p>
+        </div> -->
+            <div class="loadingContainer clearFix clearFloat">
+                <div class="loadingBar marginTop50 hide">
+                    <div class="loadingActive"></div>
+                    <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU BURÓ DE CRÉDITO</p>
+                </div>
             </div>
-        </div>
         </div>
         <div id="accionesSuccess" style="display: none;" class="clearFix clearFloat">
             <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor: pointer;">CONSULTA EXITOSA</div>

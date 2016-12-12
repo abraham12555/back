@@ -20,7 +20,7 @@ class DashboardService {
             solicitud.statusDeSolicitud = it.solicitud.statusDeSolicitud.toString()
             solicitud.puntoDeVenta = it.solicitud.puntoDeVenta?.toString()
             solicitud.autenticadoMediante = "Plataforma"
-            solicitud.producto = it.colorModelo.modelo.producto.toString()
+            solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
             solicitud.fechaDeSolicitud = it.solicitud.fechaDeSolicitud
             solicitud.montoCredito = it.montoDelCredito
             respuesta << solicitud
@@ -75,7 +75,7 @@ class DashboardService {
             solicitud.statusDeSolicitud = it.solicitud.statusDeSolicitud.toString()
             solicitud.puntoDeVenta = it.solicitud.puntoDeVenta?.toString()
             solicitud.autenticadoMediante = "Plataforma"
-            solicitud.producto = it.colorModelo.modelo.producto.toString()
+            solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
             solicitud.fechaDeSolicitud = it.solicitud.fechaDeSolicitud
             solicitud.montoCredito = it.montoDelCredito
             respuesta << solicitud
@@ -191,5 +191,47 @@ class DashboardService {
             }
         }
         return respuesta
+    }
+    
+    def guardarUsuario(params){
+        def respuesta = [:]
+        def usuario = new Usuario();
+        usuario.username = params.username
+        usuario.password = params.password
+        usuario.enabled = true
+        usuario.accountExpired = false
+        usuario.accountLocked = false
+        usuario.passwordExpired = false
+        usuario.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
+        usuario.nombre = params.nombre
+        usuario.apellidoPaterno = params.apellidoPaterno
+        usuario.apellidoMaterno = params.apellidoMaterno
+        usuario.email = params.email
+        if(usuario.save()){
+            def rol = Rol.get(params.rol.id as long)
+            def rolUsuario = new UsuarioRol()
+            rolUsuario.usuario = usuario
+            rolUsuario.rol = rol
+            if(rolUsuario.save()){
+                respuesta.usuario = usuario
+            } else {
+                if (rolUsuario.hasErrors()) {
+                    rolUsuario.errors.allErrors.each {
+                        println it
+                    }
+                }
+                respuesta.error = true
+                respuesta.mensaje = "Ocurrio un problema al asignar el rol al usuario. Intente nuevamente más tarde."
+            }
+        } else {
+            if (usuario.hasErrors()) {
+                usuario.errors.allErrors.each {
+                    println it
+                }
+            }
+            respuesta.error = true
+            respuesta.mensaje = "Ocurrio un problema al guardar el usuario. Intente nuevamente más tarde."
+        }
+        respuesta
     }
 }

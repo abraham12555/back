@@ -8,7 +8,7 @@ class TelefonoCliente implements Serializable{
     boolean vigente = true
     
     static constraints = {
-        numeroTelefonico (blank: false, maxSize: 10)
+        numeroTelefonico (blank: false, maxSize: 14)
         tipoDeTelefono (nullable: false)
         cliente (nullable: false)
     }

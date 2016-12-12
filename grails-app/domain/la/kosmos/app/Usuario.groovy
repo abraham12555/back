@@ -7,51 +7,63 @@ import groovy.transform.ToString
 @ToString(includes='username', includeNames=true, includePackage=false)
 class Usuario implements Serializable {
 
-	private static final long serialVersionUID = 1
+    private static final long serialVersionUID = 1
 
-	transient springSecurityService
+    transient springSecurityService
 
-	String username
-	String password
-	boolean enabled = true
-	boolean accountExpired
-	boolean accountLocked
-	boolean passwordExpired
-        EntidadFinanciera entidadFinanciera
+    String username
+    String password
+    boolean enabled = true
+    boolean accountExpired
+    boolean accountLocked
+    boolean passwordExpired
+    EntidadFinanciera entidadFinanciera
+    String nombre
+    String apellidoPaterno
+    String apellidoMaterno
+    String email
 
-	Usuario(String username, String password) {
-		this()
-		this.username = username
-		this.password = password
-	}
+    Usuario(String username, String password) {
+        this()
+        this.username = username
+        this.password = password
+    }
 
-	Set<Rol> getAuthorities() {
-		UsuarioRol.findAllByUsuario(this)*.rol
-	}
+    Set<Rol> getAuthorities() {
+        UsuarioRol.findAllByUsuario(this)*.rol
+    }
 
-	def beforeInsert() {
-		encodePassword()
-	}
+    def beforeInsert() {
+        encodePassword()
+    }
 
-	def beforeUpdate() {
-		if (isDirty('password')) {
-			encodePassword()
-		}
-	}
+    def beforeUpdate() {
+        if (isDirty('password')) {
+            encodePassword()
+        }
+    }
 
-	protected void encodePassword() {
-		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
-	}
+    protected void encodePassword() {
+        password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    }
 
-	static transients = ['springSecurityService']
+    static transients = ['springSecurityService']
 
-	static constraints = {
-		username blank: false, unique: true
-		password blank: false
-                entidadFinanciera nullable: false
-	}
+    static constraints = {
+        username blank: false, unique: true
+        password blank: false
+        entidadFinanciera nullable: false
+        nombre nullable: false
+        apellidoPaterno nullable: false
+        apellidoMaterno nullable: false
+        email nullable: false
+    }
 
-	static mapping = {
-		password column: '`password`'
-	}
+    static mapping = {
+        password column: '`password`'
+    }
+        
+    String toString () {
+        "${nombre} ${apellidoPaterno} ${apellidoMaterno}"
+    }
 }

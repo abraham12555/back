@@ -14,6 +14,8 @@ class DashboardController {
     
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
+        def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
+        session.configuracion = configuracion
         session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
         println "Regresando: " + solicitudes
         [solicitudes: solicitudes]
@@ -59,7 +61,12 @@ class DashboardController {
     
     def detalleVerificacion(){ }
     
-    def configuracion() { }
+    def configuracion() {
+        def usuarios = Usuario.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
+        def roles = Rol.list()
+        def productos = Producto.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
+        [listaDeUsuarios: usuarios, listaDeRoles: roles, listaDeProductos: productos]
+    }
     
     def administracion(){
         [entidadesList: EntidadFinanciera.list()]
@@ -146,5 +153,10 @@ class DashboardController {
                 render "Error!"
             }
         }
+    }
+    
+    def registrarUsuario(){
+        def respuesta = dashboardService.guardarUsuario(params)
+        redirect action: "configuracion"
     }
 }

@@ -13,14 +13,37 @@
                 <div class="whiteBox width550 autoMargin marginTop13">
                     <div class="paddingAside20">
                         <div class="paddingTop35 marginBottom30">
-                            <h1 class="center font25 fontWeight500 darkBluetitle">CONECTA TU SOLICITUD</h1>
+                            <h1 class="center font25 fontWeight500 darkBluetitle">FACILITA TU SOLICITUD</h1>
                         </div>
                         <div class="autoMargin clearFix">
                             <div class="borderTopResumen clearFix">
+                                <div class="col12 autoMargin">
+                                    <div class="paddingTop18 marginBottom20">
+                                        <p class="center formTitleColor font18">
+                                            Tomale una foto a tus INE ó Pasaporte y te ayudamos a prellenar tu formulario. ¡Es más Fácil y más Rápido!
+                                        </p>
+                                        <p class="center colorblue font18 marginBottom20">
+                                            ¡Puedes obtener tu crédito hasta en 10 minutos!
+                                        </p>
+
+                                        <div class="marginBottom20">
+                                            <a id="loginIdOf">
+                                                <div class="width350 boxGreen autoMargin pointer">
+                                                    <p class="paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
+                                                        SUBE TU IDENTIFICACIÓN OFICIAL
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="text-align: center;color: #1c2b8a;"><strong>Ó</strong></p>
+                            <div class="clearFix">
                                 <div class="col10 col12-mob autoMargin">
                                     <div class="paddingTop18 marginBottom16">
                                         <p class="center formTitleColor marginBottom30 font18">
-                                            Conecta tus redes sociales y te ayudamos <br/> a pre-llenar tu formulario. Es más fácil y mas rápido.
+                                            Conecta tu Facebook<br/> y Pre-llenamos tu formulario.
                                         </p>
                                         <a onclick="fb_login();">
                                             <div class="marginBottom20">
@@ -48,28 +71,6 @@
                                                 </div>
                                             </div>
                                         </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="clearFix">
-                                <div class="col12 autoMargin">
-                                    <div class="paddingTop18 marginBottom20">
-                                        <p class="center formTitleColor font18">
-                                            Tomale una foto a tus documentos y pre-llena tu formulario.
-                                        </p>
-                                        <p class="center colorblue font18 marginBottom20">
-                                            ¡Puedes obtener tu crédito hasta en 10 minutos!
-                                        </p>
-
-                                        <div class="marginBottom20">
-                                            <a id="loginIdOf">
-                                                <div class="width350 boxGreen autoMargin pointer">
-                                                    <p class="paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
-                                                        SUBE TU IDENTIFICACIÓN OFICIAL
-                                                    </p>
-                                                </div>
-                                            </a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

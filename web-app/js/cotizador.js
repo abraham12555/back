@@ -23,11 +23,23 @@ var seguro;
 var tipoDeProductoSelected;
 var pagoCalculado = 0;
 $(document).ready(function () {
-//prevent scroll
-    /*$('body').css({
-     heigt:$(window).height(),
-     overflow:'hidden'
-     });*/
+    $(document).tooltip({
+        position: {
+            my: "center bottom-20",
+            at: "center top",
+            using: function (position, feedback) {
+                $(this).css(position);
+                $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+            }
+        }
+    });
+    $('.closeModal').click(function () {
+        closeModal('modalTerminosCondiciones');
+    });
     lastStep = Number($('#ultimoPaso').val());
     initSteps();
     initActions();
@@ -61,7 +73,7 @@ Number.prototype.formatMoney = function (c, d, t) {
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 function formatCurrency(n, currency) {
-    return currency + " " + parseFloat(n).toFixed(2).replace(/./g, function (c, i, a) {
+    return currency + "" + parseFloat(n).toFixed(2).replace(/./g, function (c, i, a) {
         return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
     });
 }
@@ -71,6 +83,7 @@ function initSteps() {
     $('.summaryDiv').hide();
     $('.actionsDiv').hide();
     $('.stepShadow').hide();
+    $('#terminosYCondiciones').hide();
     $('.cotizadorStep').css({'opacity': '0'}).find('.stepShadow').hide();
     $('.cotizadorStep').eq(0).css({'opacity': '1'}).find('.stepShadow').show();
     $('.cotizadorStep').eq(0).find('.actionsDiv').show();
@@ -109,6 +122,7 @@ function initSteps() {
         $('.summaryDiv').slideUp();
         $('.actionsDiv').slideUp();
         $('.stepShadow').fadeOut();
+        $('#terminosYCondiciones').fadeOut();
         $('.cotizadorStep').css({'opacity': '1'});
         //Show this step
         $('.cotizadorStep').eq(step).find('.actionsDiv').slideDown();
@@ -238,13 +252,7 @@ function stepAction(step, tipoDePaso, elm) {
         $("#txtModelo").val(modelID);
         obtenerColores(modelID);
         obtenerSeguros(modelID)
-        //start slider at 30%
-        $('.cotizador-p1-buttons .ui-slider-handle').html('30%');
-        enganche = (priceSelected * 0.3);
-        $("#txtEnganche").val(enganche);
-        restante = priceSelected - enganche;
-        $('#engancheElegido').html(formatCurrency(enganche, "$"));
-        $("#engancheElegido2").html(formatCurrency(enganche, "$"));
+        montoElegido = priceSelected;
     } else if (tipoDePaso === "stepColor") {
         var colorID = $(elm).data('id');
         colorName = $(elm).html();
@@ -252,26 +260,44 @@ function stepAction(step, tipoDePaso, elm) {
         $('#colorElegido3').html(colorName);
         imagenDelColor(colorID);
         $("#txtColor").val(colorID);
-    } else if (tipoDePaso === "stepEnganche") {
-        for (i = 0; i < 4; i++) {
-            $(".frecuenciaOpt").eq(i).find('.frecuenciaTotal').html(pagosAnuales * (i + 1));
-            $(".frecuenciaOpt").eq(i).find('.frecuenciaTipo').html(frecuenciaDesc);
-            $(".frecuenciaOpt").eq(i).find('.frecuenciaCantidad').html("$" + (Math.round(restante / (pagosAnuales * (i + 1))).formatMoney(2, '.', ',')));
+        if ($("#sliderEnganche").slider("instance") !== undefined) {
+            reiniciarSlider('sliderEnganche', '%', 'enganche', 10, 80, 30, 10);
+        } else {
+            iniciarSliderEnganche('sliderEnganche', 10, 80, 30, 10);
         }
+    } else if (tipoDePaso === "stepEnganche") {
         if (productSelected === 7 && aplicacionVariable === "true") {
             cargarPlazos(productoElegido, documentoElegido, montoElegido);
+        } else if (aplicacionVariable === "false") {
+            for (i = 0; i < 4; i++) {
+                $(".frecuenciaOpt").eq(i).find('.frecuenciaTotal').html(pagosAnuales * (i + 1));
+                $(".frecuenciaOpt").eq(i).find('.frecuenciaTipo').html(frecuenciaDesc);
+                $(".frecuenciaOpt").eq(i).find('.frecuenciaCantidad').html("$" + (Math.round(restante / (pagosAnuales * (i + 1))).formatMoney(2, '.', ',')));
+            }
+            inicializarBotonesPeriodicidad();
         }
         $('#txtEnganche').val(enganche);
     } else if (tipoDePaso === "stepMontoCredito") {
         if (productSelected === 7 && aplicacionVariable === "true") {
-            iniciarSliderEnganche('sliderEnganche', 10, 80, 30, 10);
+            if ($("#sliderEnganche").slider("instance") !== undefined) {
+                reiniciarSlider('sliderEnganche', '%', 'enganche', 20, 40, 20, 10);
+            } else {
+                iniciarSliderEnganche('sliderEnganche', 20, 40, 20, 10);
+            }
         } else {
             cargarPlazos(productoElegido, documentoElegido, montoElegido);
         }
         $("#precioDelProducto").html(formatCurrency(montoElegido, "$"));
     } else if (tipoDePaso === "stepPlazos") {
-        frecMonto = pagoCalculado;//$(elm).find('.frecuenciaCantidad').html();
-        //frecTotalPagos = $(elm).find('.frecuenciaTotal').html();
+        if (aplicacionVariable === "true") {
+            frecMonto = pagoCalculado;
+        } else {
+            frecMonto = $(elm).find('.frecuenciaCantidad').html();
+            frecMonto = Number(frecMonto.replace(/[^0-9\.]+/g, ""));
+            frecTotalPagos = $(elm).find('.frecuenciaTotal').html();
+            console.log(frecMonto);
+            console.log(frecTotalPagos);
+        }
         $("#txtPlazo").val(frecTotalPagos);
         $("#txtPago").val(frecMonto);
         $("#pagoElegido").html(formatCurrency(frecMonto, "$") + " | " + frecuencia + " | " + frecTotalPagos + " pagos");
@@ -285,6 +311,7 @@ function stepAction(step, tipoDePaso, elm) {
     if (step === ultimoPaso) {
 //show button
         $('#submitCotizador').fadeIn();
+        $('#terminosYCondiciones').fadeIn();
     }
 }
 
@@ -437,7 +464,12 @@ function identificarProducto(rubro, documento, atraso) {
                 var maximo = (Number(respuesta.montoMaximo) / 1000);
                 var inicial = minimo;
                 var incremento = 1;
-                iniciarSlider('slider', ' Mil', 'dinero', minimo, maximo, inicial, incremento);
+                console.log("Existe Slider Monto: " + $("#slider").slider("instance"));
+                if ($("#slider").slider("instance") !== undefined) {
+                    reiniciarSlider('slider', ' Mil', 'dinero', minimo, maximo, inicial, incremento);
+                } else {
+                    iniciarSlider('slider', ' Mil', 'dinero', minimo, maximo, inicial, incremento);
+                }
                 productoElegido = respuesta.idProducto;
                 $('#nombreDelProducto').html(respuesta.nombreDelProducto.toUpperCase());
                 $("#txtProducto").val(respuesta.idProducto);
@@ -466,14 +498,14 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
             var respuesta = eval(data);
             var html = "";
             if (respuesta.exito) {
-                html += "<div class='payChoice'>";
-                html += "<div class='col6 floatLeft marginBottom10'>";
-                html += "<div class='paddingAside5'>";
-                html += "<p data-frecuencia='" + respuesta.periodicidad.nombre.toLowerCase() + "' class='width350 cotizador-box frecuencia blueButton'>" + respuesta.periodicidad.nombre + "</p>";
-                html += "</div>";
-                html += "</div>";
-                html += "</div>";
-                html += "<h1 class='dark-blue-titles font20 fontWeight400 letterspacing1 marginBottom20 clearFloat'><span id='pagosleyenda'>Elije tu Plazo en " + respuesta.periodicidad.nomenclatura + "</span></h1>";
+                /*html += "<div class='payChoice'>";
+                 html += "<div class='col6 floatLeft marginBottom10'>";
+                 html += "<div class='paddingAside5'>";
+                 html += "<p data-frecuencia='" + respuesta.periodicidad.nombre.toLowerCase() + "' class='width350 cotizador-box frecuencia blueButton'>" + respuesta.periodicidad.nombre + "</p>";
+                 html += "</div>";
+                 html += "</div>";
+                 html += "</div>";*/
+                html += "<h1 class='dark-blue-titles font20 fontWeight400 letterspacing1 marginBottom20 clearFloat'><span id='pagosleyenda'>¿En Cuántas " + respuesta.periodicidad.nomenclatura + " Pagarás tu Crédito?</span></h1>";
                 html += "<div class='marginTop52'>";
                 html += "<div class='marginBottom25 clearFix loading-bar-container inner marginBottom40'>";
                 html += "<div id='listaDeFrecuencias' class='loading-bar-line blueButton autoMargin'>";
@@ -496,7 +528,11 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
                 frecuencia = respuesta.periodicidad.nombre.toLowerCase();
                 periodicidadElegida = respuesta.periodicidad.id
                 $('#txtPeriodo').val(periodicidadElegida);
-                iniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider);
+                if ($("#listaDeFrecuencias").slider("instance") !== undefined) {
+                    reiniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider);
+                } else {
+                    iniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider);
+                }
                 removeActions();
                 initActions();
                 inicializarBotonesPeriodicidad();
@@ -562,7 +598,7 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
         step: incremento,
         create: function (event, ui) {
             $(this).slider('value', montoInicial);
-            $('#' + elemento + ' .ui-slider-handle').html((montoInicial + etiqueta));
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + (montoInicial + etiqueta) + ' >');
             if (tipoDeCifra === "cantidad") {
                 if (enganche === 0) {
                     restante = montoElegido
@@ -571,6 +607,12 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
                 }
                 $('#txtMontoCredito').val(restante);
                 calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, montoInicial, periodicidadElegida);
+            } else if (tipoDeCifra === "dinero") {
+                montoElegido = (montoInicial * 1000);
+                $('#montoElegido').html(formatCurrency(montoElegido, "$"));
+                //Optimizar codigo:
+                $("#montoElegido2").html(formatCurrency(montoElegido, "$"));
+                $("#montoElegido3").html(formatCurrency(montoElegido, "$"));
             }
         },
         slide: function (event, ui) {
@@ -589,7 +631,7 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
                 $('#txtMontoCredito').val(restante);
                 calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, ui.value, periodicidadElegida);
             }
-            $('#' + elemento + ' .ui-slider-handle').html(ui.value + etiqueta);
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + (ui.value + etiqueta) + ' >');
         }
 
     });
@@ -608,7 +650,7 @@ function iniciarSliderEnganche(elemento, porcentajeMinimo, porcentajeMaximo, val
             enganche = montoElegido * (valorInicial / 100);
             restante = montoElegido - enganche;
             $('#engancheElegido').html("$" + (enganche).formatMoney(2, '.', ','));
-            $('#' + elemento + ' .ui-slider-handle').html(valorInicial + '%');
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + valorInicial + '% >');
             //Optimizar codigo:
             $("#engancheElegido2").html("$" + enganche.formatMoney(2, '.', ','));
             $("#engancheElegido3").html("$" + enganche.formatMoney(2, '.', ','));
@@ -617,7 +659,7 @@ function iniciarSliderEnganche(elemento, porcentajeMinimo, porcentajeMaximo, val
             enganche = montoElegido * (ui.value / 100);
             restante = montoElegido - enganche;
             $('#engancheElegido').html("$" + (enganche).formatMoney(2, '.', ','));
-            $('#' + elemento + ' .ui-slider-handle').html(ui.value + '%');
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + ui.value + '% >');
             //Optimizar codigo:
             $("#engancheElegido2").html("$" + enganche.formatMoney(2, '.', ','));
             $("#engancheElegido3").html("$" + enganche.formatMoney(2, '.', ','));
@@ -645,8 +687,8 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
                 montoSeguro = respuesta.montoSeguro;
                 $('#txtMontoSeguro').val(montoSeguro);
                 $('#pagoCalculado').html("Pago " + respuesta.nombrePeriodo + ": " + formatCurrency(respuesta.renta, "$"));
-                $('#datosSeguro').html("Tu crédito incluye un seguro financiado por " + formatCurrency(respuesta.montoSeguro, "$"));
-                $('#montoElegido').html(formatCurrency(montoElegido, "$") + " + " + formatCurrency(respuesta.montoSeguro, "$") + " de Seguro");
+                /*$('#datosSeguro').html("Tu crédito incluye un seguro financiado por " + formatCurrency(respuesta.montoSeguro, "$"));
+                 $('#montoElegido').html(formatCurrency(montoElegido, "$") + " + " + formatCurrency(respuesta.montoSeguro, "$") + " de Seguro");*/
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "warning");
             }
@@ -685,4 +727,40 @@ function inicializarBotonesPeriodicidad() {
 
 function actualizarTexto(elemento, texto) {
     $('#' + elemento).text(texto);
+}
+
+function reiniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo, montoInicial, incremento) {
+    $("#" + elemento).slider("option", "value", montoInicial);
+    $("#" + elemento).slider("option", "min", montoMinimo);
+    $("#" + elemento).slider("option", "max", montoMaximo);
+    $("#" + elemento).slider("option", "step", incremento);
+    $('#' + elemento + ' .ui-slider-handle').html('< ' + (montoInicial + etiqueta) + ' >');
+    if (tipoDeCifra === "cantidad") {
+        if (enganche === 0) {
+            restante = montoElegido
+        } else {
+            restante = montoElegido - enganche
+        }
+        $('#txtMontoCredito').val(restante);
+        calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, montoInicial, periodicidadElegida);
+    } else if (tipoDeCifra === "dinero") {
+        montoElegido = (montoInicial * 1000);
+        $('#montoElegido').html(formatCurrency(montoElegido, "$"));
+        $("#montoElegido2").html(formatCurrency(montoElegido, "$"));
+        $("#montoElegido3").html(formatCurrency(montoElegido, "$"));
+    } else if (tipoDeCifra === "enganche") {
+        enganche = montoElegido * (montoInicial / 100);
+        restante = montoElegido - enganche;
+        $('#engancheElegido').html("$" + (enganche).formatMoney(2, '.', ','));
+        $("#engancheElegido2").html("$" + enganche.formatMoney(2, '.', ','));
+        $("#engancheElegido3").html("$" + enganche.formatMoney(2, '.', ','));
+    }
+}
+
+function openModal(divModal) {
+    $('#' + divModal).fadeIn();
+}
+
+function closeModal(divModal) {
+    $('#' + divModal).fadeOut();
 }

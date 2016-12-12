@@ -28,6 +28,7 @@
         <g:external dir="js" file="numbersOnly.js" />
         <g:external dir="js" file="google.js" />
         <g:external dir="js" file="facebook.js" />
+        <g:external dir="js" file="jasny-bootstrap.min.js" />
     </head>
     <body>
         <header class="topHeader">
@@ -40,7 +41,7 @@
                             <div id="imagenUsuario" class="floatLeft clearFix" >
                                 <img  class="userPicture floatLeft" src="${resource(dir:'images', file:'profile.png')}"/>
                             </div>
-                            <p id="nombreCliente" class="userName marginTop28 paddingRight5 marginBottom27 floatLeft">¡ Hola ${generales?.nombre ? generales.nombre.toLowerCase().capitalize() : generales?.nombrePersona}!</p>
+                            <p id="nombreCliente" class="userName marginTop20 paddingRight5 marginBottom27 floatLeft">¡ Hola ${generales?.nombre ? generales.nombre.toLowerCase().capitalize() : generales?.nombrePersona}!</p>
                             <div class="dropBox floatLeft marginTop28 marginLeft5 desktop">
                                 <i class="fa fa-angle-down paddingTop2 paddingRight2 paddingLeft5" aria-hidden="true"></i>
                             </div>
