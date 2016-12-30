@@ -4,10 +4,10 @@
     <div class="defaultBubble <g:if test="${generales?.llenadoPrevio && (generales?.nombre || generales?.apellidoPaterno || generales?.apellidoMaterno || generales?.nombreCompleto || generales?.apellidos || generales?.sexo || generales?.curp || generales?.rfc)}"> hide </g:if> ">
             <div class="container clearFix relative autoMargin width920">
                 <div class="infoBox floatLeft desktop">
-                    <div class="width529 autoMargin">
-                        <p class="displayInline textUpper floatLeft center letterspacing0.5 font13 paddingTop20 paddingRight10 paddingBottom10">llena tu formulario en menos de 1 minuto,</p>
+                    <div class="width630 autoMargin">
+                        <p class="displayInline textUpper floatLeft center letterspacing0.5 font13 paddingTop20 paddingRight10 paddingBottom10">LLENA ESTA SECCIÓN EN MENOS DE 1 MINUTO, TOMA UNA FOTO A TU </p>
                         <div class="blueBox floatRight marginTop10">
-                            <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">conecta tu facebook</p>
+                            <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">IDENTIFICACIÓN OFICIAL</p>
                         </div>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <p class="headingColor font35 letterspacing1" style="padding: 20px 15px 0 15px;">${pasoActual?.subtitulo}</p>
+        <p class="filledColor font35 letterspacing1" style="padding: 20px 15px 0 15px;">${pasoActual?.subtitulo}</p>
     <input type="hidden" id="tipoDePaso" value="${pasoActual?.tipoDePaso?.nombre}">
     <form method="POST" name="formFormulario" id="formFormulario">
         <input type="hidden" name="siguientePaso" id="siguientePaso">
@@ -48,10 +48,10 @@
                         <g:each status="i" in="${parrafos[parrafo]}" var="campo">
                             <span data-id="${i}" <g:if test="${campo.dependeDe}"> data-depende-de="${campo.dependeDe}" data-valor-dependencia="${campo.valorDeDependencia}" </g:if> class="showOnFill <g:if test="${ campo.mostrarAlInicio == false }"> hide </g:if> <g:if test="${ campo.obligatorio }"> required </g:if><g:else> nonRequired </g:else>">${campo.textoAnterior}
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("TEXTFIELD")}">
-                                    <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues headingColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty headingColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> 
+                                    <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues filledColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> 
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("TEXTAREA")}">
-                                    <textArea class="inputsFormulario formValues <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty headingColor </g:if>" style="width: 100%; height: 20%; text-align: center;" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}">${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}</textArea>
+                                    <textArea class="inputsFormulario formValues <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" style="width: 100%; height: 20%; text-align: center;" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}">${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}</textArea>
                                     </g:if>
                                     <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("SELECT")}">
                                         <% 
@@ -61,13 +61,13 @@ if(campo.campo.catalogo){
 } else{
     listaDeElementos = (Class.forName(campo.campo.claseAsociada.className)).constraints."$campo.campo.nombreDelCampo".inList
 }
-%>
+                                        %>
                             <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions width100 gray formValues notEmpty headingColor"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty filledColor"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
                                         </g:if>
                                         <g:else>
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions width100 gray formValues"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" />
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" />
                                         </g:else>
                             </span>
                             <span class="afterSelect">
@@ -77,7 +77,7 @@ if(campo.campo.catalogo){
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("FECHA")}">
                             <span class="width70 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.dia}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_dia"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_dia"}" class="formulariOptions formValues notEmpty headingColor"  from="${1..31}" noSelection="['':'Día']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.dia}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_dia"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_dia"}" class="formulariOptions formValues notEmpty filledColor"  from="${1..31}" noSelection="['':'Día']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.dia}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_dia"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_dia"}" class="formulariOptions gray formValues "  from="${1..31}" noSelection="['':'Día']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.dia}"/>
@@ -90,7 +90,7 @@ if(campo.campo.catalogo){
                                     de&nbsp;
                                 <span class="width200 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" class="formulariOptions formValues notEmpty headingColor" from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" class="formulariOptions formValues notEmpty filledColor" from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" class="formulariOptions gray formValues " from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}"/>
@@ -105,7 +105,7 @@ if(campo.campo.catalogo){
                                     de&nbsp;
                                 <span class="width100 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" class="formulariOptions width100 formValues notEmpty headingColor"  from="${(anioActual-18)..(anioActual-120)}" noSelection="['':'Año']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" class="formulariOptions width100 formValues notEmpty filledColor"  from="${(anioActual-18)..(anioActual-120)}" noSelection="['':'Año']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" class="formulariOptions width100 gray formValues"  from="${(anioActual-18)..(anioActual-120)}" noSelection="['':'Año']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}"/>
@@ -119,7 +119,7 @@ if(campo.campo.catalogo){
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("MESANIO")}">
                                 <span class="width200 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" class="formulariOptions formValues notEmpty headingColor" from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" class="formulariOptions formValues notEmpty filledColor" from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_mes"}" class="formulariOptions gray formValues " from="${[[id: 1, mes: 'Enero'],[id: 2, mes: 'Febrero'],[id: 3, mes: 'Marzo'],[id: 4, mes: 'Abril'],[id: 5, mes: 'Mayo'],[id: 6, mes: 'Junio'],[id: 7, mes: 'Julio'],[id: 8, mes: 'Agosto'],[id: 9, mes: 'Septiembre'],[id: 10, mes: 'Octubre'],[id: 11, mes: 'Noviembre'],[id: 12, mes: 'Diciembre']]}" optionKey="id" optionValue="mes" noSelection="['':'Mes']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.mes}"/>
@@ -132,7 +132,7 @@ if(campo.campo.catalogo){
                                     de&nbsp;
                                 <span class="width100 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" class="formulariOptions width100 formValues notEmpty headingColor"  from="${(anioActualParcial)..(anioActualParcial-120)}" noSelection="['':'Año']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" class="formulariOptions width100 formValues notEmpty filledColor"  from="${(anioActualParcial)..(anioActualParcial-120)}" noSelection="['':'Año']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_anio"}" class="formulariOptions width100 gray formValues"  from="${(anioActualParcial)..(anioActualParcial-120)}" noSelection="['':'Año']" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"?.anio}"/>
@@ -145,7 +145,7 @@ if(campo.campo.catalogo){
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("PERIODO")}">
                                     <span class="width80 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?.tiempo}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_tiempo"}" name="${campo.campo.claseAsociada.nombre + "_tiempo"}" class="formulariOptions width100 gray formValues notEmpty headingColor"  from="${1..80}" noSelection="['':'0']" value="${generales?."$campo.campo.claseAsociada"?.tiempo}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_tiempo"}" name="${campo.campo.claseAsociada.nombre + "_tiempo"}" class="formulariOptions width100 gray formValues notEmpty filledColor"  from="${1..80}" noSelection="['':'0']" value="${generales?."$campo.campo.claseAsociada"?.tiempo}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_tiempo"}" name="${campo.campo.claseAsociada.nombre + "_tiempo"}" class="formulariOptions width100 gray formValues"  from="${1..80}" noSelection="['':'0']"/>
@@ -153,17 +153,17 @@ if(campo.campo.catalogo){
                                     </span>
                                     <span class="width120 inline selectWrap">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?.temporalidad}">
-                                            <g:select noSelection="['':'Elija']" class="formulariOptions formValues gray notEmpty headingColor"  optionKey="id" optionValue="nombre" name="${campo.campo.claseAsociada.nombre + "_temporalidad"}" from="${la.kosmos.app.Temporalidad.list()}" value="${generales?."$campo.campo.claseAsociada"?.temporalidad}" />
+                                            <g:select noSelection="['':'Elija']" class="formulariOptions formValues gray notEmpty filledColor"  optionKey="id" optionValue="nombre" name="${campo.campo.claseAsociada.nombre + "_temporalidad"}" from="${la.kosmos.app.Temporalidad.list()}" value="${generales?."$campo.campo.claseAsociada"?.temporalidad}" />
                                         </g:if>
                                         <g:else>
-                                            <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues notEmpty headingColor"  optionKey="id" optionValue="nombre" name="${campo.campo.claseAsociada.nombre + "_temporalidad"}" from="${la.kosmos.app.Temporalidad.list()}" value="3"/>
+                                            <g:select noSelection="['':'Elija']" class="formulariOptions gray formValues notEmpty filledColor"  optionKey="id" optionValue="nombre" name="${campo.campo.claseAsociada.nombre + "_temporalidad"}" from="${la.kosmos.app.Temporalidad.list()}" value="3"/>
                                         </g:else>
                                     </span>.
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("SERIE")}">
                                             <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty headingColor"  from="${0..20}" noSelection="${Eval.me(campo.placeholder)}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" />
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty filledColor"  from="${0..20}" noSelection="${Eval.me(campo.placeholder)}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" />
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues" from="${0..20}" noSelection="${Eval.me(campo.placeholder)}"/>
@@ -175,14 +175,14 @@ if(campo.campo.catalogo){
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("AUTOCOMPLETE")}">
                                     <span id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_remote"}">
-                                        <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty headingColor </g:if>" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
+                                        <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
                                     </span> 
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("NUMERICO")}">
-                            <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues headingColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty headingColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" onKeyPress="return numbersonly(this, event)"> 
+                            <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues filledColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" onKeyPress="return numbersonly(this, event)"> 
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("TELEFONO")}">
-                                    <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues headingColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty headingColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" data-mask="99-99-99-99-99"> 
+                                    <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues filledColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" data-mask="99-99-99-99-99"> 
                                 </g:if>
                                 ${campo.textoPosterior}
                     </span>
@@ -208,10 +208,19 @@ if(campo.campo.catalogo){
 <footer class="footerContainer">
     <g:render template="stepBarTest"/>
     <div class="mobile">
-        <div class="paddingAside15 clearFix">
-            <div class="grayrectangle floatLeft marginRight10">Atras</div>
-            <div class="grayrectangle floatLeft nextBtn">Ir al paso 2</div>
-        </div>
+        <g:if test="${pasoActual.mostrarEnBarra}">
+            <g:if test="${pasoActual?.ultimoPaso}">
+                <div class="paddingAside15 clearFix">
+                    <div class="<g:if test="${documentosSubidos?.comprobanteDeDomicilio && documentosSubidos?.identificacion}"> blueButton colorWhite pointer </g:if> grayrectangle floatLeft solicitud_modal"> ENVIAR MI SOLICITUD </div>
+                </div>
+            </g:if>
+            <g:else>
+                <div class="paddingAside15 clearFix">
+                    <div class="grayrectangle floatLeft marginRight10">Atras</div>
+                    <div data-numero-de-paso="${pasoActual.numeroDePaso + 1}" id="circuloPaso${pasoActual.numeroDePaso + 1}" class="botonCambioDePaso grayrectangle floatLeft nextBtn">Ir al paso ${pasoActual?.numeroDePaso + 1}</div>
+                </div>
+            </g:else>
+        </g:if>
     </div>
 </footer>
 <g:if test="${!logueado}">

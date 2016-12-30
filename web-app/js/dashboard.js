@@ -1,8 +1,19 @@
+var solicitudes;
+var kosmosDropzone;
+var pasoActual = 1;
+
 $(document).ready(function () {
     var opcion = $('#opcionMenu').val();
     $('.elementoMenuPrincipal').removeClass('blueButton');
     $('#principalOpc' + opcion).addClass('blueButton');
-    inicializarDropzone('div#divDropzone', '#subirLogo');
+    console.log("Dropzone? -> " + document.getElementById('divDropzone'));
+    if (document.getElementById('divDropzone') !== null && document.getElementById('subirLogo') !== null) {
+        console.log("Si existe el div para Dropzone");
+        inicializarDropzone('div#divDropzone', '#subirLogo');
+    } else if (opcion === '4' && $('#solicitudId').val()) {
+        console.log("Si existe el div para Dropzone");
+        inicializarDropzone(document.body, '.cameraBox');
+    }
     $("#colorBase").spectrum({
         color: "#298df5",
         showButtons: false,
@@ -37,6 +48,32 @@ $(document).ready(function () {
         change: function (color) {
             $(".notificationBox").css("background-color", color.toHexString());
         }
+    });
+
+    $('.cameraBox').click(function () {
+        $('#tipoDeDocumento').val($(this).data('tipoDeImagen'));
+        if (kosmosDropzone !== null && kosmosDropzone !== undefined) {
+            kosmosDropzone.options.params = {'imgType': $('#tipoDeDocumento').val(), 'origen': $('#opcionMenu').val(), 'solicitudId': $('#solicitudId').val()};
+        }
+    });
+
+    $('.pregunta').change(function () {
+        if ($(this).val() !== '') {
+            $(this).addClass('filled');
+            $(this).addClass('headingColor');
+        } else {
+            $(this).removeClass('filled');
+            $(this).removeClass('headingColor');
+        }
+        validarPasoCompletado();
+    });
+
+    $('#btnEnviarEncuesta').click(function () {
+        pasoActual++;
+        $('#paso' + pasoActual + 'Verificacion').fadeIn();
+        $("html, body").animate({
+            scrollTop: $("html, body").get(0).scrollHeight
+        }, 1500);
     });
 });
 
@@ -88,9 +125,13 @@ function mostrarApartado(claseBoton, claseDiv, apartado) {
 function iniciarVisita() {
     $('#iniciarVisitaBtn').hide();
     $('#verificacionFormulario').fadeIn();
+    $("html, body").animate({
+        scrollTop: $("html, body").get(0).scrollHeight
+    }, 1500);
 }
 
 function verificarDatos(campo, respuesta) {
+    $('#' + campo + 'Verificar').addClass('filled');
     $('#' + campo + 'Verificar .checkVerificacion').removeClass('colorGreen');
     $('#' + campo + 'Verificar .checkVerificacion').addClass('whiteBox');
     $('#' + campo + 'Verificar .checkVerificacion a').removeClass('colorWhite');
@@ -106,15 +147,104 @@ function verificarDatos(campo, respuesta) {
         $('#' + campo).attr('disabled', true);
         $('#' + campo).removeClass('headingColor');
     }
+    if ($('#resultadoVerificacionDireccion').val() === "" || $('#resultadoVerificacionDireccion').val() === undefined) {
+        $('#resultadoVerificacionDireccion').val(respuesta);
+    } else if ($('#resultadoVerificacionDireccion').val() === "Si" && respuesta === "No") {
+        $('#resultadoVerificacionDireccion').val(respuesta);
+    }
+    validarPasoCompletado();
+}
+
+function confirmarAccion(boton, respuesta) {
+    if ($('#' + boton + respuesta).hasClass('whiteBox')) {
+        $('#' + boton + ' .checkVerificacion').removeClass('colorGreen');
+        $('#' + boton + ' .checkVerificacion').addClass('whiteBox');
+        $('#' + boton + ' .checkVerificacion a').removeClass('colorWhite');
+        $('#' + boton + respuesta).removeClass('whiteBox');
+        $('#' + boton + respuesta).removeClass('gray');
+        $('#' + boton + respuesta).addClass('colorGreen');
+        $('#' + boton + respuesta).addClass('filled');
+        $('#' + boton + respuesta + ' a').addClass('colorWhite');
+        $('#' + boton + 'Resultado').val(respuesta);
+    } else {
+        $('#' + boton + respuesta).addClass('whiteBox');
+        $('#' + boton + ' .checkVerificacion').removeClass('colorGreen');
+        $('#' + boton + ' .checkVerificacion').addClass('whiteBox');
+        $('#' + boton + ' .checkVerificacion a').removeClass('colorWhite');
+        $('#' + boton + respuesta).addClass('gray');
+        $('#' + boton + respuesta).removeClass('colorGreen');
+        $('#' + boton + respuesta).removeClass('filled');
+        $('#' + boton + respuesta + ' a').removeClass('colorWhite');
+        $('#' + boton + 'Resultado').val('');
+    }
+    if (boton === "documento") {
+        var cantidad = $('#modalComplemento .colorGreen').length;
+        if (cantidad === 0) {
+            $('#btnComplemento').removeClass('blueButton');
+            $('#btnComplemento').attr('disabled', true);
+        } else if (cantidad >= 1) {
+            if (!$('#btnComplemento').hasClass('blueButton')) {
+                $('#btnComplemento').addClass('blueButton');
+                $('#btnComplemento').attr('disabled', false);
+            }
+        }
+    }
+    validarPasoCompletado();
 }
 
 function listarSolicitudesPor(criterio) {
     seleccionarTemporalidad(criterio);
-    if (criterio !== 5) {
+    if (criterio !== 5 && criterio !== 0) {
+        $('#rangoDeFechas').fadeOut();
         consultarSolicitudesPorTiempo(criterio, "dictaminadas", null, null);
         consultarSolicitudesPorTiempo(criterio, "noDictaminadas", null, null);
+        consultarSolicitudesPorTiempo(criterio, "complementoSolicitado", null, null);
+    } else if (criterio === 5) {
+        $('#rangoDeFechas').fadeIn();
+        habilitarDatepicker();
+    } else if (criterio === 0) {
+        if ($('#from').val() && $('#to').val()) {
+            consultarSolicitudesPorTiempo(5, "dictaminadas", $('#from').val(), $('#to').val());
+            consultarSolicitudesPorTiempo(5, "noDictaminadas", $('#from').val(), $('#to').val());
+            consultarSolicitudesPorTiempo(5, "complementoSolicitado", $('#from').val(), $('#to').val());
+        } else {
+            sweetAlert("¡Espera!", "¡Debes colocar ambas fechas antes de realizar la consulta!", "warning");
+        }
     }
+}
 
+function habilitarDatepicker() {
+    $(function () {
+        var dateFormat = "dd/mm/yy",
+                from = $("#from")
+                .datepicker({
+                    defaultDate: "+1w",
+                    changeMonth: true,
+                    numberOfMonths: 1
+                })
+                .on("change", function () {
+                    to.datepicker("option", "minDate", getDate(this));
+                }),
+                to = $("#to").datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            numberOfMonths: 1
+        })
+                .on("change", function () {
+                    from.datepicker("option", "maxDate", getDate(this));
+                });
+
+        function getDate(element) {
+            var date;
+            try {
+                date = $.datepicker.parseDate(dateFormat, element.value);
+            } catch (error) {
+                date = null;
+            }
+
+            return date;
+        }
+    });
 }
 
 function consultarSolicitudesPorTiempo(temporalidad, idDiv, fechaInicio, fechaFinal) {
@@ -153,24 +283,38 @@ function cerrarModal(idModal) {
 }
 
 function cambiarEstatus(estatus, idSolicitud) {
-    jQuery.ajax({
-        type: 'POST',
-        data: 'id=' + idSolicitud + "&status=" + estatus,
-        url: '/kosmos-app/dashboard/cambiarEstadoSolicitud',
-        success: function (data, textStatus) {
-            var respuesta = eval(data);
-            if (respuesta.ok) {
-                sweetAlert("Actualización Correcta", respuesta.mensaje, "success");
-                if (respuesta.bloquearOpciones) {
-                    $('#opcionesScore').html("");
+    if (estatus === 8 && ($('#cantidadDePreguntas').val() === undefined || Number($('#cantidadDePreguntas').val()) === 0)) {
+        sweetAlert("!Atención¡", "No has agregado ninguna pregunta, es necesario contar con al menos una pregunta para registrar la visita ocular.", "warning");
+    } else {
+        var complemento;
+        if (estatus === 6) {
+            complemento = [];
+            $('#modalComplemento .colorGreen').each(function (index) {
+                complemento.push($(this).data("idDocumento"));
+            });
+        }
+        jQuery.ajax({
+            type: 'POST',
+            data: {id: idSolicitud, status: estatus, complemento: complemento},
+            url: '/kosmos-app/dashboard/cambiarEstadoSolicitud',
+            success: function (data, textStatus) {
+                var respuesta = eval(data);
+                if (respuesta.ok) {
+                    sweetAlert("Actualización Correcta", respuesta.mensaje, "success");
+                    if (respuesta.bloquearOpciones) {
+                        $('#opcionesScore').html("");
+                    } else if (estatus === 8) {
+                        $('#solicitarVisita').replaceWith("");
+                        $('#modalPreguntas').replaceWith("");
+                    }
+                } else {
+                    sweetAlert("Oops...", respuesta.mensaje, "error");
+                    $('#loginAutorizacion').fadeOut();
                 }
-            } else {
-                sweetAlert("Oops...", respuesta.mensaje, "error");
-                $('#loginAutorizacion').fadeOut();
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {}
-    });
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {}
+        });
+    }
 }
 
 function guardarNuevaEntidad() {
@@ -222,7 +366,7 @@ Dropzone.autoDiscover = false;
 
 function inicializarDropzone(elemento, boton) {
     //Dropzone.autoDiscover = false;
-    var kosmosDropzone = new Dropzone(elemento, {
+    kosmosDropzone = new Dropzone(elemento, {
         url: "/kosmos-app/dashboard/subirImagen",
         uploadMultiple: true,
         parallelUploads: 1,
@@ -244,6 +388,7 @@ function inicializarDropzone(elemento, boton) {
         console.log("Respuesta recibida: " + respuesta);
         if (respuesta.exito) {
             sweetAlert("¡Excelente!", respuesta.mensaje, "success");
+            getBase64(file, respuesta.tipoDeFotografia, respuesta.descripcion);
         } else {
             sweetAlert("Oops...", respuesta.mensaje, "error");
         }
@@ -270,9 +415,103 @@ function mostrarDetalleProducto(idProducto) {
         data: 'id=' + idProducto,
         url: '/kosmos-app/producto/obtenerDetalleProducto',
         success: function (data, textStatus) {
-        $('#detalleProducto').html(data);
-        openModal('modalDetalleProducto');
+            $('#detalleProducto').html(data);
+            openModal('modalDetalleProducto');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {}
     });
+}
+
+function registrarSolicitudes(listaDeSolicitudes) {
+    solicitudes = JSON.parse(listaDeSolicitudes);
+    console.log("Solicitudes: " + solicitudes);
+}
+
+function cargarDireccioneEnMapa() {
+    if (mapaGenerado() === false) {
+        initMap();
+        for (i = 0; i < solicitudes.length; i++) {
+            agregarMarcador(solicitudes[i].coordenadas, solicitudes[i].direccion, solicitudes[i].folio, solicitudes[i].cliente)
+        }
+    } else {
+        console.log("El mapa ya está inicializado");
+    }
+}
+
+function getBase64(file, tipoDeFotografia, descripcion) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+        var html = '<div class="cameraBox center width170 radius2 boxMargins">';
+        html += '<a href="' + reader.result + '" rel="prettyPhoto[pp_gal]"><img src="' + reader.result + '" width="88" height="88" alt="' + descripcion + '" /></a></div>';
+        $('#' + tipoDeFotografia + "Div").html(html);
+        $('#' + tipoDeFotografia + "Div").addClass('filled');
+        $("a[rel^='prettyPhoto[pp_gal]']").prettyPhoto();
+        validarPasoCompletado();
+    };
+    reader.onerror = function (error) {
+        console.log('Error: ', error);
+    };
+}
+
+function validarPasoCompletado() {
+    var elementosLlenosVisibles = $('.datoRequerido:visible').length;
+    var totalElementosVisibles = $('.filled:visible').length;
+    if (elementosLlenosVisibles === totalElementosVisibles) {
+        pasoActual++;
+        $('#paso' + pasoActual + 'Verificacion').fadeIn();
+        $("html, body").animate({
+            scrollTop: $("html, body").get(0).scrollHeight
+        }, 1500);
+    }
+}
+
+function agregarPregunta() {
+    var textoPregunta = $('#textoPregunta').val();
+    $.ajax({
+        type: 'POST',
+        data: 'pregunta=' + textoPregunta,
+        url: '/kosmos-app/dashboard/agregarPregunta',
+        success: function (data, textStatus) {
+            mostrarPreguntas(data);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {}
+    });
+}
+
+function eliminarPregunta(idPregunta) {
+    $.ajax({
+        type: 'POST',
+        data: 'idPregunta=' + idPregunta,
+        url: '/kosmos-app/dashboard/eliminarPregunta',
+        success: function (data, textStatus) {
+            mostrarPreguntas(data);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {}
+    });
+}
+
+function mostrarPreguntas(data) {
+    var html = ""
+    var resultado = eval(data);
+    $('#cantidadDePreguntas').val(resultado.length);
+    if (resultado.length > 0) {
+        for (var x = 0; x < resultado.length; x++) {
+            html += "<tr><td class='tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper left borderGrayBottom'>" + (x + 1) + " - " + resultado[x].texto + "</td>";
+            html += "<td class='tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper center borderGrayBottom'>";
+            html += "<button type='button' onclick='eliminarPregunta(" + resultado[x].id + ");' class='loginButton redButton letterspacing2 font14 pointer' style='width: 100%;height: 33px;margin-bottom: 15px;' >Eliminar</button></td></tr>";
+        }
+        console.log(html);
+        $('#preguntasAgregadas tbody').html(html);
+        $('#btnVerificar').addClass('blueButton');
+        $('#btnVerificar').prop("disabled", false);
+        $('#textoPregunta').val('');
+    } else {
+        html += "<td colspan='2' class='tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper center borderGrayBottom'>No se han agregado preguntas</td>";
+        $('#preguntasAgregadas tbody').html(html);
+    }
+}
+
+function iniciarPrettyPhoto() {
+    $("a[rel^='prettyPhoto[pp_gal]']").prettyPhoto();
 }

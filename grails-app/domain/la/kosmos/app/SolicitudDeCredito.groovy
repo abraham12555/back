@@ -8,8 +8,9 @@ class SolicitudDeCredito implements Serializable{
     String folio
     EntidadFinanciera entidadFinanciera
     PuntoDeVenta puntoDeVenta
-	ReporteBuroCredito reporteBuroCredito
-	VinculacionBanco vinculacionBanco 
+    ReporteBuroCredito reporteBuroCredito
+    VinculacionBanco vinculacionBanco
+    boolean solicitudEnviada = false
     
     static constraints = {
         fechaDeSolicitud (nullable: false)
@@ -18,8 +19,8 @@ class SolicitudDeCredito implements Serializable{
         folio (nullable: false)
         entidadFinanciera (nullable: false)
         puntoDeVenta (nullable: true)
-		reporteBuroCredito (nullable: true)
-		vinculacionBanco (nullable: true)
+        reporteBuroCredito (nullable: true)
+        vinculacionBanco (nullable: true)
     }
     
     static mapping = {

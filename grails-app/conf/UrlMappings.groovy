@@ -8,6 +8,9 @@ class UrlMappings {
         }
 
         "/"(controller: 'cotizador', action: 'index')
+        "/rest/obtenerUltimasSolicitudes"(controller: "solicitudRest", action: "index")
+        "/rest/obtenerSolicitudesPorFecha"(controller: "solicitudRest", action: "list")
+        "/rest/obtenerSolicitudPorFolio"(controller: "solicitudRest", action: "show")
         "500"(view:'/error')
 	}
 }

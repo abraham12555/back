@@ -123,6 +123,12 @@ body{
     color:#FFF;
 }
 
+.redButton{
+    background-image: linear-gradient(232deg, #ff1a1a, #b30000);
+    box-shadow: 0 0 7px 0 #298df5;
+    color:#FFF;
+}
+
 .whiteContainer{
     border-radius: 2px;
     background-color: #f8f9ff;
@@ -593,6 +599,11 @@ body{
 
 .width600{
     width: 600px;
+    margin: auto;
+}
+
+.width630{
+    width: 630px;
     margin: auto;
 }
 
@@ -1201,6 +1212,16 @@ body{
     position: fixed;
 }
 
+.visitaContainer {
+    width: 50%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    margin:30px auto;
+}
+
 .loginlogoBox{
     width: 100%;
     height: 30px;
@@ -1722,6 +1743,7 @@ body{
     background-color: #f1f3fa;
     border: solid 1px #71758e;
     margin: auto;
+    color: #71758d;
 }
 
 .urlContainer{
@@ -2144,7 +2166,7 @@ body{
 
 .lightboxPos{
     width:90%;
-    top: 50px;
+    top: 20px;
     left: 50%;
     transform: translate(-50%, 0);
     -webkit-transform: translate(-50%, 0);
@@ -2372,7 +2394,7 @@ body{
     border: solid 1px #dfe2f4;
     color:#9da2be;
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     letter-spacing: 1px;
     font-weight: 300;
     padding:20px 0;
@@ -2383,11 +2405,11 @@ body{
 .pagos-box{
     border-radius: 2px;
     border: solid 1px #dfe2f4;
-    color:#9da2be;
+    color:#71758d;
     text-align: center;
     font-size: 18px;
     letter-spacing: 1px;
-    font-weight: 300;
+    font-weight: 400;
     padding:20px 0;
     background: #f8f9ff;
 }
@@ -2581,7 +2603,7 @@ margin-top: -10px;
 }*/
 
 .ui-slider-horizontal .ui-state-default {
-    width: 87px !important;
+    width: 110px !important;
     height: 29px !important;
     margin-left: -50px !important;
     top: 15px;
@@ -2947,14 +2969,9 @@ margin-top: -10px;
     .none800{
         display:none !important;
     }
-
-
-
-
 }
 
-
-@media screen and (max-width:640px){
+@media screen and (max-width:1024px){
 
     .notMobile{
         display:none;
@@ -2971,6 +2988,16 @@ margin-top: -10px;
         position: fixed;
         top: 50px;
         left: 2%;
+    }
+
+    .visitaContainer {
+        width: 96%;
+        position: fixed;
+        top: 50px;
+        left: 2%;
+        transform: translate(0,0);
+        -webkit-transform: translate(0,0);
+        margin:30px auto;
     }
 
     .font14{
@@ -3162,6 +3189,10 @@ margin-top: -10px;
     overflow: hidden;
 }
 
+.overflowAuto {
+    overflow: auto;
+}
+
 .darkBlueBG {
     background-color: #252d60;
 }
@@ -3308,4 +3339,61 @@ margin-top: -10px;
 .modalSelect option{
     font-family: "Nunito", sans-serif;
     background-color: #F1F3FA;
+}
+
+.gm-style-iw {
+    width: 350px !important;
+    top: 15px !important;
+    left: 0px !important;
+    background-color: #fff;
+    box-shadow: 0 1px 6px rgba(178, 178, 178, 0.6);
+    border: 1px solid rgba(72, 181, 233, 0.6);
+    border-radius: 2px 2px 10px 10px;
+}
+#iw-container {
+    margin-bottom: 10px;
+}
+#iw-container .iw-title {
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    padding: 10px;
+    background-color: #48b5e9;
+    color: white;
+    margin: 0;
+    border-radius: 2px 2px 0 0;
+}
+#iw-container .iw-content {
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 400;
+    margin-right: 1px;
+    padding: 15px 5px 20px 15px;
+    max-height: 140px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.iw-content img {
+    float: right;
+    margin: 0 5px 5px 10px;	
+}
+.iw-subTitle {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 5px 0;
+}
+.iw-bottom-gradient {
+    position: absolute;
+    width: 326px;
+    height: 25px;
+    bottom: 10px;
+    right: 18px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+}
+
+.filledColor {
+    color: #298df5;
 }

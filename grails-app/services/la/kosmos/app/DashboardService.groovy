@@ -6,6 +6,7 @@ import grails.transaction.Transactional
 class DashboardService {
 
     def springSecurityService
+    def geocoderService
     
     def listaGeneralDeSolicitudes() {
         def respuesta = []
@@ -61,8 +62,10 @@ class DashboardService {
         def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " AND ps.solicitud.statusDeSolicitud.id "
         if(opcion == "dictaminadas") {
             query += "IN (5,7) "
-        } else if ("noDictaminadas") {
-            query += "NOT IN (5,7) " 
+        } else if (opcion == "noDictaminadas") {
+            query += "NOT IN (5,6,7) " 
+        } else if (opcion == "complementoSolicitado") {
+            query += "IN (6) " 
         }
         query += "AND ps.solicitud.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
         println "Query: " + query
@@ -81,6 +84,37 @@ class DashboardService {
             respuesta << solicitud
         }
         return respuesta
+    }
+    
+    def obtenerSolicitudesPorVerificar(){
+        def respuesta = []
+        def solicitudes = SolicitudDeCredito.findAllWhere(statusDeSolicitud: StatusDeSolicitud.get(8))
+        solicitudes.each {
+            def solicitud = [:]
+            solicitud.id = it.id
+            solicitud.folio = it.folio
+            solicitud.cliente = it.cliente.toString()
+            solicitud.direccion = (DireccionCliente.findWhere(cliente: it.cliente))?.toString()
+            solicitud.coordenadas = geocoderService.obtenerCoordenadas([:],  solicitud.direccion)
+            respuesta << solicitud
+        }
+        respuesta
+    }
+    
+    def obtenerDatosSolicitud(def idSolicitud){
+        def respuesta = [:]
+        def solicitud = SolicitudDeCredito.get(idSolicitud as long)
+        respuesta.productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud)
+        respuesta.direccion = DireccionCliente.findWhere(cliente: respuesta.productoSolicitud.solicitud.cliente)
+        respuesta.datosMapa = []
+        def datos = [:]
+        datos.id = solicitud.id
+        datos.folio = solicitud.folio
+        datos.cliente = solicitud.cliente.toString()
+        datos.direccion = (respuesta.direccion)?.toString()
+        datos.coordenadas = geocoderService.obtenerCoordenadas([:],  datos.direccion)
+        respuesta.datosMapa << datos
+        respuesta
     }
     
     def obtenerCantidadDeSolicitudesPendientes(){
@@ -106,6 +140,10 @@ class DashboardService {
             respuesta.emailCliente = EmailCliente.findAllWhere(cliente: respuesta.cliente, vigente: true)
             respuesta.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: respuesta.solicitud)
             respuesta.productoSolicitud = ProductoSolicitud.findWhere(solicitud: respuesta.solicitud)
+            respuesta.verificacion = VerificacionSolicitud.findWhere(solicitud: respuesta.solicitud)
+            respuesta.preguntas = PreguntaVerificacionSolicitud.findAllWhere(solicitud: respuesta.solicitud)
+            respuesta.fotosFachada = FotografiaSolicitud.findAll("from FotografiaSolicitud fs where fs.solicitud.id = :idSolicitud And fs.tipoDeFotografia.referencia like 'fachada%'", [idSolicitud: solicitud.id])
+            respuesta.fotosInterior = FotografiaSolicitud.findAll("from FotografiaSolicitud fs where fs.solicitud.id = :idSolicitud And fs.tipoDeFotografia.referencia like 'interior%'", [idSolicitud: solicitud.id])
         }
         return respuesta
     }
@@ -149,45 +187,84 @@ class DashboardService {
         return calendar;
     }
     
-    def subirImagen(tipoDeImagen, listaDeArchivos){
+    def subirImagen(def tipoDeImagen, def origen, def solicitudId, def listaDeArchivos){
         def respuesta = [:]
+        def pasoOrigen = origen as int;
         def usuario = springSecurityService.currentUser
         listaDeArchivos.each { archivo ->
-            def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: usuario.entidadFinanciera)
             def nombreEmpresa = usuario.entidadFinanciera.nombre
-            def ruta = "/var/uploads/kosmos/config/" + nombreEmpresa 
             nombreEmpresa = nombreEmpresa.replaceAll("[^a-zA-Z0-9]+","")
-            if(configuracion){
-                println ""
-                configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
-            } else {
-                configuracion = new ConfiguracionEntidadFinanciera()
-                configuracion.entidadFinanciera = usuario.entidadFinanciera
-                configuracion.nombreComercial = usuario.entidadFinanciera.nombre
-                configuracion.slogan = "Coloque su slogan aquí"
-                configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
-            }
-            if(configuracion.save(flush:true)){
+            if(pasoOrigen == 4){
+                def fotografia = new FotografiaSolicitud()
+                def tipoDeFotografia = TipoDeFotografia.findByReferencia(tipoDeImagen)
+                def solicitud = SolicitudDeCredito.get(solicitudId as long)
+                def ruta = "/var/uploads/kosmos/fotos/" + nombreEmpresa + "/" + solicitud.folio
                 def subdir = new File(ruta)
-                subdir.mkdir()
-                println (configuracion.rutaLogotipo)
-                File file = new File(configuracion.rutaLogotipo)
-                if (file.exists() || file.createNewFile()) {
-                    file.withOutputStream{fos->
-                        fos << archivo.archivo
-                    }
+                if (!subdir.exists()){
+                    subdir.mkdir()
                 }
-                respuesta.idConfig = configuracion.id
-                respuesta.exito = true
-                respuesta.mensaje = "El logo se ha subido exitosamente."
+                fotografia.solicitud = solicitud
+                fotografia.fechaDeSubida = new Date()
+                fotografia.rutaDelArchivo = ruta
+                fotografia.nombreDelArchivo = archivo.nombreDelArchivo
+                fotografia.tipoDeFotografia = tipoDeFotografia
+                fotografia.usuario = usuario
+                if(fotografia.save(flush:true)){
+                    File file = new File((ruta + "/" + archivo.nombreDelArchivo))
+                    if (file.exists() || file.createNewFile()) {
+                        file.withOutputStream{fos->
+                            fos << archivo.archivo
+                        }
+                    }
+                    respuesta.idFotografia = fotografia.id
+                    respuesta.tipoDeFotografia = tipoDeImagen
+                    respuesta.descripcion = tipoDeFotografia.nombre
+                    respuesta.exito = true
+                    respuesta.mensaje = "La fotografía se ha subido exitosamente."
+                } else {
+                    if (fotografia.hasErrors()) {
+                        fotografia.errors.allErrors.each {
+                            println it
+                        }
+                    }
+                    respuesta.error = true
+                    respuesta.mensaje = "Ocurrio un error al subir el logotipo."
+                }
             } else {
-                if (configuracion.hasErrors()) {
-                    configuracion.errors.allErrors.each {
-                        println it
-                    }
+                def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: usuario.entidadFinanciera)
+                def ruta = "/var/uploads/kosmos/config/" + nombreEmpresa 
+                if(configuracion){
+                    println ""
+                    configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
+                } else {
+                    configuracion = new ConfiguracionEntidadFinanciera()
+                    configuracion.entidadFinanciera = usuario.entidadFinanciera
+                    configuracion.nombreComercial = usuario.entidadFinanciera.nombre
+                    configuracion.slogan = "Coloque su slogan aquí"
+                    configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
                 }
-                respuesta.error = true
-                respuesta.mensaje = "Ocurrio un error al subir el logotipo."
+                if(configuracion.save(flush:true)){
+                    def subdir = new File(ruta)
+                    subdir.mkdir()
+                    println (configuracion.rutaLogotipo)
+                    File file = new File(configuracion.rutaLogotipo)
+                    if (file.exists() || file.createNewFile()) {
+                        file.withOutputStream{fos->
+                            fos << archivo.archivo
+                        }
+                    }
+                    respuesta.idConfig = configuracion.id
+                    respuesta.exito = true
+                    respuesta.mensaje = "El logo se ha subido exitosamente."
+                } else {
+                    if (configuracion.hasErrors()) {
+                        configuracion.errors.allErrors.each {
+                            println it
+                        }
+                    }
+                    respuesta.error = true
+                    respuesta.mensaje = "Ocurrio un error al subir el logotipo."
+                }
             }
         }
         return respuesta
@@ -233,5 +310,38 @@ class DashboardService {
             respuesta.mensaje = "Ocurrio un problema al guardar el usuario. Intente nuevamente más tarde."
         }
         respuesta
+    }
+    
+    def registrarVerificacion(def params){
+        def exito = false
+        def x = 0;
+        if(params.solicitudId){
+            def verificacion = new VerificacionSolicitud()
+            verificacion.solicitud = SolicitudDeCredito.get(params.solicitudId as long)
+            verificacion.fechaDeVerificacion = new Date()
+            verificacion.usuarioVerificador = springSecurityService.currentUser
+            verificacion.observaciones = params.observaciones
+            verificacion.resultadoPaso1 = ((params.resultadoVerificacionDireccion == "Si") ? true : false)
+            verificacion.resultadoPaso2 = ((!params.cotejoIdentificacionResultado || params.cotejoIdentificacionResultado == "") ? true : false)
+            verificacion.resultadoPaso3 = ((!params.cotejoComprobanteResultado || params.cotejoComprobanteResultado == "") ? true : false)
+            verificacion.resultadoPaso4 = true
+            if(verificacion.save(flush:true)){
+                verificacion.solicitud.statusDeSolicitud = StatusDeSolicitud.get(4)
+                if(verificacion.solicitud.save(flush:true)){
+                    def preguntas = params.findAll{it.key.startsWith("pregunta")}
+                    preguntas.each{ key, value ->
+                        def preguntaSolicitud = PreguntaVerificacionSolicitud.get((key.minus('pregunta')) as long)
+                        preguntaSolicitud.respuesta =value
+                        if(preguntaSolicitud.save(flush: true)){
+                            x++;
+                        }
+                    }
+                    if(preguntas?.size() == x){
+                        exito = true
+                    }
+                }
+            }
+        }
+        return exito
     }
 }

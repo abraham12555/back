@@ -35,4 +35,15 @@ class DireccionCliente implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_direccion_cliente', params:[sequence:'direccion_cliente_id_seq']
     }
+    
+    String toString () {
+        def cadenaDireccion = ""
+        cadenaDireccion += calle
+        cadenaDireccion += " " + numeroExterior
+        cadenaDireccion += ", Col. " + colonia
+        cadenaDireccion += ", " + codigoPostal?.municipio?.toString()
+        cadenaDireccion += ", " + codigoPostal?.codigo
+        cadenaDireccion += ", " + codigoPostal?.municipio?.estado?.toString()
+        cadenaDireccion
+    }
 }

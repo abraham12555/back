@@ -103,8 +103,10 @@
                         <div class="paddingAside10">
                             <a id="subirIdentificacion">
                                 <div class="iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
-                                    <img class="icon40" src="${resource(dir:'images', file:'file-icon.svg')}" alt="File">
-                                    <p class="gray font18 letterspacing1.1 iconButtonTxt">Subir desde tu PC</p>
+                                    <img class="icon40 desktopCapture" src="${resource(dir:'images', file:'file-icon.svg')}" alt="File">
+                                    <img class="icon40 mobileCapture" src="${resource(dir:'images', file:'phone-icon.svg')}" alt="Mobile">
+                                    <p class="desktopCapture" class="gray font18 letterspacing1.1 iconButtonTxt">Subir desde tu PC</p>
+                                    <p class="mobileCapture" class="gray font18 letterspacing1.1 iconButtonTxt">Capturar con tu smartphone</p>
                                 </div>
                             </a>
                         </div>

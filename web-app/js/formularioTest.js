@@ -11,6 +11,16 @@ var generoConyugue;
 showSlides(slideIndex);
 
 function inicializarFormulario() {
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+     console.log('Estoy en mobile')
+     $('.phoneCapture').hide()
+     $('.camCapture').hide()
+     $('.mobileCapture').show()
+     $('.desktopCapture').hide()
+    }else{
+        $('.mobileCapture').hide()
+        $('.desktopCapture').show()
+    }
     winH = $(window).height();
     contentH = $('.contentHeight').outerHeight();
     headerH = $('.topHeader').outerHeight();
@@ -130,7 +140,7 @@ function operacionesFormulario() {
         return false;
     });
 
-    $('.showOnFill').each(function (index) {
+    $('.showOnFill').change(function (index) {
         var thisStep = $(this);
         var maxIndex = $('.showOnFill').length;
         //console.log("Indice: " + index);
@@ -139,7 +149,7 @@ function operacionesFormulario() {
             if ($(this).val() !== '') {
                 //console.log("No esta vacio");
                 $(this).addClass('notEmpty');
-                $(this).addClass('headingColor');
+                $(this).addClass('filledColor');
                 console.log("--->" + $(this).attr('id'));
                 if ($(this).attr('id') === 'cliente_nombre') {
                     //console.log("Si entraaaaaaaa");
@@ -222,19 +232,133 @@ function operacionesFormulario() {
                     var sumatoria = Number($('#empleoCliente_ingresosFijos').val()) + Number($('#empleoCliente_ingresosVariables').val());
                     $('#empleoCliente_ingresosTotales').val(sumatoria);
                     $('#empleoCliente_ingresosTotales').addClass('notEmpty');
-                    $('#empleoCliente_ingresosTotales').addClass('headingColor');
+                    $('#empleoCliente_ingresosTotales').addClass('filledColor');
                     listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
                     //console.log(listaDeControl);
                 }
             } else {
                 //console.log("Si esta vacio");
                 $(this).removeClass('notEmpty');
-                $(this).removeClass('headingColor');
+                $(this).removeClass('filledColor');
             }
             //verificarCambios(index);
             mostrarSiguienteCampo(index);
             //console.log("A punto de calcular el avance....");
             calcularAvance();
+            window.scrollTo(0,document.body.scrollHeight);
+        });
+        $('.formValues', this).focusin(function () {
+            //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
+            //verificarCambios(index);
+        });
+    });
+
+    $('.showOnFill').each(function (index) {
+        var thisStep = $(this);
+        var maxIndex = $('.showOnFill').length;
+        //console.log("Indice: " + index);
+        $('.formValues', this).change(function () {
+            //console.log("Registrando: " + $(this).val() + " -adfafdadfsa:  " + $(this));
+            if ($(this).val() !== '') {
+                //console.log("No esta vacio");
+                $(this).addClass('notEmpty');
+                $(this).addClass('filledColor');
+                console.log("--->" + $(this).attr('id'));
+                if ($(this).attr('id') === 'cliente_nombre') {
+                    //console.log("Si entraaaaaaaa");
+                    $('#nombreCliente').html('¡Hola! ' + $(this).val());
+                } else if ($(this).attr('id') === 'cliente_nacionalidad') {
+                    console.log("Id-->" + $('#cliente_nacionalidad').val());
+                    if ($('#cliente_nacionalidad').val() === '2') {
+                        swal({
+                            title: "¡Importante!",
+                            text: "Por favor, asista a una sucursal para continuar con su trámite.",
+                            type: "warning",
+                            showCancelButton: true,
+                            cancelButtonText: "Me equivoque en la selección",
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Ok, Enterado",
+                            closeOnConfirm: false
+                        }, function () {
+                            avanzarPaso(0);
+                            window.location.href = "http://nuuptech.xyz/kosmos-app";
+                            return false;
+                        });
+                    }
+                } else if ($(this).attr('id') === 'cliente_estadoCivil') {
+                    var estadoCivilTmp = $(this).val();
+                    var listaElementos = $(".showOnFill[data-depende-de='cliente_estadoCivil']");
+                    //console.log("La lista resultante es: " + listaElementos.length + " - " + estadoCivilTmp);
+                    $(listaElementos).each(function () {
+                        //console.log("EstadoCivilTmp:" + estadoCivilTmp + " - " + $(this).data('valorDependencia') + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
+                        if (Number(estadoCivilTmp) === Number($(this).data('valorDependencia'))) {
+                            $(this).children('.formValues').removeClass('notEmpty');
+                            $(this).children('.formValues').removeClass('noMostrar');
+                            $(this).children().children('.formValues').removeClass('notEmpty');
+                            $(this).children().children('.formValues').removeClass('noMostrar');
+                            listaDeControl[(index + $(this).data('id'))] = 0;
+                        } else {
+                            $(this).children('.formValues').addClass('notEmpty');
+                            $(this).children('.formValues').addClass('noMostrar');
+                            $(this).children().children('.formValues').addClass('notEmpty');
+                            $(this).children().children('.formValues').addClass('noMostrar');
+                            //console.log("Indice de conyugue: " + (index + $(this).data('id')));
+                            listaDeControl[(index + $(this).data('id'))] = -1;
+                        }
+                    });
+                    console.log(listaDeControl);
+                } else if ($(this).attr('id') === 'direccionCliente_tipoDeVivienda') {
+                    var tipoDeViviendaTmp = $(this).val();
+                    var listaElementos = $(".showOnFill[data-depende-de='direccionCliente_tipoDeVivienda']");
+                    //console.log("La lista resultante es: " + listaElementos.length + " - " + tipoDeViviendaTmp);
+                    $(listaElementos).each(function () {
+                        //console.log("tipoDeViviendaTmp:" + tipoDeViviendaTmp + " - " + $(this).data('valorDependencia') + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
+                        if (Number(tipoDeViviendaTmp) === Number($(this).data('valorDependencia'))) {
+                            $(this).children('.formValues').removeClass('notEmpty');
+                            $(this).children('.formValues').removeClass('noMostrar');
+                            $(this).children().children('.formValues').removeClass('notEmpty');
+                            $(this).children().children('.formValues').removeClass('noMostrar');
+                            listaDeControl[$(this).data('id')] = 0;
+                        } else {
+                            $(this).children('.formValues').addClass('notEmpty');
+                            $(this).children('.formValues').addClass('noMostrar');
+                            $(this).children().children('.formValues').addClass('notEmpty');
+                            $(this).children().children('.formValues').addClass('noMostrar');
+                            //console.log("Indice de conyugue: " + ($(this).data('id')));
+                            listaDeControl[$(this).data('id')] = -1;
+                        }
+                    });
+                    //console.log(listaDeControl);
+                } else if (($('#cliente_rfc').val() === '') && ($('#cliente_curp').val() === '')) {
+                    if (($('#cliente_nombre').val() !== '' && $('#cliente_nombre').val() !== undefined) && ($('#cliente_apellidoPaterno').val() !== '' && $('#cliente_apellidoPaterno').val() !== undefined) && ($('#cliente_apellidoMaterno').val() !== '' && $('#cliente_apellidoMaterno').val() !== undefined) && ($('#cliente_genero').val() !== '' && $('#cliente_genero').val() !== undefined) && ($('#cliente_lugarDeNacimiento').val() !== '' && $('#cliente_nombre').val() !== undefined)) {
+                        generarClaves('cliente');
+                    } else {
+                        //console.log("No entra a la validación");
+                    }
+                } else if (($('#cliente_rfcDelConyugue').val() === '') && ($('#cliente_curpDelConyugue').val() === '')) {
+                    if (($('#cliente_nombreDelConyugue').val() !== '' && $('#cliente_nombreDelConyugue').val() !== undefined) && ($('#cliente_apellidoPaternoDelConyugue').val() !== '' && $('#cliente_apellidoPaternoDelConyugue').val() !== undefined) && ($('#cliente_apellidoMaternoDelConyugue').val() !== '' && $('#cliente_apellidoMaternoDelConyugue').val() !== undefined) && (generoConyugue) && ($('#cliente_lugarDeNacimientoDelConyugue').val() !== '' && $('#cliente_lugarDeNacimientoDelConyugue').val() !== undefined)) {
+                        generarClaves('conyugue');
+                    } else {
+                        //console.log("No entra a la validación");
+                    }
+                } else if (($('#empleoCliente_ingresosFijos').val() !== '') && ($('#empleoCliente_ingresosVariables').val() !== '')) {
+                    var sumatoria = Number($('#empleoCliente_ingresosFijos').val()) + Number($('#empleoCliente_ingresosVariables').val());
+                    $('#empleoCliente_ingresosTotales').val(sumatoria);
+                    $('#empleoCliente_ingresosTotales').addClass('notEmpty');
+                    $('#empleoCliente_ingresosTotales').addClass('filledColor');
+                    listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
+                    //console.log(listaDeControl);
+                }
+            } else {
+                //console.log("Si esta vacio");
+                $(this).removeClass('notEmpty');
+                $(this).removeClass('filledColor');
+            }
+            //verificarCambios(index);
+            mostrarSiguienteCampo(index);
+            console.log("A punto de calcular el avance....");
+            calcularAvance();
+            window.scrollTo(0,document.body.scrollHeight);
         });
         $('.formValues', this).focusin(function () {
             //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
@@ -495,11 +619,11 @@ function consultarCodigoPostal(sugerencia) {
                 selected: true
             }));
             $('.typeahead').addClass('notEmpty');
-            $('.typeahead').addClass('headingColor');
+            $('.typeahead').addClass('filledColor');
             $('#direccionCliente_delegacion').addClass('notEmpty');
-            $('#direccionCliente_delegacion').addClass('headingColor');
+            $('#direccionCliente_delegacion').addClass('filledColor');
             $('#direccionCliente_estado').addClass('notEmpty');
-            $('#direccionCliente_estado').addClass('headingColor');
+            $('#direccionCliente_estado').addClass('filledColor');
             listaDeControl[$(".showOnFill").index($('.typeahead').closest('.showOnFill'))] = 1;
             listaDeControl[$(".showOnFill").index($('#direccionCliente_delegacion').closest('.showOnFill'))] = 1;
             listaDeControl[$(".showOnFill").index($('#direccionCliente_estado').closest('.showOnFill'))] = 1;
@@ -1225,45 +1349,45 @@ function fillFB(data) {
         var sexo = (json["gender"] === "male" ? 1 : (json["gender"] === "female" ? 2 : 0));
         $("#sexo").val(sexo);
         $("#sexo").addClass('notEmpty');
-        $("#sexo").addClass('headingColor');
+        $("#sexo").addClass('filledColor');
         x++;
     }
     if (json["relationship_status"]) {
         var estadoCivil = (json["relationship_status"] === "single" ? 1 : (json["relationship_status"] === "married" ? 2 : 0));
         $("#estadoCivil").val(estadoCivil);
         $("#estadoCivil").addClass('notEmpty');
-        $("#estadoCivil").addClass('headingColor');
+        $("#estadoCivil").addClass('filledColor');
         x++;
     }
     if (json["first_name"]) {
         $("#nombre").val(json["first_name"]);
         $("#nombre").addClass('notEmpty');
-        $("#nombre").addClass('headingColor');
+        $("#nombre").addClass('filledColor');
         x++;
     }
     if (json["last_name"]) {
         $("#apellidoPaterno").val(json["last_name"]);
         $("#apellidoPaterno").addClass('notEmpty');
-        $("#apellidoPaterno").addClass('headingColor');
+        $("#apellidoPaterno").addClass('filledColor');
         x++;
     }
     if (json["birthday"]) {
         if (json["birthday"].substring(0, 2)) {
             $("#mes").val(json["birthday"].substring(0, 2));
             $("#mes").addClass('notEmpty');
-            $("#mes").addClass('headingColor');
+            $("#mes").addClass('filledColor');
             x++;
         }
         if (json["birthday"].substring(3, 5)) {
             $("#dia").val(json["birthday"].substring(3, 5));
             $("#dia").addClass('notEmpty');
-            $("#dia").addClass('headingColor');
+            $("#dia").addClass('filledColor');
             x++;
         }
         if (json["birthday"].substring(6, 12)) {
             $("#anio").val(json["birthday"].substring(6, 12));
             $("#anio").addClass('notEmpty');
-            $("#anio").addClass('headingColor');
+            $("#anio").addClass('filledColor');
             x++;
         }
     }
@@ -1288,13 +1412,13 @@ function fillGoogle(data) {
     if (json["ofa"]) { //Nombre
         $("#nombre").val(json["ofa"]);
         $("#nombre").addClass('notEmpty');
-        $("#nombre").addClass('headingColor');
+        $("#nombre").addClass('filledColor');
         x++;
     }
     if (json["wea"]) { //Apellidos
         $("#apellidoPaterno").val(json["wea"]);
         $("#apellidoPaterno").addClass('notEmpty');
-        $("#apellidoPaterno").addClass('headingColor');
+        $("#apellidoPaterno").addClass('filledColor');
         x++;
     }
     if (json["Paa"]) { //Imagen
@@ -1439,9 +1563,9 @@ function generarClaves(persona) {
         $('#cliente_curp').val(curp);
         $('#cliente_rfc').val(curp.substring(0, 10));
         $("#cliente_curp").addClass('notEmpty');
-        $("#cliente_curp").addClass('headingColor');
+        $("#cliente_curp").addClass('filledColor');
         $("#cliente_rfc").addClass('notEmpty');
-        $("#cliente_rfc").addClass('headingColor');
+        $("#cliente_rfc").addClass('filledColor');
         listaDeControl[$(".showOnFill").index($('#cliente_curp').closest('.showOnFill'))] = 1;
         listaDeControl[$(".showOnFill").index($('#cliente_rfc').closest('.showOnFill'))] = 1;
     } else if (persona === 'conyugue') {
@@ -1456,9 +1580,9 @@ function generarClaves(persona) {
         $('#cliente_curpDelConyugue').val(curp);
         $('#cliente_rfcDelConyugue').val(curp.substring(0, 10));
         $("#cliente_curpDelConyugue").addClass('notEmpty');
-        $("#cliente_curpDelConyugue").addClass('headingColor');
+        $("#cliente_curpDelConyugue").addClass('filledColor');
         $("#cliente_rfcDelConyugue").addClass('notEmpty');
-        $("#cliente_rfcDelConyugue").addClass('headingColor');
+        $("#cliente_rfcDelConyugue").addClass('filledColor');
         listaDeControl[$(".showOnFill").index($('#cliente_curpDelConyugue').closest('.showOnFill'))] = 1;
         listaDeControl[$(".showOnFill").index($('#cliente_rfcDelConyugue').closest('.showOnFill'))] = 1;
     }
@@ -1536,7 +1660,7 @@ function buildLoginBank(respuesta) {
         html += "<center>";
         html += "<div class=\"row\">";
         html += "<div class=\"col6 col12-mob floatLeft\">";
-        html += "<input class=\"inPuts4a formValues textUpper headingColor notEmpty\" name=\"" + fieldName + "\" id=\"" + fieldName + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
+        html += "<input class=\"inPuts4a formValues textUpper filledColor notEmpty\" name=\"" + fieldName + "\" id=\"" + fieldName + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
         html += "</div>";
         html += "</div>";
         html += "</center>";
@@ -2002,17 +2126,17 @@ function inicializarDropzone(elemento, boton) {
                     closeModal('comprobante_domicilio');
                     $('#calle').val(direccion);
                     $('#calle').addClass("notEmpty");
-                    $('#calle').addClass("headingColor");
+                    $('#calle').addClass("filledColor");
                     if (respuesta.codigoPostal) {
                         $('#codigoPostal').val(respuesta.codigoPostal);
                         $('#codigoPostal').addClass("notEmpty");
-                        $('#codigoPostal').addClass("headingColor");
+                        $('#codigoPostal').addClass("filledColor");
                         $('#municipio').val(respuesta.municipio);
                         $('#municipio').addClass("notEmpty");
-                        $('#municipio').addClass("headingColor");
+                        $('#municipio').addClass("filledColor");
                         $('#estado').val(respuesta.estado);
                         $('#estado').addClass("notEmpty");
-                        $('#estado').addClass("headingColor");
+                        $('#estado').addClass("filledColor");
                     }
                     $('.defaultBubble').fadeOut();
                     $('.successBubble').fadeIn();

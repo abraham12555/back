@@ -1,0 +1,413 @@
+body {
+    min-height: 400px;
+    margin-bottom: 100px;
+    clear: both;
+}
+
+.headingColor, .darkBluetitle span.headingColor {
+    color: #005398;
+}
+.formValues.notEmpty.headingColor {
+    color: #005398;
+}
+
+.darkBluetitle, .formTitleColor {
+    color: #005398;
+}
+
+.borderGrayButton {
+    border: solid 1px #005398;
+}
+
+.borderGrayButton p {
+    color: #005398;
+}
+
+.borderGrayBottom .paddingBottom15{
+    padding-bottom: 0;
+}
+
+.cotizador-box-container .cotizador-box:hover {
+    color: #fff;
+    background-image: linear-gradient(90deg, #005398, #1573d4);
+    box-shadow: 0 0 7px 0 #166ac1;
+}
+
+.ui-slider-horizontal .ui-state-default {
+    background-image: linear-gradient(90deg, #005398, #1573d4) !important;
+    box-shadow: 0 0 7px 0 #166ac1 !important;
+}
+
+.blueButton {
+    background-image: linear-gradient(90deg, #005398, #1573d4) !important;
+    box-shadow: 0 0 7px 0 #166ac1 !important;
+}
+
+@media screen and (min-width: 481px) and (max-width: 800px) {
+    .cotizador-bg {
+        background-size: contain;
+        background-position: center;
+        height: 60%;
+    }
+    h1.darkBluetitle {
+        padding-left: 20px;
+    }
+    #calle {
+        width: 57%;
+    }
+    #login .lightboxPos {
+        top: 0;
+        height: 120%;
+        position: fixed;
+    }
+    .lightboxPos .marginTop20 {
+        margin-top: 10px;
+    }
+    .whiteBox .font25 {
+        font-size: 18px;
+    }
+    .whiteBox .marginBottom16 {
+        margin-bottom: 5px;
+    }
+    .paddingTop35 {
+        padding-top: 10px;
+    }
+    .marginBottom30 {
+        margin-bottom: 5px;
+    }
+    .font14 {
+        font-size: 2.5vw;
+    }
+    .paddingTop18 {
+        padding-top: 5px;
+    }
+    .marginBottom20 {
+        margin-bottom: 7px;
+    }
+    .lightboxPos .font18 {
+        font-size: 12px;
+    }
+    .paddingTop20 {
+        padding-top: 10px;
+    }
+    .facebookColor img {
+        width: 12px;
+    }
+    .paddingBottom20 {
+        padding-bottom: 5px;
+    }
+}
+
+
+/**  portrait **/
+
+@media only screen and (max-width: 421px) {
+    /** cotizador **/
+    .inputfile {
+        width: 350px;
+        height: 55px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+        left: 0;
+    }
+    /**.inputfile + label {
+        font-size: 1.25em;
+        font-weight: 700;
+        color: white;
+        background-color: black;
+        display: inline-block;
+    }
+
+    .inputfile:focus + label,
+    .inputfile + label:hover {
+        background-color: red;
+    }**/
+    .fa {
+        display: inherit;
+        font-size: 25px;
+    }
+    .cotizador-box {
+        font-size: 0.8em;
+    }
+    .cotizador-header {
+        text-align: center;
+    }
+    .logo {
+        text-align: center;
+    }
+    .cotizador-bg {
+        height: 35%;
+        background-size: contain;
+        background-position: center;
+    }
+    h1.darkBluetitle {
+        text-align: center;
+    }
+    .marginBottom15 {
+        margin-bottom:0;
+    }
+    .inner .loading-bar-line {
+        width: 90%;
+    }
+    .ui-slider-horizontal .ui-state-default {
+        width: 85px !important;
+        margin-left: -25px !important;
+        font-size: 0.8em;
+    }
+    .borderGrayButton {
+        margin-right: 8px;
+        width: 120px;
+    }
+    span.inline.selectWrap {
+        height: 30px;
+    }
+    .font20,
+    .font17 {
+        font-size: 0.8em;
+        font-weight: 400;
+    }
+    .marginBottom8 {
+        margin-bottom: 8px;
+    }
+    .paddingTop12 {
+        padding-top: 12px;
+    }
+    .font35 {
+        font-size: 22px;
+    }
+    .lightboxPos {
+        top: 0;
+    }
+    .marginBottom30 {
+        margin-bottom: 10px;
+    }
+    .font25 {
+        font-size: 20px;
+    }
+    .font18 {
+        font-size: 14px;
+    }
+    .paddingTop5 {
+        padding-top: 10px;
+    }
+    .facebookColor img {
+        width: 15px;
+    }
+    .paddingTop18 {
+        padding-top: 6px;
+    }
+    .font25 {
+        font-size: 16px;
+    }
+    .font14 {
+        font-size: 3vw;
+    }
+    p.paddingTop20 {
+        padding-top: 15px;
+    }
+    /* PAso 1 */
+    .paddingTop20 {
+        padding-top: 0;
+    }
+    .lineHeight60 {
+        line-height: 35px;
+    }
+    .font35 {
+        font-size: 20px;
+    }
+    .width200 {
+        width: 5.5em;
+    }
+    /** width 100: 2.5em   del año de vivir en vivienda **/
+    .width100 {
+        width: 2.5em;
+    }
+    .inputsFormulario {
+        font-size: 20px;
+    }
+    .formulariOptions {
+        font-size: 0.9em;
+    }
+    #calle {
+        width: 94%;
+    }
+    .identificationLb .lbHeader.fontWeight300 {
+        font-size: 0.8em;
+        width: calc(100% - 100px);
+        width: -webkit-calc(100% - 100px);
+    }
+    .paddingTop50 {
+        padding-top: 10px;
+    }
+    .font16 {
+        font-size: 0.8em;
+    }
+    .width354 {
+        width: 90%;
+    }
+    .iconButtonTxt.font18 {
+        font-size: 1em;
+    }
+    .phone_capture {
+        font-size: 0.9em;
+    }
+    .cotizadorStep .padding20 {
+        padding: 20;
+    }
+    .idDocs img {
+        width: 100%;
+    }
+    .paddingTop7 {
+        padding-top: 4px;
+    }
+    .paddingRight20 {
+        padding-right: 10px;
+    }
+    .paddingLeft20 {
+        padding-left: 10px;
+    }
+    .paddingBottom5 {
+        padding-bottom: 5px;
+    }
+    .footerContainer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        display: inline-block;
+        padding-top:
+    }
+    #idPasoActual {
+        margin-bottom: 77px;
+    }
+    .infoBox {
+        width: 95%;
+        margin-left: 3%;
+    }
+    .width529 {
+        width: 90%;
+    }
+    .defaultBubble {
+        margin-bottom: 15px;
+    }
+    .blueBox {
+        margin-right: 15%;
+        margin-bottom: 10px;
+    }
+    .line18 {
+        width: 5px;
+        background-color: #D4DBE6;
+        height: 18px;
+        position: absolute;
+        top: 103%;
+        /* padding-right: 50%; */
+        text-align: center;
+        right: 50%;
+        transform: translate(0, -50%);
+    }
+    .crosCircle {
+        right: 46.5%;
+        top: 115%;
+    }
+    .logoMobile {
+        padding: 24px 20px;
+    }
+
+
+}
+
+@media screen and (min-width: 923px) {
+    #calle {
+        width: 70%;
+    }
+}
+
+@media screen and (min-width: 656px) and (max-width: 922px) {
+    #calle {
+        width: 57%;
+    }
+}
+
+//landscape
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    #calle {
+        width: 57%;
+    }
+    .lightboxPos {
+        top: 0;
+    }
+    .paddingTop35 {
+        padding-top: 10px;
+    }
+    .marginBottom30 {
+        margin-bottom: 5px;
+    }
+    .font14 {
+        font-size: 2.5vw;
+    }
+    .paddingTop18 {
+        padding-top: 5px;
+    }
+    .marginBottom20 {
+        margin-bottom: 7px;
+    }
+    .font18 {
+        font-size: 14px;
+    }
+    .paddingTop20 {
+        padding-top: 10px;
+    }
+    .facebookColor img {
+        width: 12px;
+    }
+    .paddingBottom20 {
+        padding-bottom: 5px;
+    }
+}
+
+.userName{
+    font-size: 18px;
+    letter-spacing: 1.1px;
+    color: #ffffff;
+    display: inline-block;
+    border-radius: 2px;
+    background-color: #005398;
+    border: solid 1px #005398;
+    padding: 7px;
+}
+
+.urlBox{
+    max-width: 242px;
+    border-radius: 2px;
+    background-color: #005398;
+    border: solid 1px #ffffff;
+    margin: auto;
+    color: #ffffff;
+}
+
+.gradientBlue {
+    background-image: linear-gradient(90deg, #005398, #1573d4);
+}
+
+.blueBox {
+    width: auto;
+    height: 36px;
+    border-radius: 100px;
+    background-image: linear-gradient(90deg, #005398, #1573d4);
+    box-shadow: 0 0 7px 0 #298df5;
+}
+
+.blueCircle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50px;
+    background-color: #005398;
+    font-weight: 700;
+}
+
+.filledColor {
+    color: #298df5;
+}

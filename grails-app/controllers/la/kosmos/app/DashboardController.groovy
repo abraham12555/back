@@ -24,9 +24,11 @@ class DashboardController {
     def solicitudes() { 
         def solicitudesDictaminadas = dashboardService.obtenerSolicitudesPorStatus("dictaminadas", 1, null, null)
         def solicitudesNoDictaminadas = dashboardService.obtenerSolicitudesPorStatus("noDictaminadas", 1, null, null)
+        def solicitudesConComplemento = dashboardService.obtenerSolicitudesPorStatus("complementoSolicitado", 1, null, null)
         println "Regresando: solicitudesDictaminadas -> " + solicitudesDictaminadas
         println "Regresando: solicitudesNoDictaminadas -> " + solicitudesNoDictaminadas
-        [solicitudesDictaminadas: solicitudesDictaminadas, solicitudesNoDictaminadas: solicitudesNoDictaminadas]
+        println "Regresando: solicitudesConComplemento -> " + solicitudesConComplemento
+        [solicitudesDictaminadas: solicitudesDictaminadas, solicitudesNoDictaminadas: solicitudesNoDictaminadas, solicitudesConComplemento: solicitudesConComplemento]
     }
     
     def consultarSolicitudes(){
@@ -39,6 +41,8 @@ class DashboardController {
             render(template: "solicitudesDictaminadas", model: [solicitudesDictaminadas: solicitudes])
         } else if (params.template == "noDictaminadas"){
             render(template: "solicitudesNoDictaminadas", model: [solicitudesNoDictaminadas: solicitudes])
+        } else if (params.template == "complementoSolicitado"){
+            render(template: "solicitudesConComplementoSolicitado", model: [solicitudesConComplemento: solicitudes])
         } else {
             render solicitudes as JSON
         }
@@ -48,18 +52,38 @@ class DashboardController {
         println params
         def datosSolicitud
         def segmentoHistorialDeCredito
+        def documentos
+        def complementoSolicitado
         if(params.id){
             datosSolicitud = dashboardService.obtenerDatosDeLaSolicitud(params.id)
             segmentoHistorialDeCredito = detalleSegmentoService.historialDeCredito(params.id)
+            documentos = TipoDeDocumento.findAllWhere(activo: true)
+            complementoSolicitado = ComplementoSolicitud.findAllWhere(solicitud: datosSolicitud.solicitud, pendiente: true)
         }
-        [datosSolicitud: datosSolicitud,segmentoHistorialDeCredito:segmentoHistorialDeCredito]
+        [datosSolicitud: datosSolicitud,segmentoHistorialDeCredito:segmentoHistorialDeCredito,documentos:documentos, complementoSolicitado: complementoSolicitado]
     }
     
     def analiticas() { }
     
-    def verificaciones() { }
+    def verificaciones() {
+        def solicitudesPorVerificar = dashboardService.obtenerSolicitudesPorVerificar()
+        [solicitudesPorVerificar: solicitudesPorVerificar, solicitudesJSON: (solicitudesPorVerificar as JSON)]
+    }
     
-    def detalleVerificacion(){ }
+    def detalleVerificacion(){
+        println params
+        if(params.id){
+            def respuesta = dashboardService.obtenerDatosSolicitud(params.id)
+            def preguntas = PreguntaVerificacionSolicitud.findAllWhere(solicitud: respuesta.productoSolicitud.solicitud)
+            if(respuesta) {
+                [respuesta: respuesta, preguntas: preguntas]
+            } else {
+                [error: true, mensaje: "La solicitud indicada no existe. Verifique sus datos e intente nuevamente."]
+            }
+        } else {
+            [error: true, mensaje: "No se especifico la solicitud a verificar. Intente nuevamente en unos momentos."]
+        }
+    }
     
     def configuracion() {
         def usuarios = Usuario.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
@@ -95,7 +119,7 @@ class DashboardController {
             mapa.extension = fileLabel.toLowerCase()
             listaDeArchivos << mapa
         }
-        def respuesta = dashboardService.subirImagen(params.imgType, listaDeArchivos)
+        def respuesta = dashboardService.subirImagen(params.imgType, params.origen, params.solicitudId, listaDeArchivos)
         render respuesta as JSON
     }
     
@@ -106,11 +130,15 @@ class DashboardController {
             def solicitud = SolicitudDeCredito.get(params.solicitudId as long)
             solicitud.statusDeSolicitud = StatusDeSolicitud.get(5)
             if(solicitud.save(flush:true)){
-                flash.message = "La solcitud ha sido aprobada correctamente"
+                println("La solicitud ha sido aprobada correctamente")
+                flash.message = "La solicitud ha sido aprobada correctamente"
+                session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
             } else {
+                println("Ocurrio un problema al aprobar la solicitud. Intente nuevamente en unos minutos")
                 flash.error = "Ocurrio un problema al aprobar la solicitud. Intente nuevamente en unos minutos"
             }
         } else {
+            println("La contraseña introducida es incorrecta")
             flash.error = "La contraseña introducida es incorrecta"
         }
         redirect action: "detalleSolicitud", params: [id: params.solicitudId]
@@ -127,6 +155,24 @@ class DashboardController {
                 respuesta.mensaje = "La solicitud se actualizó correctamente"
                 if((params.status as int) == 7){
                     respuesta.bloquearOpciones = true
+                } else if ((params.status as int) == 6) {
+                    params["complemento[]"]?.each{
+                        def complemento = new ComplementoSolicitud()
+                        complemento.solicitud = solicitud
+                        complemento.fechaDeSolicitud = new Date()
+                        complemento.usuarioSolicitante = springSecurityService.currentUser
+                        complemento.documentoSolicitado = TipoDeDocumento.get(it as long)
+                        complemento.save(flush:true)
+                    }
+                } else if ((params.status as int) == 8) {
+                    session.preguntas.each {
+                        def preguntaSolicitud = new PreguntaVerificacionSolicitud()
+                        preguntaSolicitud.fechaDeSubida = new Date()
+                        preguntaSolicitud.pregunta = it.texto
+                        preguntaSolicitud.solicitud = solicitud
+                        preguntaSolicitud.usuario = springSecurityService.currentUser
+                        preguntaSolicitud.save(flush:true)
+                    }
                 }
             } else {
                 respuesta.error = true
@@ -159,4 +205,73 @@ class DashboardController {
         def respuesta = dashboardService.guardarUsuario(params)
         redirect action: "configuracion"
     }
+    
+    def agregarPregunta(){
+        println params
+        def respuesta
+        if(params.pregunta){
+            respuesta = [:]
+            if(!session.preguntas){
+                session.preguntas = []
+            }
+            respuesta.texto = params.pregunta
+            session.preguntas << respuesta
+        } else {
+            respuesta = [:]
+        }
+        def x = 0
+        session.preguntas.each{ 
+            x++
+            it.id = x
+        }
+        render session.preguntas as JSON
+    }
+    
+    def eliminarPregunta(){
+        println params
+        def respuesta
+        if(params.idPregunta){
+            if(session.preguntas && session.preguntas != null && session.preguntas?.size() > 0){
+                session.preguntas.removeAll { it.id == (params.idPregunta as int) }
+            }
+        }
+        def x = 0
+        session.preguntas.each{ 
+            x++
+            it.id = x
+        }
+        render session.preguntas as JSON
+    }
+    
+    def registrarVisitaOcular(){
+        println params
+        def exito = dashboardService.registrarVerificacion(params)
+        if(exito) {
+            redirect action: "detalleSolicitud", params: [id: params.solicitudId]
+        } else {
+            redirect action: "detalleVerificacion", params: [id: params.solicitudId]
+        }
+    }
+    
+    def mostrarFotografia() {
+        println params
+        if(params.id){
+            def fotografia = FotografiaSolicitud.get(params.id as long)
+            String ruta = fotografia.rutaDelArchivo
+            String imagen = fotografia.nombreDelArchivo
+            def extension = (fotografia.nombreDelArchivo.substring(fotografia.nombreDelArchivo.lastIndexOf(".") + 1)).toLowerCase()
+            println extension
+            File imageFile = new File(ruta + "/" + imagen);
+            byte[] imageInByte = imageFile.bytes
+            response.setHeader('Content-length', imageInByte.length.toString())
+            response.contentType = 'image/' + extension
+            response.outputStream << imageInByte 
+            response.outputStream.flush()
+        } else {
+            def respuesta = [:]
+            respuesta.mensaje = "No cuenta con fotografia."
+            render respuesta as JSON
+        }
+    }
+    
 }

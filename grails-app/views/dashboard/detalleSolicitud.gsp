@@ -10,6 +10,8 @@
     <head>
         <meta name="layout" content="dashboard"/>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <g:external dir="css" file="prettyPhoto.css" />
+        <g:external dir="js" file="jquery.prettyPhoto.js" />
         <g:external dir="css" file="jquery.rateyo.min.css" />
         <g:external dir="js" file="jquery.rateyo.min.js" />
         <g:external dir="js" file="highchart/highcharts.js" />
@@ -565,9 +567,11 @@
                                 <li class="floatLeft">
                                     <a id="documentacionButton" onclick="mostrarTab('documentacion');" class="opcionMenuSolicitud displayInline font14 fontWeight300 gray paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Documentación</a>
                                 </li>
-                                <li class="floatLeft">
-                                    <a id="visitaOcularButton" onclick="mostrarTab('visitaOcular');" class="opcionMenuSolicitud displayInline font14 fontWeight300 gray paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Visita Ocular</a>
-                                </li>
+                                <g:if test="${datosSolicitud.verificacion}">
+                                    <li class="floatLeft">
+                                        <a id="visitaOcularButton" onclick="mostrarTab('visitaOcular'); iniciarPrettyPhoto();" class="opcionMenuSolicitud displayInline font14 fontWeight300 gray paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Visita Ocular</a>
+                                    </li>
+                                </g:if>
                             </ul>
                         </div>
                     </div>
@@ -903,11 +907,11 @@
                                             <p class="font12 fontWeight500 gray paddingTop10">MOP MAS ALTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.mopMasAltoDesc}</p>
                                         </div>
-                                        
-                                        <!-- div class="marginLeft32">
-                                            <p class="font12 fontWeight500 gray paddingTop10">DESTINO</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.destino}</p>
-                                        </div-->
+
+<!-- div class="marginLeft32">
+    <p class="font12 fontWeight500 gray paddingTop10">DESTINO</p>
+    <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.destino}</p>
+</div-->
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">JUICIOS AP</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.juicios}</p>
@@ -1057,14 +1061,14 @@
                                                 <p class="autorizar_credito letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center pointer">AUTORIZAR</p>
                                             </div>
                                         </a>
-                                        <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 8}">
-                                            <a onclick="cambiarEstatus(8, ${datosSolicitud.solicitud?.id});" id="solicitarVisita">
+                                        <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 8 && !datosSolicitud.verificacion}">
+                                            <a onclick="mostrarModal('modalPreguntas');" id="solicitarVisita">
                                                 <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
                                                     <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center darkBluetitle pointer">SOLICITAR VISITA</p>
                                                 </div>
                                             </a>
                                         </g:if>
-                                        <a onclick="cambiarEstatus(6, ${datosSolicitud.solicitud?.id};" id="solicitarComplemento">
+                                        <a onclick="mostrarModal('modalComplemento');" id="solicitarComplemento">
                                             <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
                                                 <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center gray pointer">SOLICITAR COMPLEMENTO</p>
                                             </div>
@@ -1100,228 +1104,309 @@
                                 <div class="loginShadow"></div>
                             </div>
                         </div>
+                        <div class="solicitudLightbox hide" id="modalComplemento">
+                            <div class="overlay"></div>
+                            <div class="visitaContainer">
+                                <div class="dashBordBox">
+                                    <div class="loginForm gray font14">
+                                        <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">DOCUMENTOS A SOLICITAR</p>
+                                        <div class="solicitudTitle autoMargin" style="width: 100%;">
+                                            <p class="center font14 lightGray">Indica los documentos que requiere proporcionar el cliente</p>
+                                        </div>
+                                        <div class="formContainer" style="width: 90%">
+                                            <div class='col12 marginBottom20' style='display:inline-block;'>
+                                                <center>
+                                                    <g:each var='documento' in='${documentos}' status='i'>
+                                                        <div class='col4 col12-mob' style='display:inline-block;' class="button marginTop20">
+                                                            <div id="documento${documento.id}" data-id-documento="${documento.id}" class="checkVerificacion whiteBox col11 marginTop10 autoCenter block" style="margin-left: 10px;margin-right: 10px;">
+                                                                <a onclick="confirmarAccion('documento',${documento.id});" title="${documento.nombre}" class="block font14 letterspacing1 fontWeight500 lightGray paddingTop15 paddingBottom15 center">${documento.nombre}</a>
+                                                            </div>
+                                                        </div>
+                                                    </g:each>
+                                                </center>
+                                            </div>
+                                            <div class="col12" style="text-align: center;">
+                                                <div class="col4" style="display: inline-block;">
+                                                    <button type="button" id="btnComplemento" onclick="cambiarEstatus(6, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>ACEPTAR</button>
+                                                </div>                   
+                                                <div class="col4" style="display: inline-block;">
+                                                    <button type="button" onclick="cerrarModal('modalComplemento');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </g:if>
+                    <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 8}">
+                        <div class="solicitudLightbox hide" id="modalPreguntas">
+                            <div class="overlay"></div>
+                            <div class="visitaContainer">
+                                <div class="dashBordBox">
+                                    <div class="loginForm gray font14">
+                                        <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
+                                        <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">PREGUNTAS PARA VISITA OCULAR</p>
+                                        <div class="solicitudTitle autoMargin" style="width: 100%;">
+                                            <p class="center font14 lightGray">Indica las preguntas a realizar durante la visita ocular</p>
+                                        </div>
+                                        <div class="formContainer">
+                                            <div class='col12' style='display:inline-block; position:relative;'>
+                                                <textarea rows='8' class="col12 inputs marginBottom30 lightGray letterspacing1 font14" id="textoPregunta" type="text" required placeholder="Pregunta a realizar"></textarea>
+                                                <button type="button" onclick="agregarPregunta();" class="loginButton blueButton letterspacing2 font14 pointer" style="width: 15%; position:absolute; bottom:10px; right:10px;">Agregar</button>
+                                            </div>
+                                            <div>
+                                                <table id='preguntasAgregadas' style="width: 100%; margin-bottom: 20px; border-bottom: 5px #369;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="2" class="navyBg"><h1 class="graphHeading colorWhite letterspacing2 textUpper center">Preguntas Añadidas</h1></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colspan="2" class="tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper center borderGrayBottom">No se han agregado preguntas</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <input type="hidden" id="cantidadDePreguntas">
+                                            </div>
+                                            <div class="col12" style="text-align: center;">
+                                                <div class="col4" style="display: inline-block;">
+                                                    <button type="button" id="btnVerificar" onclick="cambiarEstatus(8, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>REGISTRAR PREGUNTAS</button>
+                                                </div>                   
+                                                <div class="col4" style="display: inline-block;">
+                                                    <button type="button" onclick="cerrarModal('modalPreguntas');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </g:if>
                 </div>
             </div>
             <div class="solicitudTab" id='documentacion' style='margin-top: 30px; display: none;'>
                 <section class="container">
                     <div class="clearFix width928 autoMargin">
-                        <g:if test="${datosSolicitud.documentosSolicitud}">
-                            <g:each var='documento' in='${datosSolicitud.documentosSolicitud}' status='i'>
-                                <g:link controller="dashboard" action="descargarArchivo" id="${documento.id}" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10">
-                                    <img src="${resource(dir:'images', file:'pdf.svg')}" alt="PDF File">
-                                    <p class="lightGrayColor font12 fontWeight300">${documento?.tipoDeDocumento?.nombre}</p>
-                                </g:link>
-                            </g:each>
+                        <g:if test="${complementoSolicitado}">
+                            <div class="container clearFix">
+                                <div class="width990 autoMargin solicitudWhiteBox clearFix paddingBottom20">
+                                    <div class="floatLeft col12 col12-mob">
+                                        <br/>
+                                        <p class="lightGrayColor font12 fontWeight300" style="padding-left: 25px;"><strong>Se han solicitado los siguientes documentos de manera complementanria: </strong></p>
+                                    </div>
+                                    <div class="col12 col12-mob floatLeft">
+                                        <div class="paddingAside15">
+                                            <div class="marginTop20 marginBottom20">
+                                                <g:each var='complemento' in='${complementoSolicitado}' status='c'>
+                                                    <a class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10 pointer" style="height: 73px;">
+                                                        <img src="${resource(dir:'images', file:'add_file.png')}" alt="Agregar Archivo">
+                                                        <p class="lightGrayColor font12 fontWeight300">${complemento?.documentoSolicitado?.nombre}</p>
+                                                    </a>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </g:if>
-                        <g:else>
-                            <p class="lightGrayColor font12 fontWeight300">No hay documentos disponibles</p>
-                        </g:else>
-                    </div>
-                </section>
-            </div>
-            <div class="solicitudTab" id='visitaOcular' style='display: none;'>
-                <section class="container marginTop10 marginBottom10">
-                    <div class="clearFix autoMargin">
-                        <h3 class="floatLeft darkBluetitle marginLeft30 marginTop10">1. VERIFICACIÓN DE DOMICILIO.</h3>
-                        <a href="#" title="VERIFICACIÓN EXITOSA" class="floatLeft block colorGreen radius100 colorWhite letterspacing1 paddingTop10 paddingRight30 paddingBottom10 paddingLeft30 marginLeft30">VERIFICACIÓN EXITOSA</a>
-                    </div>
-                </section>
-
-                <section class="container">
-                    <div class="wrapper autoMargin solicitudWhiteBox clearFix">
-                        <div class="col4 col12-mob floatLeft">
-                            <div class="marginTop25 marginRight25 marginBottom35 marginLeft25 solicitudWhiteBox radius2">
-                                <div class="navyBg radius2">
-                                    <p class="colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom15 paddingLeft35">DOMICILIO</p>
-                                </div>
-                                <div class="padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">DIRECCIÓN</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">Av. Orizaba</p>
-                                </div>
-                                <div class="lightGrayBG padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">NÚMERO EXTERIOR</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">234</p>
-                                </div>
-                                <div class="padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">NÚMERO INTERIOR</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">123</p>
-                                </div>
-                                <div class="lightGrayBG padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">COLONIA</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">Hipódromo</p>
-                                </div>
-                                <div class="padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">DELEGACIÓN O MUNICIPIO</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">Cuauhtemoc</p>
-                                </div>
-                                <div class="lightGrayBG padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">CÓDIGO POSTAL</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">06100</p>
-                                </div>
-                                <div class="padding10">
-                                    <p class="font12 fontWeight500 gray paddingAside15">ESTADO</p>
-                                    <p class="font18 fontWeight500 darkBluetitle paddingAside15">Distrito Federal</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col8 col12-mob floatLeft">
-                            <div class="marginTop25 marginBottom35  paddingBottom12">
-                                <div class="clearFix">
-                                    <h1 class="gray font16 fontWeight300 marginBottom15 paddingAside15">FOTOS DE LA FACHADA DE LA VIVIENDA</h1>
-                                    <div class="col4 col12-mob floatLeft">
-                                        <div class="paddingAside15 marginBottom20">
-                                            <div class="grayBorderBox center">
-                                                <img src="${resource(dir:'images', file:'photo.svg')}" alt="Photo" class="paddingTop7 paddingBottom10">
-                                                <p class="gray2 font12 center">FACHADA - FRENTE</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col4 col12-mob floatLeft">
-                                        <div class="paddingAside15 marginBottom20">
-                                            <div class="grayBorderBox center">
-                                                <img src="${resource(dir:'images', file:'photo.svg')}" alt="Photo" class="paddingTop7 paddingBottom10">
-                                                <p class="gray2 font12 center">FACHADA - IZQUIERDA</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col4 col12-mob floatLeft">
-                                        <div class="paddingAside15 marginBottom20">
-                                            <div class="grayBorderBox center">
-                                                <img src="${resource(dir:'images', file:'photo.svg')}" alt="Photo" class="paddingTop7 paddingBottom10">
-                                                <p class="gray2 font12 center">FACHADA - DERECHA</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clearFix">
-                                    <h1 class="gray font16 fontWeight300 marginTop30 paddingAside15 marginBottom15">FOTOS DE INTERIOR DE LA VIVIENDA</h1>
-                                    <div class="col4 col12-mob floatLeft">
-                                        <div class="paddingAside15 marginBottom20">
-                                            <div class="grayBorderBox center">
-                                                <img src="${resource(dir:'images', file:'photo.svg')}" alt="Photo" class="paddingTop7 paddingBottom10">
-                                                <p class="gray2 font12 center">INTERIOR 1</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col4 col12-mob floatLeft">
-                                        <div class="paddingAside15 marginBottom20">
-                                            <div class="grayBorderBox center">
-                                                <img src="${resource(dir:'images', file:'photo.svg')}" alt="Photo" class="paddingTop7 paddingBottom10">
-                                                <p class="gray2 font12 center">INTERIOR 2</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col4 col12-mob floatLeft">
-                                        <div class="paddingAside15 marginBottom20">
-                                            <div class="grayBorderBox center">
-                                                <img src="${resource(dir:'images', file:'photo.svg')}" alt="Photo" class="paddingTop7 paddingBottom10">
-                                                <p class="gray2 font12 center">INTERIOR 3</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="container marginTop10 marginBottom10">
-                    <div class="clearFix autoMargin">
-                        <h3 class="floatLeft darkBluetitle marginLeft30 marginTop10">2. VERIFICACIÓN DE DOCUMENTOS</h3>
-                        <a href="#" title="VERIFICACIÓN EXITOSA" class="floatLeft block buttonOrange2 radius100 colorWhite letterspacing1 paddingTop10 paddingRight30 paddingBottom10 paddingLeft30 marginLeft30">VERIFICACIÓN NO EXITOSA</a>
-                    </div>
-                </section>
-
-                <section class="container marginTop10">
-                    <div class="wrapper autoMargin solicitudWhiteBox paddingBottom35 clearFix">
-                        <div class="col6 col12-mob floatLeft">
-                            <div class="padding15">
-                                <h1 class="gray font16 fontWeight400 marginTop30 marginLeft25 marginBottom15">IDENTIFICACIÓN OFICIAL</h1>
-                                <div class="">
-                                    <div class="grayBG-visita radius10 height260 autoMargin clearFix">
-                                        <div class="profileBG floatLeft marginLeft17 marginTop65">
-                                            <img class="imgResponsive" src="${resource(dir:'images', file:'user.png')}" alt="user" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="marginTop19 marginBottom14">
-                                    <div class="grayBG-visita radius10 height260 autoMargin">
-                                        <div class="paddingTop150">
-                                            <div class="height47 colorGrayBG"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col6 col12-mob floatLeft">
-                            <div class="padding15">
-                                <h1 class="gray font16 fontWeight400 marginTop30 marginLeft10 marginBottom15">COMPROBANTE DE DOMICILIO</h1>
-                                <div class="grayBG-visita2 height535 autoMargin BigGrayBox">
-                                    <div class="clearFix alert-visita">
-                                        <img src="${resource(dir:'images', file:'info-red.svg')}" alt="Info-Red" class="floatLeft padding20">
-                                        <p class="floatRight buttonOrange2 colorWhite radius2 alertError">El documento es diferente al que el prospecto subió originalmente.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="container">
-                    <div class="clearFix autoMargin padding20">
-                        <h3 class="floatLeft darkBluetitle">3. PREGUNTAS ESPECIFICAS PARA EL PROSPECTO</h3>
-                    </div>
-                </section>
-
-                <section class="container">
-                    <div class="wrapper autoMargin solicitudWhiteBox fullInputs clearFix padding20">
-                        <div>
-                            <label for="atrazo" class="block font14 gray marginBottom10 ">¿A QUÉ SE DEBE SU ATRAZO EN SU TARJETA DE CRÉDITO?</label>
-                            <div>
-                            </div>
-                            <input type="text" placeholder="Respuesta" class="whiteBox blockAuto">
-                        </div>
-                        <div>
-                            <label for="ingresos" class="block font14 gray marginTop15 marginBottom10 ">¿DE DONDE VIENEN SUS INGRESOS?</label>
-                            <div>
-                            </div>
-                            <input type="text" placeholder="Respuesta" class="whiteBox blockAuto">
-                        </div>
-                        <div class="col5half col12-mob floatLeft">
-                            <div>
-                                <label for="domicilio" class="block font14 gray marginTop15 marginBottom10 ">¿CUANTAS PERSONAS HABITAN EN EL DOMICILIO?</label>
-                            </div>
-                            <div>
-                                <input type="text" placeholder="Respuesta" class="whiteBox blockAuto">
-                            </div>
-                        </div>
-                        <div class="col5half col12-mob floatRight">
-                            <div>
-                                <label for="dependientes" class="block font14 gray marginTop15 marginBottom10 ">¿CUANTOS DEPENDIENTES ECONÓMICOS TIENE?</label>
-                            </div>
-                            <div>
-                                <input type="text" placeholder="Respuesta" class="whiteBox blockAuto">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="container">
-                    <div class="clearFix autoMargin padding20">
-                        <h3 class="floatLeft darkBluetitle">4. COMENTARIOS ADICIONALES</h3>
-                    </div>
-                </section>
-
-                <section class="container marginBottom40">
-                    <div class="wrapper autoMargin solicitudWhiteBox padding20 paddingBottom35">
-                        <h1 class="darkBluetitle font14 fontWeight400 marginBottom15">SI HAY ALGUN COMENTARIO IMPORTANTE PUEDE SER ANOTADO EN ESTE ESPACIO.</h1>
-                        <div class="fullInputs">
-                            <textarea name="name" class="whiteBox block height179 autoMargin font14 paddingTop10 paddingBottom10 paddingLeft20"></textarea>
+                        <div class="container clearFix marginTop10">
+                            <g:if test="${datosSolicitud.documentosSolicitud}">
+                                <g:each var='documento' in='${datosSolicitud.documentosSolicitud}' status='i'>
+                                    <g:link controller="dashboard" action="descargarArchivo" id="${documento.id}" class="block width94 grayBorderBox floatLeft center marginLeft10 marginRight10 marginBottom10 pointer" style="height: 73px;">
+                                        <img src="${resource(dir:'images', file:'pdf.svg')}" alt="${documento?.tipoDeDocumento?.nombre}">
+                                        <p class="lightGrayColor font12 fontWeight300">${documento?.tipoDeDocumento?.nombre}</p>
+                                    </g:link>
+                                </g:each>
+                            </g:if>
+                            <g:else>
+                                <p class="lightGrayColor font12 fontWeight300">No hay documentos disponibles</p>
+                            </g:else>
                         </div>
                     </div>
                 </section>
             </div>
+            <g:if test="${datosSolicitud.verificacion}">
+                <div class="solicitudTab" id='visitaOcular' style='display: none;'>
+                    <section class="container marginTop10 marginBottom10">
+                        <div class="clearFix autoMargin">
+                            <h3 class="floatLeft darkBluetitle marginLeft30 marginTop10">1. VERIFICACIÓN DE DOMICILIO.</h3>
+                            <g:if test="${datosSolicitud.verificacion.resultadoPaso1}">
+                                <a title="VERIFICACIÓN EXITOSA" class="floatLeft block colorGreen radius100 colorWhite letterspacing1 paddingTop10 paddingRight30 paddingBottom10 paddingLeft30 marginLeft30">VERIFICACIÓN EXITOSA</a>
+                            </g:if>
+                            <g:else>
+                                <a  title="VERIFICACIÓN NO EXITOSA" class="floatLeft block buttonOrange2 radius100 colorWhite letterspacing1 paddingTop10 paddingRight30 paddingBottom10 paddingLeft30 marginLeft30">VERIFICACIÓN NO EXITOSA</a>
+                            </g:else>
+                        </div>
+                    </section>
+
+                    <section class="container">
+                        <div class="wrapper autoMargin solicitudWhiteBox clearFix">
+                            <div class="col4 col12-mob floatLeft">
+                                <div class="marginTop25 marginRight25 marginBottom35 marginLeft25 solicitudWhiteBox radius2">
+                                    <div class="navyBg radius2">
+                                        <p class="colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom15 paddingLeft35">DOMICILIO</p>
+                                    </div>
+                                    <div class="padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">DIRECCIÓN</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.calle}</p>
+                                    </div>
+                                    <div class="lightGrayBG padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">NÚMERO EXTERIOR</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.numeroExterior}</p>
+                                    </div>
+                                    <div class="padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">NÚMERO INTERIOR</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.numeroInterior}</p>
+                                    </div>
+                                    <div class="lightGrayBG padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">COLONIA</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.colonia}</p>
+                                    </div>
+                                    <div class="padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">DELEGACIÓN O MUNICIPIO</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.codigoPostal?.municipio}</p>
+                                    </div>
+                                    <div class="lightGrayBG padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">CÓDIGO POSTAL</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.codigoPostal?.codigo}</p>
+                                    </div>
+                                    <div class="padding10">
+                                        <p class="font12 fontWeight500 gray paddingAside15">ESTADO</p>
+                                        <p class="font18 fontWeight500 darkBluetitle paddingAside15">${datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col8 col12-mob floatLeft">
+                                <div class="marginTop25 marginBottom35  paddingBottom12">
+                                    <div class="clearFix">
+                                        <h1 class="gray font16 fontWeight300 marginBottom15 paddingAside15">FOTOS DE LA FACHADA DE LA VIVIENDA</h1>
+                                        <g:each var='fotoFachada' in='${datosSolicitud.fotosFachada}'>
+                                            <div class="col4 col12-mob floatLeft">
+                                                <div class="paddingAside15 marginBottom20">
+                                                    <div class="grayBorderBox center">
+                                                        <a href="${createLink(controller: 'dashboard', action:'mostrarFotografia', id: fotoFachada.id)}" rel="prettyPhoto[pp_gal]"><img src="${createLink(controller: 'dashboard', action:'mostrarFotografia', id: fotoFachada.id)}" width="88" height="88" alt="${fotoFachada.tipoDeFotografia}" /></a>
+                                                        <p class="gray2 font12 center">${fotoFachada.tipoDeFotografia}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <div class="clearFix">
+                                        <h1 class="gray font16 fontWeight300 marginTop30 paddingAside15 marginBottom15">FOTOS DE INTERIOR DE LA VIVIENDA</h1>
+                                        <g:each var='fotoInterior' in='${datosSolicitud.fotosInterior}'>
+                                            <div class="col4 col12-mob floatLeft">
+                                                <div class="paddingAside15 marginBottom20">
+                                                    <div class="grayBorderBox center">
+                                                        <a href="${createLink(controller: 'dashboard', action:'mostrarFotografia', id: fotoInterior.id)}" rel="prettyPhoto[pp_gal]"><img src="${createLink(controller: 'dashboard', action:'mostrarFotografia', id: fotoInterior.id)}" width="88" height="88" alt="${fotoInterior.tipoDeFotografia}" /></a>
+                                                        <p class="gray2 font12 center">${fotoInterior.tipoDeFotografia}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="container marginTop10 marginBottom10">
+                        <div class="clearFix autoMargin">
+                            <h3 class="floatLeft darkBluetitle marginLeft30 marginTop10">2. VERIFICACIÓN DE DOCUMENTOS</h3>
+                            <g:if test="${datosSolicitud.verificacion.resultadoPaso2 && datosSolicitud.verificacion.resultadoPaso3}">
+                                <a title="VERIFICACIÓN EXITOSA" class="floatLeft block colorGreen radius100 colorWhite letterspacing1 paddingTop10 paddingRight30 paddingBottom10 paddingLeft30 marginLeft30">VERIFICACIÓN EXITOSA</a>
+                            </g:if>
+                            <g:else>
+                                <a  title="VERIFICACIÓN NO EXITOSA" class="floatLeft block buttonOrange2 radius100 colorWhite letterspacing1 paddingTop10 paddingRight30 paddingBottom10 paddingLeft30 marginLeft30">VERIFICACIÓN NO EXITOSA</a>
+                            </g:else>
+                        </div>
+                    </section>
+
+                    <section class="container marginTop10">
+                        <div class="wrapper autoMargin solicitudWhiteBox paddingBottom35 clearFix">
+                            <div class="col6 col12-mob floatLeft">
+                                <div class="padding15">
+                                    <h1 class="gray font16 fontWeight400 marginTop30 marginLeft25 marginBottom15">IDENTIFICACIÓN OFICIAL</h1>
+                                    <div class="">
+                                        <div class="<g:if test="${datosSolicitud.verificacion.resultadoPaso2}">grayBG-visita</g:if><g:else>grayBG-visita2</g:else> radius10 height260 autoMargin clearFix BigGrayBox">
+                                                <div class="profileBG floatLeft marginLeft17 marginTop65">
+                                                        <img class="imgResponsive" src="${resource(dir:'images', file:'user.png')}" alt="user" />
+                                            </div>
+                                            <g:if test="${datosSolicitud.verificacion.resultadoPaso2 == false}">
+                                                <div class="clearFix alert-visita">
+                                                    <img src="${resource(dir:'images', file:'info-red.svg')}" alt="Info-Red" class="floatLeft padding20" />
+                                                    <p class="floatRight buttonOrange2 colorWhite radius2 alertError">El documento es diferente al que el prospecto subió originalmente.</p>
+                                                </div>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                    <div class="marginTop19 marginBottom14">
+                                        <div class="<g:if test="${datosSolicitud.verificacion.resultadoPaso2}">grayBG-visita</g:if><g:else>grayBG-visita2</g:else> radius10 height260 autoMargin BigGrayBox">
+                                                <div class="paddingTop150">
+                                                    <div class="height47 colorGrayBG"></div>
+                                                </div>
+                                            <g:if test="${datosSolicitud.verificacion.resultadoPaso2 == false}">
+                                                <div class="clearFix alert-visita">
+                                                    <img src="${resource(dir:'images', file:'info-red.svg')}" alt="Info-Red" class="floatLeft padding20" />
+                                                    <p class="floatRight buttonOrange2 colorWhite radius2 alertError">El documento es diferente al que el prospecto subió originalmente.</p>
+                                                </div>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col6 col12-mob floatLeft">
+                                <div class="padding15">
+                                    <h1 class="gray font16 fontWeight400 marginTop30 marginLeft10 marginBottom15">COMPROBANTE DE DOMICILIO</h1>
+                                    <div class="<g:if test="${datosSolicitud.verificacion.resultadoPaso3}">grayBG-visita</g:if><g:else>grayBG-visita2</g:else> height535 autoMargin BigGrayBox">
+                                        <g:if test="${datosSolicitud.verificacion.resultadoPaso3 == false}">
+                                            <div class="clearFix alert-visita">
+                                                <img src="${resource(dir:'images', file:'info-red.svg')}" alt="Info-Red" class="floatLeft padding20">
+                                                <p class="floatRight buttonOrange2 colorWhite radius2 alertError">El documento es diferente al que el prospecto subió originalmente.</p>
+                                            </div>
+                                        </g:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="container">
+                        <div class="clearFix autoMargin padding20">
+                            <h3 class="floatLeft darkBluetitle">3. PREGUNTAS ESPECIFICAS PARA EL PROSPECTO</h3>
+                        </div>
+                    </section>
+
+                    <section class="container">
+                        <div class="wrapper autoMargin solicitudWhiteBox fullInputs clearFix padding20">
+                            <g:each var='pregunta' in='${datosSolicitud.preguntas}' status="i">
+                                <div>
+                                    <label for="ingresos" class="block font14 gray marginTop15 marginBottom10 ">${pregunta.pregunta.toUpperCase()}</label>
+                                    <div>
+                                    </div>
+                                    <input type="text" placeholder="Respuesta" class="whiteBox blockAuto" readonly value="${pregunta.respuesta.toUpperCase()}">
+                                </div>
+                            </g:each>
+                        </div>
+                    </section>
+
+                    <section class="container">
+                        <div class="clearFix autoMargin padding20">
+                            <h3 class="floatLeft darkBluetitle">4. COMENTARIOS ADICIONALES</h3>
+                        </div>
+                    </section>
+
+                    <section class="container marginBottom40">
+                        <div class="wrapper autoMargin solicitudWhiteBox padding20 paddingBottom35">
+                            <h1 class="darkBluetitle font14 fontWeight400 marginBottom15">SI HAY ALGUN COMENTARIO IMPORTANTE PUEDE SER ANOTADO EN ESTE ESPACIO.</h1>
+                            <div class="fullInputs">
+                                <textarea readonly class="whiteBox block height179 autoMargin font14 paddingTop10 paddingBottom10 paddingLeft20">${datosSolicitud.verificacion.observaciones}</textarea>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </g:if>
             <a class="back-to-top">Back to Top</a>
         </g:if>
         <g:else>

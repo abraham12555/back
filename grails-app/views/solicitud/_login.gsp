@@ -20,10 +20,10 @@
                                 <div class="col12 autoMargin">
                                     <div class="paddingTop18 marginBottom20">
                                         <p class="center formTitleColor font18">
-                                            Tomale una foto a tus INE ó Pasaporte y te ayudamos a prellenar tu formulario. ¡Es más Fácil y más Rápido!
+                                            Tomale una foto a tu INE ó Pasaporte y te ayudamos a prellenar tu formulario. ¡Es más Fácil y más Rápido!
                                         </p>
                                         <p class="center colorblue font18 marginBottom20">
-                                            ¡Puedes obtener tu crédito hasta en 10 minutos!
+                                            ¡Puedes Completar tu solicitud hasta en 3 minutos!
                                         </p>
 
                                         <div class="marginBottom20">

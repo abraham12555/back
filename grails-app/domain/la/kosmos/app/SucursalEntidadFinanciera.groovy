@@ -9,6 +9,9 @@ class SucursalEntidadFinanciera implements Serializable{
     String responsable
     String numeroDeSucursal
     CodigoPostal codigoPostal
+    Double latitud
+    Double longitud
+    //Riesgo Geografico
     
     boolean activo = true
     
@@ -20,6 +23,8 @@ class SucursalEntidadFinanciera implements Serializable{
         responsable (blank: false)
         numeroDeSucursal (blank: false)
         codigoPostal (nullable: true)
+        latitud (nullable: true)
+        longitud (nullable: true)
     }
     
     static mapping = {
