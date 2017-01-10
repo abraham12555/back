@@ -55,6 +55,8 @@ grails.project.dependency.resolution = {
         compile 'com.google.code.gson:gson:2.3.1'
         compile 'org.bouncycastle:bcpkix-jdk15on:1.52'
         compile 'org.json:json:20160212'
+        compile 'org.awaitility:awaitility-groovy:2.0.0'
+        runtime "com.sun.xml.ws:jaxws-rt:2.1.7"
     }
 
     plugins {

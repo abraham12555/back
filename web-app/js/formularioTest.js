@@ -11,13 +11,13 @@ var generoConyugue;
 showSlides(slideIndex);
 
 function inicializarFormulario() {
-    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-     console.log('Estoy en mobile')
-     $('.phoneCapture').hide()
-     $('.camCapture').hide()
-     $('.mobileCapture').show()
-     $('.desktopCapture').hide()
-    }else{
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        console.log('Estoy en mobile')
+        $('.phoneCapture').hide()
+        $('.camCapture').hide()
+        $('.mobileCapture').show()
+        $('.desktopCapture').hide()
+    } else {
         $('.mobileCapture').hide()
         $('.desktopCapture').show()
     }
@@ -64,16 +64,21 @@ function inicializarFormulario() {
         operacionesLogin();
     }
 
-    $('.botonCambioDePaso').click(function () {
-        if ($(this).hasClass("sendBtn")) {
-            var numeroDePaso = $(this).data('numeroDePaso');
-            avanzarPaso(numeroDePaso);
-        }
-    });
+    habilitarBotonesAvance();
 
     $('.showOnFill').each(function (index) {
         //verificarCambios(index);
         mostrarSiguienteCampo(index);
+    });
+}
+
+function habilitarBotonesAvance() {
+    $('.botonCambioDePaso').click(function () {
+        console.log("Dando click en boton para avanzar...");
+        if ($(this).hasClass("sendBtn")) {
+            var numeroDePaso = $(this).data('numeroDePaso');
+            avanzarPaso(numeroDePaso);
+        }
     });
 }
 
@@ -245,7 +250,7 @@ function operacionesFormulario() {
             mostrarSiguienteCampo(index);
             //console.log("A punto de calcular el avance....");
             calcularAvance();
-            window.scrollTo(0,document.body.scrollHeight);
+            window.scrollTo(0, document.body.scrollHeight);
         });
         $('.formValues', this).focusin(function () {
             //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
@@ -358,7 +363,7 @@ function operacionesFormulario() {
             mostrarSiguienteCampo(index);
             console.log("A punto de calcular el avance....");
             calcularAvance();
-            window.scrollTo(0,document.body.scrollHeight);
+            window.scrollTo(0, document.body.scrollHeight);
         });
         $('.formValues', this).focusin(function () {
             //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
@@ -1236,7 +1241,7 @@ function avanzarPaso(paso) {
     //cerrarModal();
     var paso = paso;
     $('#siguientePaso').val(paso);
-    //console.log("Avanzando a paso " + paso);
+    console.log("Avanzando a paso " + paso);
     //alert("Datos::"+$('.sendValues').serialize());
     $.ajax({
         type: 'POST',
@@ -1255,9 +1260,11 @@ function avanzarPaso(paso) {
                     //verificarCambios(index);
                 });
             } else if (tipoDePaso === "consultaBancaria") {
+                habilitarBotonesAvance();
                 operacionesBancos();
                 verificacionSubPaso4();
             } else if (tipoDePaso === "consultaBuro") {
+                habilitarBotonesAvance();
                 operacionesBuro();
                 verificacionSubPaso5();
             } else if (tipoDePaso === "resumen") {
@@ -1546,7 +1553,7 @@ function authenticate() {
 function generarClaves(persona) {
     console.log("A por la generacion de llaves!!! --->" + persona);
     if (persona === 'cliente') {
-        console.log($('#cliente_nombre').val() + ', ' + $('#cliente_apellidoPaterno').val() + ', ' + $('#cliente_apellidoMaterno').val() + ', ' + $('#cliente_genero').val() + ',' + $('#cliente_fechaDeNacimiento_dia').val() + '/' + $('#cliente_fechaDeNacimiento_mes').val() + '/' +  $('#cliente_fechaDeNacimiento_anio').val());
+        console.log($('#cliente_nombre').val() + ', ' + $('#cliente_apellidoPaterno').val() + ', ' + $('#cliente_apellidoMaterno').val() + ', ' + $('#cliente_genero').val() + ',' + $('#cliente_fechaDeNacimiento_dia').val() + '/' + $('#cliente_fechaDeNacimiento_mes').val() + '/' + $('#cliente_fechaDeNacimiento_anio').val());
         var curp = generaCurp({
             nombre: $('#cliente_nombre').val(),
             apellido_paterno: $('#cliente_apellidoPaterno').val(),
@@ -2149,7 +2156,7 @@ function inicializarDropzone(elemento, boton) {
                     if (document.getElementById('login')) {
                         $('#submitLogin').click();
                     }
-                } else if (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno)) {
+                } else if (respuesta.exito || (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno))) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellido Paterno: </strong>" + respuesta.apellidoPaterno + "<br/><strong>Apellido Materno: </strong> " + respuesta.apellidoMaterno + "</br>", type: "success"});
                     closeModal('identification_oficial');
                     $('#paso6IdOf').addClass('colorGreen');

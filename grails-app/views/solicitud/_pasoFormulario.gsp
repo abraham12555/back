@@ -1,12 +1,12 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
     <input type="hidden" id="pasoPrellenado" value="${generales?.llenadoPrevio}"/>
     <input type="hidden" id="tituloDelPaso" value="${pasoActual?.titulo}"/>
-    <div class="defaultBubble <g:if test="${generales?.llenadoPrevio && (generales?.nombre || generales?.apellidoPaterno || generales?.apellidoMaterno || generales?.nombreCompleto || generales?.apellidos || generales?.sexo || generales?.curp || generales?.rfc)}"> hide </g:if> ">
+    <div class="defaultBubble <g:if test="${pasoActual?.tipoDePaso?.nombre != "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
             <div class="container clearFix relative autoMargin width920">
                 <div class="infoBox floatLeft desktop">
                     <div class="width630 autoMargin">
                         <p class="displayInline textUpper floatLeft center letterspacing0.5 font13 paddingTop20 paddingRight10 paddingBottom10">LLENA ESTA SECCIÓN EN MENOS DE 1 MINUTO, TOMA UNA FOTO A TU </p>
-                        <div class="blueBox floatRight marginTop10">
+                        <div class="blueBox floatRight marginTop10" onclick="openModal('identification_oficial');">
                             <p class="textUpper colorWhite font13 paddingTop10 paddingRight10 paddingLeft15 paddingBottom5">IDENTIFICACIÓN OFICIAL</p>
                         </div>
                     </div>
@@ -64,7 +64,7 @@ if(campo.campo.catalogo){
                                         %>
                             <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
-                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty filledColor"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
+                                            <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty filledColor"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" value="${(generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo") as int}"/>
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" />
@@ -191,6 +191,8 @@ if(campo.campo.catalogo){
                             </g:if>    
                         </g:each>
                     </g:if>
+                    <g:elseif test="${pasoActual.modoDeDespliegue == "FORMULARIO"}">
+                    </g:elseif>
         </div>
         <div class="confirmDiv hide col7 col12-tab floatRight marginTop28 clearFix">
             <div class="floatLeft marginBottom20">

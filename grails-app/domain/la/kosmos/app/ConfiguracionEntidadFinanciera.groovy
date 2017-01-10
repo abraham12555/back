@@ -20,6 +20,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String colorGradienteSuperior
     String terminosCondiciones
     String rutaCss
+    String wsdlMotorDeDecision
+    int ejecutarMotorEnPaso
     boolean aplicacionVariable = false
     
     static constraints = {
@@ -40,6 +42,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         colorGradienteSuperior (blank: false)
         terminosCondiciones (blank: false)
         rutaCss (nullable: true)
+        wsdlMotorDeDecision (nullable: true)
     }
 
     static mapping = {

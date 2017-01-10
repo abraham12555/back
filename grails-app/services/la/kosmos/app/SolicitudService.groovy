@@ -177,8 +177,8 @@ class SolicitudService {
                     direccionCliente.tiempoDeResidencia = (datosPaso.direccionCliente.tiempo ? (datosPaso.direccionCliente.tiempo as int) : 0)
                     direccionCliente.latitud = 0
                     direccionCliente.longitud = 0
-                    direccionCliente.tiempoDeEstadia = ((datosPaso.direccionCliente.tiempoDeResidencia?.mes && datosPaso.direccionCliente.tiempoDeResidencia?.anio) ? (datosPaso.direccionCliente.tiempoDeResidencia?.mes + "/" + datosPaso.direccionCliente.tiempoDeResidencia?.anio) : null)
-                    direccionCliente.tiempoDeVivienda = ((datosPaso.direccionCliente.tiempoDeVivir?.mes && datosPaso.direccionCliente.tiempoDeVivir?.anio) ? (datosPaso.direccionCliente.tiempoDeVivir?.mes + "/" + datosPaso.direccionCliente.tiempoDeVivir?.anio) : null)
+                    direccionCliente.tiempoDeEstadia = ((datosPaso.direccionCliente.tiempoDeResidencia?.mes && datosPaso.direccionCliente.tiempoDeResidencia?.anio) ? ((datosPaso.direccionCliente.tiempoDeResidencia?.mes?.padLeft(2, '0')) + "/" + datosPaso.direccionCliente.tiempoDeResidencia?.anio) : null)
+                    direccionCliente.tiempoDeVivienda = ((datosPaso.direccionCliente.tiempoDeVivir?.mes && datosPaso.direccionCliente.tiempoDeVivir?.anio) ? ((datosPaso.direccionCliente.tiempoDeVivir?.mes?.padLeft(2, '0')) + "/" + datosPaso.direccionCliente.tiempoDeVivir?.anio) : null)
                     if(direccionCliente.save(flush:true)){
                         println("La dirección se ha registrado correctamente")
                         datosPaso.direccionCliente.idDireccion = direccionCliente.id
@@ -219,8 +219,8 @@ class SolicitudService {
                     empleoCliente.ciudad = (datosPaso.empleoCliente.municipio ? Municipio.get(datosPaso.empleoCliente.municipio) : null)
                     empleoCliente.cliente = cliente
                     empleoCliente.ocupacion = ( datosPaso.empleoCliente.ocupacion ? Ocupacion.get(datosPaso.empleoCliente.ocupacion as long) : null)
-                    empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? (datosPaso.empleoCliente.antiguedad?.mes + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
-                    empleoCliente.ingresosFijos = (datosPaso.empleoCliente.ingresosFIjos ? datosPaso.empleoCliente.ingresosFijos as float : 0)
+                    empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? ((datosPaso.empleoCliente.antiguedad?.mes?.padLeft(2, '0')) + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
+                    empleoCliente.ingresosFijos = (datosPaso.empleoCliente.ingresosFijos ? datosPaso.empleoCliente.ingresosFijos as float : 0)
                     empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
                     empleoCliente.gastos = (datosPaso.empleoCliente.gastos ? datosPaso.empleoCliente.gastos as int : 0)
                     if(empleoCliente.save(flush:true)){
@@ -301,6 +301,9 @@ class SolicitudService {
                 }
             }
         } else if (pasoEnviado.tipoDePaso.nombre == "consultaBancaria"){
+            if(!datosPaso.consultaBancaria){
+                datosPaso.consultaBancaria = [:]
+            }
             datosPaso.consultaBancaria.depositoPromedio = (params.depositos ? params.depositos :null)
             datosPaso.consultaBancaria.retiroPromedio = (params.retiros ? params.retiros :null)
             datosPaso.consultaBancaria.saldoPromedio = (params.saldo ? params.saldo :null)
@@ -309,6 +312,9 @@ class SolicitudService {
             datosPaso.consultaBancaria.retiroCorrecto=(params.retiroCorrecto ? params.retiroCorrecto:null)
             datosPaso.consultaBancaria.saldoCorrecto=(params.saldoCorrecto ? params.saldoCorrecto:null)
         } else if (pasoEnviado.tipoDePaso.nombre == "consultaBuro"){
+            if(!datosPaso.consultaBuro){
+                datosPaso.consultaBuro = [:]
+            }
             datosPaso.consultaBuro.tCredito=(params.tCredito ? params.tCredito:null)
             datosPaso.consultaBuro.creditoA=(params.creditoA ? params.creditoA:null)
             datosPaso.consultaBuro.creditoH=(params.creditoH ? params.creditoH:null)
@@ -373,7 +379,7 @@ class SolicitudService {
         return respuesta 
     }
     
-    def guardarDocumentoTemporal(def archivo, def tipoDeDocumento){
+    def guardarDocumentoTemporal(def archivo, def tipoDeDocumento, def ephesoft){
         def respuesta = null
         if(archivo){
             def documento = new DocumentoTemporal()
@@ -383,7 +389,7 @@ class SolicitudService {
             } else if(tipoDeDocumento == "Identicaciones" || tipoDeDocumento == "Pasaportes"){
                 documento.tipoDeDocumento = TipoDeDocumento.get(2)
             } 
-            documento.rutaDelArchivo = "/var/uploads/kosmos/temporales" + "/" + archivo.nombreDelArchivo + ".pdf"
+            documento.rutaDelArchivo = "/var/uploads/kosmos/temporales" + "/" + archivo.nombreDelArchivo + (ephesoft ? ".pdf" : "")
             if(documento.save(flush:true)){
                 def subdir = new File("/var/uploads/kosmos/temporales/")
                 subdir.mkdir()
@@ -394,7 +400,7 @@ class SolicitudService {
                 fos << archivo.archivo
                 }
                 }*/
-                def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
+                def fis = new FileInputStream("/tmp/" + (ephesoft ? "BCC_Doc0.pdf" : archivo.nombreDelArchivo ))
                 def fos = new FileOutputStream(documento.rutaDelArchivo)
                 fos << fis
                 fis.close()
@@ -813,5 +819,46 @@ class SolicitudService {
         byte[] array = Files.readAllBytes((newFile).toPath()); 
         base64 = Base64.encodeBase64String(array)
         return base64
+    }
+    
+    def construirDatosMotorDeDecision(def identificadores){
+        def datos = [:]
+        println ("Identificadores: " + identificadores)
+        def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud)
+        def productoSolicitud = ProductoSolicitud.get(identificadores.idProductoSolicitud)
+        def direccion = DireccionCliente.get(identificadores.idDireccion)
+        def empleo = EmpleoCliente.get(identificadores.idEmpleo)
+        datos.riesgoGeografico = "GEOGRAFICOI"
+        datos.plazo = productoSolicitud.plazos
+        datos.periodicidad = productoSolicitud.periodicidad.nombre.toUpperCase()
+        datos.cuoIngfu = new Double(0.94969275)
+        datos.riesgoOcupacion = "OCUPACIONI"
+        datos.edad = calcularTiempoTranscurrido(solicitud.cliente.fechaDeNacimiento)
+        datos.cobSldPas12 = new Double(0.86204414)
+        datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.toUpperCase()
+        datos.productoServicio = productoSolicitud.producto.claveDeProducto
+        datos.indicaPasNoVista = "NO"
+        datos.antiguedadVivienda = calcularTiempoTranscurrido(new Date().parse("dd/MM/yyyy", ("01/" + direccion.tiempoDeVivienda)))
+        datos.hist12Hist24 = new Double(3)
+        datos.mopPeorSis = new Double(6)
+        datos.dsptoCon = new Double(0.12)
+        datos.conoe1ConD1 = productoSolicitud.producto.nombreDelProducto
+        datos.conoe1conOe = new Double(1.11)
+        datos.ingresosFijosMensuales = new Double(empleo.ingresosFijos)
+        datos.ingresosVariablesMensuales = new Double(empleo.ingresosVariables)
+        datos.gastoMensuales = new Double(empleo.gastos)
+        datos.cuotaMensualCredito = new Double(productoSolicitud.montoDelPago)
+        println "Regresando: " + datos
+        datos
+    }
+    
+    def calcularTiempoTranscurrido(def fechaAComparar){
+        def aniosTranscurridos = 0
+        use(groovy.time.TimeCategory) {
+            def duration = (new Date()) - fechaAComparar
+            println("Han transcurrido ${duration.years}...")
+            aniosTranscurridos = duration.years
+        }
+        aniosTranscurridos
     }
 }

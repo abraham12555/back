@@ -72,7 +72,7 @@ class BuroDeCreditoService {
 						  soap.append("<ApellidoAdicional></ApellidoAdicional>")
 						  soap.append("<PrimerNombre>"+datosPersonales?.nombre.toUpperCase()+"</PrimerNombre>")
 						  soap.append("<SegundoNombre></SegundoNombre>")
-						  soap.append("<FechaNacimiento>"+obtenerFechaTipo2("${datosPersonales?.dia}","${datosPersonales?.mes}","${datosPersonales?.anio}")+"</FechaNacimiento>")
+						  soap.append("<FechaNacimiento>"+obtenerFechaTipo2("${datosPersonales?.fechaDeNacimiento.dia}","${datosPersonales?.fechaDeNacimiento.mes}","${datosPersonales?.fechaDeNacimiento.anio}")+"</FechaNacimiento>")
 						  soap.append("<RFC>${datosPersonales?.rfc}</RFC>")
 						  soap.append("<Prefijo></Prefijo>")
 						  soap.append("<Sufijo></Sufijo>")
@@ -84,7 +84,7 @@ class BuroDeCreditoService {
 						  }else{
 						  	soap.append("<EstadoCivil>M</EstadoCivil>")
 						  }
-						  if(datosPersonales?.sexo == 1){
+						  if(datosPersonales?.genero == 1){
 							 soap.append("<Sexo>M</Sexo>")  
 						  }else{
 						  soap.append("<Sexo>F</Sexo>")
@@ -98,10 +98,10 @@ class BuroDeCreditoService {
 					   soap.append("</Nombre>")
 					   soap.append("<Domicilios>")
 						  soap.append("<Domicilio>")
-							 soap.append("<Direccion1>"+direccion?.calle.toUpperCase()+" "+direccion?.noExterior.toUpperCase()+" "+direccion?.noInterior.toUpperCase()+"</Direccion1>")
+							 soap.append("<Direccion1>"+direccion?.calle.toUpperCase()+" "+direccion?.numeroExterior.toUpperCase()+" "+direccion?.numeroInterior.toUpperCase()+"</Direccion1>")
 							 soap.append("<Direccion2></Direccion2>")
 							 soap.append("<ColoniaPoblacion>"+direccion?.colonia.toUpperCase()+"</ColoniaPoblacion>")
-							 Municipio municipio = Municipio.findById(direccion?.municipio)
+							 Municipio municipio = Municipio.findById(direccion?.delegacion)
 							 soap.append("<DelegacionMunicipio>"+municipio.nombre.toUpperCase()+"</DelegacionMunicipio>")
 							 soap.append("<Ciudad></Ciudad>")
 							 Estado estado = Estado.findById(direccion?.estado)

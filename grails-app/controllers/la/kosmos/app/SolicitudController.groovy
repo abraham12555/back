@@ -26,9 +26,10 @@ import static java.lang.Double.parseDouble
 class SolicitudController {
     def ephesoftService
     def solicitudService
-	
+    def documentSenderService
     def saltEdgeService
     def buroDeCreditoService
+    def motorDeDecisionService
 	
     int timeWait = 500
     def maximumAttempts = 100
@@ -49,6 +50,7 @@ class SolicitudController {
             session.datosLogin = null
             session.yaUsoLogin = null
             session.pasosDelCliente = null
+            session.motorDeDecisionConsultado = null
             session["pasoFormulario"] = null
             session["consultaBancos"] = null
             session["consultaBuro"] = null
@@ -622,6 +624,11 @@ class SolicitudController {
             if(siguientePaso == 0){
                 session.invalidate()
                 render modelo as JSON
+            } else if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
+                if(session.identificadores){
+                    def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
+                    motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
+                }
             } else {
                 def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
                 camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
@@ -714,6 +721,8 @@ class SolicitudController {
         def fileNames = request.getFileNames()
         def listaDeArchivos = []
         def mapa
+        def respuesta
+        def ephesoft = false
         fileNames.each{ fileName ->
             def uploadedFile = request.getFile(fileName)
             def fileLabel = ".${uploadedFile.originalFilename.split("\\.")[-1]}"
@@ -728,16 +737,23 @@ class SolicitudController {
             mapa.extension = fileLabel.toLowerCase()
             listaDeArchivos << mapa
         }
-        def respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos,params.docType);
-        if(respuesta?.vigente == true){
-            session.respuestaEphesoft = respuesta
+        if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
+            def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
+            respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud ,respuestaPreliminar.dossierId)
+
+        }else{
+            respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos,params.docType);
+            ephesoft = true
+        }
+        if(!respuesta?.error || respuesta?.vigente == true){
+            session["pasoFormulario"] = respuesta
             session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
             if(session.identificadores){
                 solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
             } else if(session.archivoTemporal){
                 
             } else {
-                session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType)
+                session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
             }
         }
         println respuesta
@@ -746,7 +762,7 @@ class SolicitudController {
     
     def consultarBuroDeCredito(){
         println "CONSULTA DE BURO DE CREDITO...." 
-        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["datosPaso1"],session["datosPaso2"],SolicitudDeCredito.get(session.identificadores.idSolicitud))
+        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud))
         render respuesta as JSON
     }
     
@@ -889,6 +905,7 @@ class SolicitudController {
             camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
             parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
             if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                println ("PasoFormulario: " + session["pasoFormulario"] + ", OCR: " + session.respuestaEphesoft)
                 modelo = [configuracion: configuracion,
                     logueado: session.yaUsoLogin,
                     pasosDeSolicitud: pasosDeSolicitud,
