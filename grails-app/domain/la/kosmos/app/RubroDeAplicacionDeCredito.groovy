@@ -7,12 +7,14 @@ class RubroDeAplicacionDeCredito implements Serializable{
     String descripcion
     String claseIconoPaso
     boolean activo = true
+    String urlImagen
     
     static constraints = {
         entidadFinanciera (nullable: false)
         nombre (blank: false)
         descripcion (blank: false)
         claseIconoPaso (nullable: true)
+        urlImagen (nullable: true)
     }
     
     static mapping = {

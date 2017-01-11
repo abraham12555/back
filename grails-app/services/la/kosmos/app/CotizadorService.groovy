@@ -1,6 +1,8 @@
 package la.kosmos.app
 
 import grails.transaction.Transactional
+import org.apache.commons.codec.binary.Base64
+import java.nio.file.Files;
 
 @Transactional
 class CotizadorService {
@@ -12,6 +14,7 @@ class CotizadorService {
         def x = 0
         def entidadFinanciera = EntidadFinanciera.get(((params.ef) ? (params.ef as long) : 13)) //TODO Recibir parametro por POST/GET para buscar dinamicamente la entidad financiera a conectarse
         def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+        def landingImage = obtenerBase64Imagenes(configuracion.imagenDefault)
         def pasosCotizador = PasoCotizadorEntidadFinanciera.findAllWhere(entidadFinanciera: entidadFinanciera, cargaInicial: true)
         def tiposDePaso = (pasosCotizador*.tipoDePaso as Set)
         while(x < tiposDePaso.size()){
@@ -41,6 +44,16 @@ class CotizadorService {
         }
         productos = productos.sort { it.id }
         pasosCotizador = pasosCotizador.sort { it.numeroDePaso }
-        [productos: productos, documentos: documentos, tiposDeProducto: tiposDeProducto, entidadFinanciera: entidadFinanciera, pasosCotizador: pasosCotizador, periodicidadList: Periodicidad.list(), configuracion: configuracion]
+        [productos: productos, documentos: documentos, tiposDeProducto: tiposDeProducto, entidadFinanciera: entidadFinanciera, pasosCotizador: pasosCotizador, periodicidadList: Periodicidad.list(), configuracion: configuracion, landingImage: landingImage]
+    }
+    
+    def obtenerBase64Imagenes(def ruta){
+        def respuesta = [:]
+        if(ruta){
+            byte[] array = Files.readAllBytes(new File(ruta).toPath());
+            respuesta.base64 = Base64.encodeBase64String(array)
+            respuesta.extension =  ruta.split("\\.")[-1]
+        }
+        return respuesta
     }
 }

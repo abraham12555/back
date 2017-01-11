@@ -224,6 +224,7 @@ function stepAction(step, tipoDePaso, elm) {
         if (aplicacionVariable === "true") {
             obtenerPasos(productSelected, step, elm);
             $('#txtRubro').val(productSelected);
+            cargarImagen('rubroId', productSelected);
         } else {
             initProduct(productSelected);
             obtenerModelos(productSelected);
@@ -357,6 +358,8 @@ function obtenerPasos(rubro, paso, elm) {
             var parentStep = $(".cotizadorStep[data-step='" + paso + "']");
             lastStep = Number($('#ultimoPaso').val());
             habilitarPaso(step, lastStep, parentStep);
+            actualizarTexto('nombreDelProducto', $(elm).data('nombre').toUpperCase());
+            actualizarTexto('precioDelProducto', ' ');
             actualizarTexto('descripcionDelProducto', $(elm).data('descripcion'));
             actualizarTexto('productoElegido', $(elm).data('nombre'));
         },
@@ -763,4 +766,42 @@ function openModal(divModal) {
 
 function closeModal(divModal) {
     $('#' + divModal).fadeOut();
+}
+
+function cargarImagen(tipo, identificador) {
+    $.ajax({
+        type: 'POST',
+        data: (tipo + '=' + identificador),
+        url: "/kosmos-app/cotizador/cargarImagen",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.extension !== undefined && respuesta.base64 !== undefined) {
+                $('#imagenDelProducto').animate({
+                    opacity: 0
+                }, 'fast', function () {
+                    $(this).css({
+                        'background-image': 'url("data:image/' + respuesta.extension + ';base64,' + respuesta.base64 + '")',
+                        'background-size': '95%'
+                    }).animate({
+                        opacity: 1
+                    });
+                });
+            } else {
+                ///kosmos-app/images/cajaLibertad/logo.png
+                $('#imagenDelProducto').animate({
+                    opacity: 0
+                }, 'fast', function () {
+                    $(this).css({
+                        'background-image': 'url("/kosmos-app/images/no-disponible.png")',
+                        'background-size': '50%'
+                    }).animate({
+                        opacity: 1
+                    });
+                });
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            
+        }
+    });
 }

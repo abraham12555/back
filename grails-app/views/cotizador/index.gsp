@@ -20,10 +20,10 @@
                         <h3 id="precioDelProducto" class="darkBluetitle font30 fontWeight400 marginBottom20">
                             ${configuracion.textoMontoDefault}
                         </h3>
-                        <div id="imagenDelProducto" class="cotizador-bg none800" style="background-image: url('${configuracion.imagenDefault}');">
+                        <div id="imagenDelProducto" class="cotizador-bg none800" style="background-image: url('data:image/${landingImage.extension};base64,${landingImage.base64}');">
                             <div class="cotizador-bae"></div>
                         </div>
-                        <div class="paddingAside10">
+                        <div class="paddingAside10" style='margin-top: 30px;'>
                             <p id="descripcionDelProducto" class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
                                 ${configuracion.textoDescripcionDefault}
                             </p>

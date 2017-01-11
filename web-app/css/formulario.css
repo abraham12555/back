@@ -2352,11 +2352,10 @@ body{
 }
 
 .cotizador-bg{
-    background-image: url(../images/nissan/2016-maxima-azul-v1.png);
-    background-position: left bottom;
+    background-position: center;
     background-repeat: no-repeat;
-    background-size: 100%;
-    height: 320px;
+    background-size: 95%;
+    height: 350px;
 }
 
 .cotizadorStep{

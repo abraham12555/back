@@ -24,6 +24,7 @@ class CotizadorController {
         def respuesta = cotizadorService.cargarCatalogos(params)
         session.ef = respuesta.entidadFinanciera
         session.configuracion = respuesta.configuracion
+        
         respuesta
         //}
     }
@@ -186,5 +187,18 @@ class CotizadorController {
         } else {
             redirect(controller: "cotizador", action: "index")
         }
+    }
+    
+    def cargarImagen(){
+        println params
+        def respuesta = [:]
+        if(params.rubroId){
+            def rubro = RubroDeAplicacionDeCredito.get(params.rubroId as long)
+            respuesta = cotizadorService.obtenerBase64Imagenes(rubro.urlImagen)
+        } else if(params.productoId){
+            def producto = Producto.get(params.productoId as long);
+            respuesta = cotizadorService.obtenerBase64Imagenes(producto.rutaImagenDefault)
+        }
+        render respuesta as JSON
     }
 }
