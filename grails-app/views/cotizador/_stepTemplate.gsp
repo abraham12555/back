@@ -15,7 +15,7 @@
                     <div class="col5 floatRight">
                         <div class="floatRight paddingTop18 marginBottom15">
                             <div class="borderGrayButton marginBottom15">
-                                <p class="center paddingTop10 paddingBottom10 cambiar">Cambiar</p>
+                                <p class="center paddingTop10 paddingBottom10 cambiar pointer">Cambiar</p>
                             </div>
                         </div>
                     </div>
@@ -32,6 +32,12 @@
                         <p id="engancheElegido2" class="lightBlue floatRight font20"></p>
                         <div class="clearFloat"></div>
                     </g:if>
+                    <g:elseif test="${paso.tipoDePaso.nombre == "stepMontoCredito"}">
+                        <center>
+                        <p id="montoElegido2" class="darkBluetitle floatRight font20"></p>
+                        <div class="clearFloat"></div>
+                        </center>
+                    </g:elseif>
 
                     <div id="${paso.idListaAjax}" class="cotizador-p1-buttons clearFix">
                         <g:render template="${paso.idListaAjax}"/>

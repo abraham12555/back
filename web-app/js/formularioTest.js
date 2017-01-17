@@ -492,7 +492,14 @@ function mostrarSiguienteCampo(index) {
                 indice++;
             }
         }
+    } else if (prellenado === "true") {
+        if ($('.showOnFill').eq(index + 1).hasClass('noMostrar') === false) {
+            $('.showOnFill').eq(index + 1).fadeIn();
+            $('.showOnFill').eq(index + 1).css({'display': 'inline'});
+            checkInputs();
+        }
     }
+    
     var elementosLlenosVisibles = $('.notEmpty:visible').length;
     var totalElementosVisibles = $('.formStep:visible .formValues').length;
     var totalElementosRequeridos = $('.required .formValues').length;

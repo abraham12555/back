@@ -163,7 +163,7 @@ function initActions() {
         stepAction(step, tipoDePaso, $(this));
         console.log("Tipo de Paso: " + tipoDePaso + " - aplicacion variable: " + $('#aplicacionVariable').val());
         if ((tipoDePaso !== "stepProducto" && $('#aplicacionVariable').val() === "true") || ($('#aplicacionVariable').val() === "false")) {
-            console.log("Antes de Habilitar Paso");
+            console.log("Antes de Habilitar Paso " + step);
             habilitarPaso(step, lastStep, parentStep);
         }
     });
@@ -187,10 +187,14 @@ function habilitarPaso(step, lastStep, parentStep) {
         $(parentStep).find('.actionsDiv').slideUp();
         $(parentStep).find('.stepShadow').fadeOut();
         //Show next step
+        var tipoDePaso = $('.cotizadorStep').eq((step)).data('tipoDePaso');
         $('.cotizadorStep').eq((step)).css({'opacity': '1'}).find('.stepShadow').fadeIn();
         $('.cotizadorStep').eq((step)).find('.actionsDiv').slideDown();
         $('.cotizadorStep').eq((step)).find('.summaryDiv').slideUp();
         //Slightly Show next step
+        if(tipoDePaso === 'stepRegistro'){
+            iniciarFormularioRegistro();
+        }
         if (step < lastStep) {
             $('.cotizadorStep').eq((step + 1)).css({'opacity': '0.2'}).find('.stepShadow').hide();
         }
@@ -252,7 +256,7 @@ function stepAction(step, tipoDePaso, elm) {
         $("#modeloElegido3").html(modelName);
         $("#txtModelo").val(modelID);
         obtenerColores(modelID);
-        obtenerSeguros(modelID)
+        obtenerSeguros(modelID);
         montoElegido = priceSelected;
     } else if (tipoDePaso === "stepColor") {
         var colorID = $(elm).data('id');
@@ -508,7 +512,7 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
                  html += "</div>";
                  html += "</div>";
                  html += "</div>";*/
-                html += "<h1 class='dark-blue-titles font20 fontWeight400 letterspacing1 marginBottom20 clearFloat'><span id='pagosleyenda'>¿En Cuántas " + respuesta.periodicidad.nomenclatura + " Pagarás tu Crédito?</span></h1>";
+                html += "<h1 class='dark-blue-titles font20 fontWeight400 letterspacing1 marginBottom20 clearFloat' style='color:#005398;'><span id='pagosleyenda'>¿En Cuántas " + respuesta.periodicidad.nomenclatura + " Pagarás tu Crédito?</span></h1>";
                 html += "<div class='marginTop52'>";
                 html += "<div class='marginBottom25 clearFix loading-bar-container inner marginBottom40'>";
                 html += "<div id='listaDeFrecuencias' class='loading-bar-line blueButton autoMargin'>";
@@ -552,7 +556,7 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
 /***** Borrar la siguiente functiones, simulacion Ajax  ******/
 
 function fakeAjax(action, id) {
-    if (action == 'model') {
+    if (action === 'model') {
 //Replace with info from Database
         var models = new Array('SENSE 2.5L´17', 'ADVANCE 2.5L´17', 'ARMOR CVT ´16', 'ADVANCE 2 ROW ´17', 'ADVANCE CVT 3.5LTS ´16', 'EXCLUSIVE CVT 3.5LTS ´16', 'EXCLUSIVE CVT MY´17', 'SENSE MT MY´17');
         var prices = new Array('346000', '383000', '415000', '480000', '256000', '288000', '401000', '460000');
@@ -563,7 +567,7 @@ function fakeAjax(action, id) {
         str_models += '</div>';
         return str_models;
     }
-    if (action == 'color') {
+    if (action === 'color') {
         var modelColor = new Array('Azul', 'Gris', 'Rojo', 'Blanca', 'Negra', 'Verde', 'Azul', 'Gris', 'Rojo', 'Blanco', 'Gris', 'Negro');
         var str_colors = '<div class="col6 floatLeft marginBottom10 modelOption">';
         str_colors += '<div class="paddingAside5">';
@@ -573,20 +577,21 @@ function fakeAjax(action, id) {
         return str_colors;
     }
 
-    if (action == 'colorBG') {
+    if (action === 'colorBG') {
         var modelColorBG = new Array('../kosmos-app/images/nissan/2016-maxima-azul.png',
                 '../kosmos-app/images/nissan/2016-maxima-azul.png',
                 '../kosmos-app/images/nissan/2016-maxima-gris.png',
                 '../kosmos-app/images/nissan/2016-maxima-rojo.png',
-                '../kosmos-app/images/nissan/2016-altima-azul.png',
-                '../kosmos-app/images/nissan/2016-altima-gris_2.png',
-                '../kosmos-app/images/nissan/2016-altima-rojo.png',
                 '../kosmos-app/images/nissan/2016-sentra-blanco.png',
                 '../kosmos-app/images/nissan/2016-sentra-gris.png',
                 '../kosmos-app/images/nissan/2016-sentra-negro.png',
+                '../kosmos-app/images/nissan/2016-altima-azul.png',
+                '../kosmos-app/images/nissan/2016-altima-gris_2.png',
+                '../kosmos-app/images/nissan/2016-altima-rojo.png',
                 '../kosmos-app/images/nissan/2016-xtrail-blanca.png',
                 '../kosmos-app/images/nissan/2016-xtrail-negra.png',
                 '../kosmos-app/images/nissan/2016-xtrail-verde.png');
+        console.log("-------> Seleccionado el color: " + modelColorBG[id] + " - id " + id);
         return modelColorBG[id];
     }
 }
@@ -781,7 +786,8 @@ function cargarImagen(tipo, identificador) {
                 }, 'fast', function () {
                     $(this).css({
                         'background-image': 'url("data:image/' + respuesta.extension + ';base64,' + respuesta.base64 + '")',
-                        'background-size': '95%'
+                        'background-size': '95%',
+                        'background-position': 'left center'
                     }).animate({
                         opacity: 1
                     });
@@ -793,7 +799,8 @@ function cargarImagen(tipo, identificador) {
                 }, 'fast', function () {
                     $(this).css({
                         'background-image': 'url("/kosmos-app/images/no-disponible.png")',
-                        'background-size': '50%'
+                        'background-size': '50%',
+                        'background-position': 'center'
                     }).animate({
                         opacity: 1
                     });

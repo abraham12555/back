@@ -56,6 +56,10 @@
                                 </div>
                             </div>
                             <div class="paddingAside10" style="margin-top: 10%;">
+                                <p class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
+                                <strong>*</strong> Se agrega un seguro de deuda en todos los financiamientos.
+                                </p>
+                                <br/>
                                 <p id="terminosYCondiciones" class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
                                     Al dar clic en <strong>Comenzar mi Solicitud</strong> aceptas los <a class="pointer" onclick="openModal('modalTerminosCondiciones');" style="text-decoration: underline;">Términos y Condiciones
                                     y Aviso de Privacidad</a>

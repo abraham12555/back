@@ -9,7 +9,7 @@ class SolicitudService {
     
     def dataSource
 
-    def construirDatosTemporales(def datosPreguardados, def params, def pasoEnviado, def identificadores, entidadFinanciera) {
+    def construirDatosTemporales(def datosPreguardados, def params, def pasoEnviado, def identificadores, def entidadFinanciera, def token, def shortUrl) {
         println "Contenido del Mapa: " + datosPreguardados + " - Parametros Enviados:" + params +" - Paso Enviado: " +pasoEnviado + " - Identificadores: " + identificadores
 	def cliente
         def clienteNuevo = false
@@ -135,6 +135,8 @@ class SolicitudService {
                         solicitudDeCredito.entidadFinanciera = entidadFinanciera
                         solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
                         solicitudDeCredito.cliente = cliente
+                        solicitudDeCredito.token = token
+                        solicitudDeCredito.shortUrl = shortUrl
                         if(solicitudDeCredito.save(flush: true)){
                             println "Si se guardo la solicitud: " + solicitudDeCredito?.id
                             datosPaso.cliente.idSolicitud = solicitudDeCredito.id
@@ -860,5 +862,131 @@ class SolicitudService {
             aniosTranscurridos = duration.years
         }
         aniosTranscurridos
+    }
+    
+    def continuarSolicitud(def solicitud){
+        def datosSolicitud = [:]
+        def cliente = solicitud.cliente
+        def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: solicitud.entidadFinanciera)
+        def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud)
+        def direccionCliente = DireccionCliente.findWhere(cliente: solicitud.cliente, vigente: true)
+        def empleoCliente = EmpleoCliente.findWhere(cliente: solicitud.cliente)
+        def telefonosCliente = TelefonoCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
+        def emailCliente = EmailCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
+        def documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
+        datosSolicitud.identificadores = [:]
+        datosSolicitud.pasoFormulario = [:]
+        datosSolicitud.cotizador = [:]
+        datosSolicitud.token = solicitud.token
+        datosSolicitud.shortUrl = solicitud.shortUrl
+        datosSolicitud.ultimoPaso = solicitud.ultimoPaso
+        datosSolicitud.entidadFinanciera = solicitud.entidadFinanciera
+        datosSolicitud.configuracion = configuracion
+        datosSolicitud.identificadores.idSolicitud = solicitud.id
+        datosSolicitud.identificadores.idCliente = cliente.id
+        datosSolicitud.identificadores.idProductoSolicitud = productoSolicitud.id
+        datosSolicitud.pasoFormulario.cliente = [:]
+        datosSolicitud.pasoFormulario.cliente.nombre = cliente.nombre
+        datosSolicitud.pasoFormulario.cliente.apellidoPaterno = cliente.apellidoPaterno
+        datosSolicitud.pasoFormulario.cliente.apellidoMaterno =  cliente.apellidoMaterno
+        datosSolicitud.pasoFormulario.cliente.lugarDeNacimiento = cliente.lugarDeNacimiento.id
+        datosSolicitud.pasoFormulario.cliente.nacionalidad = cliente.nacionalidad.id
+        datosSolicitud.pasoFormulario.cliente.fechaDeNacimiento = [:]
+        datosSolicitud.pasoFormulario.cliente.fechaDeNacimiento.dia = (cliente.fechaDeNacimiento.format("dd") as int)
+        datosSolicitud.pasoFormulario.cliente.fechaDeNacimiento.mes = (cliente.fechaDeNacimiento.format("MM") as int)
+        datosSolicitud.pasoFormulario.cliente.fechaDeNacimiento.anio = (cliente.fechaDeNacimiento.format("yyyy") as int)
+        datosSolicitud.pasoFormulario.cliente.curp = cliente.curp
+        datosSolicitud.pasoFormulario.cliente.genero = cliente.genero.id
+        datosSolicitud.pasoFormulario.cliente.rfc = cliente.rfc
+        datosSolicitud.pasoFormulario.cliente.estadoCivil = (cliente.estadoCivil ? cliente.estadoCivil.id : null)
+        datosSolicitud.pasoFormulario.cliente.nivelEducativo = (cliente.nivelEducativo ? cliente.nivelEducativo.id : null)
+        datosSolicitud.pasoFormulario.cliente.dependientesEconomicos = cliente.dependientesEconomicos
+        datosSolicitud.pasoFormulario.cliente.nombreDelConyugue = cliente.nombreDelConyugue
+        datosSolicitud.pasoFormulario.cliente.regimenMatrimonial = (cliente.regimenMatrimonial ? cliente.regimenMatrimonial.id : null)
+        datosSolicitud.pasoFormulario.cliente.apellidoPaternoDelConyugue = cliente.apellidoPaternoDelConyugue
+        datosSolicitud.pasoFormulario.cliente.apellidoMaternoDelConyugue = cliente.apellidoMaternoDelConyugue
+        
+        datosSolicitud.cotizador.rubro = (productoSolicitud.rubroDeAplicacion ? productoSolicitud.rubroDeAplicacion.id : null)
+        datosSolicitud.cotizador.producto = productoSolicitud.producto.id
+        datosSolicitud.cotizador.documento = (productoSolicitud.documentoElegido ? productoSolicitud.documentoElegido.id : null)
+        datosSolicitud.cotizador.montoCredito = productoSolicitud.montoDelCredito
+        datosSolicitud.cotizador.montoSeguro = productoSolicitud.montoDelSeguroDeDeuda
+        datosSolicitud.cotizador.pagos = productoSolicitud.montoDelPago
+        datosSolicitud.cotizador.atrasos = productoSolicitud.haTenidoAtrasos
+        datosSolicitud.cotizador.color = (productoSolicitud.colorModelo ? productoSolicitud.colorModelo.id : null)
+        datosSolicitud.cotizador.enganche = productoSolicitud.enganche
+        datosSolicitud.cotizador.periodo = (productoSolicitud.periodicidad ? productoSolicitud.periodicidad.id : null)
+        datosSolicitud.cotizador.plazo = productoSolicitud.plazos
+        
+        if(cliente.fechaDeNacimientoDelConyugue){
+            datosSolicitud.pasoFormulario.cliente.fechaDeNacimientoDelConyugue = [:]
+            datosSolicitud.pasoFormulario.cliente.fechaDeNacimientoDelConyugue.dia = (cliente.fechaDeNacimientoDelConyugue.format("dd") as int)
+            datosSolicitud.pasoFormulario.cliente.fechaDeNacimientoDelConyugue.mes = (cliente.fechaDeNacimientoDelConyugue.format("MM") as int)
+            datosSolicitud.pasoFormulario.cliente.fechaDeNacimientoDelConyugue.anio = (cliente.fechaDeNacimientoDelConyugue.format("yyyy") as int)
+        }
+        datosSolicitud.pasoFormulario.cliente.rfcDelConyugue = cliente.rfcDelConyugue
+        datosSolicitud.pasoFormulario.cliente.curpDelConyugue = cliente.curpDelConyugue
+        datosSolicitud.pasoFormulario.cliente.lugarDeNacimientoDelConyugue = (cliente.lugarDeNacimientoDelConyugue ? cliente.lugarDeNacimientoDelConyugue.id : null)
+        datosSolicitud.pasoFormulario.cliente.nacionalidadDelConyugue = (cliente.nacionalidadDelConyugue ? cliente.nacionalidadDelConyugue : null )
+        if(direccionCliente) {
+            datosSolicitud.identificadores.idDireccion = direccionCliente.id
+            datosSolicitud.pasoFormulario.direccionCliente = [:]
+            datosSolicitud.pasoFormulario.direccionCliente.calle = direccionCliente.calle
+            datosSolicitud.pasoFormulario.direccionCliente.ciudad = direccionCliente.ciudad
+            datosSolicitud.pasoFormulario.direccionCliente.numeroExterior = direccionCliente.numeroExterior
+            datosSolicitud.pasoFormulario.direccionCliente.numeroInterior = direccionCliente.numeroInterior
+            datosSolicitud.pasoFormulario.direccionCliente.codigoPostal = direccionCliente.codigoPostal?.codigo
+            datosSolicitud.pasoFormulario.direccionCliente.colonia = direccionCliente.colonia 
+            datosSolicitud.pasoFormulario.direccionCliente.delegacion = direccionCliente.codigoPostal?.municipio?.id
+            datosSolicitud.pasoFormulario.direccionCliente.estado = direccionCliente.codigoPostal?.municipio?.estado?.id
+            datosSolicitud.pasoFormulario.direccionCliente.tipoDeVivienda = direccionCliente.tipoDeVivienda.id
+            datosSolicitud.pasoFormulario.direccionCliente.temporalidad = (direccionCliente.temporalidad ? direccionCliente.temporalidad.id : null)
+            datosSolicitud.pasoFormulario.direccionCliente.tiempo = direccionCliente.tiempoDeResidencia
+            if(direccionCliente.tiempoDeEstadia){
+                def tiempoDeEstadia = direccionCliente.tiempoDeEstadia.split("/")
+                datosSolicitud.pasoFormulario.direccionCliente.tiempoDeResidencia = [:]
+                datosSolicitud.pasoFormulario.direccionCliente.tiempoDeResidencia?.mes = (tiempoDeEstadia[0] as int)
+                datosSolicitud.pasoFormulario.direccionCliente.tiempoDeResidencia?.anio = (tiempoDeEstadia[1] as int)
+            }
+            if(direccionCliente.tiempoDeVivienda){
+                def tiempoDeVivienda = direccionCliente.tiempoDeVivienda.split("/")
+                datosSolicitud.pasoFormulario.direccionCliente.tiempoDeVivir = [:]
+                datosSolicitud.pasoFormulario.direccionCliente.tiempoDeVivir?.mes = (tiempoDeVivienda[0] as int)
+                datosSolicitud.pasoFormulario.direccionCliente.tiempoDeVivir?.anio = (tiempoDeVivienda[1] as int)
+            }
+        }
+        if(empleoCliente){
+            datosSolicitud.identificadores.idEmpleo = empleoCliente.id
+            datosSolicitud.pasoFormulario.empleoCliente = [:]
+            datosSolicitud.pasoFormulario.empleoCliente.puesto = empleoCliente.puesto
+            datosSolicitud.pasoFormulario.empleoCliente.actividad = empleoCliente.actividad
+            datosSolicitud.pasoFormulario.empleoCliente.explicacionActividad = empleoCliente.explicacionActividad
+            datosSolicitud.pasoFormulario.empleoCliente.profesion = (empleoCliente.profesion ? empleoCliente.profesion.id : null)
+            datosSolicitud.pasoFormulario.empleoCliente.contrato = (empleoCliente.tipoDeContrato ? empleoCliente.tipoDeContrato.id : null)
+            datosSolicitud.pasoFormulario.empleoCliente.giroEmpresarial = (empleoCliente.giroEmpresarial ? empleoCliente.giroEmpresarial.id : null)
+            datosSolicitud.pasoFormulario.empleoCliente.empresa = empleoCliente.nombreDeLaEmpresa
+            datosSolicitud.pasoFormulario.empleoCliente.jefeInmediato = empleoCliente.nombreDelJefeInmediato
+            datosSolicitud.pasoFormulario.empleoCliente.periodo = empleoCliente.antiguedad
+            datosSolicitud.pasoFormulario.empleoCliente.plazo = (empleoCliente.temporalidad ? empleoCliente.temporalidad.id : null)
+            datosSolicitud.pasoFormulario.empleoCliente.telefono = empleoCliente.telefono
+            datosSolicitud.pasoFormulario.empleoCliente.calle = empleoCliente.calle = 
+            datosSolicitud.pasoFormulario.empleoCliente.noExterior = empleoCliente.numeroExterior
+            datosSolicitud.pasoFormulario.empleoCliente.noInterior = empleoCliente.numeroInterior
+            datosSolicitud.pasoFormulario.empleoCliente.codigoPostal = empleoCliente.codigoPostal?.codigo
+            datosSolicitud.pasoFormulario.empleoCliente.colonia = empleoCliente.colonia
+            datosSolicitud.pasoFormulario.empleoCliente.delegacion = empleoCliente.codigoPostal?.municipio?.id
+            datosSolicitud.pasoFormulario.empleoCliente.estado = empleoCliente.codigoPostal?.municipio?.estado?.id
+            datosSolicitud.pasoFormulario.empleoCliente.ocupacion = (empleoCliente.ocupacion ? empleoCliente.ocupacion.id : null)
+            if(empleoCliente.fechaIngreso){
+                def fechaIngreso = empleoCliente.fechaIngreso.split("/")
+                datosSolicitud.pasoFormulario.empleoCliente.antiguedad = [:]
+                datosSolicitud.pasoFormulario.empleoCliente.antiguedad.mes = (fechaIngreso[0] as int)
+                datosSolicitud.pasoFormulario.empleoCliente.antiguedad.anio = (fechaIngreso[1] as int)
+            }
+            datosSolicitud.pasoFormulario.empleoCliente.ingresosFijos = empleoCliente.ingresosFijos
+            datosSolicitud.pasoFormulario.empleoCliente.ingresosVariables = empleoCliente.ingresosVariables
+            datosSolicitud.pasoFormulario.empleoCliente.gastos = empleoCliente.gastos
+        }
+        datosSolicitud
     }
 }

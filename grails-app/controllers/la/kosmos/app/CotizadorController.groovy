@@ -1,10 +1,12 @@
 package la.kosmos.app
 
 import grails.converters.JSON
+import java.net.URL
 
 class CotizadorController {
     
     def cotizadorService
+    def smsService
 
     def index() {
         println params
@@ -20,6 +22,10 @@ class CotizadorController {
         session["pasoFormulario"] = null
         session["consultaBancos"] = null
         session["consultaBuro"] = null
+        session.shortUrl = null
+        session.token = null
+        String domain = new URL(request.getRequestURL().toString()).getHost();
+        println "Dominio: " + domain
         //if(params.ef){
         def respuesta = cotizadorService.cargarCatalogos(params)
         session.ef = respuesta.entidadFinanciera
@@ -53,11 +59,13 @@ class CotizadorController {
 
     def obtenerModelos () { //Falta filtrar por Entidad Financiera
         def modelos = Modelo.findAllByProductoAndActivo(Producto.get(params.productoId as long), true)
+        modelos = modelos.sort{ it.id }
         render ( template: 'modelosList', model: [modelosList: modelos])
     }
 
     def obtenerColores() {//Falta filtrar por Entidad Financiera
         def colores = ColorModelo.findAllByModeloAndActivo(Modelo.get(params.modeloId as long), true)
+        colores = colores.sort{ it.id }
         render ( template: 'coloresList', model: [coloresList: colores])
     }
     
@@ -131,6 +139,8 @@ class CotizadorController {
             def producto = Producto.get(params.productoId as long);
             def montoFinanciado = params.montoFinanciado as float
             def periodicidad = Periodicidad.get(params.periodicidadId as long)
+            println "Plazo Elegido: " + params.plazoElegido
+            println "Periodos Anuales: " + periodicidad.periodosAnuales
             def plazoAnual = (((params.plazoElegido as int)/(periodicidad.periodosAnuales)) as float).round()
             println "Plazo Anual: " + plazoAnual
             def seguro = SeguroSobreDeuda.executeQuery('Select s from SeguroSobreDeuda s Where s.entidadFinanciera.id = :entidadFinancieraId and s.montoInicial <= :monto and s.montoFinal >= :monto and s.plazoAnual = :plazoAnual',[entidadFinancieraId: (params.entidadFinancieraId as long), monto: montoFinanciado, plazoAnual: plazoAnual])
@@ -146,7 +156,7 @@ class CotizadorController {
             println "n: " + n
             def c = (montoFinanciado + montoSeguro)
             println "c: " + c
-            def i = (tasaConI/24)
+            def i = (tasaConI/periodicidad.periodosAnuales)
             println "i: " + i
             def renta =  (c / ((1-((1+i)**(-n)))/i))
             respuesta.montoSeguro = montoSeguro
@@ -198,6 +208,38 @@ class CotizadorController {
         } else if(params.productoId){
             def producto = Producto.get(params.productoId as long);
             respuesta = cotizadorService.obtenerBase64Imagenes(producto.rutaImagenDefault)
+        }
+        render respuesta as JSON
+    }
+    
+    def solicitarCodigo() {
+        def respuesta = [:]
+        if(params.telefonoCelular){
+            def toPhone = params.telefonoCelular.replaceAll('-', '') 
+            String sid = smsService.sendSMS(toPhone)
+            if(sid){
+                session.sid = sid
+                respuesta.mensajeEnviado = true
+            } else {
+                respuesta.mensajeEnviado = false
+            }
+        } else {
+            respuesta.mensajeEnviado = false
+        }
+        render respuesta as JSON
+    }
+
+    def resultadoVerificacion() {
+        def respuesta = [:]
+        if(params.codigoConfirmacion){
+            String sid = session.sid
+            String randomCodeTmp = params.codigoConfirmacion
+            println "session.sid -> " + sid
+            println "randomCodeTmp -> " + randomCodeTmp
+            boolean result = smsService.verify(sid, randomCodeTmp)
+            respuesta.resultado = result
+        } else {
+            respuesta.incorrecto = true
         }
         render respuesta as JSON
     }

@@ -1,7 +1,7 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
     <input type="hidden" id="pasoPrellenado" value="${generales?.llenadoPrevio}"/>
     <input type="hidden" id="tituloDelPaso" value="${pasoActual?.titulo}"/>
-    <div class="defaultBubble <g:if test="${pasoActual?.tipoDePaso?.nombre != "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
+    <div class="defaultBubble <g:if test="${pasoActual?.tipoDePaso?.nombre == "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
             <div class="container clearFix relative autoMargin width920">
                 <div class="infoBox floatLeft desktop">
                     <div class="width630 autoMargin">

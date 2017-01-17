@@ -1,0 +1,72 @@
+.register {
+
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); 
+}
+
+.register .row{
+    padding: 30px;
+    margin-bottom: 0;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+.faDos {
+  background-color: white;
+  color: #25a3ff;
+  float: right;
+  margin-top: 20px;
+  font-size: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.input-field label.active {
+    transform: translateY(-100%)
+}
+
+input[type=text]:before {
+    width: 0%;
+}
+
+input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+
+    font-size:1.6rem;
+    border-bottom: 1px solid #005398;
+    box-shadow: 0 1px 0 0 #25a3ff;
+    transition: border .2s ease-in-out;
+    -webkit-transition: border .2s ease-in-out;
+    -moz-transition: border .2s ease-in-out;
+    height: 55px;
+    background-color: #f8f9ff;
+    color: #25a3ff;
+    text-align: left;
+}
+
+input[type=text]:after {
+    width: 93%;
+}
+
+input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea .underline{
+    width: 93%;
+}
+
+input:not([type]):focus:not([readonly]), input[type=text]:focus:not([readonly]), input[type=password]:focus:not([readonly]), input[type=email]:focus:not([readonly]), input[type=url]:focus:not([readonly]), input[type=time]:focus:not([readonly]), input[type=date]:focus:not([readonly]), input[type=datetime]:focus:not([readonly]), input[type=datetime-local]:focus:not([readonly]), input[type=tel]:focus:not([readonly]), input[type=number]:focus:not([readonly]), input[type=search]:focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly]) {
+    transition: border .2s ease-in-out;
+    -webkit-transition: border .2s ease-in-out;
+    -moz-transition: border .2s ease-in-out;
+
+}
+
+input[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #005398;
+}
+
+input[type=text]:focus:not([readonly]).invalid {
+    border-bottom: 1px solid red;
+}
+
+.fa.invalid{
+    color: red;
+}

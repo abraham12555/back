@@ -21,6 +21,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String terminosCondiciones
     String rutaCss
     String wsdlMotorDeDecision
+    String urlDominio
     int ejecutarMotorEnPaso
     boolean aplicacionVariable = false
     

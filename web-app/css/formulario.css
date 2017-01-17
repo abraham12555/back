@@ -2352,7 +2352,7 @@ body{
 }
 
 .cotizador-bg{
-    background-position: center;
+    background-position: left center;
     background-repeat: no-repeat;
     background-size: 95%;
     height: 350px;
@@ -2403,8 +2403,8 @@ body{
 
 .pagos-box{
     border-radius: 2px;
-    border: solid 1px #dfe2f4;
-    color:#71758d;
+    border: solid 1px #005398;
+    color:#005398;
     text-align: center;
     font-size: 18px;
     letter-spacing: 1px;

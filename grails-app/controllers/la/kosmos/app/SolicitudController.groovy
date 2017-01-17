@@ -30,6 +30,7 @@ class SolicitudController {
     def saltEdgeService
     def buroDeCreditoService
     def motorDeDecisionService
+    def urlShortenerService
 	
     int timeWait = 500
     def maximumAttempts = 100
@@ -54,6 +55,8 @@ class SolicitudController {
             session["pasoFormulario"] = null
             session["consultaBancos"] = null
             session["consultaBuro"] = null
+            session.shortUrl = null
+            session.token = null
             //redirect action: "formulario"
             redirect action: "test"
         } else {
@@ -603,7 +606,7 @@ class SolicitudController {
                 }
             }
             println("Paso a avanzar: " + pasoActual);
-            session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef)
+            session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl)
             if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
                 if(!session.identificadores){
                     session.identificadores = [:]
@@ -631,9 +634,11 @@ class SolicitudController {
                 }
             } else {
                 def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
+                def statusDeSolicitud
                 camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
                 parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
                 if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                    statusDeSolicitud = StatusDeSolicitud.get(1)
                     session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
                     modelo = [configuracion: configuracion,
                         logueado: session.yaUsoLogin,
@@ -642,6 +647,7 @@ class SolicitudController {
                         pasoActual:pasoActual,
                         generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
                 } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
+                    statusDeSolicitud = StatusDeSolicitud.get(3)
                     modelo = [configuracion: configuracion,
                         pasosDeSolicitud: pasosDeSolicitud,
                         pasoActual:pasoActual, 
@@ -651,6 +657,7 @@ class SolicitudController {
                     if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
                         municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
                     }
+                    statusDeSolicitud = StatusDeSolicitud.get(3)
                     def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
                     modelo = [configuracion: configuracion,
                         logueado: session.yaUsoLogin,
@@ -664,6 +671,7 @@ class SolicitudController {
                         reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
                         errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
                 } else if(pasoActual.tipoDePaso.nombre == "resumen"){
+                    statusDeSolicitud = StatusDeSolicitud.get(2)
                     def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
                     def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
                     def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
@@ -674,11 +682,18 @@ class SolicitudController {
                         productoSolicitud:productoSolicitud,
                         documentosSubidos: session.tiposDeDocumento]
                 }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
+                    statusDeSolicitud = StatusDeSolicitud.get(4)
                     def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
                     def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
                     modelo = [configuracion: configuracion,
                         productoSolicitud: productoSolicitud,
                         pasoActual:pasoActual]
+                }
+                if(session.identificadores?.idSolicitud){
+                    def solicitud = SolicitudDeCredito.get(session.identificadores?.idSolicitud)
+                    solicitud.ultimoPaso = pasoActual.numeroDePaso
+                    solicitud.statusDeSolicitud = statusDeSolicitud
+                    solicitud.save(flush: true)
                 }
                 render(template: pasoActual.tipoDePaso.nombre, model: modelo)
             }
@@ -883,6 +898,13 @@ class SolicitudController {
             def ponderaciones = [:]
             def parrafos
             def configuracion = session.configuracion//ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+            if(!session.shortUrl) {
+                def resultadoShortener = urlShortenerService.acortarUrl((entidadFinanciera.nombre + session.id), configuracion)
+                if(resultadoShortener.statusCode == 200){
+                    session.token = resultadoShortener.token
+                    session.shortUrl = resultadoShortener.jsonGoogle.id
+                }
+            }
             println entidadFinanciera
             if(session.pasosDelCliente){
                 pasosDeSolicitud = session.pasosDelCliente
@@ -954,6 +976,31 @@ class SolicitudController {
             modelo
         } else{
             redirect action: "index"
+        }
+    }
+    
+    def resume(){
+        println params
+        if(params.token){
+            def solicitud = SolicitudDeCredito.findWhere(token: params.token)
+            if(solicitud){
+                def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
+                def ultimoPaso = datosRecuperados.ultimoPaso
+                session.yaUsoLogin = true
+                session.ef = datosRecuperados.entidadFinanciera
+                session.configuracion = datosRecuperados.configuracion
+                session.cotizador = datosRecuperados.cotizador
+                session.identificadores = datosRecuperados.identificadores
+                session["pasoFormulario"] = datosRecuperados.pasoFormulario
+                session.token = datosRecuperados.token
+                session.shortUrl = datosRecuperados.shortUrl
+                params.keySet().asList().each { params.remove(it) }
+                forward action:'test', params: [paso: ultimoPaso]
+            } else {
+                
+            }
+        } else {
+            
         }
     }
 }

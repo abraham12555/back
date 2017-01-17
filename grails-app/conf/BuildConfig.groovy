@@ -41,9 +41,8 @@ grails.project.dependency.resolution = {
         grailsCentral()
         mavenCentral()
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "https://repo1.maven.org/maven2/"
+        mavenRepo "https://mvnrepository.com/"
     }
 
     dependencies {
@@ -56,6 +55,8 @@ grails.project.dependency.resolution = {
         compile 'org.bouncycastle:bcpkix-jdk15on:1.52'
         compile 'org.json:json:20160212'
         compile 'org.awaitility:awaitility-groovy:2.0.0'
+        compile "com.twilio.sdk:twilio:7.4.0"
+        compile "commons-lang:commons-lang:2.6"
         runtime "com.sun.xml.ws:jaxws-rt:2.1.7"
     }
 

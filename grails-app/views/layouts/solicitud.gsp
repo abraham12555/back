@@ -46,7 +46,7 @@
                             <div id="imagenUsuario" class="floatLeft clearFix" >
                                 <img  class="userPicture floatLeft" src="${resource(dir:'images', file:'profile.png')}"/>
                             </div>
-                            <p id="nombreCliente" class="userName marginTop20 paddingRight5 marginBottom27 floatLeft">¡ Hola ${generales?.nombre ? generales.nombre.toLowerCase().capitalize() : generales?.nombrePersona}!</p>
+                            <p id="nombreCliente" class="userName marginTop20 paddingRight5 marginBottom27 floatLeft">¡ Hola ${generales?.cliente?.nombre ? generales.cliente.nombre.toLowerCase().capitalize() : generales?.nombrePersona}!</p>
                             <div class="dropBox floatLeft marginTop28 marginLeft5 desktop">
                                 <i class="fa fa-angle-down paddingTop2 paddingRight2 paddingLeft5" aria-hidden="true"></i>
                             </div>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="floatRight width337 borderGrayRight borderGrayLeft paddingBottom18 paddingTop19  desktop">
                             <div class="urlBox autoMargin">
-                                <p class="letterspacing0.8 font14 paddingTop10 paddingRight36 paddingBottom10 paddingLeft25 center ">TU URL: KSM.os/ER45</p>
+                                <p class="letterspacing0.8 font14 paddingTop10 paddingRight36 paddingBottom10 center ">TU URL: <strong>${session.shortUrl}</strong></p>
                             </div>
                         </div>
                         <div class="salvadoConatiner floatRight desktop">

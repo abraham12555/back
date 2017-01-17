@@ -26,6 +26,9 @@ class ConfiguracionKosmos implements Serializable{
     String encabezadoTipoSalida
     String autenticaTipoReporte
     String autenticaTipoSalidaAU
+    
+    String googleApiKey
+    
     boolean habilitarMockBuroCredito
     boolean habilitarMockBuroCreditoSuccess
 	
