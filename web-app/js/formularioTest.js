@@ -154,7 +154,7 @@ function operacionesFormulario() {
             if ($(this).val() !== '') {
                 //console.log("No esta vacio");
                 $(this).addClass('notEmpty');
-                $(this).addClass('filledColor');
+                $(this).addClass('headingColor');
                 console.log("--->" + $(this).attr('id'));
                 if ($(this).attr('id') === 'cliente_nombre') {
                     //console.log("Si entraaaaaaaa");
@@ -237,14 +237,14 @@ function operacionesFormulario() {
                     var sumatoria = Number($('#empleoCliente_ingresosFijos').val()) + Number($('#empleoCliente_ingresosVariables').val());
                     $('#empleoCliente_ingresosTotales').val(sumatoria);
                     $('#empleoCliente_ingresosTotales').addClass('notEmpty');
-                    $('#empleoCliente_ingresosTotales').addClass('filledColor');
+                    $('#empleoCliente_ingresosTotales').addClass('headingColor');
                     listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
                     //console.log(listaDeControl);
                 }
             } else {
                 //console.log("Si esta vacio");
                 $(this).removeClass('notEmpty');
-                $(this).removeClass('filledColor');
+                $(this).removeClass('headingColor');
             }
             //verificarCambios(index);
             mostrarSiguienteCampo(index);
@@ -267,7 +267,7 @@ function operacionesFormulario() {
             if ($(this).val() !== '') {
                 //console.log("No esta vacio");
                 $(this).addClass('notEmpty');
-                $(this).addClass('filledColor');
+                $(this).addClass('headingColor');
                 console.log("--->" + $(this).attr('id'));
                 if ($(this).attr('id') === 'cliente_nombre') {
                     //console.log("Si entraaaaaaaa");
@@ -350,14 +350,14 @@ function operacionesFormulario() {
                     var sumatoria = Number($('#empleoCliente_ingresosFijos').val()) + Number($('#empleoCliente_ingresosVariables').val());
                     $('#empleoCliente_ingresosTotales').val(sumatoria);
                     $('#empleoCliente_ingresosTotales').addClass('notEmpty');
-                    $('#empleoCliente_ingresosTotales').addClass('filledColor');
+                    $('#empleoCliente_ingresosTotales').addClass('headingColor');
                     listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
                     //console.log(listaDeControl);
                 }
             } else {
                 //console.log("Si esta vacio");
                 $(this).removeClass('notEmpty');
-                $(this).removeClass('filledColor');
+                $(this).removeClass('headingColor');
             }
             //verificarCambios(index);
             mostrarSiguienteCampo(index);
@@ -499,7 +499,7 @@ function mostrarSiguienteCampo(index) {
             checkInputs();
         }
     }
-    
+
     var elementosLlenosVisibles = $('.notEmpty:visible').length;
     var totalElementosVisibles = $('.formStep:visible .formValues').length;
     var totalElementosRequeridos = $('.required .formValues').length;
@@ -631,11 +631,11 @@ function consultarCodigoPostal(sugerencia) {
                 selected: true
             }));
             $('.typeahead').addClass('notEmpty');
-            $('.typeahead').addClass('filledColor');
+            $('.typeahead').addClass('headingColor');
             $('#direccionCliente_delegacion').addClass('notEmpty');
-            $('#direccionCliente_delegacion').addClass('filledColor');
+            $('#direccionCliente_delegacion').addClass('headingColor');
             $('#direccionCliente_estado').addClass('notEmpty');
-            $('#direccionCliente_estado').addClass('filledColor');
+            $('#direccionCliente_estado').addClass('headingColor');
             listaDeControl[$(".showOnFill").index($('.typeahead').closest('.showOnFill'))] = 1;
             listaDeControl[$(".showOnFill").index($('#direccionCliente_delegacion').closest('.showOnFill'))] = 1;
             listaDeControl[$(".showOnFill").index($('#direccionCliente_estado').closest('.showOnFill'))] = 1;
@@ -1248,7 +1248,7 @@ function avanzarPaso(paso) {
     //cerrarModal();
     var paso = paso;
     $('#siguientePaso').val(paso);
-    console.log("Avanzando a paso " + paso);
+    //console.log("Avanzando a paso " + paso);
     //alert("Datos::"+$('.sendValues').serialize());
     $.ajax({
         type: 'POST',
@@ -1361,47 +1361,47 @@ function fillFB(data) {
     }
     if (json["gender"]) {
         var sexo = (json["gender"] === "male" ? 1 : (json["gender"] === "female" ? 2 : 0));
-        $("#sexo").val(sexo);
-        $("#sexo").addClass('notEmpty');
-        $("#sexo").addClass('filledColor');
+        $("#cliente_genero").val(sexo);
+        $("#cliente_genero").addClass('notEmpty');
+        $("#cliente_genero").addClass('headingColor');
         x++;
     }
     if (json["relationship_status"]) {
         var estadoCivil = (json["relationship_status"] === "single" ? 1 : (json["relationship_status"] === "married" ? 2 : 0));
-        $("#estadoCivil").val(estadoCivil);
-        $("#estadoCivil").addClass('notEmpty');
-        $("#estadoCivil").addClass('filledColor');
+        $("#cliente_estadoCivil").val(estadoCivil);
+        $("#cliente_estadoCivil").addClass('notEmpty');
+        $("#cliente_estadoCivil").addClass('headingColor');
         x++;
     }
     if (json["first_name"]) {
-        $("#nombre").val(json["first_name"]);
-        $("#nombre").addClass('notEmpty');
-        $("#nombre").addClass('filledColor');
+        $("#cliente_nombre").val(json["first_name"]);
+        $("#cliente_nombre").addClass('notEmpty');
+        $("#cliente_nombre").addClass('headingColor');
         x++;
     }
     if (json["last_name"]) {
-        $("#apellidoPaterno").val(json["last_name"]);
-        $("#apellidoPaterno").addClass('notEmpty');
-        $("#apellidoPaterno").addClass('filledColor');
+        $("#cliente_apellidoPaterno").val(json["last_name"]);
+        $("#cliente_apellidoPaterno").addClass('notEmpty');
+        $("#cliente_apellidoPaterno").addClass('headingColor');
         x++;
     }
     if (json["birthday"]) {
         if (json["birthday"].substring(0, 2)) {
-            $("#mes").val(json["birthday"].substring(0, 2));
-            $("#mes").addClass('notEmpty');
-            $("#mes").addClass('filledColor');
+            $("#cliente_fechaDeNacimiento_mes").val(json["birthday"].substring(0, 2));
+            $("#cliente_fechaDeNacimiento_mes").addClass('notEmpty');
+            $("#cliente_fechaDeNacimiento_mes").addClass('headingColor');
             x++;
         }
         if (json["birthday"].substring(3, 5)) {
-            $("#dia").val(json["birthday"].substring(3, 5));
-            $("#dia").addClass('notEmpty');
-            $("#dia").addClass('filledColor');
+            $("#cliente_fechaDeNacimiento_dia").val(json["birthday"].substring(3, 5));
+            $("#cliente_fechaDeNacimiento_dia").addClass('notEmpty');
+            $("#cliente_fechaDeNacimiento_dia").addClass('headingColor');
             x++;
         }
         if (json["birthday"].substring(6, 12)) {
-            $("#anio").val(json["birthday"].substring(6, 12));
-            $("#anio").addClass('notEmpty');
-            $("#anio").addClass('filledColor');
+            $("#cliente_fechaDeNacimiento_anio").val(json["birthday"].substring(6, 12));
+            $("#cliente_fechaDeNacimiento_anio").addClass('notEmpty');
+            $("#cliente_fechaDeNacimiento_anio").addClass('headingColor');
             x++;
         }
     }
@@ -1426,13 +1426,13 @@ function fillGoogle(data) {
     if (json["ofa"]) { //Nombre
         $("#nombre").val(json["ofa"]);
         $("#nombre").addClass('notEmpty');
-        $("#nombre").addClass('filledColor');
+        $("#nombre").addClass('headingColor');
         x++;
     }
     if (json["wea"]) { //Apellidos
         $("#apellidoPaterno").val(json["wea"]);
         $("#apellidoPaterno").addClass('notEmpty');
-        $("#apellidoPaterno").addClass('filledColor');
+        $("#apellidoPaterno").addClass('headingColor');
         x++;
     }
     if (json["Paa"]) { //Imagen
@@ -1577,9 +1577,9 @@ function generarClaves(persona) {
         $('#cliente_curp').val(curp);
         $('#cliente_rfc').val(curp.substring(0, 10));
         $("#cliente_curp").addClass('notEmpty');
-        $("#cliente_curp").addClass('filledColor');
+        $("#cliente_curp").addClass('headingColor');
         $("#cliente_rfc").addClass('notEmpty');
-        $("#cliente_rfc").addClass('filledColor');
+        $("#cliente_rfc").addClass('headingColor');
         listaDeControl[$(".showOnFill").index($('#cliente_curp').closest('.showOnFill'))] = 1;
         listaDeControl[$(".showOnFill").index($('#cliente_rfc').closest('.showOnFill'))] = 1;
     } else if (persona === 'conyugue') {
@@ -1594,9 +1594,9 @@ function generarClaves(persona) {
         $('#cliente_curpDelConyugue').val(curp);
         $('#cliente_rfcDelConyugue').val(curp.substring(0, 10));
         $("#cliente_curpDelConyugue").addClass('notEmpty');
-        $("#cliente_curpDelConyugue").addClass('filledColor');
+        $("#cliente_curpDelConyugue").addClass('headingColor');
         $("#cliente_rfcDelConyugue").addClass('notEmpty');
-        $("#cliente_rfcDelConyugue").addClass('filledColor');
+        $("#cliente_rfcDelConyugue").addClass('headingColor');
         listaDeControl[$(".showOnFill").index($('#cliente_curpDelConyugue').closest('.showOnFill'))] = 1;
         listaDeControl[$(".showOnFill").index($('#cliente_rfcDelConyugue').closest('.showOnFill'))] = 1;
     }
@@ -1674,7 +1674,7 @@ function buildLoginBank(respuesta) {
         html += "<center>";
         html += "<div class=\"row\">";
         html += "<div class=\"col6 col12-mob floatLeft\">";
-        html += "<input class=\"inPuts4a formValues textUpper filledColor notEmpty\" name=\"" + fieldName + "\" id=\"" + fieldName + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
+        html += "<input class=\"inPuts4a formValues textUpper headingColor notEmpty\" name=\"" + fieldName + "\" id=\"" + fieldName + "\" autocomplete=\"off\" autocapitalize=\"off\" value=\"\" type=\"password\">";
         html += "</div>";
         html += "</div>";
         html += "</center>";
@@ -2140,17 +2140,17 @@ function inicializarDropzone(elemento, boton) {
                     closeModal('comprobante_domicilio');
                     $('#calle').val(direccion);
                     $('#calle').addClass("notEmpty");
-                    $('#calle').addClass("filledColor");
+                    $('#calle').addClass("headingColor");
                     if (respuesta.codigoPostal) {
                         $('#codigoPostal').val(respuesta.codigoPostal);
                         $('#codigoPostal').addClass("notEmpty");
-                        $('#codigoPostal').addClass("filledColor");
+                        $('#codigoPostal').addClass("headingColor");
                         $('#municipio').val(respuesta.municipio);
                         $('#municipio').addClass("notEmpty");
-                        $('#municipio').addClass("filledColor");
+                        $('#municipio').addClass("headingColor");
                         $('#estado').val(respuesta.estado);
                         $('#estado').addClass("notEmpty");
-                        $('#estado').addClass("filledColor");
+                        $('#estado').addClass("headingColor");
                     }
                     $('.defaultBubble').fadeOut();
                     $('.successBubble').fadeIn();
