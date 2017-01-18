@@ -627,12 +627,14 @@ class SolicitudController {
             if(siguientePaso == 0){
                 session.invalidate()
                 render modelo as JSON
-            } else if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
-                if(session.identificadores){
-                    def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
-                    motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
-                }
             } else {
+                def respuestaMotor
+                if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
+                    if(session.identificadores){
+                        def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
+                        respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
+                    }
+                }
                 def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
                 def statusDeSolicitud
                 camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
@@ -873,6 +875,7 @@ class SolicitudController {
             def tipoLogin;
             def datosLogin;
             def modelo = [:]
+            def avance = [:]
             if(params.origen == 'login'){
                 if(params.datosFb && params.datosFb?.toString()!= 'null' && params.datosFb?.toString().length() > 0){
                     println(":: Se inicio Sesión con FB ::" + params.datosFb.toString())
@@ -922,6 +925,11 @@ class SolicitudController {
                     pasoActual = paso
                 }
                 ponderaciones."paso$paso.numeroDePaso" = paso.ponderacion
+                if((siguientePaso > 1) && (paso.numeroDePaso < siguientePaso)){
+                    avance."paso$paso.numeroDePaso" = paso.ponderacion
+                } else {
+                    avance."paso$paso.numeroDePaso" = 0
+                }
             }
             def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
             camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
@@ -932,6 +940,7 @@ class SolicitudController {
                     logueado: session.yaUsoLogin,
                     pasosDeSolicitud: pasosDeSolicitud,
                     parrafos: parrafos,
+                    avance: avance as JSON,
                     ponderaciones: ponderaciones as JSON,
                     pasoActual:pasoActual,
                     generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
@@ -939,6 +948,7 @@ class SolicitudController {
                 modelo = [configuracion: configuracion,
                     pasosDeSolicitud: pasosDeSolicitud,
                     pasoActual:pasoActual,
+                    avance: avance as JSON,
                     ponderaciones: ponderaciones as JSON,
                     generales: session["consultaBancaria"]]
             } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
@@ -951,6 +961,7 @@ class SolicitudController {
                     logueado: session.yaUsoLogin,
                     pasosDeSolicitud: pasosDeSolicitud,
                     pasoActual:pasoActual,
+                    avance: avance as JSON,
                     ponderaciones: ponderaciones as JSON,
                     generales: session["consultaBuro"],
                     personales: session["pasoFormulario"]?.cliente,
@@ -966,6 +977,7 @@ class SolicitudController {
                 modelo = [configuracion: configuracion,
                     pasosDeSolicitud: pasosDeSolicitud,
                     pasoActual:pasoActual,
+                    avance: avance as JSON,
                     mediosDeContacto: mediosDeContacto,
                     ponderaciones: ponderaciones as JSON,
                     documentosSubidos: session.tiposDeDocumento,

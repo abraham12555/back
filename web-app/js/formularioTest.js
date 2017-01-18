@@ -105,17 +105,20 @@ function showSlides(n) {
     $('.formStep').eq(slideIndex - 1).slideDown();
 }
 
-function cargarPonderaciones(listaDePonderaciones) {
+function cargarPonderaciones(listaDePonderaciones, listaDeAvances) {
+    var avance = JSON.parse(listaDeAvances);
     ponderaciones = JSON.parse(listaDePonderaciones);
     if (avancePorPaso === undefined) {
         var length = Object.keys(ponderaciones).length;
         avancePorPaso = new Array(length);
         for (var i = 0; i < length; i++) {
-            avancePorPaso[i] = 0;
+            avancePorPaso[i] = Number(avance[("paso" + (i+1))]);
         }
     } else {
         console.log(avancePorPaso);
     }
+    console.log(avancePorPaso);
+    calcularAvance();
 }
 
 function operacionesLogin() {

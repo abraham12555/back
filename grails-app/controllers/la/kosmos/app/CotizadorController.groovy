@@ -24,6 +24,7 @@ class CotizadorController {
         session["consultaBuro"] = null
         session.shortUrl = null
         session.token = null
+        session.sid = null
         String domain = new URL(request.getRequestURL().toString()).getHost();
         println "Dominio: " + domain
         //if(params.ef){
@@ -187,11 +188,11 @@ class CotizadorController {
                 session.cotizador.producto = (params.txtProducto ? (params.txtProducto as long) : 0)
                 session.cotizador.periodo = (params.txtPeriodo ? (params.txtPeriodo as long) : 0)
                 session.cotizador.pagos = (params.txtPago ? (params.txtPago as float) : 0)
-                session.cotizador.modelo = params.txtModelo as long
-                session.cotizador.color = params.txtColor as long
-                session.cotizador.enganche = params.txtEnganche as float
-                session.cotizador.plazo = params.txtPlazo as long
-                session.cotizador.periodo = params.txtPeriodo as long
+                session.cotizador.modelo = (params.txtModelo ? params.txtModelo as long : 0)
+                session.cotizador.color = (params.txtColor ? params.txtColor as long : 0)
+                session.cotizador.enganche = (params.txtEnganche ? params.txtEnganche as float : 0)
+                session.cotizador.plazo = (params.txtPlazo ? params.txtPlazo as long : 0)
+                session.cotizador.periodo = (params.txtPeriodo ? params.txtPeriodo as long : 0)
             }
             redirect(controller: "solicitud", action: "index")
         } else {

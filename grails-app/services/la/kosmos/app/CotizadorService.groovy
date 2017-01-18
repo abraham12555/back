@@ -24,25 +24,32 @@ class CotizadorService {
             } else if(productos == null){
                 if(configuracion.aplicacionVariable){
                     def rubros = []
-                    def listaTmp = RubroDeAplicacionDeCredito.findAllWhere(entidadFinanciera: entidadFinanciera)
+                    def listaTmp = RubroDeAplicacionDeCredito.findAllWhere(entidadFinanciera: entidadFinanciera, activo: true)
+                    
                     listaTmp.each{
                         def mapa = [:]
                         mapa.id = it.id
                         mapa.nombreDelProducto = it.nombre
                         mapa.descripcion = it.descripcion
                         mapa.claseIconoPaso = it.claseIconoPaso
+                        mapa.posicion = it.posicion
                         rubros << mapa
                     }
                     productos = rubros
-                    documentos =  TipoDeDocumento.findAllWhere(usoEnCotizador: true, activo: true)
+                    if(params.rubroId){
+                        documentos = RubroDeAplicacionTipoDeDocumento.executeQuery("Select ratd.tipoDeDocumento from RubroDeAplicacionTipoDeDocumento ratd Where ratd.rubro.id = :rubroId", [rubroId: (params.rubroId as long)])
+                    } else {
+                        documentos =  TipoDeDocumento.findAllWhere(usoEnCotizador: true, activo: true)
+                    }
                     documentos = documentos.sort { it.id }
+                    productos = productos.sort { it.posicion }
                 } else {
                     productos = Producto.findAllWhere(activo: true, entidadFinanciera: entidadFinanciera)
+                    productos = productos.sort { it.id }
                 }
             }
             x++
         }
-        productos = productos.sort { it.id }
         pasosCotizador = pasosCotizador.sort { it.numeroDePaso }
         [productos: productos, documentos: documentos, tiposDeProducto: tiposDeProducto, entidadFinanciera: entidadFinanciera, pasosCotizador: pasosCotizador, periodicidadList: Periodicidad.list(), configuracion: configuracion, landingImage: landingImage]
     }

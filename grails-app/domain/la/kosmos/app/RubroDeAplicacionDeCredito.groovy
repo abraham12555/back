@@ -8,6 +8,7 @@ class RubroDeAplicacionDeCredito implements Serializable{
     String claseIconoPaso
     boolean activo = true
     String urlImagen
+    int posicion
     
     static constraints = {
         entidadFinanciera (nullable: false)

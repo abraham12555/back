@@ -160,6 +160,8 @@ function submitPhone() {
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
                     if (respuesta.mensajeEnviado === true) {
+                        $('#editarTelefono').html("");
+                        $('#editarTelefono').hide();
                         $('.register').addClass('bounceOut');
                         setTimeout(function () {
                             $('.register').removeClass(' bounceOut');
@@ -167,8 +169,22 @@ function submitPhone() {
                             $('#phone_form').addClass('hide');
                             $('#codigo_form').removeClass('hide');
                             $('.register').removeClass('fadeIn');
-
                         }, 600);
+                        setTimeout(function () {
+                            $('#editarTelefono').html("<span class='backBtn'>Corregir Teléfono</span>");
+                            $('#editarTelefono').fadeIn();
+                            $('#editarTelefono').click(function () {
+                                $('.register').addClass('bounceOut');
+                                setTimeout(function () {
+                                    $('.register').removeClass(' bounceOut');
+                                    $('.register').addClass('fadeIn');
+                                    $('#codigo_form').addClass('hide');
+                                    $('#phone_form').removeClass('hide');
+                                    $('#phone_form').addClass('animated fadeIn');
+                                    $('.register').removeClass('fadeIn');
+                                }, 600);
+                            });
+                        }, 10000);
                     } else {
                         $('#leyendaTel').html("<small style='color: red;'>Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.</small>");
                     }

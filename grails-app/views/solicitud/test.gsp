@@ -21,7 +21,7 @@
             fillGoogle("${datosLogin.encodeAsJSON()}");
             }
             console.log("Iniciando carga de ponderaciones");
-    cargarPonderaciones('${raw(ponderaciones as String)}');
+            cargarPonderaciones('${raw(ponderaciones as String)}','${raw(avance as String)}');
             console.log("Iniciando funciones...");
             inicializarFormulario();
             });

@@ -29,6 +29,7 @@
             <input id="codigo" type="text" name="codigoConfirmacion" class="validate" onkeypress="return event.keyCode != 13;">
             <i class="fa fa-angle-right" style="display: inline-block; font-size: 25px;"></i> 
             <p style="margin-top: 10px;" id="leyendaCodigo"></p>
+            <p style="margin-top: 10px; text-align: center; display: none;" id="editarTelefono"></p>
         </div>
         <div id="thanks" class="hide">
             <strong>¡Gracias <span id="registeredName" class="darkBluetitle"></span>!</strong>

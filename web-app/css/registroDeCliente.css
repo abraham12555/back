@@ -70,3 +70,15 @@ input[type=text]:focus:not([readonly]).invalid {
 .fa.invalid{
     color: red;
 }
+
+.backBtn {
+    border-radius: 10px;
+    background-image: linear-gradient(90deg, #005398, #1573d4);
+    box-shadow: 0 11px 19px 0 #b8bdcd;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px 3px 5px;
+    text-decoration: none;
+}

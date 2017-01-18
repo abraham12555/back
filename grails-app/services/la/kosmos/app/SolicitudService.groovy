@@ -113,15 +113,33 @@ class SolicitudService {
                             telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
                             telefonoCelular.save(flush: true)
                         }
-                    } else {
+                    } else if(!clienteNuevo && datosPaso.telefonoCliente){
+                        def telefonoCasa
+                        def telefonoCelular
                         def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
                         telefonosCliente?.each {
                             if(it.tipoDeTelefono.id == 1) {
-                                it.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
-                                it.save(flush:true)
+                                if(datosPaso.telefonoCliente.telefonoCasa && (datosPaso.telefonoCliente.telefonoCasa != it.numeroTelefonico)){
+                                    it.vigente = false
+                                    it.save(flush:true)
+                                    telefonoCasa = new TelefonoCliente()
+                                    telefonoCasa.cliente = cliente
+                                    telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
+                                    telefonoCasa.vigente = true
+                                    telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
+                                    telefonoCasa.save(flush: true)
+                                }
                             } else if(it.tipoDeTelefono.id == 2) {
-                                it.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
-                                it.save(flush:true)
+                                if(datosPaso.telefonoCliente.telefonoCelular && (datosPaso.telefonoCliente.telefonoCelular != it.numeroTelefonico)){
+                                    it.vigente = false
+                                    it.save(flush:true)
+                                    telefonoCelular = new TelefonoCliente()
+                                    telefonoCelular.cliente = cliente
+                                    telefonoCelular.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
+                                    telefonoCelular.vigente = true
+                                    telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
+                                    telefonoCelular.save(flush: true)
+                                }
                             }
                         }
                     }
@@ -928,6 +946,16 @@ class SolicitudService {
         datosSolicitud.pasoFormulario.cliente.curpDelConyugue = cliente.curpDelConyugue
         datosSolicitud.pasoFormulario.cliente.lugarDeNacimientoDelConyugue = (cliente.lugarDeNacimientoDelConyugue ? cliente.lugarDeNacimientoDelConyugue.id : null)
         datosSolicitud.pasoFormulario.cliente.nacionalidadDelConyugue = (cliente.nacionalidadDelConyugue ? cliente.nacionalidadDelConyugue : null )
+        if(telefonosCliente){
+            datosSolicitud.pasoFormulario.telefonoCliente = [:]
+            telefonosCliente.each{
+                if(it.tipoDeTelefono.id == 1) {
+                    datosSolicitud.pasoFormulario.telefonoCliente.telefonoCasa = it.numeroTelefonico
+                } else if(it.tipoDeTelefono.id == 2) {
+                    datosSolicitud.pasoFormulario.telefonoCliente.telefonoCelular = it.numeroTelefonico
+                }
+            }
+        }
         if(direccionCliente) {
             datosSolicitud.identificadores.idDireccion = direccionCliente.id
             datosSolicitud.pasoFormulario.direccionCliente = [:]
