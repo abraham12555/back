@@ -88,7 +88,8 @@ class DashboardService {
     
     def obtenerSolicitudesPorVerificar(){
         def respuesta = []
-        def solicitudes = SolicitudDeCredito.findAllWhere(statusDeSolicitud: StatusDeSolicitud.get(8))
+        def usuario = springSecurityService.currentUser
+        def solicitudes = SolicitudDeCredito.findAllWhere(statusDeSolicitud: StatusDeSolicitud.get(8), entidadFinanciera: usuario.entidadFinanciera)
         solicitudes.each {
             def solicitud = [:]
             solicitud.id = it.id

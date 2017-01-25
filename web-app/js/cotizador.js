@@ -148,7 +148,9 @@ function initSteps() {
             $('.cotizadorStep').eq((step - 2)).find('.summaryDiv').slideDown();
             $('.cotizadorStep').eq((step - 2)).css({'opacity': '0.2'}).find('.stepShadow').hide();
         }
-        $('#submitCotizador').fadeOut();
+        $("#btnCotSub").prop("disabled", true);
+        $('#submitCotizador').addClass('blur');
+        $('#terminosYCondiciones').fadeOut();
     });
 }
 
@@ -192,7 +194,7 @@ function habilitarPaso(step, lastStep, parentStep) {
         $('.cotizadorStep').eq((step)).find('.actionsDiv').slideDown();
         $('.cotizadorStep').eq((step)).find('.summaryDiv').slideUp();
         //Slightly Show next step
-        if(tipoDePaso === 'stepRegistro'){
+        if (tipoDePaso === 'stepRegistro') {
             iniciarFormularioRegistro();
         }
         if (step < lastStep) {
@@ -315,7 +317,8 @@ function stepAction(step, tipoDePaso, elm) {
     }
     if (step === ultimoPaso) {
 //show button
-        $('#submitCotizador').fadeIn();
+        $("#btnCotSub").prop("disabled", false);
+        $('#submitCotizador').removeClass('blur');
         $('#terminosYCondiciones').fadeIn();
     }
 }
@@ -327,14 +330,14 @@ function initProduct(id) {
         data: {
             id: id
         },
-        url: "/kosmos-app/cotizador/obtenerProducto",
+        url: "/cotizador/obtenerProducto",
         success: function (jsonResponse, textStatus) {
             var data = checkIfJson(jsonResponse);
             // Sustituir el contenido necesario
             productoElegido = data.tituloEnCotizador.toUpperCase();
             $('#nombreDelProducto').html(productoElegido);
             $('#descripcionDelProducto').html(data.descripcion);
-            $('#imagenDelProducto').css('background-image', 'url(../kosmos-app/images/nissan/' + data.rutaImagenDefault + ')');
+            $('#imagenDelProducto').css('background-image', 'url(../images/nissan/' + data.rutaImagenDefault + ')');
             $('#productoElegido').html(productoElegido);
             $('#productoElegido2').html(productoElegido);
             $('#productoElegido3').html(productoElegido);
@@ -352,7 +355,7 @@ function obtenerPasos(rubro, paso, elm) {
             rubroId: rubro,
             ef: $('#entidadFinancieraId').val()
         },
-        url: "/kosmos-app/cotizador/obtenerPasos",
+        url: "/cotizador/obtenerPasos",
         success: function (data, textStatus) {
             $('#contenedorDePasos').html('');
             $('#contenedorDePasos').html(data);
@@ -379,7 +382,7 @@ function obtenerProductos(tipoDeProductoId) {
         data: {
             tipoDeProductoId: tipoDeProductoId
         },
-        url: "/kosmos-app/cotizador/obtenerProductos",
+        url: "/cotizador/obtenerProductos",
         success: function (data, textStatus) {
             $('#productosList').html('');
             $('#productosList').html(data);
@@ -398,7 +401,7 @@ function obtenerModelos(productoId) {
         data: {
             productoId: productoId
         },
-        url: "/kosmos-app/cotizador/obtenerModelos",
+        url: "/cotizador/obtenerModelos",
         success: function (data, textStatus) {
             $('#modelosList').html('');
             $('#modelosList').html(data);
@@ -418,7 +421,7 @@ function obtenerColores(modeloId) {
         data: {
             modeloId: modeloId
         },
-        url: "/kosmos-app/cotizador/obtenerColores",
+        url: "/cotizador/obtenerColores",
         success: function (data, textStatus) {
             $('#coloresList').html('');
             $('#coloresList').html(data);
@@ -442,7 +445,7 @@ function obtenerSeguros(modeloId) {
         data: {
             modeloId: modeloId
         },
-        url: "/kosmos-app/cotizador/obtenerSeguros",
+        url: "/cotizador/obtenerSeguros",
         success: function (data, textStatus) {
             $('#segurosList').html('');
             $('#segurosList').html(data);
@@ -463,7 +466,7 @@ function identificarProducto(rubro, documento, atraso) {
             documentoId: documento,
             atrasoEnPagos: atraso
         },
-        url: "/kosmos-app/cotizador/identificarProducto",
+        url: "/cotizador/identificarProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -500,7 +503,7 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
             documentoId: documento,
             monto: montoSeleccionado
         },
-        url: "/kosmos-app/cotizador/obtenerPlazosProducto",
+        url: "/cotizador/obtenerPlazosProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             var html = "";
@@ -578,19 +581,19 @@ function fakeAjax(action, id) {
     }
 
     if (action === 'colorBG') {
-        var modelColorBG = new Array('../kosmos-app/images/nissan/2016-maxima-azul.png',
-                '../kosmos-app/images/nissan/2016-maxima-azul.png',
-                '../kosmos-app/images/nissan/2016-maxima-gris.png',
-                '../kosmos-app/images/nissan/2016-maxima-rojo.png',
-                '../kosmos-app/images/nissan/2016-sentra-blanco.png',
-                '../kosmos-app/images/nissan/2016-sentra-gris.png',
-                '../kosmos-app/images/nissan/2016-sentra-negro.png',
-                '../kosmos-app/images/nissan/2016-altima-azul.png',
-                '../kosmos-app/images/nissan/2016-altima-gris_2.png',
-                '../kosmos-app/images/nissan/2016-altima-rojo.png',
-                '../kosmos-app/images/nissan/2016-xtrail-blanca.png',
-                '../kosmos-app/images/nissan/2016-xtrail-negra.png',
-                '../kosmos-app/images/nissan/2016-xtrail-verde.png');
+        var modelColorBG = new Array('../images/nissan/2016-maxima-azul.png',
+                '../images/nissan/2016-maxima-azul.png',
+                '../images/nissan/2016-maxima-gris.png',
+                '../images/nissan/2016-maxima-rojo.png',
+                '../images/nissan/2016-sentra-blanco.png',
+                '../images/nissan/2016-sentra-gris.png',
+                '../images/nissan/2016-sentra-negro.png',
+                '../images/nissan/2016-altima-azul.png',
+                '../images/nissan/2016-altima-gris_2.png',
+                '../images/nissan/2016-altima-rojo.png',
+                '../images/nissan/2016-xtrail-blanca.png',
+                '../images/nissan/2016-xtrail-negra.png',
+                '../images/nissan/2016-xtrail-verde.png');
         console.log("-------> Seleccionado el color: " + modelColorBG[id] + " - id " + id);
         return modelColorBG[id];
     }
@@ -686,7 +689,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
             plazoElegido: plazo,
             periodicidadId: periodicidad
         },
-        url: "/kosmos-app/cotizador/calcularPagos",
+        url: "/cotizador/calcularPagos",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -777,7 +780,7 @@ function cargarImagen(tipo, identificador) {
     $.ajax({
         type: 'POST',
         data: (tipo + '=' + identificador),
-        url: "/kosmos-app/cotizador/cargarImagen",
+        url: "/cotizador/cargarImagen",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.extension !== undefined && respuesta.base64 !== undefined) {
@@ -793,12 +796,12 @@ function cargarImagen(tipo, identificador) {
                     });
                 });
             } else {
-                ///kosmos-app/images/cajaLibertad/logo.png
+                ///images/cajaLibertad/logo.png
                 $('#imagenDelProducto').animate({
                     opacity: 0
                 }, 'fast', function () {
                     $(this).css({
-                        'background-image': 'url("/kosmos-app/images/no-disponible.png")',
+                        'background-image': 'url("/images/no-disponible.png")',
                         'background-size': '50%',
                         'background-position': 'center'
                     }).animate({
@@ -808,7 +811,7 @@ function cargarImagen(tipo, identificador) {
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            
+
         }
     });
 }

@@ -1,7 +1,7 @@
 <div class="idLightbox hide" id="modalAltaDeUsuario">
     <div class="overlay"></div>
     <div class="whiteContainer lightboxPos altaUsuario darkBluetitle font14 fontWeight400 letterspacing1 justify">
-        <form id="formAltaUsuario" action="/kosmos-app/dashboard/registrarUsuario" method="POST" class="loginForm gray font14">
+        <form id="formAltaUsuario" action="/dashboard/registrarUsuario" method="POST" class="loginForm gray font14">
             <div class="clearFix width990 autoMargin">
                 <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10">ALTA DE USUARIO</h1></center>
             </div>

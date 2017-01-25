@@ -103,9 +103,13 @@
                     </div>
                 </div>
                 <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
-                    <div class="loadingBar meter animate">
-                        <span style="width: 100%"><span></span></span>
-                    </div>
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                  </div>
                     <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
                 </div>
             </div>

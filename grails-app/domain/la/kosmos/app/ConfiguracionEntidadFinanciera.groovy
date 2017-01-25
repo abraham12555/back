@@ -24,6 +24,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String urlDominio
     int ejecutarMotorEnPaso
     boolean aplicacionVariable = false
+    boolean navegacionLibre = false
     
     static constraints = {
         nombreComercial (blank:false)

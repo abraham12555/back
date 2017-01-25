@@ -67,14 +67,14 @@ class SolicitudService {
                 cliente.lugarDeNacimiento = (datosPaso.cliente.lugarDeNacimiento ? Estado.get(datosPaso.cliente.lugarDeNacimiento) : null)
                 if(datosPaso.cliente.nacionalidad){
                     cliente.nacionalidad = Nacionalidad.get(datosPaso.cliente.nacionalidad as long)
-                } else if(datosPaso.cliente.lugarDeNacimiento){
-                    if(datosPaso.cliente.lugarDeNacimiento > 32){
+                } else if(cliente.lugarDeNacimiento){
+                    if(cliente.lugarDeNacimiento?.id > 32){
                         cliente.nacionalidad = Nacionalidad.get(2 as long)
                     } else {
                         cliente.nacionalidad = Nacionalidad.get(1 as long)
                     }
                 }
-                cliente.fechaDeNacimiento = ((datosPaso.cliente.fechaDeNacimiento.dia && datosPaso.cliente.fechaDeNacimiento.mes && datosPaso.cliente.fechaDeNacimiento.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.cliente.fechaDeNacimiento.dia + "/" + datosPaso.cliente.fechaDeNacimiento.mes + "/" + datosPaso.cliente.fechaDeNacimiento.anio))) : null)
+                cliente.fechaDeNacimiento = ((datosPaso.cliente.fechaDeNacimiento?.dia && datosPaso.cliente.fechaDeNacimiento?.mes && datosPaso.cliente.fechaDeNacimiento?.anio) ? (new Date().parse("dd/MM/yyyy", (datosPaso.cliente.fechaDeNacimiento.dia + "/" + datosPaso.cliente.fechaDeNacimiento.mes + "/" + datosPaso.cliente.fechaDeNacimiento.anio))) : null)
                 cliente.curp = datosPaso.cliente.curp
                 cliente.genero = (datosPaso.cliente.genero ? Genero.get(datosPaso.cliente.genero) : null)
                 cliente.rfc = datosPaso.cliente.rfc
@@ -197,8 +197,8 @@ class SolicitudService {
                     direccionCliente.tiempoDeResidencia = (datosPaso.direccionCliente.tiempo ? (datosPaso.direccionCliente.tiempo as int) : 0)
                     direccionCliente.latitud = 0
                     direccionCliente.longitud = 0
-                    direccionCliente.tiempoDeEstadia = ((datosPaso.direccionCliente.tiempoDeResidencia?.mes && datosPaso.direccionCliente.tiempoDeResidencia?.anio) ? ((datosPaso.direccionCliente.tiempoDeResidencia?.mes?.padLeft(2, '0')) + "/" + datosPaso.direccionCliente.tiempoDeResidencia?.anio) : null)
-                    direccionCliente.tiempoDeVivienda = ((datosPaso.direccionCliente.tiempoDeVivir?.mes && datosPaso.direccionCliente.tiempoDeVivir?.anio) ? ((datosPaso.direccionCliente.tiempoDeVivir?.mes?.padLeft(2, '0')) + "/" + datosPaso.direccionCliente.tiempoDeVivir?.anio) : null)
+                    direccionCliente.tiempoDeEstadia = ((datosPaso.direccionCliente.tiempoDeResidencia?.mes && datosPaso.direccionCliente.tiempoDeResidencia?.anio) ? ((datosPaso.direccionCliente.tiempoDeResidencia?.mes?.toString()?.padLeft(2, '0')) + "/" + datosPaso.direccionCliente.tiempoDeResidencia?.anio) : null)
+                    direccionCliente.tiempoDeVivienda = ((datosPaso.direccionCliente.tiempoDeVivir?.mes && datosPaso.direccionCliente.tiempoDeVivir?.anio) ? ((datosPaso.direccionCliente.tiempoDeVivir?.mes?.toString()?.padLeft(2, '0')) + "/" + datosPaso.direccionCliente.tiempoDeVivir?.anio) : null)
                     if(direccionCliente.save(flush:true)){
                         println("La dirección se ha registrado correctamente")
                         datosPaso.direccionCliente.idDireccion = direccionCliente.id
@@ -239,7 +239,7 @@ class SolicitudService {
                     empleoCliente.ciudad = (datosPaso.empleoCliente.municipio ? Municipio.get(datosPaso.empleoCliente.municipio) : null)
                     empleoCliente.cliente = cliente
                     empleoCliente.ocupacion = ( datosPaso.empleoCliente.ocupacion ? Ocupacion.get(datosPaso.empleoCliente.ocupacion as long) : null)
-                    empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? ((datosPaso.empleoCliente.antiguedad?.mes?.padLeft(2, '0')) + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
+                    empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? ((datosPaso.empleoCliente.antiguedad?.mes?.toString()?.padLeft(2, '0')) + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
                     empleoCliente.ingresosFijos = (datosPaso.empleoCliente.ingresosFijos ? datosPaso.empleoCliente.ingresosFijos as float : 0)
                     empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
                     empleoCliente.gastos = (datosPaso.empleoCliente.gastos ? datosPaso.empleoCliente.gastos as int : 0)
@@ -454,6 +454,10 @@ class SolicitudService {
                 productoSolicitud.colorModelo = ColorModelo.get(datosCotizador.color)
                 productoSolicitud.seguroFinanciado = false
                 productoSolicitud.montoDelCredito = (productoSolicitud.colorModelo.modelo.precio - productoSolicitud.enganche)
+                productoSolicitud.producto = Producto.get(datosCotizador.producto as long)
+                productoSolicitud.modelo = Modelo.get(datosCotizador.modelo as long)
+                productoSolicitud.colorModelo = ColorModelo.get(datosCotizador.color as long)
+                productoSolicitud.seguro = SeguroProducto.get(datosCotizador.seguro as long)
             }
             productoSolicitud.enganche = datosCotizador.enganche as float
             productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
@@ -637,9 +641,9 @@ class SolicitudService {
             solicitudRest.solicitud.buroDeCredito.apellidoAdicional = (datosBuroDeCredito.reporte?.apellidoAdicional ? datosBuroDeCredito.reporte?.apellidoAdicional : "")
             solicitudRest.solicitud.buroDeCredito.primerNombre = (datosBuroDeCredito.reporte?.primerNombre ? datosBuroDeCredito.reporte?.primerNombre : "")
             solicitudRest.solicitud.buroDeCredito.segundoNombre = (datosBuroDeCredito.reporte?.segundoNombre ? datosBuroDeCredito.reporte?.segundoNombre : "")
-            solicitudRest.solicitud.buroDeCredito.fechaDeNacimiento = (datosBuroDeCredito.reporte?.fechaDeNacimiento ? datosBuroDeCredito.reporte?.fechaDeNacimiento : "")
+            solicitudRest.solicitud.buroDeCredito.fechaDeNacimiento = (datosBuroDeCredito.reporte?.fechaNacimiento ? datosBuroDeCredito.reporte?.fechaNacimiento : "")
             solicitudRest.solicitud.buroDeCredito.rfc = (datosBuroDeCredito.reporte?.rfc ? datosBuroDeCredito.reporte?.rfc : "")
-            solicitudRest.solicitud.buroDeCredito.prefijoProfesional = (datosBuroDeCredito.reporte?.prefijoProfesional ? datosBuroDeCredito.reporte?.prefijoProfesional : "")
+            solicitudRest.solicitud.buroDeCredito.prefijoProfesional = (datosBuroDeCredito.reporte?.prefijoProfesinal ? datosBuroDeCredito.reporte?.prefijoProfesinal : "")
             solicitudRest.solicitud.buroDeCredito.sufijoPersonal = (datosBuroDeCredito.reporte?.sufijoPersonal ? datosBuroDeCredito.reporte?.sufijoPersonal : "")
             solicitudRest.solicitud.buroDeCredito.nacionalidad = (datosBuroDeCredito.reporte?.nacionalidad ? datosBuroDeCredito.reporte?.nacionalidad : "")
             solicitudRest.solicitud.buroDeCredito.tipoResidencia = (datosBuroDeCredito.reporte?.tipoResidencia ? datosBuroDeCredito.reporte?.tipoResidencia : "")
@@ -720,7 +724,7 @@ class SolicitudService {
             
             solicitudRest.solicitud.buroDeCredito.direcciones = []
             datosBuroDeCredito.direcciones.each { direccion ->
-                def maparaDireccion = [:]
+                def mapaDireccion = [:]
                 mapaDireccion.direccionPrimeraLinea = (direccion.direccionPrimeraLinea ?: "")
                 mapaDireccion.direccionSegundaLinea = (direccion.direccionSegundaLinea ?: "")
                 mapaDireccion.colonia = (direccion.colonia ?: "")
@@ -734,7 +738,7 @@ class SolicitudService {
                 mapaDireccion.numeroFax = (direccion.numeroFax ?: "")
                 mapaDireccion.tipoDomicilio = (direccion.tipoDomicilio ?: "")
                 mapaDireccion.indicadorEspecialDomicilio = (direccion.indicadorEspecialDomicilio ?: "")
-                solicitudRest.solicitud.buroDeCredito.direcciones << maparaDireccion
+                solicitudRest.solicitud.buroDeCredito.direcciones << mapaDireccion
             }
             
             solicitudRest.solicitud.buroDeCredito.empleos = []
@@ -945,7 +949,7 @@ class SolicitudService {
         datosSolicitud.pasoFormulario.cliente.rfcDelConyugue = cliente.rfcDelConyugue
         datosSolicitud.pasoFormulario.cliente.curpDelConyugue = cliente.curpDelConyugue
         datosSolicitud.pasoFormulario.cliente.lugarDeNacimientoDelConyugue = (cliente.lugarDeNacimientoDelConyugue ? cliente.lugarDeNacimientoDelConyugue.id : null)
-        datosSolicitud.pasoFormulario.cliente.nacionalidadDelConyugue = (cliente.nacionalidadDelConyugue ? cliente.nacionalidadDelConyugue : null )
+        datosSolicitud.pasoFormulario.cliente.nacionalidadDelConyugue = (cliente.nacionalidadDelConyugue ? cliente.nacionalidadDelConyugue.id : null )
         if(telefonosCliente){
             datosSolicitud.pasoFormulario.telefonoCliente = [:]
             telefonosCliente.each{
@@ -1014,6 +1018,17 @@ class SolicitudService {
             datosSolicitud.pasoFormulario.empleoCliente.ingresosFijos = empleoCliente.ingresosFijos
             datosSolicitud.pasoFormulario.empleoCliente.ingresosVariables = empleoCliente.ingresosVariables
             datosSolicitud.pasoFormulario.empleoCliente.gastos = empleoCliente.gastos
+        }
+        if(documentosSolicitud){
+            datosSolicitud.tiposDeDocumento = [:]
+            def tiposDeDocumento = TipoDeDocumento.findAllWhere(activo: true)
+            tiposDeDocumento = tiposDeDocumento.sort{ it.id }
+            tiposDeDocumento.each {
+                datosSolicitud.tiposDeDocumento."$it.nombreMapeo" = false
+            }
+            documentosSolicitud.each {
+                datosSolicitud.tiposDeDocumento."$it.tipoDeDocumento.nombreMapeo" = true
+            }
         }
         datosSolicitud
     }

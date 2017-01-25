@@ -1,6 +1,12 @@
 var solicitudes;
 var kosmosDropzone;
 var pasoActual = 1;
+function w3_open() {
+    document.getElementById("mySidenav").style.display = "block";
+}
+function w3_close() {
+    document.getElementById("mySidenav").style.display = "none";
+}
 
 $(document).ready(function () {
     var opcion = $('#opcionMenu').val();
@@ -95,11 +101,11 @@ function mostrarOpciones() {
 }
 
 function consultarSolicitud(numeroDeSolicitud) {
-    window.location.href = "/kosmos-app/dashboard/detalleSolicitud/" + numeroDeSolicitud;
+    window.location.href = "/dashboard/detalleSolicitud/" + numeroDeSolicitud;
 }
 
 function realizarVerificacion(numeroDeSolicitud) {
-    window.location.href = "/kosmos-app/dashboard/detalleVerificacion/" + numeroDeSolicitud;
+    window.location.href = "/dashboard/detalleVerificacion/" + numeroDeSolicitud;
 }
 
 function mostrarTab(tab) {
@@ -255,7 +261,7 @@ function consultarSolicitudesPorTiempo(temporalidad, idDiv, fechaInicio, fechaFi
     jQuery.ajax({
         type: 'POST',
         data: 'temporalidad=' + temporalidad + "&template=" + idDiv + complemento,
-        url: '/kosmos-app/dashboard/consultarSolicitudes',
+        url: '/dashboard/consultarSolicitudes',
         success: function (data, textStatus) {
             $('#' + idDiv).html(data);
         },
@@ -296,7 +302,7 @@ function cambiarEstatus(estatus, idSolicitud) {
         jQuery.ajax({
             type: 'POST',
             data: {id: idSolicitud, status: estatus, complemento: complemento},
-            url: '/kosmos-app/dashboard/cambiarEstadoSolicitud',
+            url: '/dashboard/cambiarEstadoSolicitud',
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 if (respuesta.ok) {
@@ -321,7 +327,7 @@ function guardarNuevaEntidad() {
     jQuery.ajax({
         type: 'POST',
         data: $('#crearEntidadForm').serialize(),
-        url: '/kosmos-app/entidadFinanciera/save',
+        url: '/entidadFinanciera/save',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -367,7 +373,7 @@ Dropzone.autoDiscover = false;
 function inicializarDropzone(elemento, boton) {
     //Dropzone.autoDiscover = false;
     kosmosDropzone = new Dropzone(elemento, {
-        url: "/kosmos-app/dashboard/subirImagen",
+        url: "/dashboard/subirImagen",
         uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",
@@ -413,7 +419,7 @@ function mostrarDetalleProducto(idProducto) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idProducto,
-        url: '/kosmos-app/producto/obtenerDetalleProducto',
+        url: '/producto/obtenerDetalleProducto',
         success: function (data, textStatus) {
             $('#detalleProducto').html(data);
             openModal('modalDetalleProducto');
@@ -471,7 +477,7 @@ function agregarPregunta() {
     $.ajax({
         type: 'POST',
         data: 'pregunta=' + textoPregunta,
-        url: '/kosmos-app/dashboard/agregarPregunta',
+        url: '/dashboard/agregarPregunta',
         success: function (data, textStatus) {
             mostrarPreguntas(data);
         },
@@ -483,7 +489,7 @@ function eliminarPregunta(idPregunta) {
     $.ajax({
         type: 'POST',
         data: 'idPregunta=' + idPregunta,
-        url: '/kosmos-app/dashboard/eliminarPregunta',
+        url: '/dashboard/eliminarPregunta',
         success: function (data, textStatus) {
             mostrarPreguntas(data);
         },

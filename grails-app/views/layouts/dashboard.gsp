@@ -23,29 +23,29 @@
         <g:external dir="js" file="spectrum.js" />
         <g:external dir="js" file="dateFormat.min.js" />
         <g:external dir="js" file="dashboard.js" />
-        <g:external dir="css" file="jquery-ui-kosmos.css" />
+        <!--<g:external dir="css" file="jquery-ui-kosmos.css" />-->
         <g:external dir="js" file="jquery-ui-kosmos.js" />
         <g:layoutHead/>
     </head>
     <body>
         <header class="appHeader" style="border-top: solid 5px ${session.configuracion?.colorBordeSuperior}; background-color: ${session.configuracion?.colorEncabezado};">
-            <div class="container clearFix" >
+            <div class="container clearFix">
                 <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file: session.configuracion?.rutaLogotipo )}" alt="Logo" title="Logo" />
                 <img class="logoMobile dashboard floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" title="Logo" />
                 <div class="floatingHeader floatRight clearFix">
                     <div class="floatRight clearFix">
                         <div class="clearFix floatLeft ">
-                            <img  class="userPicture dashboard floatLeft" src="${resource(dir:'images', file:'profile.png')}"/>
+                            <img class="userPicture dashboard floatLeft" src="${resource(dir:'images', file:'profile.png')}"/>
                         </div>
                         <p class="userName dashboard floatLeft">Hola Joseph</p>
                         <div class="dropBox floatLeft marginTop20 marginLeft5 desktop">
                             <i class="fa fa-angle-down paddingTop4 paddingRight5 paddingLeft5 dropbtn" aria-hidden="true" onclick="mostrarOpciones();"></i>
                             <div id="opcionesUsuario" class="dropdown-content">
-                                <a href="/kosmos-app/dashboard/editarPerfil">Editar Perfil</a>
-                                <a href="/kosmos-app/logout">Salir</a>
+                                <a href="/dashboard/editarPerfil">Editar Perfil</a>
+                                <a href="/logout">Salir</a>
                             </div>
                         </div>
-                        <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="mostrarOpciones();"></i></span>
+                        <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
                     <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
                         <div class="searchBox autoMargin clearFix">
@@ -60,8 +60,50 @@
                 </div>
             </div>
         </header>
-
-        <nav class="container menuBox marginBottom28">
+        <ul id="mySidenav" class="side-nav right-aligned" style="transform: translateX(0px); -ms-transform: translateX(0px);
+    -webkit-transform: translateX(0px);">
+          <li>
+              <a href="${createLink(controller:'dashboard', action:'index')}">
+                  <img class="menuIcon" src="${resource(dir:'images', file:'dashboard.png')}" alt="dashboard" title="dashboard"> DASHBOARD
+              </a>
+          </li>
+          <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                  <a href="${createLink(controller:'dashboard', action:'solicitudes')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"> SOLICTUDES
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+          <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                  <a href="${createLink(controller:'dashboard', action:'analiticas')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"> ANALITICAS
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+          <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR'>
+                  <a href="${createLink(controller:'dashboard', action:'verificaciones')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'verification.png')}" alt="verificacion" title="verificaciones"> VERIFICACIONES
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+          <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_DISENO'>
+                  <a href="${createLink(controller:'dashboard', action:'configuracion')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"> CONFIGURACIÓN
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+          <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+                  <a href="${createLink(controller:'dashboard', action:'administracion')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administracion"> ADMINISTRACIÓN
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+        </ul>
+    <nav id="dashboardMenu" class="container menuBox marginBottom28">
             <ul class="clearFix">
                 <li class="floatLeft">
                     <a id="principalOpc1" href="${createLink(controller:'dashboard', action:'index')}" class="elementoMenuPrincipal font12">
@@ -73,7 +115,7 @@
                     <li class="floatLeft">
                         <a id="principalOpc2" href="${createLink(controller:'dashboard', action:'solicitudes')}" class="elementoMenuPrincipal font12 ">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"></span>
-                            <span>SOLICTUDES</span>
+                            <span>SOLICITUDES</span>
                         </a>
                     </li>
                 </sec:ifAnyGranted>
@@ -101,7 +143,7 @@
                         </a>
                     </li>
                 </sec:ifAnyGranted>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>  
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
                     <li class="floatLeft">
                         <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'administracion')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administracion"></span>

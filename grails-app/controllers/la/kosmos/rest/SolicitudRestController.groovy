@@ -65,7 +65,7 @@ class SolicitudRestController {
         if(autorizado){
             if(params.folioSolicitud){
                 try{
-                    respuesta = solicitudService.consultaSolicitudes(autorizado, 3, null, null, null, params.folioSolicitud)
+                    respuesta = solicitudService.consultaSolicitudes(autorizado, 3, null, null, null, (params.folioSolicitud as int))
                 }catch(Exception e){
                     e.printStackTrace();
                     respuesta = [codigoDeError: 500, mensajeError: "Ocurrio un error al obtener la lista de solicitudes."]

@@ -1,7 +1,7 @@
 <div class=" <g:if test="${pasoActual?.ultimoPaso}"> width850 </g:if><g:else> width600 </g:else> clearFix desktop tablet">
     <g:each status="i" in="${pasosDeSolicitud}" var="paso">
         <g:if test="${paso.mostrarEnBarra}">
-            <div data-numero-de-paso="${paso.numeroDePaso}" id="circuloPaso${paso.numeroDePaso}" class="botonCambioDePaso <g:if test="${paso.numeroDePaso <= pasoActual.numeroDePaso}"> blueCircle colorWhite </g:if><g:else>grayCircle</g:else> center floatLeft" <g:if test="${paso.numeroDePaso == pasoActual.numeroDePaso}"> disabled </g:if> >
+            <div data-numero-de-paso="${paso.numeroDePaso}" id="circuloPaso${paso.numeroDePaso}" class="botonCambioDePaso <g:if test="${paso.numeroDePaso <= pasoActual.numeroDePaso}"> blueCircle colorWhite </g:if><g:else>grayCircle</g:else> center floatLeft <g:if test="${configuracion.navegacionLibre}">freeNav</g:if>" <g:if test="${paso.numeroDePaso == pasoActual.numeroDePaso}"> disabled </g:if> >
                 <p id="pPaso${paso.numeroDePaso}" class="<g:if test="${paso.numeroDePaso <= pasoActual.numeroDePaso}"> paddingTop10 </g:if><g:else> paddingTop5 footerTextColor </g:else> font18">${paso.numeroDePaso}</p>
                 </div>
             <g:if test="${!paso?.ultimoPaso}">

@@ -845,11 +845,18 @@ class SolicitudController {
         println params
         def respuesta = [:]
         if(params.idCodigoPostal){
-            def codigo = CodigoPostal.get(params.idCodigoPostal as long)
-            respuesta.estado = codigo.municipio.estado
-            respuesta.municipio =  codigo.municipio
+            def cp = params.idCodigoPostal?.replaceFirst('^0+(?!$)', '')
+            def codigo = CodigoPostal.findAllWhere(codigo: cp)
+            if(codigo){
+                respuesta.asentamientos = codigo*.asentamiento as Set
+                respuesta.asentamientos = respuesta.asentamientos.sort{ it }
+                respuesta.municipio =  codigo*.municipio[0]
+                respuesta.estado = respuesta.municipio.estado
+            } else {
+                
+            }
         }
-        println respuesta
+        println "Regresando: " + respuesta
         render respuesta as JSON
     }
     
@@ -1003,16 +1010,21 @@ class SolicitudController {
                 session.configuracion = datosRecuperados.configuracion
                 session.cotizador = datosRecuperados.cotizador
                 session.identificadores = datosRecuperados.identificadores
+                session.tiposDeDocumento = datosRecuperados.tiposDeDocumento
                 session["pasoFormulario"] = datosRecuperados.pasoFormulario
                 session.token = datosRecuperados.token
                 session.shortUrl = datosRecuperados.shortUrl
                 params.keySet().asList().each { params.remove(it) }
                 forward action:'test', params: [paso: ultimoPaso]
             } else {
-                
+                def entidadFinanciera = EntidadFinanciera.get(6)
+                def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+                [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
             }
         } else {
-            
+            def entidadFinanciera = EntidadFinanciera.get(6)
+            def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+            [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
         }
     }
 }

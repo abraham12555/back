@@ -39,7 +39,7 @@
         <header class="topHeader">
             <div class="formularioHeader clearFix" style="border-top: solid 5px ${configuracion?.colorBordeSuperior}; background-color: ${configuracion?.colorEncabezado};">
                 <div class="container clearFix">
-                    <img class="logo floatLeft desktop" src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo" title="Logo" />
+                    <center><img class="logo desktop" src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo" title="Logo" /></center>
                     <img class="logoMobile floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" title="Logo" />
                     <div class="floatingHeader floatRight clearFix">
                     </div>

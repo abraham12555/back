@@ -15,6 +15,7 @@
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery.modal.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="animate.min.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="jquery.mloading.css" title="text/css" rel="stylesheet" />
         <g:if test="${configuracion?.rutaCss}">
             <link rel="stylesheet" href="${configuracion?.rutaCss}">
         </g:if>
@@ -34,6 +35,7 @@
         <g:external dir="js" file="facebook.js" />
         <g:external dir="js" file="jasny-bootstrap.min.js" />
         <g:external dir="js" file="jquery-ui-touch-punch.js" />
+        <g:external dir="js" file="jquery.mloading.js" />
     </head>
     <body>
         <header class="topHeader">

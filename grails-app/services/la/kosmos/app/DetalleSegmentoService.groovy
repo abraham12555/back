@@ -43,7 +43,7 @@ class DetalleSegmentoService {
             datosPrestamo.name = credito.nombreUsuario
 			
             CodigosTipoContratoBuroCredito codigo = CodigosTipoContratoBuroCredito.findByCodigo(credito?.tipoContratoProducto?.trim())
-            datosPrestamoPorTipoCredito.name = codigo.descripcion
+            datosPrestamoPorTipoCredito.name = codigo?.descripcion
 			
             //datosPrestamo.tipoDeCuenta = credito.tipoDeCuenta
             if(reporteBuro.totalSaldoActual > 0){

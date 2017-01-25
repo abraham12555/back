@@ -1614,7 +1614,7 @@ body{
 }
 
 .blueBox{
-    width: 190px;
+    width: auto;
     height: 36px;
     border-radius: 100px;
     background-image: linear-gradient(258deg, #59c4fb, #2d91f6);

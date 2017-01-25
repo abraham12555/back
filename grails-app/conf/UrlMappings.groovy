@@ -14,5 +14,7 @@ class UrlMappings {
         "/api/Callback/ClassificationResult"(controller: "classificationResult", action: "save")
         "/api/Callback/DossierSummary"(controller: "dossierSummary", action: "save")
         "500"(view:'/error')
+        "404"(view:'/notFound')
+        "403"(view:'/denied')
 	}
 }

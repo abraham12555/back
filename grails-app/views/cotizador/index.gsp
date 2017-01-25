@@ -20,7 +20,7 @@
                         <h3 id="precioDelProducto" class="darkBluetitle font30 fontWeight400 marginBottom20">
                             ${configuracion.textoMontoDefault}
                         </h3>
-                        <div id="imagenDelProducto" class="cotizador-bg none800" style="background-image: url('data:image/${landingImage.extension};base64,${landingImage.base64}');">
+                        <div id="imagenDelProducto" class="cotizador-bg" style="background-image: url('data:image/${landingImage.extension};base64,${landingImage.base64}');">
                             <div class="cotizador-bae"></div>
                         </div>
                         <div class="paddingAside10" style='margin-top: 30px;'>
@@ -50,9 +50,9 @@
                             <g:hiddenField id="txtPago" name="txtPago" value=""/>
                             <g:hiddenField id="txtSeguro" name="txtSeguro" value=""/>
                             <g:hiddenField id="txtPeriodo" name="txtPeriodo" value=""/>
-                            <div class="marginTop40 marginBottom20" id="submitCotizador">
+                            <div class="marginTop40 marginBottom20 blur" id="submitCotizador">
                                 <div class="paddingAside20">
-                                    <input type="submit" value="Comenzar mi Solicitud" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" />
+                                    <input type="submit" value="Comenzar mi Solicitud" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" id="btnCotSub" disabled/>
                                 </div>
                             </div>
                             <div class="paddingAside10" style="margin-top: 10%;">

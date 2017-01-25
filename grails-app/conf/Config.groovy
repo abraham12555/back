@@ -10,6 +10,7 @@
 // if (System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
+grails.app.context = "/"
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
@@ -121,9 +122,10 @@ log4j.main = {
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'la.kosmos.app.Usuario'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'la.kosmos.app.UsuarioRol'
 grails.plugin.springsecurity.authority.className = 'la.kosmos.app.Rol'
-grails.plugin.springsecurity.successHandler.alwaysUseDefault = true
-grails.plugin.springsecurity.successHandler.alwaysUseDefaultTargetUrl = true
-grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/dashboard/index'
+//grails.plugin.springsecurity.successHandler.alwaysUseDefault = true
+//grails.plugin.springsecurity.successHandler.alwaysUseDefaultTargetUrl = true
+//grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/dashboard/index'
+grails.plugin.springsecurity.adh.errorPage = '/denied'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                ['permitAll'],
     	'/cotizador/**':    ['permitAll'],

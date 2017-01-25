@@ -12,7 +12,7 @@ class CotizadorService {
         def tiposDeProducto
         def documentos
         def x = 0
-        def entidadFinanciera = EntidadFinanciera.get(((params.ef) ? (params.ef as long) : 13)) //TODO Recibir parametro por POST/GET para buscar dinamicamente la entidad financiera a conectarse
+        def entidadFinanciera = EntidadFinanciera.get(((params.ef) ? (params.ef as long) : 6)) //TODO Recibir parametro por POST/GET para buscar dinamicamente la entidad financiera a conectarse
         def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
         def landingImage = obtenerBase64Imagenes(configuracion.imagenDefault)
         def pasosCotizador = PasoCotizadorEntidadFinanciera.findAllWhere(entidadFinanciera: entidadFinanciera, cargaInicial: true)

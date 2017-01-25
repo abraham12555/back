@@ -44,10 +44,16 @@
                         <g:else>
                             DE <span class="headingColor"> ${productoSolicitud.producto.nombreDelProducto.toUpperCase()} </span>
                         </g:else>
-                        POR
-                        <span class="headingColor"><g:formatNumber number="${productoSolicitud?.montoDelCredito + productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /> MXN</span>
-                        , PARA UTILIZARLO EN 
-                        <span class="headingColor"> ${productoSolicitud.rubroDeAplicacion.nombre.toUpperCase()} </span>.
+                        <g:if test="${productoSolicitud?.rubroDeAplicacion}">
+                            POR
+                            <span class="headingColor"><g:formatNumber number="${productoSolicitud?.montoDelCredito + productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /> MXN</span>
+                            , PARA UTILIZARLO EN 
+                            <span class="headingColor"> ${productoSolicitud.rubroDeAplicacion.nombre.toUpperCase()} </span>.
+                        </g:if>
+                        <g:else>
+                            POR
+                            <span class="headingColor"><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /> MXN</span>.
+                        </g:else>    
                     </p>
                     <p class="paddingTop20">A UNA TAZA ORDINARIA DEL
                         <span class="headingColor"> ${((productoSolicitud.producto.tasaDeInteres * 12) * 100).round(2)} % ANUAL </span>

@@ -71,6 +71,7 @@ function submitFirstName() {
             $('.register').removeClass('shake');
         }, 3000);
     } else {
+        $('#termsPriv').fadeOut();
         $('.register').addClass('bounceOut');
         setTimeout(function () {
             $('.register').removeClass(' bounceOut');
@@ -156,7 +157,7 @@ function submitPhone() {
                 data: {
                     telefonoCelular: $('#phone').val()
                 },
-                url: "/kosmos-app/cotizador/solicitarCodigo",
+                url: "/cotizador/solicitarCodigo",
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
                     if (respuesta.mensajeEnviado === true) {
@@ -215,7 +216,7 @@ function submitCodigo() {
                 data: {
                     codigoConfirmacion: $('#codigo').val()
                 },
-                url: "/kosmos-app/cotizador/resultadoVerificacion",
+                url: "/cotizador/resultadoVerificacion",
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
                     if (respuesta.resultado === true) {

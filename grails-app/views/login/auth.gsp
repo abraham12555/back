@@ -25,7 +25,7 @@
                         El usuario y/o la contraseña no son válidos.
                     </div>
                 </g:if>
-                <form class="loginForm gray font14" action="/kosmos-app/j_spring_security_check" method="post" name="loginForm" id="loginForm" autocomplete="off">
+                <form class="loginForm gray font14" action="/j_spring_security_check" method="post" name="loginForm" id="loginForm" autocomplete="off">
                     <p class="loginTitle gray textUpper letterspacing1 center">NÚMERO DE CLIENTE</p>
                     <div class="formContainer">
                         <label class="formLabel letterspacing1 emailLabel">CORREO</label>

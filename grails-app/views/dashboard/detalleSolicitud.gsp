@@ -47,7 +47,7 @@
             z-index: 999;
             right: 20px;
             bottom: 20px;
-            background: #2d91f6 url("/kosmos-app/images/up-arrow.png") no-repeat center 43%;
+            background: #2d91f6 url("/images/up-arrow.png") no-repeat center 43%;
             box-shadow: 0 0 7px 0 #298df5;
             -webkit-border-radius: 30px;
             -moz-border-radius: 30px;
@@ -535,7 +535,7 @@
             <section class="container">
                 <div class="col12 clearFix">
                     <div class="autoMargin radius2 solicitudWhiteBox">
-                        <div>
+                        <div class="solicitudDetailHeader">
                             <ul class="clearFix">
                                 <li class="floatLeft paddingTop7 paddingLeft5 paddingRight5">
                                     <a href="#" title="SOLICITUDES" class="displayInline font24 fontWeight700 darkBluetitle paddingTop17 paddingBottom17 paddingLeft20">SOLICITUD</a>
@@ -1088,7 +1088,7 @@
                             <div class="overlay"></div>
                             <div class="loginContainer creditLb">
                                 <div class="dashBordBox">
-                                    <form action="/kosmos-app/dashboard/autorizarSolicitud" method="POST" class="loginForm gray font14">
+                                    <form action="/dashboard/autorizarSolicitud" method="POST" class="loginForm gray font14">
                                         <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
                                         <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">APROBACIÓN DE CRÉDITO</p>
                                         <div class="solicitudTitle width166 autoMargin">
@@ -1128,7 +1128,7 @@
                                             <div class="col12" style="text-align: center;">
                                                 <div class="col4" style="display: inline-block;">
                                                     <button type="button" id="btnComplemento" onclick="cambiarEstatus(6, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>ACEPTAR</button>
-                                                </div>                   
+                                                </div>
                                                 <div class="col4" style="display: inline-block;">
                                                     <button type="button" onclick="cerrarModal('modalComplemento');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
                                                 </div>
@@ -1173,7 +1173,7 @@
                                             <div class="col12" style="text-align: center;">
                                                 <div class="col4" style="display: inline-block;">
                                                     <button type="button" id="btnVerificar" onclick="cambiarEstatus(8, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>REGISTRAR PREGUNTAS</button>
-                                                </div>                   
+                                                </div>
                                                 <div class="col4" style="display: inline-block;">
                                                     <button type="button" onclick="cerrarModal('modalPreguntas');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
                                                 </div>

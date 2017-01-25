@@ -1,7 +1,8 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
     <input type="hidden" id="pasoPrellenado" value="${generales?.llenadoPrevio}"/>
     <input type="hidden" id="tituloDelPaso" value="${pasoActual?.titulo}"/>
-    <div class="defaultBubble <g:if test="${pasoActual?.tipoDePaso?.nombre == "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
+    <g:if test="${!session.tiposDeDocumento?.identificacion}">
+        <div class="defaultBubble <g:if test="${pasoActual?.tipoDePaso?.nombre == "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
             <div class="container clearFix relative autoMargin width920">
                 <div class="infoBox floatLeft desktop">
                     <div class="width630 autoMargin">
@@ -17,6 +18,7 @@
                 </div>
             </div>
         </div>
+    </g:if>    
         <div class="successBubble <g:if test="${!generales?.llenadoPrevio}"> hide </g:if>">
             <div class="container clearFix relative autoMargin width920">
                 <div class="infoBoxGreen floatLeft">
@@ -68,6 +70,19 @@ if(campo.campo.catalogo){
                                         </g:if>
                                         <g:else>
                                             <g:select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues"  from="${listaDeElementos}" optionKey="id" noSelection="${Eval.me(campo.placeholder)}" />
+                                        </g:else>
+                            </span>
+                            <span class="afterSelect">
+                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                            </span>
+                                </g:if>
+                                    <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("DYNAMICSELECT")}">
+                            <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
+                                        <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
+                                            <select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty filledColor" value="${(generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo")}"></select>
+                                        </g:if>
+                                        <g:else>
+                                            <select id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues"></select>
                                         </g:else>
                             </span>
                             <span class="afterSelect">
@@ -174,12 +189,10 @@ if(campo.campo.catalogo){
                 </span>
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("AUTOCOMPLETE")}">
-                                    <span id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo + "_remote"}">
-                                        <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 typeahead tt-input <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
-                                    </span> 
+                                    <input type="text" style="text-align:center;" class="inputsFormulario formValues width120 <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"/>
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("NUMERICO")}">
-                            <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues filledColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" onKeyPress="return numbersonly(this, event)"> 
+                                    <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues filledColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" onKeyPress="return numbersonly(this, event)"> 
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("TELEFONO")}">
                                     <input type="text" style="text-align:center; width: ${campo.longitudDelCampo};" class="inputsFormulario formValues filledColor <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> notEmpty filledColor </g:if>" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" placeholder="${campo.placeholder}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" data-mask="99-99-99-99-99"> 

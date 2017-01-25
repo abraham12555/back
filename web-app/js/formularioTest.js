@@ -73,6 +73,25 @@ function inicializarFormulario() {
 }
 
 function habilitarBotonesAvance() {
+    $(".freeNav").hover(function () {
+        if ($(this).hasClass("grayCircle") || $(this).hasClass("blueCircle")) {
+            $(this).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
+            $(this).addClass('nextBtn');
+            $(this).addClass('sendBtn');
+            $(this).children('p').addClass('paddingTop10');
+            $(this).children('p').removeClass('paddingTop5');
+            $(this).children('p').html("IR AL PASO " + $(this).children('p').text());
+        }
+    }, function () {
+        if ($(this).hasClass("grayCircle") || $(this).hasClass("blueCircle")) {
+            $(this).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
+            $(this).removeClass('nextBtn');
+            $(this).removeClass('sendBtn');
+            $(this).children('p').addClass('paddingTop5');
+            $(this).children('p').removeClass('paddingTop10');
+            $(this).children('p').html($(this).children('p').text().replace("IR AL PASO ", ""));
+        }
+    });
     $('.botonCambioDePaso').click(function () {
         console.log("Dando click en boton para avanzar...");
         if ($(this).hasClass("sendBtn")) {
@@ -112,7 +131,7 @@ function cargarPonderaciones(listaDePonderaciones, listaDeAvances) {
         var length = Object.keys(ponderaciones).length;
         avancePorPaso = new Array(length);
         for (var i = 0; i < length; i++) {
-            avancePorPaso[i] = Number(avance[("paso" + (i+1))]);
+            avancePorPaso[i] = Number(avance[("paso" + (i + 1))]);
         }
     } else {
         console.log(avancePorPaso);
@@ -174,9 +193,13 @@ function operacionesFormulario() {
                             confirmButtonColor: "#DD6B55",
                             confirmButtonText: "Ok, Enterado",
                             closeOnConfirm: false
-                        }, function () {
-                            avanzarPaso(0);
-                            window.location.href = "http://nuuptech.xyz/kosmos-app";
+                        }, function (isConfirm) {
+                            if (isConfirm) {
+                                avanzarPaso(0);
+                                window.location.href = "http://micreditolibertad.com";
+                            } else {
+                                $('#cliente_nacionalidad').val(1);
+                            }
                             return false;
                         });
                     }
@@ -255,10 +278,6 @@ function operacionesFormulario() {
             calcularAvance();
             window.scrollTo(0, document.body.scrollHeight);
         });
-        $('.formValues', this).focusin(function () {
-            //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
-            //verificarCambios(index);
-        });
     });
 
     $('.showOnFill').each(function (index) {
@@ -287,9 +306,13 @@ function operacionesFormulario() {
                             confirmButtonColor: "#DD6B55",
                             confirmButtonText: "Ok, Enterado",
                             closeOnConfirm: false
-                        }, function () {
-                            avanzarPaso(0);
-                            window.location.href = "http://nuuptech.xyz/kosmos-app";
+                        }, function (isConfirm) {
+                            if (isConfirm) {
+                                avanzarPaso(0);
+                                window.location.href = "http://micreditolibertad.com";
+                            } else {
+                                $('#cliente_nacionalidad').val(1);
+                            }
                             return false;
                         });
                     }
@@ -368,9 +391,12 @@ function operacionesFormulario() {
             calcularAvance();
             window.scrollTo(0, document.body.scrollHeight);
         });
-        $('.formValues', this).focusin(function () {
-            //console.log("Input " + $(this).attr('id') + " - Indice " + index + " ha tomado el foco");
-            //verificarCambios(index);
+        $('.formValues', this).focusout(function () {
+            console.log("Checando el campo: " + $(this).attr('id'));
+            if ($(this).attr('id') === 'direccionCliente_codigoPostal' || $(this).attr('id') === 'empleoCliente_codigoPostal') {
+                console.log("El campo de código postal ha perdido el foco!!");
+                consultarCodigoPostal($(this).attr('id'), $(this).val());
+            }
         });
     });
 
@@ -387,6 +413,7 @@ function operacionesFormulario() {
                 //submitNextPage();
                 var currentStep = $('#pasoAnterior').val();
                 if ($('#circuloPaso' + (parseInt(currentStep) + 1)).hasClass("grayCircle")) {
+                    $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
@@ -409,35 +436,6 @@ function operacionesFormulario() {
         openModal('comprobante_domicilio');
         inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
     });
-
-    var bestPictures = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: '/kosmos-app/solicitud/buscarCodigoPostal',
-        remote: {
-            url: '/kosmos-app/solicitud/buscarCodigoPostal?query=%QUERY',
-            wildcard: '%QUERY'
-        }
-    });
-    console.log("Inicializando typeahead....");
-    $('#direccionCliente_codigoPostal_remote .typeahead').typeahead({minLength: 3}, {
-        name: 'codigos',
-        display: 'value',
-        source: bestPictures,
-        limit: 10,
-        templates: {
-            empty: [
-                '<div class="empty-message">',
-                'No hay coincidencias.',
-                '</div>'
-            ].join('\n')
-        }
-    });
-    $('#direccionCliente_codigoPostal_remote .typeahead').bind('typeahead:select', function (ev, suggestion) {
-        consultarCodigoPostal(suggestion);
-    });
-
-    //submitNextPage();
 }
 
 function mostrarSiguienteCampo(index) {
@@ -510,19 +508,10 @@ function mostrarSiguienteCampo(index) {
     totalElementosVisibles -= $('.formStep:visible .noMostrar').length;
     //console.log("index: " + index + " - elementosLlenosVisibles:" + elementosLlenosVisibles + " - totalElementosVisibles: " + totalElementosVisibles + " - totalElementosRequeridos: " + totalElementosRequeridos + " - totalElementosRequeridosLLenos: " + totalElementosRequeridosLLenos);
     if ((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridos === totalElementosRequeridosLLenos)) {
-        if (prellenado === "true") {
-            //console.log("Mostrar el boton de confirmacion");
-            $('.formStep:visible .confirmDiv').fadeIn();
-        } else {
-            //console.log("Hacer click en el boton de confirmacion");
-            //$('.formStep:visible .confirmDiv').fadeIn();
-            $('.formStep:visible .confirmDiv .buttonM').click();
-        }
-        /*if (pasoActual === "1" && index === 6) {
-         generarClaves();
-         }*/
+        $('.formStep:visible .confirmDiv .buttonM').click();
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
+            $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('nextBtn');
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('sendBtn');
@@ -574,6 +563,7 @@ function verificarCambios(index) {
          }*/
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
+          $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('nextBtn');
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('sendBtn');
@@ -614,41 +604,94 @@ function calcularAvance() {
     $('.activeProgress').animate({width: avanceTotal + '%'}, {queue: false});
 }
 
-function consultarCodigoPostal(sugerencia) {
-    var respuesta = eval(sugerencia);
-    var idCodigo = respuesta.id;
+function consultarCodigoPostal(elemento, codigo) {
+    var idCodigo = codigo;
+    $("body").mLoading({
+        text: "Cargando, espere por favor...",
+        icon: "/images/spinner.gif",
+        mask: true
+    });
     $.ajax({
         type: 'POST',
         data: 'idCodigoPostal=' + idCodigo,
-        url: '/kosmos-app/solicitud/consultarCodigoPostal',
+        url: '/solicitud/consultarCodigoPostal',
         success: function (data, textStatus) {
             var response = eval(data)
-            $('#direccionCliente_delegacion').append($('<option>', {
-                value: response.municipio.id,
-                text: response.municipio.nombre,
-                selected: true
-            }));
-            $('#direccionCliente_estado').append($('<option>', {
-                value: response.estado.id,
-                text: response.estado.nombre,
-                selected: true
-            }));
-            $('.typeahead').addClass('notEmpty');
-            $('.typeahead').addClass('headingColor');
-            $('#direccionCliente_delegacion').addClass('notEmpty');
-            $('#direccionCliente_delegacion').addClass('headingColor');
-            $('#direccionCliente_estado').addClass('notEmpty');
-            $('#direccionCliente_estado').addClass('headingColor');
-            listaDeControl[$(".showOnFill").index($('.typeahead').closest('.showOnFill'))] = 1;
-            listaDeControl[$(".showOnFill").index($('#direccionCliente_delegacion').closest('.showOnFill'))] = 1;
-            listaDeControl[$(".showOnFill").index($('#direccionCliente_estado').closest('.showOnFill'))] = 1;
-            //$('.showOnFill').each(function (index) {
-            mostrarSiguienteCampo($(".showOnFill").index($('.typeahead').closest('.showOnFill')));
-            //});
+            if (elemento == 'direccionCliente_codigoPostal') {
+                var colonia = $('#direccionCliente_colonia').val();
+                $('#direccionCliente_colonia').html("");
+                $('#direccionCliente_delegacion').html("");
+                $('#direccionCliente_estado').html("");
+                if (response.asentamientos && response.asentamientos !== null && response.asentamientos !== undefined) {
+                    for (var x = 0; x < response.asentamientos.length; x++) {
+                        $('#direccionCliente_colonia').append($('<option>', {
+                            value: response.asentamientos[x],
+                            text: response.asentamientos[x],
+                            selected: true
+                        }));
+                    }
+                    $('#direccionCliente_colonia').addClass('notEmpty');
+                    $('#direccionCliente_colonia').addClass('headingColor');
+                    listaDeControl[$(".showOnFill").index($('#direccionCliente_colonia').closest('.showOnFill'))] = 1;
+                    if (response.municipio && response.municipio !== null && response.municipio !== undefined) {
+                        $('#direccionCliente_delegacion').append($('<option>', {
+                            value: response.municipio.id,
+                            text: response.municipio.nombre,
+                            selected: true
+                        }));
+                        $('#direccionCliente_delegacion').addClass('notEmpty');
+                        $('#direccionCliente_delegacion').addClass('headingColor');
+                        listaDeControl[$(".showOnFill").index($('#direccionCliente_delegacion').closest('.showOnFill'))] = 1;
+                    }
+                    if (response.estado && response.estado !== null && response.estado !== undefined) {
+                        $('#direccionCliente_estado').append($('<option>', {
+                            value: response.estado.id,
+                            text: response.estado.nombre,
+                            selected: true
+                        }));
+                        $('#direccionCliente_estado').addClass('notEmpty');
+                        $('#direccionCliente_estado').addClass('headingColor');
+                        listaDeControl[$(".showOnFill").index($('#direccionCliente_estado').closest('.showOnFill'))] = 1;
+                    }
+                    $('#direccionCliente_codigoPostal').addClass('notEmpty');
+                    $('#direccionCliente_codigoPostal').addClass('headingColor');
+                    listaDeControl[$(".showOnFill").index($('#direccionCliente_codigoPostal').closest('.showOnFill'))] = 1;
+                    mostrarSiguienteCampo($(".showOnFill").index($('#direccionCliente_codigoPostal').closest('.showOnFill')));
+                } else {
+                    $('#direccionCliente_colonia').append($('<option>', {
+                        value: null,
+                        text: "C.P. no Registrado",
+                        selected: true
+                    }));
+                }
+            } else if (elemento == 'empleoCliente_codigoPostal') {
+                $('#empleoCliente_delegacion').html("");
+                $('#empleoCliente_delegacion').append($('<option>', {
+                    value: response.municipio.id,
+                    text: response.municipio.nombre,
+                    selected: true
+                }));
+                $('#empleoCliente_estado').html("");
+                $('#empleoCliente_estado').append($('<option>', {
+                    value: response.estado.id,
+                    text: response.estado.nombre,
+                    selected: true
+                }));
+                $('#empleoCliente_codigoPostal').addClass('notEmpty');
+                $('#empleoCliente_codigoPostal').addClass('headingColor');
+                $('#empleoCliente_delegacion').addClass('notEmpty');
+                $('#empleoCliente_delegacion').addClass('headingColor');
+                $('#empleoCliente_estado').addClass('notEmpty');
+                $('#empleoCliente_estado').addClass('headingColor');
+                listaDeControl[$(".showOnFill").index($('#empleoCliente_codigoPostal').closest('.showOnFill'))] = 1;
+                listaDeControl[$(".showOnFill").index($('#empleoCliente_delegacion').closest('.showOnFill'))] = 1;
+                listaDeControl[$(".showOnFill").index($('#empleoCliente_estado').closest('.showOnFill'))] = 1;
+                mostrarSiguienteCampo($(".showOnFill").index($('#empleoCliente_codigoPostal').closest('.showOnFill')));
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {}
     });
-
+    $("body").mLoading('hide');
 }
 //function operacionesPaso4() {
 function operacionesBancos() {
@@ -670,14 +713,14 @@ function operacionesBancos() {
     $(".bankButton").mouseover(function () {
         console.log("pasando por la imagen");
         var hoverImage = $('img', this).data('hover');
-        $('img', this).attr('src', '/kosmos-app/images/' + hoverImage + '_white.png');
+        $('img', this).attr('src', '/images/' + hoverImage + '_white.png');
     });
 
     $(".bankButton").mouseout(function () {
         console.log("quitando el mouse de la imagen");
         if ($(this).hasClass('active_green') === false) {
             var hoverImage = $('img', this).data('hover');
-            $('img', this).attr('src', '/kosmos-app/images/' + hoverImage + '.png');
+            $('img', this).attr('src', '/images/' + hoverImage + '.png');
         }
     });
 
@@ -689,7 +732,7 @@ function operacionesBancos() {
         $(".bankButton").each(function (index) {
             if (index !== thisIndex) {
                 var hoverImage = $('img', this).data('hover');
-                $('img', this).attr('src', '/kosmos-app/images/' + hoverImage + '.png');
+                $('img', this).attr('src', '/images/' + hoverImage + '.png');
             }
         });
         if ($(this).hasClass('bankButton') === true) {
@@ -1034,6 +1077,7 @@ function operacionesBuro() {
             //avanzarPaso("6");
             var currentStep = $('#pasoAnterior').val();
             if ($('#circuloPaso' + (parseInt(currentStep) + 1)).hasClass("grayCircle")) {
+              $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
@@ -1145,7 +1189,7 @@ function cargarOpcionesDeContacto(opcion) {
         data: {
             opcionElegida: opcion
         },
-        url: "/kosmos-app/solicitud/obtenerOpciones",
+        url: "/solicitud/obtenerOpciones",
         success: function (data, textStatus) {
             var resultado = eval(data);
             var html = "";
@@ -1256,7 +1300,7 @@ function avanzarPaso(paso) {
     $.ajax({
         type: 'POST',
         data: $('#formFormulario').serialize(),
-        url: '/kosmos-app/solicitud/cambiarPaso',
+        url: '/solicitud/cambiarPaso',
         success: function (data, textStatus) {
             $('#pasoActual').hide();
             $('#pasoActual').html(data);
@@ -1468,7 +1512,7 @@ function loginInteractive() {
     $.ajax({
         type: 'POST',
         data: 'data=' + JSON.stringify(data),
-        url: '/kosmos-app/solicitud/loginInteractive',
+        url: '/solicitud/loginInteractive',
         success: function (data, textStatus) {
             var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
@@ -1519,7 +1563,7 @@ function authenticate() {
     $.ajax({
         type: 'POST',
         data: 'data=' + JSON.stringify(data),
-        url: '/kosmos-app/solicitud/authenticate',
+        url: '/solicitud/authenticate',
         success: function (data, textStatus) {
             var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
@@ -1627,17 +1671,17 @@ function spinner(bank) {
     html += "<center><p style=\"font-size:16px;color:#298df5\">Estableciendo Conexi&oacute;n con la Instituci&oacute;n Financiera</p>";
     if (bank == 'banamex') {
 
-        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banamex.png\"/></center>";
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/images/banamex.png\"/></center>";
     } else if (bank == 'bancomer') {
-        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/bancomer.png\"/></center>";
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/images/bancomer.png\"/></center>";
     } else if (bank == 'american_express') {
-        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/american_express.png\"/></center>";
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/images/american_express.png\"/></center>";
     } else if (bank == 'santander') {
-        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/santander.png\"/></center>";
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/images/santander.png\"/></center>";
     } else if (bank == 'banorte') {
-        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/banorte.png\"/></center>";
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/images/banorte.png\"/></center>";
     } else if (bank == 'hsbc') {
-        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/kosmos-app/images/hsbc.png\"/></center>";
+        html += "<img class=\"width120 blockAuto paddingTop20\" src=\"/images/hsbc.png\"/></center>";
     }
     return html;
 }
@@ -1711,7 +1755,7 @@ function consultarBancos() {
             $.ajax({
                 type: 'POST',
                 data: 'banco=' + banco + "&cliente=" + cliente + "&clave=" + clave + "&token=" + token + "&intentos=" + intentos,
-                url: '/kosmos-app/solicitud/consultaBancos',
+                url: '/solicitud/consultaBancos',
                 success: function (data, textStatus) {
                     var respuesta = checkIfJson(data);
                     restartLoadBar();
@@ -1761,7 +1805,7 @@ function consultarBuro() {
             $.ajax({
                 type: 'POST',
                 data: 'tarjeta=' + tarjeta + "&numeroTarjeta=" + numeroTarjeta + "&hipoteca=" + hipoteca + "&creditoAutomotriz=" + creditoAutomotriz,
-                url: '/kosmos-app/solicitud/consultarBuroDeCredito',
+                url: '/solicitud/consultarBuroDeCredito',
                 success: function (data, textStatus) {
                     loadBar("100%");
                     //cerrarModal();
@@ -1887,7 +1931,7 @@ function guardarFoto(cara) {
     $.ajax({
         type: 'POST',
         data: 'img_data=' + $("#imagenCapturada" + cara).val() + "&cara=" + cara,
-        url: '/kosmos-app/solicitud/guardarFoto',
+        url: '/solicitud/guardarFoto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.status === 200) {
@@ -2109,7 +2153,7 @@ Dropzone.autoDiscover = false;
 function inicializarDropzone(elemento, boton) {
     //Dropzone.autoDiscover = false;
     var kosmosDropzone = new Dropzone(elemento, {
-        url: "/kosmos-app/solicitud/consultarEphesoft",
+        url: "/solicitud/consultarEphesoft",
         uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",

@@ -193,7 +193,9 @@ class CotizadorController {
                 session.cotizador.enganche = (params.txtEnganche ? params.txtEnganche as float : 0)
                 session.cotizador.plazo = (params.txtPlazo ? params.txtPlazo as long : 0)
                 session.cotizador.periodo = (params.txtPeriodo ? params.txtPeriodo as long : 0)
+                session.cotizador.seguro = (params.txtSeguro ? params.txtSeguro as long : 0)
             }
+            println session.cotizador
             redirect(controller: "solicitud", action: "index")
         } else {
             redirect(controller: "cotizador", action: "index")
