@@ -9,6 +9,7 @@ class BootStrap {
 	
     def init = { servletContext ->
 		sequenceGeneratorService.initSequence('CUSTOMER', null, null, 200, 'KD-%05d')		
+		sequenceGeneratorService.initSequence('REFERENCIA_LIB', null, null, 200, 'LIB-%021d')
         /*def marca = new Marca(nombre:"Nissan").save(flush: true)
         def entidadFinanciera = new EntidadFinanciera(nombre: "CrediNissan").save(flush: true)
         def tipoDeProducto = new TipoDeProducto(nombre: "Automóviles").save(flush: true);

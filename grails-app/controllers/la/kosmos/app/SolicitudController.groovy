@@ -778,8 +778,9 @@ class SolicitudController {
     }
     
     def consultarBuroDeCredito(){
-        println "CONSULTA DE BURO DE CREDITO...." 
-        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud))
+		ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
+		//println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
+        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
         render respuesta as JSON
     }
     
@@ -908,6 +909,7 @@ class SolicitudController {
             def ponderaciones = [:]
             def parrafos
             def configuracion = session.configuracion//ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+			
             if(!session.shortUrl) {
                 def resultadoShortener = urlShortenerService.acortarUrl((entidadFinanciera.nombre + session.id), configuracion)
                 if(resultadoShortener.statusCode == 200){

@@ -27,6 +27,9 @@ class ReporteBuroCredito implements Serializable{
 	String fechaDefuncionCliente
 	Date fechaConsulta = new Date()
 	String errorConsulta
+	String referenciaOperadorUR
+	String referenciaOperadorAR
+	TipoErrorBuroCredito tipoErrorBuroCredito
 	static constraints = {
 		 apellidoPaterno nullable: true
 		 apellidoPaterno nullable: true
@@ -50,6 +53,9 @@ class ReporteBuroCredito implements Serializable{
 		 edadDependientes nullable: true
 		 fechaDefuncionCliente nullable: true
 		 errorConsulta nullable: true
+		 referenciaOperadorUR nullable: true
+		 referenciaOperadorAR nullable: true
+		 tipoErrorBuroCredito nullable: true
 	}
 	
 	static mapping = {

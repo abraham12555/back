@@ -2,7 +2,9 @@ package la.kosmos.app
 
 import grails.converters.JSON
 import groovy.json.*
+
 import java.text.SimpleDateFormat
+
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 
 class DashboardController {
@@ -89,7 +91,8 @@ class DashboardController {
         def usuarios = Usuario.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
         def roles = Rol.list()
         def productos = Producto.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
-        [listaDeUsuarios: usuarios, listaDeRoles: roles, listaDeProductos: productos]
+		def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(springSecurityService.currentUser.entidadFinanciera).configuracionBuroCredito
+        [listaDeUsuarios: usuarios, listaDeRoles: roles, listaDeProductos: productos, configuracionBuroCredito:configuracionBuroCredito]
     }
     
     def administracion(){

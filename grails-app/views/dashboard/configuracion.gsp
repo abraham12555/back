@@ -30,6 +30,11 @@
                                 <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','perfilDeMarca');" title="PERFIL DE MARCA" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">PERFIL DE MARCA</a>
                             </li>
                         </sec:ifAnyGranted>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+                            <li id="productosButton" class="opcConfiguracion floatLeft paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionBuroCredito');"  title="CONFIGURACIÓN BURÓ DE CRÉDITO" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">BURÓ DE CRÉDITO</a>
+                            </li>                           
+                        </sec:ifAnyGranted>
                         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS'>
                             <li id="variablesButton" class="opcConfiguracion floatLeft paddingLeft5 paddingRight5">
                                 <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','variables');"  title="VARIABLES" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">VARIABLES</a>
@@ -106,5 +111,12 @@
             <g:render template="productos"/>
         </div>
     </sec:ifAnyGranted>
+    <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <div class="configuracionTab" id="configuracionBuroCredito" style="display: none;">
+            <g:render template="configuracionBuroCredito"/>
+        </div>
+    </sec:ifAnyGranted>
+    
+    
 </body>
 </html>

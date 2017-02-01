@@ -323,6 +323,26 @@ function cambiarEstatus(estatus, idSolicitud) {
     }
 }
 
+function actualizarConfiguracionBuroCredito(){
+	jQuery.ajax({
+        type: 'POST',
+        data: $('#configuracionBuroCreditoForm').serialize(),
+        url: '/configuracionBuroCredito/update',
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.exito) {
+                sweetAlert("¡Excelente!", respuesta.mensaje , "success");
+            } else {
+                sweetAlert("Oops...", respuesta.mensaje , "error");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Ocurrio un error grave. Intentelo nuevamente más tarde.", "error");
+        }
+    });
+}
+
+
 function guardarNuevaEntidad() {
     jQuery.ajax({
         type: 'POST',

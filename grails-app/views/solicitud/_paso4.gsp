@@ -115,8 +115,7 @@
 		</div>
 		<div id="accionesSuccess" style="display: none;"
 			class="clearFix clearFloat">
-			<div
-				class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto"
+			<div id="btnConsultaExitosa" class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto"
 				style="cursor: pointer;">CONSULTA EXITOSA</div>
 		</div>
 		<div id="accionesError" style="display: none;" class="clearFix">
@@ -126,7 +125,7 @@
 					style="cursor: pointer;">CONSULTA FALLIDA</div>
 			</div>
 			<div class="clearFloat tablet mobile"></div>
-			<div
+			<!-- div
 				class="phoneStaus col6 col8-tab col12-mob blockAuto floatRight clearFix">
 				<div class="col9  col8-mob floatLeft">
 					<div class="clearFix paddingAside15">
@@ -145,8 +144,7 @@
 					<p class="buttonM colorGreen radius100 colorWhite letterspacing1.5"
 						id="clock">2:00 min</p>
 				</div>
-			</div>
-
+			</div-->
 		</div>
 	</div>
 </section>

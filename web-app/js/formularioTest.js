@@ -1817,10 +1817,16 @@ function consultarBuro() {
                         $('#accionesNormales').fadeOut();
                         $('#accionesSuccess').fadeIn();
                         $('#divAutorizacionBuro').fadeOut();
+                        $('.avanzaBtn').click();
+                    } else if (respuesta.segmento) {
+                    	sweetAlert("Oops...", "Algo salió mal, Por favor verifica los datos capturados en la seccion de " + respuesta.segmento, "warning");
+                        $('#accionesNormales').fadeIn();
+                        $('#divAutorizacionBuro').fadeIn();
                     } else if (respuesta.error) {
                         $('#accionesNormales').fadeOut();
                         $('#accionesError').fadeIn();
                         $('#divAutorizacionBuro').fadeOut();
+                        $('.avanzaBtn').click();
                         resumeCountdown();
                     }
                     showValues();
