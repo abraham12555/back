@@ -3,12 +3,14 @@ package la.kosmos.app
 class TipoDeDocumento implements Serializable{
     
     String nombre
+    String nombreEnPlural
     String formatosPermitidos
     boolean activo
     boolean usoEnCotizador
     boolean usoEnSolicitud
     TipoDeIngresos tipoDeIngresos
     String nombreMapeo
+    int cantidadSolicitada = 1
 
     static constraints = {
         nombre (blank: false)

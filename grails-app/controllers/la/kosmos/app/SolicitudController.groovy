@@ -31,6 +31,7 @@ class SolicitudController {
     def buroDeCreditoService
     def motorDeDecisionService
     def urlShortenerService
+    def smsService
 	
     int timeWait = 500
     def maximumAttempts = 100
@@ -57,6 +58,7 @@ class SolicitudController {
             session["consultaBuro"] = null
             session.shortUrl = null
             session.token = null
+            session.cargarImagen = null
             //redirect action: "formulario"
             redirect action: "test"
         } else {
@@ -592,6 +594,7 @@ class SolicitudController {
             def pasoActual
             def entidadFinanciera = session.ef
             def configuracion = session.configuracion
+            session.noChecarCamposLlenos = null
             if(session.pasosDelCliente){
                 pasosDeSolicitud = session.pasosDelCliente
             } else {
@@ -615,6 +618,13 @@ class SolicitudController {
                     session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
                     session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
                     session.identificadores.idProductoSolicitud = solicitudService.registrarProducto(session.cotizador, session.identificadores)
+                    session.identificadores.idSolicitudTemporal = null
+                    if(session.archivoTemporal){
+                        def archivoMovido = solicitudService.moverDocumento(session.archivoTemporal, session.identificadores.idSolicitud)
+                        if(archivoMovido){
+                            session.archivoTemporal = null
+                        }
+                    }
                 } else if(pasoAnterior == 2){
                     session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
                 } else if(pasoAnterior == 3){
@@ -733,13 +743,14 @@ class SolicitudController {
 
     }
     
-    def consultarEphesoft(){
+    def consultarOCR(){
         println params
         def fileNames = request.getFileNames()
         def listaDeArchivos = []
         def mapa
         def respuesta
         def ephesoft = false
+        def ocr = true
         fileNames.each{ fileName ->
             def uploadedFile = request.getFile(fileName)
             def fileLabel = ".${uploadedFile.originalFilename.split("\\.")[-1]}"
@@ -754,21 +765,35 @@ class SolicitudController {
             mapa.extension = fileLabel.toLowerCase()
             listaDeArchivos << mapa
         }
+        if(!session.yaUsoLogin){
+            session.yaUsoLogin = true
+        }
         if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
             def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
             respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud ,respuestaPreliminar.dossierId)
 
-        }else{
+        }else if (params.docType == "UtilityBill"){
             respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos,params.docType);
             ephesoft = true
+        } else if (params.docType == "ComprobanteDeIngresos"){
+            def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+            def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+            params.docType = productoSolicitud.documentoElegido.nombreMapeo
+            respuesta = [:]
+            respuesta.error = false
+            ocr = false
         }
         if(!respuesta?.error || respuesta?.vigente == true){
-            session["pasoFormulario"] = respuesta
+            if(ocr){
+                session["pasoFormulario"] = respuesta
+            }
             session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
-            if(session.identificadores){
-                solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
-            } else if(session.archivoTemporal){
-                
+            if(session.identificadores?.idSolicitud){
+                if(ocr){
+                    solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                } else {
+                    respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                }
             } else {
                 session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
             }
@@ -940,10 +965,24 @@ class SolicitudController {
                     avance."paso$paso.numeroDePaso" = 0
                 }
             }
+            if(siguientePaso == 1 && session.shortUrl && session.token && !session.identificadores?.idSolicitud && !session.identificadores?.idSolicitudTemporal){
+                if(!session.identificadores){
+                    session.identificadores = [:]
+                }
+                session.identificadores.idSolicitudTemporal = solicitudService.registrarSolicitudTemporal (session.cotizador, session.token, session.shortUrl, session.ef)
+                session.respuestaEphesoft = [:]
+                session.respuestaEphesoft.telefonoCliente = [:]
+                session.respuestaEphesoft.telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
+                session.respuestaEphesoft.emailCliente = [:]
+                session.respuestaEphesoft.emailCliente.emailPersonal = session.cotizador.emailCliente
+            }
             def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
             camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
             parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
             if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                if(siguientePaso == 1 && !session["pasoFormulario"]?.llenadoPrevio){
+                    session.noChecarCamposLlenos = true
+                }
                 println ("PasoFormulario: " + session["pasoFormulario"] + ", OCR: " + session.respuestaEphesoft)
                 modelo = [configuracion: configuracion,
                     logueado: session.yaUsoLogin,
@@ -1019,14 +1058,83 @@ class SolicitudController {
                 params.keySet().asList().each { params.remove(it) }
                 forward action:'test', params: [paso: ultimoPaso]
             } else {
-                def entidadFinanciera = EntidadFinanciera.get(6)
-                def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
-                [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+                def temporal = SolicitudTemporal.findWhere(token: params.token)
+                if(temporal){
+                    def datosRecuperados = solicitudService.armarDatosTemporales(temporal)
+                    println datosRecuperados
+                    session.yaUsoLogin = false
+                    session.ef = datosRecuperados.ef
+                    session.cotizador = datosRecuperados.cotizador
+                    session.identificadores = datosRecuperados.identificadores
+                    session.configuracion = datosRecuperados.configuracion
+                    session.token = datosRecuperados.token
+                    session.shortUrl = datosRecuperados.shortUrl
+                    session.cargarImagen = datosRecuperados.cargarImagen
+                    session.respuestaEphesoft = datosRecuperados.prefilled
+                    params.keySet().asList().each { params.remove(it) }
+                    forward action:'test', params: [paso: datosRecuperados.ultimoPaso]
+                } else {
+                    def entidadFinanciera = EntidadFinanciera.get(6)
+                    def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+                    [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+                }
             }
         } else {
             def entidadFinanciera = EntidadFinanciera.get(6)
             def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
             [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
         }
+    }
+    
+    def obtenerSucursales(){
+        println params
+        def respuesta = [:]
+        if(params.cp){
+            def cp = params.cp?.replaceFirst('^0+(?!$)', '')
+            def codigo = CodigoPostal.findWhere(codigo: cp)
+            def sucursales = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: codigo.municipio.estado)
+            if(sucursales) {
+                respuesta = []
+                sucursales.each { sucursal ->
+                    def registro = [:]
+                    registro.coordenadas = [:]
+                    registro.id = sucursal.id
+                    registro.coordenadas.lat = sucursal.latitud
+                    registro.coordenadas.lng = sucursal.longitud
+                    registro.ubicacion = sucursal.ubicacion
+                    registro.numeroDeSucursal = sucursal.numeroDeSucursal
+                    registro.nombre = sucursal.nombre
+                    respuesta << registro
+                }
+            } else {
+                respuesta.noHaySucursales = true
+                respuesta.mensaje = ""
+            }
+        } else {
+            respuesta.error = true
+            respuesta.mensaje = ""
+        }
+        render respuesta as JSON
+    }
+    
+    def enviarShortUrl() {
+        def respuesta = [:]
+        def toPhone = (session.cotizador?.telefonoCliente ?: generales?.telefonoCliente?.telefonoCelular)
+        if(toPhone){
+            toPhone = toPhone.replaceAll('-', '') 
+            if(smsService.sendShortUrl(toPhone, session.shortUrl, "Libertad SF - Tu URL personalizada es: ")){
+                respuesta.mensajeEnviado = true
+                def solicitud = SolicitudTemporal.get(session.identificadores.idSolicitudTemporal)
+                if(solicitud){
+                    solicitud.cargarImagen = true
+                    solicitud.save(flush:true)
+                }
+            } else {
+                respuesta.mensajeEnviado = false
+            }
+        } else {
+            respuesta.mensajeEnviado = false
+        }
+        render respuesta as JSON
     }
 }

@@ -191,7 +191,7 @@ class DocumentSenderService implements AwaitilityTrait{
         def datosRecibidos = false
         def mapa = [:]
         try {
-            await().atMost(40, SECONDS).until { consultarResultadosMitek(referencia, dossierId) }
+            await().atMost(45, SECONDS).until { consultarResultadosMitek(referencia, dossierId) }
             datosRecibidos = true
         }catch(ConditionTimeoutException e){
             mapa.error = "No se ha recibido respuesta en 40 seguros. Intente nuevamente por favor."
@@ -212,6 +212,7 @@ class DocumentSenderService implements AwaitilityTrait{
             mapa.cliente.genero = (classificationResult.gender == "Male" ? 1 : 2)
             mapa.direccionCliente = [:]
             mapa.direccionCliente.calle = classificationResult.address
+            //mapa.direccionCliente.numeroExterior = mapa.direccionCliente.calle?.replaceAll("[^\\d.]", "")
             def direccion = (classificationResult.address1)?.replaceAll("\\.", "")
             direccion = (direccion)?.replaceAll("-", " ")
             direccion = direccion?.trim()
@@ -223,6 +224,9 @@ class DocumentSenderService implements AwaitilityTrait{
                         mapa.direccionCliente.codigoPostal = it
                         def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
                         if(consulta){
+                            if(!mapa.direccionCliente.colonia){
+                                mapa.direccionCliente.colonia = consulta.asentamiento
+                            }
                             if(!mapa.direccionCliente.municipio){
                                 mapa.direccionCliente.municipio = consulta.municipio.id
                             }
@@ -240,6 +244,9 @@ class DocumentSenderService implements AwaitilityTrait{
                         mapa.direccionCliente.codigoPostal = it
                         def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
                         if(consulta){
+                            if(!mapa.direccionCliente.colonia){
+                                mapa.direccionCliente.colonia = consulta.asentamiento
+                            }
                             if(!mapa.direccionCliente.municipio){
                                 mapa.direccionCliente.municipio = consulta.municipio.id
                             }
@@ -255,7 +262,7 @@ class DocumentSenderService implements AwaitilityTrait{
                 int anioDeExpiracion = (classificationResult.yearOfExpiry as int)
                 mapa.vigente = ( anioActual <= anioDeExpiracion ? true : false )
             }
-            mapa.direccionCliente.colonia = classificationResult.address1
+            //mapa.direccionCliente.colonia = classificationResult.address1
             mapa.llenadoPrevio = true
             mapa.exito = true
         }

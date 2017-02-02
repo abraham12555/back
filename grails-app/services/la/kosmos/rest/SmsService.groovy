@@ -38,6 +38,23 @@ public class SmsService {
         }
     }
 
+    public boolean sendShortUrl(String to, String shortUrl, String text){
+        def respuesta = false
+        try{
+            Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
+            Message message = Message.creator(
+                new PhoneNumber("+52" + to),
+                new PhoneNumber(PHONE_NUMBER),
+                text + shortUrl)
+            .create()
+            respuesta = true
+        }catch(ApiException e){
+            respuesta = false
+        } finally{
+            respuesta
+        }
+    }
+    
     private String getRandomCode() {
         def result = RandomStringUtils.randomAlphanumeric(5).toUpperCase()
         result

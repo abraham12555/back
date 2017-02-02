@@ -22,13 +22,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="marginTop50 clearFix">
+                    <center>
+                        <div class="col5 col6-tab col12-mob">
+                            <div class="paddingAside15">
+                                    <div id="paso6Docto" class="colorWhite darkGray radius100 buttonM mobileAuto greenClick pointer">SUBE TU ${productoSolicitud?.documentoElegido?.nombre?.toUpperCase()}</div>
+                        </div>
+                    </div>
+                </center>
             </div>
-        </form>
-    </section>
-    <footer class="footerContainer">
+        </div>
+    </form>
+</section>
+<footer class="footerContainer">
     <g:render template="stepBarTest"/>
 </footer>
-
+<g:render template="modalDocumentos"/>
 <div class="solicitudLightbox hide" id="resumen_solicitud">
     <div class="overlay"></div>
     <div class="resumenSolicitud lightboxPos">

@@ -2,24 +2,24 @@ var winH;
 var contentH;
 var headerH;
 var footerH;
-var avancePorPaso
+var avancePorPaso;
 var elementos;
 var ponderaciones;
 var slideIndex = 1;
-var listaDeControl
+var listaDeControl;
 var generoConyugue;
 showSlides(slideIndex);
 
 function inicializarFormulario() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        console.log('Estoy en mobile')
-        $('.phoneCapture').hide()
-        $('.camCapture').hide()
-        $('.mobileCapture').show()
-        $('.desktopCapture').hide()
+        console.log('Estoy en mobile');
+        $('.phoneCapture').hide();
+        $('.camCapture').hide();
+        $('.mobileCapture').show();
+        $('.desktopCapture').hide();
     } else {
-        $('.mobileCapture').hide()
-        $('.desktopCapture').show()
+        $('.mobileCapture').hide();
+        $('.desktopCapture').show();
     }
     winH = $(window).height();
     contentH = $('.contentHeight').outerHeight();
@@ -66,10 +66,31 @@ function inicializarFormulario() {
 
     habilitarBotonesAvance();
 
-    $('.showOnFill').each(function (index) {
-        //verificarCambios(index);
-        mostrarSiguienteCampo(index);
+    if ($('#revisionInicial').val() === "false") {
+        $('#revisionInicial').remove();
+    } else {
+        $('.showOnFill').each(function (index) {
+            //verificarCambios(index);
+            mostrarSiguienteCampo(index);
+        });
+    }
+
+    $(document).tooltip({
+        position: {
+            my: "center bottom-20",
+            at: "center top",
+            using: function (position, feedback) {
+                $(this).css(position);
+                $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+            }
+        }
     });
+
+    $('.select2').select2();
 }
 
 function habilitarBotonesAvance() {
@@ -113,10 +134,10 @@ function showSlides(n) {
     var i;
     var slides = $('.formStep').length;
     if (n > slides) {
-        slideIndex = 1
+        slideIndex = 1;
     }
     if (n < 1) {
-        slideIndex = slides
+        slideIndex = slides;
     }
     for (i = 0; i < slides; i++) {
         $('.formStep').eq(i).slideUp();
@@ -464,18 +485,22 @@ function mostrarSiguienteCampo(index) {
             while ((indice + 1) < elementos.length && elementoMostrado === false) {
                 if (listaDeControl[indice + 1] === 0) {
                     //console.log("Mostrando el siguiente paso....");
+                    var elemento;
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
                     if ($('.showOnFill').eq(indice + 1).children('.formValues')) {
+                        elemento = $('.showOnFill').eq(indice + 1).children('.formValues');
                         $('.showOnFill').eq(indice + 1).children('.formValues').focus();
                     } else if ($('.showOnFill').eq(indice + 1).children().children('.formValues')) {
+                        elemento = $('.showOnFill').eq(indice + 1).children().children('.formValues');
                         $('.showOnFill').eq(indice + 1).children().children('.formValues').focus();
                     } else if ($('.showOnFill').eq(indice + 1).children().children().children('.formValues')) {
+                        elemento = $('.showOnFill').eq(indice + 1).children().children().children('.formValues');
                         $('.showOnFill').eq(indice + 1).children().children().children('.formValues').focus();
                     }
                     checkInputs();
                     //console.log("El siguiente campo es requerido?? " + $('.showOnFill').eq(indice + 1).hasClass('required'));
-                    if ($('.showOnFill').eq(indice + 1).hasClass('required')) {
+                    if ($('.showOnFill').eq(indice + 1).hasClass('required') && !elemento.hasClass('notEmpty')) {
                         elementoMostrado = true;
                     }
                 } else if (listaDeControl[indice + 1] === 1) {
@@ -500,15 +525,19 @@ function mostrarSiguienteCampo(index) {
             checkInputs();
         }
     }
-
+    var totalElementosRequeridosSubpaso = $(".required[data-subpaso='" + (slideIndex - 1) + "']").find(".formValues").length;
+    var totalElementosRequeridosLlenosSubpaso = $(".required[data-subpaso='" + (slideIndex - 1) + "']").find(".notEmpty").length;
     var elementosLlenosVisibles = $('.notEmpty:visible').length;
     var totalElementosVisibles = $('.formStep:visible .formValues').length;
     var totalElementosRequeridos = $('.required .formValues').length;
     var totalElementosRequeridosLLenos = $('.required .notEmpty').length;
     totalElementosVisibles -= $('.formStep:visible .noMostrar').length;
     //console.log("index: " + index + " - elementosLlenosVisibles:" + elementosLlenosVisibles + " - totalElementosVisibles: " + totalElementosVisibles + " - totalElementosRequeridos: " + totalElementosRequeridos + " - totalElementosRequeridosLLenos: " + totalElementosRequeridosLLenos);
-    if ((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridos === totalElementosRequeridosLLenos)) {
+    if ((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridos === totalElementosRequeridosLLenos) || (totalElementosRequeridosSubpaso === totalElementosRequeridosLlenosSubpaso)) {
         $('.formStep:visible .confirmDiv .buttonM').click();
+        if ($('#direccionCliente_sucursal').is(':visible') && $('#direccionCliente_sucursal option').length === 0) {
+            cargarSucursalesCercanas();
+        }
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
             $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
@@ -520,6 +549,34 @@ function mostrarSiguienteCampo(index) {
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').html($('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').text().replace("IR AL PASO ", ""));
         }
     }
+}
+
+function cargarSucursalesCercanas() {
+    $.ajax({
+        type: 'POST',
+        data: {
+            cp: $('#direccionCliente_codigoPostal').val()
+        },
+        url: "/solicitud/obtenerSucursales",
+        success: function (data, textStatus) {
+            var resultado = eval(data);
+            if (resultado.noHaySucursales) {
+                console.log("No hay sucursales");
+            } else if (resultado.error) {
+                console.log("Error");
+            } else {
+                var html = "";
+                html += "<option value=''>Elija una opción...</option>";
+                for (var x = 0; x < resultado.length; x++) {
+                    html += "<option value='" + resultado[x].id + "'> Sucursal " + resultado[x].numeroDeSucursal + " - " + resultado[x].nombre + "</option>";
+                }
+                $('#direccionCliente_sucursal').html(html);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
 }
 
 function verificarCambios(index) {
@@ -563,7 +620,7 @@ function verificarCambios(index) {
          }*/
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
-          $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
+            $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('nextBtn');
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('sendBtn');
@@ -602,6 +659,12 @@ function calcularAvance() {
     //console.log("Resultado del calculo: totalDeCampos: " + totalDeCampos + " -- camposLlenos: " + camposLlenos + " -- porcentajeCalculado: " + porcentajePorPaso + "  -- avanceTotal: " + avanceTotal);
     $('.progressPerc').html(avanceTotal + '%');
     $('.activeProgress').animate({width: avanceTotal + '%'}, {queue: false});
+    if (avanceTotal !== 0) {
+        $('.progressTile').animate({fontSize: "20px"}, 200);
+        setTimeout(function () {
+            $('.progressTile').animate({fontSize: "12px"}, 200);
+        }, 200)
+    }
 }
 
 function consultarCodigoPostal(elemento, codigo) {
@@ -1077,7 +1140,7 @@ function operacionesBuro() {
             //avanzarPaso("6");
             var currentStep = $('#pasoAnterior').val();
             if ($('#circuloPaso' + (parseInt(currentStep) + 1)).hasClass("grayCircle")) {
-              $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
+                $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
@@ -1154,19 +1217,25 @@ function operacionesResumen() {
     $('#paso6IdOf').click(function () {
         if ($(this).hasClass("darkGray")) {
             openModal('identification_oficial');
-            //$('#tipoDeDocumento').val('Identicaciones');
-            //inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
-            //$(this).addClass('colorGreen');
         }
     });
 
     $('#paso6CompDom').click(function () {
         if ($(this).hasClass("darkGray")) {
-            //$('#tipoDeDocumento').val('UtilityBill');
             openModal('comprobante_domicilio');
-            //inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
-            //$(this).addClass('colorGreen')
         }
+    });
+
+    $('#paso6Docto').click(function () {
+        if ($(this).hasClass("darkGray")) {
+            $('#tipoDeDocumento').val('ComprobanteDeIngresos');
+            openModal('documento_solicitud');
+            inicializarDropzone('div#divDropzoneDocs', '.foldersBox');
+        }
+    });
+
+    $('.foldersBox').click(function () {
+        $('#doctoCargado').val($(this).data('box'));
     });
 
     $('#terminarSolicitud').click(function () {
@@ -1941,7 +2010,7 @@ function guardarFoto(cara) {
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.status === 200) {
-                sweetAlert("!Enhorabuena¡", "La foto se subio correctamente", "success");
+                sweetAlert("¡Enhorabuena!", "La foto se subio correctamente", "success");
                 if (cara === 'Frente') {
                     detenerCamara('Frente');
                     $('#fotoFrente').fadeOut();
@@ -2045,19 +2114,9 @@ function operacionesModal() {
     });
 
     $('.goLastStep').click(function () {
-
+        enviarShortUrl();
     });
-    //Temporal //nombreDelDocumento
-    /*$('.docChoice').click(function () {
-     $('#tipoDeDocumento').val('UtilityBill');
-     inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
-     $(this).parent().parent().parent().parent().parent().parent().fadeOut();
-     $(this).parent().parent().parent().parent().parent().parent().next().fadeIn();
-     $('#label2Comp').addClass('active_blue');
-     $('#label1Comp').removeClass('active_blue');
-     $('#label1Comp').addClass('gray');
-     $('#label2Comp').removeClass('gray');
-     });*/
+
     $('.cfe').click(function () {
         $('#tipoDeDocumento').val('UtilityBill');
         $('#nombreDelDocumento').html('Recibo de C.F.E.');
@@ -2142,8 +2201,9 @@ function habilitarTerminarSolicitud() {
     var no_buttons = $('.greenClick').length;
     var no_active = $('.greenClick.colorGreen').length;
     var pasoActual = $('#pasoAnterior').val();
-
-    if (no_active === no_buttons) {
+    var cantidadRequerida = Number((($('#cantidadSolicitada').val() !== undefined || $('#cantidadSolicitada').val() !== null) ? $('#cantidadSolicitada').val() : 0));
+    var doctosSubidos = $('.checkmark').length;
+    if (no_active === no_buttons && cantidadRequerida === doctosSubidos) {
         avancePorPaso[Number(pasoActual - 1)] = Number(ponderaciones[("paso" + pasoActual)]);
         //console.log("Si lo registro? " + avancePorPaso[Number(pasoActual - 1)]);
         $('.solicitud_modal').addClass('blueButton colorWhite pointer');
@@ -2154,12 +2214,41 @@ function habilitarTerminarSolicitud() {
     calcularAvance();
 }
 
+function enviarShortUrl() {
+    var documento = $('#tipoDeDocumento').val();
+    $.ajax({
+        type: 'POST',
+        data: {
+            opcionElegida: documento
+        },
+        url: "/solicitud/enviarShortUrl",
+        success: function (data, textStatus) {
+            var resultado = eval(data);
+            if (resultado.mensajeEnviado) {
+                if (documento === 'UtilityBill') {
+                    closeModal('comprobante_domicilio');
+                } else if (documento === 'Pasaportes' || documento === 'Identicaciones') {
+                    closeModal('identification_oficial');
+                }
+                var html = '<svg class="checkmark" style="margin: 5% auto;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+                html += '<p class="gray center marginTop20 marginBottom30"> ¡El mensaje fue enviado correctamente! <br/> Lo recibirás en breve. </p>';
+                $('.shortUrlAction').html(html);
+            } else {
+                sweetAlert("Oops...", "El mensaje no pudó ser enviado, intenta nuevamente en unos minutos.", "error");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+
 Dropzone.autoDiscover = false;
 
 function inicializarDropzone(elemento, boton) {
     //Dropzone.autoDiscover = false;
     var kosmosDropzone = new Dropzone(elemento, {
-        url: "/solicitud/consultarEphesoft",
+        url: "/solicitud/consultarOCR",
         uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",
@@ -2255,6 +2344,16 @@ function inicializarDropzone(elemento, boton) {
             }
         } else if (respuesta.vigente === false) {
             sweetAlert("Oops...", "El documento envíado no está vigente. Por favor, suba un documento vigente.", "error");
+        } else if (respuesta.exito === true && respuesta.idArchivo) {
+            var posicion = $('#doctoCargado').val();
+            var cantidadRequerida = $('#cantidadSolicitada').val();
+            var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+            html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
+            $('#uploadDocto' + posicion).html(html);
+            if ($('.checkmark').length === Number(cantidadRequerida)) {
+                closeModal('documento_solicitud');
+                $('#paso6Docto').addClass('colorGreen');
+            }
         } else {
             sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga border blancos.", "warning");
         }
@@ -2263,7 +2362,8 @@ function inicializarDropzone(elemento, boton) {
         $('#progresoConsultaIds').fadeOut();
     });
     kosmosDropzone.on("error", function (file, response) {
-        //console.log(response);
+        $('#progresoConsultaComp').fadeOut();
+        $('#progresoConsultaIds').fadeOut();
         sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
         this.removeAllFiles();
     });

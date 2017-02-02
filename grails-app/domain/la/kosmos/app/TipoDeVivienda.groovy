@@ -3,6 +3,7 @@ package la.kosmos.app
 class TipoDeVivienda implements Serializable{
 
     String nombre
+    char clave
     boolean activo = true
     
     static constraints = {

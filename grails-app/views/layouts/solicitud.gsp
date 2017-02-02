@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Kosmos - Solicitud</title>
+        <title>${(configuracion?.htmlTitle ? (configuracion?.htmlTitle + " - " )  : "" )}Solicitud</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="utf-8">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
         <script src = "https://plus.google.com/js/client:platform.js" async defer></script>
         <script src = "https://apis.google.com/js/api:client.js"></script>
+        <script src="https://maps.google.com.mx/maps/api/js?language=es&key=AIzaSyA1CPLFAC5mFixfxBFB5OYnirzijeTopRI" async defer></script>
+        <g:external dir="js" file="maps.js" />
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="progressbar.css" title="text/css" rel="stylesheet" />
-        <g:external dir="css" file="jquery-ui.min.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="jquery-ui-kosmos.css" />
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery.modal.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="animate.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery.mloading.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="select2.css" title="text/css" rel="stylesheet" />
         <g:if test="${configuracion?.rutaCss}">
             <link rel="stylesheet" href="${configuracion?.rutaCss}">
         </g:if>
         <g:external dir="js" file="jquery-3.0.0.min.js" />
-        <g:external dir="js" file="jquery-ui.min.js" />
+        <g:external dir="js" file="jquery-ui-kosmos.js" />
         <g:external dir="js" file="typeahead.js" />
         <g:external dir="js" file="jquery.validate.min.js" />
         <g:external dir="js" file="sweetalert.min.js" />
@@ -36,6 +39,7 @@
         <g:external dir="js" file="jasny-bootstrap.min.js" />
         <g:external dir="js" file="jquery-ui-touch-punch.js" />
         <g:external dir="js" file="jquery.mloading.js" />
+        <g:external dir="js" file="select2.js" />
     </head>
     <body>
         <header class="topHeader">

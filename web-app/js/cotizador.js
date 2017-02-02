@@ -217,6 +217,7 @@ function habilitarPaso(step, lastStep, parentStep) {
 }
 
 function stepAction(step, tipoDePaso, elm) {
+    esperePorFavor();
     var ultimoPaso = Number($('#ultimoPaso').val());
     var aplicacionVariable = $('#aplicacionVariable').val();
     if (tipoDePaso === "stepTipoDeProducto") {
@@ -321,6 +322,7 @@ function stepAction(step, tipoDePaso, elm) {
         $('#submitCotizador').removeClass('blur');
         $('#terminosYCondiciones').fadeIn();
     }
+    cargaCompletada();
 }
 
 /**** Ajax Calls ******/
@@ -814,4 +816,21 @@ function cargarImagen(tipo, identificador) {
 
         }
     });
+}
+
+function esperePorFavor() {
+    $("body").mLoading({
+        text: "Cargando, espere por favor...",
+        icon: "/images/spinner.gif",
+        mask: true
+    });
+    console.log("Se ha mostrado el modal");
+}
+
+function cargaCompletada() {
+    //$("body").mLoading('hide');
+    setTimeout(function () {
+        $("body").mLoading('hide');
+    }, 1000);
+    console.log("Se ha ocultado el modal");
 }

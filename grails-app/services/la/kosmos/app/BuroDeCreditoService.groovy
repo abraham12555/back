@@ -25,7 +25,7 @@ import java.io.File;
 
 //@Transactional
 class BuroDeCreditoService {
-	
+
 	def sequenceGeneratorService
 	
 
@@ -93,7 +93,7 @@ class BuroDeCreditoService {
 						  if(datosPersonales?.genero == 1){
 							 soap.append("<Sexo>M</Sexo>")  
 						  }else{
-						  	soap.append("<Sexo>F</Sexo>")
+						  soap.append("<Sexo>F</Sexo>")
 						  }
 						  soap.append("<NumeroCedulaProfesional></NumeroCedulaProfesional>")
 						  soap.append("<NumeroRegistroElectoral></NumeroRegistroElectoral>")
@@ -104,7 +104,7 @@ class BuroDeCreditoService {
 					   soap.append("</Nombre>")
 					   soap.append("<Domicilios>")
 						  soap.append("<Domicilio>")
-							 soap.append("<Direccion1>"+direccion?.calle.toUpperCase()+" "+direccion?.numeroExterior.toUpperCase()+" "+direccion?.numeroInterior.toUpperCase()+"</Direccion1>")
+							 soap.append("<Direccion1>"+direccion?.calle.toUpperCase()+" "+direccion?.numeroExterior.toUpperCase()+" "+direccion?.numeroInterior?.toUpperCase()+"</Direccion1>")
 							 soap.append("<Direccion2></Direccion2>")
 							 soap.append("<ColoniaPoblacion>"+direccion?.colonia.toUpperCase()+"</ColoniaPoblacion>")
 							 Municipio municipio = Municipio.findById(direccion?.delegacion)
@@ -274,7 +274,7 @@ class BuroDeCreditoService {
 					if( peticiones <= reintentos )
 					segmentos.each{ ReporteBuroSegmentoError segmento ->
 						respuesta.segmento = segmento.segmentoError.pasoPlataforma
-					}
+			}
 				}
 			}
 		} else {
@@ -748,7 +748,6 @@ class BuroDeCreditoService {
 			}else{
 				reporteBuro.errorConsulta = reporte
 				reporteBuro.save(flush:true)
-				obtenerTipoError(reporteBuro,reporte)
 			}	
 		}catch(Exception e){
 			println "Exception obtenerDatosPersonales: "+ e

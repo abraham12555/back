@@ -8,13 +8,10 @@ function iniciarFormularioRegistro() {
         $('.register').removeClass('fadeIn');
     }, 3000);
 
-    $('i').on('click', function () {
+    $('.sigPaso').on('click', function () {
         console.log("i ->" + $(this).parent().attr('id'));
         if ($(this).parent().attr('id') === 'first_name_form') {
             submitFirstName();
-        }
-        if ($(this).parent().attr('id') === 'last_names_form') {
-            submitLastNames();
         }
         if ($(this).parent().attr('id') === 'email_form') {
             submitEmail();
@@ -33,14 +30,6 @@ function iniciarFormularioRegistro() {
             return false;
         }
     });
-
-    $('#last_names').on('keyup', function (e) {
-        if (e.keyCode === 13) {
-            submitLastNames();
-            return false;
-        }
-    });
-
 
     $('#email').on('keyup', function (e) {
         if (e.keyCode === 13) {
@@ -77,30 +66,10 @@ function submitFirstName() {
             $('.register').removeClass(' bounceOut');
             $('.register').addClass('fadeIn');
             $("#first_name_form").addClass('hide');
-            $("#last_names_form").removeClass('hide');
-            $("#last_names_form").addClass('animated fadeIn');
-            $('.register').removeClass('fadeIn');
-        }, 600);
-    }
-}
-
-function submitLastNames() {
-    if ($('#last_names').val() === '') {
-        $('.register').addClass('shake');
-        setTimeout(function () {
-            $('.register').removeClass('shake');
-        }, 3000);
-    } else {
-        $('.register').addClass('bounceOut');
-        setTimeout(function () {
-            $('.register').removeClass(' bounceOut');
-            $('.register').addClass('fadeIn');
-            $("#last_names_form").addClass('hide');
             $('#email_form').removeClass('hide');
             $('#email_form').addClass('animated fadeIn');
             $('.register').removeClass('fadeIn');
         }, 600);
-
     }
 }
 

@@ -8,7 +8,7 @@ class SucursalEntidadFinanciera implements Serializable{
     String horario
     String responsable
     String numeroDeSucursal
-    CodigoPostal codigoPostal
+    Estado estado
     Double latitud
     Double longitud
     //Riesgo Geografico
@@ -22,7 +22,7 @@ class SucursalEntidadFinanciera implements Serializable{
         horario (blank: false)
         responsable (blank: false)
         numeroDeSucursal (blank: false)
-        codigoPostal (nullable: true)
+        estado (nullable: true)
         latitud (nullable: true)
         longitud (nullable: true)
     }

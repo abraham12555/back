@@ -158,6 +158,10 @@ class SolicitudService {
                         if(solicitudDeCredito.save(flush: true)){
                             println "Si se guardo la solicitud: " + solicitudDeCredito?.id
                             datosPaso.cliente.idSolicitud = solicitudDeCredito.id
+                            def temporal = SolicitudTemporal.findWhere(token: token)
+                            if(temporal){
+                                temporal.delete()
+                            }
                         } else {
                             println ":( no se guardo la solicitud"
                             if (solicitudDeCredito.hasErrors()) {
@@ -354,6 +358,8 @@ class SolicitudService {
             listaDeDoctos.comprobanteDeDomicilio = true
         } else if (tipoDeDocumentoEnviado == "Pasaportes" || tipoDeDocumentoEnviado == "Identicaciones"){
             listaDeDoctos.identificacion = true
+        } else if(tipoDeDocumentoEnviado == "ComprobanteDeIngresos"){
+            listaDeDoctos."$tipoDeDocumentoEnviado" = true
         }
         return listaDeDoctos
     }
@@ -366,32 +372,38 @@ class SolicitudService {
             def documento = new DocumentoSolicitud()
             documento.fechaDeSubida = new Date()
             documento.solicitud = solicitud
+            documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + archivo.nombreDelArchivo
             if(tipoDeDocumento == "UtilityBill"){
+                documento.rutaDelArchivo += ".pdf"
                 documento.tipoDeDocumento = TipoDeDocumento.get(1)
             } else if(tipoDeDocumento == "Identicaciones" || tipoDeDocumento == "Pasaportes"){
                 documento.tipoDeDocumento = TipoDeDocumento.get(2)
-            } 
-            documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + archivo.nombreDelArchivo + ".pdf"
+            } else {
+                documento.tipoDeDocumento = TipoDeDocumento.findByNombreMapeo(tipoDeDocumento)
+            }
             if(documento.save(flush:true)){
                 def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
                 subdir.mkdir()
                 println (documento.rutaDelArchivo)
-                /*File file = new File(documento.rutaDelArchivo)
-                if (file.exists() || file.createNewFile()) {
-                file.withOutputStream{fos->
-                fos << archivo.archivo
+                if(tipoDeDocumento == "UtilityBill"){
+                    def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
+                    def fos = new FileOutputStream(documento.rutaDelArchivo)
+                    fos << fis
+                    fis.close()
+                    fos.close()
+                } else {
+                    File file = new File(documento.rutaDelArchivo)
+                    if (file.exists() || file.createNewFile()) {
+                        file.withOutputStream{fos->
+                            fos << archivo.archivo
+                        }
+                    }
                 }
-                }*/
-                def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
-                def fos = new FileOutputStream(documento.rutaDelArchivo)
-                fos << fis
-                fis.close()
-                fos.close()
                 respuesta.idArchivo = documento.id
                 respuesta.exito = true
                 respuesta.mensaje = "El archivo se ha registrado exitosamente."
             } else {
-                respuesta.nombreArchivo = archivoJuicio.nombreArchivo
+                respuesta.nombreArchivo = archivo.nombreDelArchivo
                 respuesta.exito = false
                 respuesta.mensaje = "Ocurrio un error al registrar el documento. Intentelo nuevamente."
             }
@@ -433,6 +445,34 @@ class SolicitudService {
         return respuesta 
     }
     
+    def moverDocumento(def archivoTemporalId, def solicitudId){
+        def respuesta = false
+        def documentoTemporal = DocumentoTemporal.get(archivoTemporalId as long)
+        if(documentoTemporal){
+            def solicitud =  SolicitudDeCredito.get(solicitudId as long)
+            def documento = new DocumentoSolicitud()
+            def nombreDelArchivo = documentoTemporal.rutaDelArchivo.minus("/var/uploads/kosmos/documentos/temporales/")
+            documento.fechaDeSubida = new Date()
+            documento.solicitud = solicitud
+            documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + nombreDelArchivo
+            documento.tipoDeDocumento = documentoTemporal.tipoDeDocumento
+            if(documento.save(flush:true)){
+                def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
+                subdir.mkdir()
+                println (documento.rutaDelArchivo)
+                def fis = new FileInputStream(documentoTemporal.rutaDelArchivo)
+                def fos = new FileOutputStream(documento.rutaDelArchivo)
+                fos << fis
+                fis.close()
+                fos.close()
+                respuesta = true
+            } else {
+                respuesta = false
+            }
+        }
+        return respuesta
+    }
+    
     def registrarProducto (def datosCotizador, def identificadores){
         println "Datos del Cotizador: " + datosCotizador
         def respuesta = null
@@ -470,6 +510,58 @@ class SolicitudService {
                 println("No se guardo nada")
                 if (productoSolicitud.hasErrors()) {
                     productoSolicitud.errors.allErrors.each {
+                        println it
+                    }
+                }
+                return null
+            }
+        } else {
+            return null
+        }
+    }
+    
+    def registrarSolicitudTemporal (def datosCotizador, def token, def shortUrl, def entidadFinanciera){
+        println "Datos del Cotizador: " + datosCotizador
+        def respuesta = null
+        if(datosCotizador && token && shortUrl){
+            def solicitud =  new SolicitudTemporal()
+            if(datosCotizador.rubro){
+                solicitud.rubroDeAplicacion = RubroDeAplicacionDeCredito.get(datosCotizador.rubro as long)
+                solicitud.producto = Producto.get(datosCotizador.producto as long)
+                solicitud.documentoElegido = TipoDeDocumento.get(datosCotizador.documento as long);
+                solicitud.montoDelCredito = datosCotizador.montoCredito as float
+                solicitud.montoDelSeguroDeDeuda = datosCotizador.montoSeguro as float
+                solicitud.montoDelPago = datosCotizador.pagos as float
+                solicitud.haTenidoAtrasos = datosCotizador.atrasos
+                solicitud.seguroFinanciado = true
+                solicitud.nombreDelCliente = datosCotizador.nombreCliente
+                solicitud.emailCliente = datosCotizador.emailCliente
+                solicitud.telefonoCliente = datosCotizador.telefonoCliente
+            } else {
+                solicitud.montoDelPago = datosCotizador.pagos as float
+                solicitud.montoDelSeguroDeDeuda = 0
+                solicitud.colorModelo = ColorModelo.get(datosCotizador.color)
+                solicitud.seguroFinanciado = false
+                solicitud.montoDelCredito = (productoSolicitud.colorModelo.modelo.precio - productoSolicitud.enganche)
+                solicitud.producto = Producto.get(datosCotizador.producto as long)
+                solicitud.modelo = Modelo.get(datosCotizador.modelo as long)
+                solicitud.colorModelo = ColorModelo.get(datosCotizador.color as long)
+                solicitud.seguro = SeguroProducto.get(datosCotizador.seguro as long)
+            }
+            solicitud.fechaDeSolicitud = new Date()
+            solicitud.entidadFinanciera = entidadFinanciera
+            solicitud.token = token
+            solicitud.shortUrl = shortUrl
+            solicitud.enganche = datosCotizador.enganche as float
+            solicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
+            solicitud.plazos = datosCotizador.plazo as int
+            if(solicitud.save(flush:true)){
+                println("La solicitud temporal se ha registrado correctamente")
+                return solicitud.id
+            } else {
+                println("No se guardo nada")
+                if (solicitud.hasErrors()) {
+                    solicitud.errors.allErrors.each {
                         println it
                     }
                 }
@@ -579,14 +671,14 @@ class SolicitudService {
             solicitudRest.solicitud.generales.numeroCelular = "7221232323"
             solicitudRest.solicitud.generales.numeroFijo = "7221323232"
             solicitudRest.solicitud.generales.correoElectronico = "sumail@mail.com"
-            solicitudRest.solicitud.generales.sexo = solicitud.cliente.genero.nombre
+            solicitudRest.solicitud.generales.sexo = String.valueOf(solicitud.cliente.genero.clave)
             solicitudRest.solicitud.generales.fechaDeNacimiento = (solicitud.cliente.fechaDeNacimiento).format('dd/MM/yyyy HH:mm')
-            solicitudRest.solicitud.generales.lugarDeNacimiento = solicitud.cliente?.lugarDeNacimiento?.nombre
+            solicitudRest.solicitud.generales.lugarDeNacimiento = solicitud.cliente?.lugarDeNacimiento?.id
             solicitudRest.solicitud.generales.nacionalidad = solicitud.cliente.nacionalidad?.nombre
             solicitudRest.solicitud.generales.rfc = solicitud.cliente.rfc
             solicitudRest.solicitud.generales.curp = solicitud.cliente.curp
-            solicitudRest.solicitud.generales.estadoCivil = solicitud.cliente.estadoCivil?.nombre
-            solicitudRest.solicitud.generales.regimenDeBienes = ((solicitud.cliente.regimenMatrimonial) ? solicitud.cliente.regimenMatrimonial.nombre : "")
+            solicitudRest.solicitud.generales.estadoCivil = String.valueOf(solicitud.cliente.estadoCivil?.clave)
+            solicitudRest.solicitud.generales.regimenDeBienes = ((solicitud.cliente.regimenMatrimonial) ? String.valueOf(solicitud.cliente.regimenMatrimonial.clave) : "")
             solicitudRest.solicitud.generales.dependientesEconomicos = solicitud.cliente.dependientesEconomicos
             
             solicitudRest.solicitud.conyugue.nombre = ((solicitud.cliente.nombreDelConyugue) ? solicitud.cliente.nombreDelConyugue : "")
@@ -594,7 +686,7 @@ class SolicitudService {
             solicitudRest.solicitud.conyugue.apellidoPaterno = ((solicitud.cliente.apellidoPaternoDelConyugue) ? solicitud.cliente.apellidoPaternoDelConyugue : "")
             solicitudRest.solicitud.conyugue.apellidoMaterno = ((solicitud.cliente.apellidoMaternoDelConyugue) ? solicitud.cliente.apellidoMaternoDelConyugue : "")
             solicitudRest.solicitud.conyugue.fechaDeNacimiento = ((solicitud.cliente.fechaDeNacimientoDelConyugue) ? (solicitud.cliente.fechaDeNacimientoDelConyugue).format('dd/MM/yyyy HH:mm') : "")
-            solicitudRest.solicitud.conyugue.lugarDeNacimiento = ((solicitud.cliente.lugarDeNacimientoDelConyugue) ? solicitud.cliente.lugarDeNacimientoDelConyugue.nombre : "")
+            solicitudRest.solicitud.conyugue.lugarDeNacimiento = ((solicitud.cliente.lugarDeNacimientoDelConyugue) ? solicitud.cliente.lugarDeNacimientoDelConyugue.id : "")
             solicitudRest.solicitud.conyugue.nacionalidad = ((solicitud.cliente.nacionalidadDelConyugue) ? solicitud.cliente.nacionalidadDelConyugue.nombre : "")
             solicitudRest.solicitud.conyugue.rfc = ((solicitud.cliente.rfcDelConyugue) ? solicitud.cliente.rfcDelConyugue : "")
             solicitudRest.solicitud.conyugue.curp = ((solicitud.cliente.curpDelConyugue) ? solicitud.cliente.curpDelConyugue : "")
@@ -606,9 +698,9 @@ class SolicitudService {
             solicitudRest.solicitud.direccion.colonia = ((datosSolicitud.direccionCliente?.colonia) ? datosSolicitud.direccionCliente?.colonia : "")
             solicitudRest.solicitud.direccion.municipio = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.nombre) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.nombre : "")
             solicitudRest.solicitud.direccion.ciudad = ((datosSolicitud.direccionCliente?.ciudad) ? datosSolicitud.direccionCliente?.ciudad : "")
-            solicitudRest.solicitud.direccion.estado = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.nombre) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.nombre : "")
+            solicitudRest.solicitud.direccion.estado = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.id : "")
             
-            solicitudRest.solicitud.vivienda.tipoDeVivienda = ((datosSolicitud.direccionCliente?.tipoDeVivienda) ? datosSolicitud.direccionCliente.tipoDeVivienda.nombre : "")
+            solicitudRest.solicitud.vivienda.tipoDeVivienda = ((datosSolicitud.direccionCliente?.tipoDeVivienda) ? String.valueOf(datosSolicitud.direccionCliente.tipoDeVivienda.clave) : "")
             solicitudRest.solicitud.vivienda.montoDeRenta = 0
             def periodoVivienda = (datosSolicitud.direccionCliente?.tiempoDeVivienda)?.split("/");
             solicitudRest.solicitud.vivienda.mesInicioVivienda = (periodoVivienda ? periodoVivienda.getAt(0) : "")
@@ -617,8 +709,8 @@ class SolicitudService {
             solicitudRest.solicitud.vivienda.mesInicioResidencia = (periodoResidencia ? periodoResidencia.getAt(0) : "")
             solicitudRest.solicitud.vivienda.anioInicioResidencia = (periodoResidencia ? periodoResidencia.getAt(1) : "")
             
-            solicitudRest.solicitud.empleo.profesion = ((datosSolicitud.empleoCliente?.profesion) ? datosSolicitud.empleoCliente?.profesion?.nombre : "")
-            solicitudRest.solicitud.empleo.ocupacion = ((datosSolicitud.empleoCliente?.ocupacion) ? datosSolicitud.empleoCliente?.ocupacion?.nombre : "")
+            solicitudRest.solicitud.empleo.profesion = ((datosSolicitud.empleoCliente?.profesion) ? datosSolicitud.empleoCliente?.profesion?.codigo : "")
+            solicitudRest.solicitud.empleo.ocupacion = ((datosSolicitud.empleoCliente?.ocupacion) ? datosSolicitud.empleoCliente?.ocupacion?.codigo : "")
             solicitudRest.solicitud.empleo.empresa = ((datosSolicitud.empleoCliente?.nombreDeLaEmpresa) ? datosSolicitud.empleoCliente?.nombreDeLaEmpresa : "")
             def fechaIngreso = (datosSolicitud.empleoCliente?.fechaIngreso)?.split("/");
             solicitudRest.solicitud.empleo.mesInicioEmpleo = (fechaIngreso ? fechaIngreso.getAt(0) : "")
@@ -1031,5 +1123,44 @@ class SolicitudService {
             }
         }
         datosSolicitud
+    }
+    
+    def armarDatosTemporales(def solicitud){
+        def respuesta = [:]
+        respuesta.cotizador = [:]
+        respuesta.identificadores = [:]
+        if(solicitud.rubroDeAplicacion){
+            respuesta.cotizador.rubro = solicitud.rubroDeAplicacion.id
+            respuesta.cotizador.documento = solicitud.documentoElegido.id
+            respuesta.cotizador.montoSeguro = solicitud.montoDelSeguroDeDeuda
+            respuesta.cotizador.atrasos = solicitud.haTenidoAtrasos
+            respuesta.cotizador.nombreCliente = solicitud.nombreDelCliente
+            respuesta.cotizador.emailCliente = solicitud.emailCliente
+            respuesta.cotizador.telefonoCliente = solicitud.telefonoCliente
+            respuesta.prefilled = [:]
+            respuesta.prefilled.telefonoCliente = [:]
+            respuesta.prefilled.telefonoCliente.telefonoCelular = solicitud.telefonoCliente
+            respuesta.prefilled.emailCliente = [:]
+            respuesta.prefilled.emailCliente.emailPersonal = solicitud.emailCliente
+        } else {
+            respuesta.cotizador.color = solicitud.colorModelo.id
+            respuesta.cotizador.modelo = solicitud.modelo.id
+            respuesta.cotizador.seguro = solicitud.seguro.id
+        }
+        respuesta.cotizador.producto = solicitud.producto.id
+        respuesta.cotizador.pagos = solicitud.montoDelPago
+        respuesta.cotizador.montoCredito = solicitud.montoDelCredito
+        respuesta.cotizador.seguroFinanciado = solicitud.seguroFinanciado
+        respuesta.cotizador.enganche = solicitud.enganche
+        respuesta.cotizador.periodo = solicitud.periodicidad.id
+        respuesta.cotizador.plazo = solicitud.plazos
+        respuesta.identificadores.idSolicitudTemporal = solicitud.id
+        respuesta.configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: solicitud.entidadFinanciera)
+        respuesta.ef = solicitud.entidadFinanciera
+        respuesta.token = solicitud.token
+        respuesta.shortUrl = solicitud.shortUrl
+        respuesta.cargarImagen = solicitud.cargarImagen
+        respuesta.ultimoPaso = 1
+        return respuesta
     }
 }

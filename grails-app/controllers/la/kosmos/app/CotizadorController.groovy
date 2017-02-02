@@ -25,6 +25,7 @@ class CotizadorController {
         session.shortUrl = null
         session.token = null
         session.sid = null
+        session.cargarImagen = null
         String domain = new URL(request.getRequestURL().toString()).getHost();
         println "Dominio: " + domain
         //if(params.ef){
@@ -184,6 +185,9 @@ class CotizadorController {
                 session.cotizador.plazo = (params.txtPlazo ? (params.txtPlazo as int) : 0)
                 session.cotizador.atrasos = params.txtTieneAtrasos
                 session.cotizador.enganche = (params.txtEnganche ? (params.txtEnganche as float) : 0)
+                session.cotizador.nombreCliente = params.nombre
+                session.cotizador.emailCliente = params.email
+                session.cotizador.telefonoCliente = params.telefonoCelular
             } else {
                 session.cotizador.producto = (params.txtProducto ? (params.txtProducto as long) : 0)
                 session.cotizador.periodo = (params.txtPeriodo ? (params.txtPeriodo as long) : 0)

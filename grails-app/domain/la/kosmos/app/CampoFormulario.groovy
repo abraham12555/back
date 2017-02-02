@@ -7,6 +7,7 @@ class CampoFormulario implements Serializable{
     TipoDeCampo tipoDeCampo
     boolean catalogo = false
     String claseCatalogo
+    boolean aplicarFiltro = false
     
     static constraints = {
         nombreDelCampo (blank: false)

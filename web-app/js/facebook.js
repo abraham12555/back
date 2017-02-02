@@ -3,7 +3,7 @@
  */
 function initFB() {
     $.ajaxSetup({cache: true});
-    $.getScript('http://connect.facebook.net/en_US/sdk.js', function () {
+    $.getScript('https://connect.facebook.net/en_US/sdk.js', function () {
         FB.init({
             appId: '1132024623508026',
             xfbml: true,

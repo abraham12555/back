@@ -5,7 +5,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 
-        <title>Solicitudes</title>
+        <title>${(configuracion?.htmlTitle ? (configuracion?.htmlTitle + " - " )  : "" )}Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="UTF-8">
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />

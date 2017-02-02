@@ -118,40 +118,24 @@
         <div id="capturaTelefonoComp" class="phone_capture hide">
             <div class="marginTop15 marginBottom15">
                 <p class="center gray font16">
-                    ¿Cómo quieres recibir el link en tu smartphone?
+                    Sube la fotografía desde tu smartphone
                 </p>
             </div>
             <div class="border1"></div>
             <div class="clearFix fontWeight500">
-                <div class="col6 down800 col12-mob  floatLeft clearFix">
+                <div class="col12 down800 col12-mob  floatLeft clearFix">
                     <div class="padding20">
-                        <div class="paddingAside20">
+                        <div class="paddingAside20 shortUrlAction">
                             <p class="gray center marginTop20 marginBottom30">
-                                Agrega tu número y te enviamos un SMS
+                                Da click en el siguiente botón y reciba la URL personalizada en tu smartphone.
                             </p>
                             <div class="clearFix marginBottom30">
-
-                                <input class="whiteBox upldsInputCode font16 marginRight10" type="text" name="contrycode" placeholder="044">
-
-                                <input class="whiteBox upldsInputPhone font16" type="text" name="phoneNumber" placeholder="(55)0000 - 000)">
-
+                                <p class="headingColor textUpper letterspacing1.5 font25 paddingRight15 center"> ${session.cotizador?.telefonoCliente ?: generales?.telefonoCliente?.telefonoCelular} </p>
                             </div>
                             <div class="colorGreen width350 radius100 autoMargin goLastStep">
-                                <p class="colorWhite center font16 paddingTop13 paddingBottom10">
+                                <p class="colorWhite center font16 paddingTop13 paddingBottom10 pointer">
                                     ENVIAR SMS
                                 </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col6 down800 col12-mob floatLeft clearFix">
-                    <div class="padding20 borderGrayLeft">
-                        <div class="paddingAside20">
-                            <p class="gray center marginTop20 marginBottom30">
-                                O scanea este QR Code desde tu smartphone
-                            </p>
-                            <div class="center paddingBottom20">
-                                <img src="${resource(dir:'images', file:'barcode1.png')}" alt="barcode" title="barcode" />
                             </div>
                         </div>
                     </div>

@@ -71,12 +71,16 @@ body{
 .facebookColor{
     border-radius: 2px;
     background-image: linear-gradient(253deg, #6187c0, #4f75ad);
+    background: -ms-linear-gradient(90deg, #6187c0, #4f75ad);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#6187c0', endColorstr='#4f75ad');/*For IE7-8-9*/
     box-shadow: 0 11px 19px 0 #b8bdcd;
 }
 
 .googleColor{
     border-radius: 2px;
     background-image: linear-gradient(253deg, #ef6559, #dc4e41);
+    background: -ms-linear-gradient(90deg, #ef6559, #dc4e41);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#ef6559', endColorstr='#dc4e41');/*For IE7-8-9*/
     box-shadow: 0 11px 19px 0 #b8bdcd;
 }
 
@@ -1483,7 +1487,7 @@ body{
 }
 
 .foldersBox{
-    margin-right: 75px;
+    margin-right: 50px;
 }
 
 .inputsFormulario{
@@ -1655,7 +1659,8 @@ body{
 }
 
 .folderContainer{
-    height: 187px;
+    height: 170px;
+    width: 170px;
     background-color: #f8f9ff;
     box-shadow: inset 0 -1px 0 0 #71758d;
     border: solid 1px #dfe2f4;
@@ -1663,7 +1668,7 @@ body{
 }
 
 .folderImage{
-    margin: 77px 0 23px 0;
+    margin: 5% 0 23px 0;
 }
 
 .rectangleRound{
@@ -2413,7 +2418,7 @@ body{
 }
 
 #submitCotizador{
-    display:none;  
+    display:none;
 }
 
 .cotizador-box.seguro{
@@ -2571,23 +2576,7 @@ body{
 #slider{
     opacity: 1 !important;
 }
-.stepShadow{
-    /*width:100%;
-    box-shadow:0 0 5px 5px rgba(0,0,0,0.5);*/
-    margin-top: -65px;
-    transform: translate(0,10px);
-    -webkit-transform: translate(0,10px);
-    width: 100%;
-    height: 59px;
-    opacity: 0.49;
-    mix-blend-mode: multiply;
-    border-radius: 7px;
-    -webkit-filter: blur(10px);
-    filter: blur(10px);
-    background-color: #9da2be;
-    position: relative;
-    z-index: 1;
-}
+
 
 /*.cotizador-p1-buttons .ui-slider-handle.ui-state-default.ui-corner-all{
   background-color: #2d91f6 !important;
@@ -2998,9 +2987,9 @@ margin-top: -10px;
         margin:30px auto;
     }
 
-    .font14{
+    /**.font14{
         font-size:3.5vw;
-    }
+    }**/
 
 
     .confirmDiv{
@@ -3074,13 +3063,7 @@ margin-top: -10px;
         margin-left:10px;
     }
 
-    .progressTile.mobile{
-        position:static;
-        transform: translate(0, 0);
-        -webkit-transform: translate(0, 0);
-        display:inline-block;
-        margin:30px auto 0 auto;
-    }
+  
 
     .identificationLb .lbHeader.fontWeight300 {
         font-size:18px;
@@ -3373,7 +3356,7 @@ margin-top: -10px;
 }
 .iw-content img {
     float: right;
-    margin: 0 5px 5px 10px;	
+    margin: 0 5px 5px 10px;
 }
 .iw-subTitle {
     font-size: 16px;
@@ -3394,4 +3377,99 @@ margin-top: -10px;
 
 .filledColor {
     color: #298df5;
+}
+
+/*Modal de Documentos*/
+
+/*  SECTIONS  */
+.document-section {
+	clear: both;
+	padding: 0px;
+	margin: 0px;
+}
+
+/*  COLUMN SETUP  */
+.col {
+	display: block;
+	float:left;
+	margin: 1% 0 1% 1.6%;
+}
+.col:first-child { margin-left: 2.3%; }
+
+/*  GROUPING  */
+.group:before,
+.group:after { content:""; display:table; }
+.group:after { clear:both;}
+.group { zoom:1; /* For IE 6/7 */ }
+
+/*  GRID OF FOUR  */
+.span_4_of_4 {
+	width: 90%;
+}
+.span_3_of_4 {
+	width: 67.5%;
+}
+.span_2_of_4 {
+	width: 45%;
+}
+.span_1_of_4 {
+	width: 22.5%;
+}
+
+/*  GO FULL WIDTH BELOW 480 PIXELS */
+@media only screen and (max-width: 480px) {
+	.col {  margin: 1% 0 1% 4.6%; }
+        .col:first-child { margin-left: 4.6%; }
+	.span_1_of_4, .span_2_of_4, .span_3_of_4, .span_4_of_4 { width: 90%; }
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #33c56e;
+  fill: none;
+  animation: stroke .6s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+}
+
+.checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 10% auto;
+  box-shadow: inset 0px 0px 0px #33c56e;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #33c56e;
+  }
 }

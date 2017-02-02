@@ -1,10 +1,10 @@
-<div class="idLightbox hide" id="identification_oficial">
-    <div class="overlay"></div>
-    <div class="whiteContainer lightboxPos identificationLb">
-        <h2 class="floatLeft lbHeader headingColor fontWeight300 letterspacing1.5">SUBE TU IDENTIFICACIÓN OFICIAL</h2>
-        <span class="closeModal floatRight borderGray radius100 marginTop15 marginRight15">
-            <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><span class="notMobile paddingRight5">cerrar</span><i class="fa fa-times " aria-hidden="true"></i></p>
-        </span>
+<div class="idLightbox <g:if test="${!session.cargarImagen}">hide</g:if>" id="identification_oficial">
+        <div class="overlay"></div>
+        <div class="whiteContainer lightboxPos identificationLb">
+            <h2 class="floatLeft lbHeader headingColor fontWeight300 letterspacing1.5">SUBE TU IDENTIFICACIÓN OFICIAL</h2>
+            <span class="closeModal floatRight borderGray radius100 marginTop15 marginRight15">
+                <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><span class="notMobile paddingRight5">cerrar</span><i class="fa fa-times " aria-hidden="true"></i></p>
+            </span>
 
         <div class="border1 clearFloat"></div>
         <div class="clearFix">
@@ -112,12 +112,12 @@
                         </div>
                     </div>
                     <div id="progresoConsultaIds" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
-                      <div class="spinner">
-                          <div class="rect1"></div>
-                          <div class="rect2"></div>
-                          <div class="rect3"></div>
-                          <div class="rect4"></div>
-                          <div class="rect5"></div>
+                        <div class="spinner">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
                         </div>
                         <center><span style="color: #71758d;">Estamos subiendo tu identificación, espera por favor...</span></center>
                     </div>
@@ -129,41 +129,31 @@
             <div class="border1 clearFloat"></div>
             <div class="marginTop15 marginBottom15">
                 <p class="center gray font16">
-                    ¿Cómo quieres recibir el link en tu smartphone?
+                    Sube la fotografía desde tu smartphone
                 </p>
             </div>
             <div class="border1"></div>
             <div class="clearFix fontWeight500">
-                <div class="col6 down800 col12-mob  floatLeft clearFix">
+                <div class="col12 down800 col12-mob  floatLeft clearFix">
                     <div class="padding20">
-                        <div class="paddingAside20">
-                            <p class="gray center marginTop20 marginBottom30">
-                                Agrega tu número y te enviamos un SMS
-                            </p>
-                            <div class="clearFix marginBottom30">
-
-                                <input class="whiteBox upldsInputCode font16 marginRight10" type="text" name="contrycode" placeholder="044">
-
-                                <input class="whiteBox upldsInputPhone font16" type="text" name="phoneNumber" placeholder="(55)0000 - 000)">
-
-                            </div>
-                            <div class="colorGreen width350 radius100 autoMargin goLastStep">
-                                <p class="colorWhite center font16 paddingTop13 paddingBottom10">
-                                    ENVIAR SMS
+                        <div class="paddingAside20 shortUrlAction">
+                            <g:if test="${session.cargarImagen}">
+                                <svg class="checkmark" style="margin: 5% auto;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+                                <p class="gray center marginTop20 marginBottom30"> ¡El mensaje fue enviado correctamente!</p>
+                                </g:if>
+                                <g:else>
+                                <p class="gray center marginTop20 marginBottom30">
+                                    Da click en el siguiente botón y reciba la URL personalizada en tu smartphone.
                                 </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col6 down800 col12-mob floatLeft clearFix">
-                    <div class="padding20 borderGrayLeft">
-                        <div class="paddingAside20">
-                            <p class="gray center marginTop20 marginBottom30">
-                                O scanea este QR Code desde tu smartphone
-                            </p>
-                            <div class="center paddingBottom20">
-                                <img src="${resource(dir:'images', file:'barcode1.png')}" alt="barcode" title="barcode" />
-                            </div>
+                                <div class="clearFix marginBottom30">
+                                    <p class="headingColor textUpper letterspacing1.5 font25 paddingRight15 center"> ${session.cotizador?.telefonoCliente ?: generales?.telefonoCliente?.telefonoCelular} </p>
+                                </div>
+                                <div class="colorGreen width350 radius100 autoMargin goLastStep">
+                                    <p class="colorWhite center font16 paddingTop13 paddingBottom10 pointer">
+                                        ENVIAR SMS
+                                    </p>
+                                </div>
+                            </g:else>    
                         </div>
                     </div>
                 </div>

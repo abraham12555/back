@@ -3,6 +3,7 @@ package la.kosmos.app
 class EstadoCivil implements Serializable{
 
     String nombre
+    char clave
     
     static constraints = {
         nombre (blank: false)

@@ -71,9 +71,21 @@ input[type=text]:focus:not([readonly]).invalid {
     color: red;
 }
 
-.backBtn {
+.goBtn {
     border-radius: 10px;
     background-image: linear-gradient(90deg, #005398, #1573d4);
+    box-shadow: 0 11px 19px 0 #b8bdcd;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px 3px 5px;
+    text-decoration: none;
+}
+
+.backBtn {
+    border-radius: 10px;
+    background-image: linear-gradient(90deg, #ba1b05, #fb5e48);
     box-shadow: 0 11px 19px 0 #b8bdcd;
     color: white;
     font-weight: bold;

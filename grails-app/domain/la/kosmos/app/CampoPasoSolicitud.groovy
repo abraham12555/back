@@ -16,6 +16,8 @@ class CampoPasoSolicitud implements Serializable{
     int parrafo = 1
     String dependeDe
     String valorDeDependencia
+    boolean tieneAyuda = false
+    String textoAyuda
     
     static constraints = {
         pasoSolicitud (nullable: false)
@@ -28,6 +30,7 @@ class CampoPasoSolicitud implements Serializable{
         numeroDeCampo (range: 1..50)
         dependeDe (nullable: true)
         valorDeDependencia (nullable: true)
+        textoAyuda (nullable: true)
     }
     
     static mapping = {
