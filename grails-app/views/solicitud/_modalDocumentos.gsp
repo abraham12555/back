@@ -20,7 +20,7 @@
                         <input type="hidden" id="cantidadSolicitada" value="${productoSolicitud.documentoElegido?.cantidadSolicitada}">
                         <g:each var="i" in="${ (0..<productoSolicitud.documentoElegido?.cantidadSolicitada) }">
                             <div id="uploadDocto${i}" class="col folderContainer center span_1_of_4">
-                                <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder" title="folder"/>
+                                <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder"/>
                                 <p class="center letterspacing1.4 gray">${productoSolicitud.documentoElegido?.nombre + " " + (i+1)}</p>
                                 <div data-box="${i}" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
                                     <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">subir</p>

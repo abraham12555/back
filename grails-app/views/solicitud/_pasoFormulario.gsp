@@ -66,7 +66,7 @@ if(campo.campo.catalogo){
 } else{
     listaDeElementos = (Class.forName(campo.campo.claseAsociada.className)).constraints."$campo.campo.nombreDelCampo".inList
 }
-%>
+                                        %>
                             <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
                                             <g:if test="${campo.campo.aplicarFiltro}">
@@ -92,10 +92,30 @@ if(campo.campo.catalogo){
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("DYNAMICSELECT")}">
                             <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
                                         <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
-                                            <select title="${campo.textoAyuda}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty headingColor" value="${(generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo")}"></select>
+                                            <select title="${campo.textoAyuda}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty headingColor" value="${(generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo")}">
+                                                <option value=''>Elija una opción...</option>
+                                                <g:each in="${catalogos?."$campo.campo.nombreDelCampo"}" var="valor">
+                                                    <g:if test="${!(valor instanceof String) && valor?.id}">
+                                                        <option value="${valor.id}" <g:if test="${valor.id == generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> selected</g:if>>${valor}</option>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <option value="${valor}" <g:if test="${valor == generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}"> selected</g:if>>${valor}</option>
+                                                    </g:else>
+                                                </g:each>
+                                            </select>
                                         </g:if>
                                         <g:else>
-                                            <select title="${campo.textoAyuda}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues"></select>
+                                            <select title="${campo.textoAyuda}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues">
+                                                <option value=''>Elija una opción...</option>
+                                                <g:each in="${catalogos?."$campo.campo.nombreDelCampo"}" var="valor">
+                                                    <g:if test="${valor?.id}">
+                                                        <option value="${valor.id}">${valor}</option>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <option value="${valor}">${valor}</option>
+                                                    </g:else>
+                                                </g:each>
+                                            </select>
                                         </g:else>
                             </span>
                             <span class="afterSelect">
@@ -190,7 +210,7 @@ if(campo.campo.catalogo){
                                 </g:if>
                                 <g:if test="${campo.campo.tipoDeCampo.elementoDeEntrada.equals("SERIE")}">
                                             <span class="inline selectWrap" style="text-align:center; width: ${campo.longitudDelCampo};">
-                                        <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}">
+                                        <g:if test="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo" != null}">
                                             <g:select title="${campo.textoAyuda}" id="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" name="${campo.campo.claseAsociada.nombre + "_" + campo.campo.nombreDelCampo}" class="formulariOptions gray formValues notEmpty headingColor"  from="${0..20}" noSelection="${Eval.me(campo.placeholder)}" value="${generales?."$campo.campo.claseAsociada"?."$campo.campo.nombreDelCampo"}" />
                                         </g:if>
                                         <g:else>
@@ -230,6 +250,7 @@ if(campo.campo.catalogo){
                     <g:elseif test="${pasoActual.modoDeDespliegue == "FORMULARIO"}">
                     </g:elseif>
         </div>
+        <div id="accionesFinales${p}" class="filledColor font35 letterspacing1"></div>
         <div class="confirmDiv hide col7 col12-tab floatRight marginTop28 clearFix">
             <div class="floatLeft marginBottom20">
                 <p class="font25 marginTop5 headingColor marginRight10"></p>

@@ -52,7 +52,7 @@
                         <h1 class="font16 gray letterspacing1">Te damos algunos tips para saber como subir tu <span class="headingColor" id="nombreDelDocumento"></span></h1>
                     </div>
                     <div class="autoMargin clearFix">
-                        <div class="col4 col12-mob col floatLeft idDocs">
+                        <div class="col4 col12-mob floatLeft idDocs">
                             <h4 class="gray font16 fontWeight400 letterspacing1">LEGIBLE</h4>
                             <img class="imgResponsive" src="${resource(dir:'images', file:'id1.png')}" alt="id1"/>
                         </div>
@@ -66,11 +66,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col4 col8-mob col6-tab width354 autoMargin marginTop40 marginBottom40">
+                <!--<div class="col4 col8-mob col6-tab width354 autoMargin marginTop40 marginBottom40">
                     <div class="darkGray center radius100 paddingTop12 paddingBottom12">
                         <span class="font16 colorWhite center letterspacing1">VER MÁS TIPS</span>
                     </div>
-                </div>
+                </div>-->
                 <div class="clearFix">
 
                     <div class="col4 col12-tab floatLeft">
@@ -101,16 +101,6 @@
                             </a>
                         </div>
                     </div>
-                </div>
-                <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
-                <div class="spinner">
-                    <div class="rect1"></div>
-                    <div class="rect2"></div>
-                    <div class="rect3"></div>
-                    <div class="rect4"></div>
-                    <div class="rect5"></div>
-                  </div>
-                    <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
                 </div>
             </div>
         </div>
@@ -193,6 +183,17 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20 barraProgresoComp">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+            <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
         </div>
     </div>
 </div>

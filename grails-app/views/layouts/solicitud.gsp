@@ -45,8 +45,8 @@
         <header class="topHeader">
             <div class="formularioHeader clearFix" style="border-top: solid 5px ${configuracion?.colorBordeSuperior}; background-color: ${configuracion?.colorEncabezado};">
                 <div class="container clearFix">
-                    <img class="logo floatLeft desktop" src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo" title="Logo" />
-                    <img class="logoMobile floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" title="Logo" />
+                    <img class="logo floatLeft desktop" src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo" />
+                    <img class="logoMobile floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" />
                     <div class="floatingHeader floatRight clearFix">
                         <div class="floatRight clearFix">
                             <div id="imagenUsuario" class="floatLeft clearFix" >
@@ -65,7 +65,7 @@
                         </div>
                         <div class="salvadoConatiner floatRight desktop">
                             <p class="salvadoTitle floatLeft paddingTop20 paddingBottom15">salvado automático</p>
-                            <img class="floatLeft paddingTop20 paddingLeft16 paddingRight10 paddingBottom15" src="${resource(dir:'images', file:'cloud.png')}" alt="cloud" title="cloud"/>
+                            <img class="floatLeft paddingTop20 paddingLeft16 paddingRight10 paddingBottom15" src="${resource(dir:'images', file:'cloud.png')}" alt="cloud"/>
                         </div>
                     </div>
                 </div>

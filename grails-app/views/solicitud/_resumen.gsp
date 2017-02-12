@@ -5,7 +5,7 @@
         <input type="hidden" name="siguientePaso" id="siguientePaso">
         <input type="hidden" name="pasoAnterior" id="pasoAnterior" value="${pasoActual?.numeroDePaso}">
         <div class="padding20">
-            <img class="happines" src="${resource(dir:'images', file:'happines.png')}" alt="happines" title="happines"/>
+            <img class="happines" src="${resource(dir:'images', file:'happines.png')}" alt="happines"/>
             <p class="center marginLeft24 font25 formTitleColor letterspacing2.3">¡FELICIDADES!</p>
             <p class="center marginLeft24 font16 formTitleColor letterspacing1.5 marginTop12">Has terminado tu solicitúd, estás a un click de saber tu resultado.</p>
             <p class="center marginLeft24 font16 colorblue letterspacing1.5 marginTop12">Solo te falta subir tu documentación, toma una foto de tus documentos</p>

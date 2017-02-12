@@ -1,4 +1,4 @@
-<section class="container paddingTop30 paddingBottom20 clearFix contentHeight">
+<section id="pasoConsultaBuro" class="container paddingTop30 paddingBottom20 clearFix contentHeight">
     <input type="hidden" id="tipoDePaso" value="${pasoActual?.tipoDePaso?.nombre}">
     <input type="hidden" id="tituloDelPaso" value="${pasoActual?.titulo}"/>
     <form method="POST" name="formFormulario" id="formFormulario">
@@ -22,6 +22,11 @@
                 <div class="floatLeft col3 col6-tab col12-mob">
                     <p class="gray font14 letterspacing1.1">ÚLTIMOS CUATRO DÍGITOS</p>
                     <input class="inPuts4a marginTop15 headingColor" type="text" disabled id="numeroTarjeta" name="numeroTarjeta" placeholder="0000" maxlength="4" />
+                    <div class="col7 col12-tab floatLeft marginTop30" id="bubbleMensajeTarjeta">
+                        <div class="rectangleRound font11 letterspacing0.5 center">LAS
+                            TARJETAS DE DÉBITO Y TIENDAS DEPARTAMENTALES NO SON CONSIDERADAS
+                            TARJETAS DE CRÉDITO</div>
+                    </div>
                     <input type="hidden" class="textUpper" disabled id="nombre" name="nombre" value="${personales?.nombre}" />
                     <input
                     type="hidden" class="textUpper" id="apellidoPaterno"
@@ -44,13 +49,9 @@
                     value="${direccion?.delegacion}" />
                 </div>
 
-                <div class="col5 col12-tab floatLeft marginTop30">
-                    <div class="rectangleRound font11 letterspacing0.5 center">LAS
-                        TARJETAS DE DÉBITO Y TIENDAS DEPARTAMENTALES NO SON CONSIDERADAS
-                        TARJETAS DE CRÉDITO</div>
-                </div>
+
             </div>
-            <div class="clearFix marginBottom30">
+            <div class="clearFix marginBottom30" id="buroSegundaFila">
                 <div
                 class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
                 <p class="correctaBoxLabel">¿ERES TÍTULAR DE UN CREDITO HIPOTECARIO?</p>
@@ -85,11 +86,11 @@
                 y uso que <span id="razonSocial" class="headingColor"> ${razonSocial}
                 </span> har&aacute; de tal informaci&oacute;n?
             </p>
-        </div>		
+        </div>
         <div id="accionesNormales" class="creditBtns">
             <div class="col5half col12-mob floatLeft">
                 <a id="consultarBuroBtn">
-                    <div  class="colorGreen buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
+                    <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
                 </a>
             </div>
             <!--<div class="col1 col12-mob center gray floatLeft padingAside20 marginTop15 marginBottom15 block">Ó</div>
@@ -114,9 +115,7 @@
             <div class="phoneStaus col6 col8-tab col12-mob blockAuto floatRight clearFix">
                 <div class="col9  col8-mob floatLeft">
                     <div class="clearFix paddingAside15">
-                        <img class="floatLeft"
-                        src="${resource(dir:'images', file:'phone.png')}" alt="contact"
-                        title="contact" />
+                        <img class="floatLeft" src="${resource(dir:'images', file:'phone.png')}" alt="contact" />
                         <div class="floatLeft marginLeft10">
                             <p class="formTitleColor font16 letterspacing1.5">NOS
                                 COMUNICAREMOS</p>

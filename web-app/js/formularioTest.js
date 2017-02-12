@@ -8,6 +8,8 @@ var ponderaciones;
 var slideIndex = 1;
 var listaDeControl;
 var generoConyugue;
+var ubicacionSucursal;
+var cara = "frente";
 showSlides(slideIndex);
 
 function inicializarFormulario() {
@@ -21,6 +23,7 @@ function inicializarFormulario() {
         $('.mobileCapture').hide();
         $('.desktopCapture').show();
     }
+    slideIndex = 1;
     winH = $(window).height();
     contentH = $('.contentHeight').outerHeight();
     headerH = $('.topHeader').outerHeight();
@@ -32,7 +35,7 @@ function inicializarFormulario() {
     for (var i = 0; i < length; i++) {
         listaDeControl[i] = 0;
     }
-    //console.log(listaDeControl);
+    console.log("Lista de Control: " + listaDeControl);
 
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
@@ -61,7 +64,7 @@ function inicializarFormulario() {
     } else if (tipoDePaso === "resumen") {
         operacionesResumen();
     } else if (tipoDePaso === "confirmacion") {
-        operacionesLogin();
+        operacionesConfirmacion();
     }
 
     habilitarBotonesAvance();
@@ -69,10 +72,9 @@ function inicializarFormulario() {
     if ($('#revisionInicial').val() === "false") {
         $('#revisionInicial').remove();
     } else {
-        $('.showOnFill').each(function (index) {
-            //verificarCambios(index);
-            mostrarSiguienteCampo(index);
-        });
+        //$('.showOnFill').each(function (index) {
+        mostrarSiguienteCampo(0);
+        //});
     }
 
     $(document).tooltip({
@@ -191,7 +193,7 @@ function operacionesFormulario() {
     $('.showOnFill').change(function (index) {
         var thisStep = $(this);
         var maxIndex = $('.showOnFill').length;
-        //console.log("Indice: " + index);
+        console.log("Indice: " + index);
         $('.formValues', this).change(function () {
             //console.log("Registrando: " + $(this).val() + " -adfafdadfsa:  " + $(this));
             if ($(this).val() !== '') {
@@ -245,7 +247,7 @@ function operacionesFormulario() {
                             listaDeControl[(index + $(this).data('id'))] = -1;
                         }
                     });
-                    console.log(listaDeControl);
+                    console.log("EC: " + listaDeControl);
                 } else if ($(this).attr('id') === 'direccionCliente_tipoDeVivienda') {
                     var tipoDeViviendaTmp = $(this).val();
                     var listaElementos = $(".showOnFill[data-depende-de='direccionCliente_tipoDeVivienda']");
@@ -267,7 +269,7 @@ function operacionesFormulario() {
                             listaDeControl[$(this).data('id')] = -1;
                         }
                     });
-                    //console.log(listaDeControl);
+                    console.log("TV: " + listaDeControl);
                 } else if (($('#cliente_rfc').val() === '') && ($('#cliente_curp').val() === '')) {
                     if (($('#cliente_nombre').val() !== '' && $('#cliente_nombre').val() !== undefined) && ($('#cliente_apellidoPaterno').val() !== '' && $('#cliente_apellidoPaterno').val() !== undefined) && ($('#cliente_apellidoMaterno').val() !== '' && $('#cliente_apellidoMaterno').val() !== undefined) && ($('#cliente_genero').val() !== '' && $('#cliente_genero').val() !== undefined) && ($('#cliente_lugarDeNacimiento').val() !== '' && $('#cliente_nombre').val() !== undefined)) {
                         generarClaves('cliente');
@@ -293,7 +295,6 @@ function operacionesFormulario() {
                 $(this).removeClass('notEmpty');
                 $(this).removeClass('headingColor');
             }
-            //verificarCambios(index);
             mostrarSiguienteCampo(index);
             //console.log("A punto de calcular el avance....");
             calcularAvance();
@@ -304,9 +305,9 @@ function operacionesFormulario() {
     $('.showOnFill').each(function (index) {
         var thisStep = $(this);
         var maxIndex = $('.showOnFill').length;
-        //console.log("Indice: " + index);
+        console.log("Indice: " + index);
         $('.formValues', this).change(function () {
-            //console.log("Registrando: " + $(this).val() + " -adfafdadfsa:  " + $(this));
+            console.log("Registrando: " + $(this).val() + " -adfafdadfsa:  " + $(this));
             if ($(this).val() !== '') {
                 //console.log("No esta vacio");
                 $(this).addClass('notEmpty');
@@ -337,6 +338,9 @@ function operacionesFormulario() {
                             return false;
                         });
                     }
+                } else if ($(this).attr('id') === 'direccionCliente_codigoPostal' || $(this).attr('id') === 'empleoCliente_codigoPostal') {
+                    console.log("El campo de código postal ha perdido el foco!!");
+                    consultarCodigoPostal($(this).attr('id'), $(this).val());
                 } else if ($(this).attr('id') === 'cliente_estadoCivil') {
                     var estadoCivilTmp = $(this).val();
                     var listaElementos = $(".showOnFill[data-depende-de='cliente_estadoCivil']");
@@ -358,7 +362,7 @@ function operacionesFormulario() {
                             listaDeControl[(index + $(this).data('id'))] = -1;
                         }
                     });
-                    console.log(listaDeControl);
+                    console.log("EC2: " + listaDeControl);
                 } else if ($(this).attr('id') === 'direccionCliente_tipoDeVivienda') {
                     var tipoDeViviendaTmp = $(this).val();
                     var listaElementos = $(".showOnFill[data-depende-de='direccionCliente_tipoDeVivienda']");
@@ -380,7 +384,7 @@ function operacionesFormulario() {
                             listaDeControl[$(this).data('id')] = -1;
                         }
                     });
-                    //console.log(listaDeControl);
+                    console.log("TV2: " + listaDeControl);
                 } else if (($('#cliente_rfc').val() === '') && ($('#cliente_curp').val() === '')) {
                     if (($('#cliente_nombre').val() !== '' && $('#cliente_nombre').val() !== undefined) && ($('#cliente_apellidoPaterno').val() !== '' && $('#cliente_apellidoPaterno').val() !== undefined) && ($('#cliente_apellidoMaterno').val() !== '' && $('#cliente_apellidoMaterno').val() !== undefined) && ($('#cliente_genero').val() !== '' && $('#cliente_genero').val() !== undefined) && ($('#cliente_lugarDeNacimiento').val() !== '' && $('#cliente_nombre').val() !== undefined)) {
                         generarClaves('cliente');
@@ -406,18 +410,10 @@ function operacionesFormulario() {
                 $(this).removeClass('notEmpty');
                 $(this).removeClass('headingColor');
             }
-            //verificarCambios(index);
             mostrarSiguienteCampo(index);
             console.log("A punto de calcular el avance....");
             calcularAvance();
             window.scrollTo(0, document.body.scrollHeight);
-        });
-        $('.formValues', this).focusout(function () {
-            console.log("Checando el campo: " + $(this).attr('id'));
-            if ($(this).attr('id') === 'direccionCliente_codigoPostal' || $(this).attr('id') === 'empleoCliente_codigoPostal') {
-                console.log("El campo de código postal ha perdido el foco!!");
-                consultarCodigoPostal($(this).attr('id'), $(this).val());
-            }
         });
     });
 
@@ -451,12 +447,6 @@ function operacionesFormulario() {
             $('.successBubble').fadeOut();
         }
     });
-
-    $('#paso2CompDom').click(function () {
-        $('#tipoDeDocumento').val('UtilityBill');
-        openModal('comprobante_domicilio');
-        inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
-    });
 }
 
 function mostrarSiguienteCampo(index) {
@@ -477,37 +467,103 @@ function mostrarSiguienteCampo(index) {
         }
     }
     //console.log("index: " + index + " - elementosPorGrupo:" + elementosPorGrupo + " - elementosLLenosPorGrupo: " + elementosLLenosPorGrupo);
-    if (elementosPorGrupo === elementosLLenosPorGrupo) {
+    if (prellenado === "true") {
+        var elemento;
+        var indice = index;
+        var estadoCivilTmp = $('#cliente_estadoCivil').val();
+        var listaElementos = $(".showOnFill[data-depende-de='cliente_estadoCivil']");
+        //console.log("La lista resultante es: " + listaElementos.length + " - " + estadoCivilTmp);
+        $(listaElementos).each(function () {
+            //console.log("EstadoCivilTmp:" + estadoCivilTmp + " - " + ($(this).data('valorDependencia')) + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
+            if (Number(estadoCivilTmp) === Number($(this).data('valorDependencia'))) {
+                $(this).children('.formValues').removeClass('notEmpty');
+                $(this).children('.formValues').removeClass('noMostrar');
+                $(this).children().children('.formValues').removeClass('notEmpty');
+                $(this).children().children('.formValues').removeClass('noMostrar');
+                listaDeControl[(11 + $(this).data('id'))] = 0;
+            } else {
+                $(this).children('.formValues').addClass('notEmpty');
+                $(this).children('.formValues').addClass('noMostrar');
+                $(this).children().children('.formValues').addClass('notEmpty');
+                $(this).children().children('.formValues').addClass('noMostrar');
+                //console.log("Indice de conyugue: " + (index + $(this).data('id')));
+                listaDeControl[(11 + $(this).data('id'))] = -1;
+            }
+        });
+        console.log("Prefill - " + listaDeControl);
+        var tipoDeViviendaTmp = $('#direccionCliente_tipoDeVivienda').val();
+        var listaElementos = $(".showOnFill[data-depende-de='direccionCliente_tipoDeVivienda']");
+        //console.log("La lista resultante es: " + listaElementos.length + " - " + tipoDeViviendaTmp);
+        $(listaElementos).each(function () {
+            //console.log("tipoDeViviendaTmp:" + tipoDeViviendaTmp + " - " + ($(this).data('valorDependencia')) + " - data-id: " + $(this).data('id') + " - $(this).index(): " + $(this).index());
+            if (Number(tipoDeViviendaTmp) === Number($(this).data('valorDependencia'))) {
+                $(this).children('.formValues').removeClass('notEmpty');
+                $(this).children('.formValues').removeClass('noMostrar');
+                $(this).children().children('.formValues').removeClass('notEmpty');
+                $(this).children().children('.formValues').removeClass('noMostrar');
+                listaDeControl[$(this).data('id')] = 0;
+            } else {
+                $(this).children('.formValues').addClass('notEmpty');
+                $(this).children('.formValues').addClass('noMostrar');
+                $(this).children().children('.formValues').addClass('notEmpty');
+                $(this).children().children('.formValues').addClass('noMostrar');
+                //console.log("Indice de conyugue: " + ($(this).data('id')));
+                listaDeControl[$(this).data('id')] = -1;
+            }
+        });
+        console.log("Prefill - " + listaDeControl);
+        elementos.each(function () {
+            if ($(this).children('.formValues').attr('id') !== undefined) {
+                console.log("If");
+                elemento = $(this).children('.formValues');
+            } else if ($(this).children().children('.formValues').attr('id') !== undefined) {
+                console.log("ElseIf");
+                elemento = $(this).children().children('.formValues');
+            } else if ($(this).children().children().children('.formValues').attr('id') !== undefined) {
+                console.log("ElseIf 2");
+                elemento = $(this).children().children().children('.formValues');
+            }
+            console.log("Elemento : " + ($(elemento).attr('id')) + " tiene la clase noMostrar? " + ($(elemento).hasClass('noMostrar')));
+            if (($(elemento).hasClass('noMostrar') === false) && (listaDeControl[indice + 1] !== -1)) {
+                console.log("Mostrando el siguiente paso....");
+                $(this).fadeIn();
+                $(this).css({'display': 'inline'});
+                checkInputs();
+            } else {
+                console.log("Ocultando el siguiente paso....");
+                $(this).fadeOut();
+                $(this).css({'display': 'none'});
+                checkInputs();
+            }
+        });
+        $('#pasoPrellenado').val("false");
+    } else if (elementosPorGrupo === elementosLLenosPorGrupo) {
         listaDeControl[index] = 1;
         if ((index + 1) < elementos.length) {
             var indice = index;
             var elementoMostrado = false;
             while ((indice + 1) < elementos.length && elementoMostrado === false) {
                 if (listaDeControl[indice + 1] === 0) {
-                    //console.log("Mostrando el siguiente paso....");
+                    //console.log(indice + " - Mostrando el siguiente paso....");
                     var elemento;
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
-                    if ($('.showOnFill').eq(indice + 1).children('.formValues')) {
+                    if ($('.showOnFill').eq(indice + 1).children('.formValues').attr('id') !== undefined) {
                         elemento = $('.showOnFill').eq(indice + 1).children('.formValues');
-                        $('.showOnFill').eq(indice + 1).children('.formValues').focus();
-                    } else if ($('.showOnFill').eq(indice + 1).children().children('.formValues')) {
+                    } else if ($('.showOnFill').eq(indice + 1).children().children('.formValues').attr('id') !== undefined) {
                         elemento = $('.showOnFill').eq(indice + 1).children().children('.formValues');
-                        $('.showOnFill').eq(indice + 1).children().children('.formValues').focus();
-                    } else if ($('.showOnFill').eq(indice + 1).children().children().children('.formValues')) {
+                    } else if ($('.showOnFill').eq(indice + 1).children().children().children('.formValues').attr('id') !== undefined) {
                         elemento = $('.showOnFill').eq(indice + 1).children().children().children('.formValues');
-                        $('.showOnFill').eq(indice + 1).children().children().children('.formValues').focus();
                     }
                     checkInputs();
                     //console.log("El siguiente campo es requerido?? " + $('.showOnFill').eq(indice + 1).hasClass('required'));
-                    if ($('.showOnFill').eq(indice + 1).hasClass('required') && !elemento.hasClass('notEmpty')) {
+                    if ($('.showOnFill').eq(indice + 1).hasClass('required') && !$(elemento).hasClass('notEmpty')) {
                         elementoMostrado = true;
                     }
                 } else if (listaDeControl[indice + 1] === 1) {
                     //console.log("Mostrando el siguiente paso....");
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
-                    $('.showOnFill').eq(indice + 1).children('.formValues').focus();
                     checkInputs();
                 } else if (listaDeControl[indice + 1] === -1) {
                     //console.log("Mostrando el siguiente paso....");
@@ -518,12 +574,7 @@ function mostrarSiguienteCampo(index) {
                 indice++;
             }
         }
-    } else if (prellenado === "true") {
-        if ($('.showOnFill').eq(index + 1).hasClass('noMostrar') === false) {
-            $('.showOnFill').eq(index + 1).fadeIn();
-            $('.showOnFill').eq(index + 1).css({'display': 'inline'});
-            checkInputs();
-        }
+        console.log("Lista - " + listaDeControl);
     }
     var totalElementosRequeridosSubpaso = $(".required[data-subpaso='" + (slideIndex - 1) + "']").find(".formValues").length;
     var totalElementosRequeridosLlenosSubpaso = $(".required[data-subpaso='" + (slideIndex - 1) + "']").find(".notEmpty").length;
@@ -533,11 +584,8 @@ function mostrarSiguienteCampo(index) {
     var totalElementosRequeridosLLenos = $('.required .notEmpty').length;
     totalElementosVisibles -= $('.formStep:visible .noMostrar').length;
     //console.log("index: " + index + " - elementosLlenosVisibles:" + elementosLlenosVisibles + " - totalElementosVisibles: " + totalElementosVisibles + " - totalElementosRequeridos: " + totalElementosRequeridos + " - totalElementosRequeridosLLenos: " + totalElementosRequeridosLLenos);
-    if ((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridos === totalElementosRequeridosLLenos) || (totalElementosRequeridosSubpaso === totalElementosRequeridosLlenosSubpaso)) {
+    if ((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridos === totalElementosRequeridosLLenos) || ((totalElementosRequeridosSubpaso === totalElementosRequeridosLlenosSubpaso))) {
         $('.formStep:visible .confirmDiv .buttonM').click();
-        if ($('#direccionCliente_sucursal').is(':visible') && $('#direccionCliente_sucursal option').length === 0) {
-            cargarSucursalesCercanas();
-        }
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
             $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
@@ -560,75 +608,12 @@ function cargarSucursalesCercanas() {
         url: "/solicitud/obtenerSucursales",
         success: function (data, textStatus) {
             var resultado = eval(data);
-            if (resultado.noHaySucursales) {
-                console.log("No hay sucursales");
-            } else if (resultado.error) {
-                console.log("Error");
-            } else {
-                var html = "";
-                html += "<option value=''>Elija una opción...</option>";
-                for (var x = 0; x < resultado.length; x++) {
-                    html += "<option value='" + resultado[x].id + "'> Sucursal " + resultado[x].numeroDeSucursal + " - " + resultado[x].nombre + "</option>";
-                }
-                $('#direccionCliente_sucursal').html(html);
-            }
+
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
         }
     });
-}
-
-function verificarCambios(index) {
-    var maxIndex = $('.showOnFill').length;
-    var filledLength = $('.notEmpty:visible').length;
-    var thisLength = $('.formValues:visible').length;
-    var prellenado = $('#pasoPrellenado').val();
-    var pasoActual = $('#pasoAnterior').val();
-    //console.log("Index: " + index + " - not Empty: " + filledLength + " -  total: " + thisLength + " - prellenado: " + prellenado);
-
-    if (filledLength === thisLength) {
-        if ((index + 1) < maxIndex) {
-            //console.log("Mostrando el siguiente paso....");
-            $('.showOnFill').eq(index + 1).fadeIn();
-            $('.showOnFill').eq(index + 1).css({'display': 'inline'});
-            $('.showOnFill').eq(index + 1).children('.formValues').focus();
-            checkInputs();
-        } else {
-            //console.log("Else 1");
-        }
-    } else if (prellenado === "true") {
-        if ($('.showOnFill').eq(index + 1).hasClass('noMostrar') === false) {
-            $('.showOnFill').eq(index + 1).fadeIn();
-            $('.showOnFill').eq(index + 1).css({'display': 'inline'});
-            checkInputs();
-        }
-    }
-    var totalLength = $('.formStep:visible .formValues').length;
-    //console.log("totalLength: " + totalLength);
-    if (filledLength === totalLength) {
-        if (prellenado === "true") {
-            //console.log("Mostrar el boton de confirmacion");
-            $('.formStep:visible .confirmDiv').fadeIn();
-        } else {
-            //console.log("Hacer click en el boton de confirmacion");
-            //$('.formStep:visible .confirmDiv').fadeIn();
-            $('.formStep:visible .confirmDiv .buttonM').click();
-        }
-        /*if (pasoActual === "1" && index === 6) {
-         generarClaves();
-         }*/
-    } else {
-        if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
-            $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
-            $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
-            $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('nextBtn');
-            $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('sendBtn');
-            $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').addClass('paddingTop5');
-            $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').removeClass('paddingTop10');
-            $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').html($('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').text().replace("IR AL PASO ", ""));
-        }
-    }
 }
 
 function calcularAvance() {
@@ -685,6 +670,7 @@ function consultarCodigoPostal(elemento, codigo) {
                 $('#direccionCliente_colonia').html("");
                 $('#direccionCliente_delegacion').html("");
                 $('#direccionCliente_estado').html("");
+                $('#direccionCliente_sucursal').html("");
                 if (response.asentamientos && response.asentamientos !== null && response.asentamientos !== undefined) {
                     for (var x = 0; x < response.asentamientos.length; x++) {
                         $('#direccionCliente_colonia').append($('<option>', {
@@ -726,6 +712,62 @@ function consultarCodigoPostal(elemento, codigo) {
                         text: "C.P. no Registrado",
                         selected: true
                     }));
+                }
+                if (response.sucursales.noHaySucursales) {
+                    console.log("No hay sucursales");
+                    swal({
+                        title: "¡Importante!",
+                        text: "Lo sentimos, aún no tenemos presencia en tu estado. Nos pondremos en contacto cuando podamos atender tu solicitud. Gracias.",
+                        type: "warning",
+                        showCancelButton: true,
+                        cancelButtonText: "Me equivoque en la selección",
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Ok, Enterado",
+                        closeOnConfirm: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            avanzarPaso(0);
+                            window.location.href = "http://micreditolibertad.com";
+                        } else {
+                            $('#direccionCliente_codigoPostal').val("");
+                            $('#direccionCliente_colonia').html("");
+                            $('#direccionCliente_delegacion').html("");
+                            $('#direccionCliente_estado').html("");
+                            $('#direccionCliente_sucursal').html("");
+                        }
+                        return false;
+                    });
+                } else if (response.sucursales.error) {
+                    console.log("Error");
+                    swal({
+                        title: "¡Importante!",
+                        text: "Lo sentimos, aún no tenemos presencia en tu estado. Nos pondremos en contacto cuando podamos atender tu solicitud. Gracias.",
+                        type: "warning",
+                        showCancelButton: true,
+                        cancelButtonText: "Me equivoque en la selección",
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Ok, Enterado",
+                        closeOnConfirm: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            avanzarPaso(0);
+                            window.location.href = "http://micreditolibertad.com";
+                        } else {
+                            $('#direccionCliente_codigoPostal').val("");
+                            $('#direccionCliente_colonia').html("");
+                            $('#direccionCliente_delegacion').html("");
+                            $('#direccionCliente_estado').html("");
+                            $('#direccionCliente_sucursal').html("");
+                        }
+                        return false;
+                    });
+                } else {
+                    var html = "";
+                    html += "<option value=''>Elija una opción...</option>";
+                    for (var x = 0; x < response.sucursales.length; x++) {
+                        html += "<option value='" + response.sucursales[x].id + "'> Sucursal " + response.sucursales[x].numeroDeSucursal + " - " + response.sucursales[x].nombre + "</option>";
+                    }
+                    $('#direccionCliente_sucursal').html(html);
                 }
             } else if (elemento == 'empleoCliente_codigoPostal') {
                 $('#empleoCliente_delegacion').html("");
@@ -1278,6 +1320,23 @@ function cargarOpcionesDeContacto(opcion) {
     });
 }
 
+function operacionesConfirmacion() {
+    $('.abrirMapa').click(function () {
+        openModal('modalGoogleMaps');
+        if (mapaGenerado() === false) {
+            initMap();
+            ubicarSucursal(ubicacionSucursal.coordenadas, ubicacionSucursal.ubicacion, ubicacionSucursal.numeroDeSucursal, ubicacionSucursal.nombre);
+        } else {
+            console.log("El mapa ya está inicializado");
+        }
+    });
+
+}
+
+function registrarUbicacion(datosSucursal) {
+    ubicacionSucursal = JSON.parse(datosSucursal);
+}
+
 function showValues() {
     var allInputs = $(".formValues").serializeArray();
     //$(".sendValues").html('');
@@ -1395,7 +1454,7 @@ function avanzarPaso(paso) {
             } else {
                 //console.log("Paso desconocido " + paso);
             }
-            setFooter();
+            //setFooter();
             actualizarProgreso(paso);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1527,7 +1586,7 @@ function fillFB(data) {
         $('.defaultBubble').fadeOut();
         $('.successBubble').fadeIn();
         $('.showOnFill').each(function (index) {
-            verificarCambios(index);
+            mostrarSiguienteCampo(index);
         });
     }
 }
@@ -1564,7 +1623,7 @@ function fillGoogle(data) {
         $('.defaultBubble').fadeOut();
         $('.successBubble').fadeIn();
         $('.showOnFill').each(function (index) {
-            verificarCambios(index);
+            mostrarSiguienteCampo(index);
         });
     }
 }
@@ -1888,10 +1947,12 @@ function consultarBuro() {
                         $('#divAutorizacionBuro').fadeOut();
                         $('.avanzaBtn').click();
                     } else if (respuesta.segmento) {
-                    	sweetAlert("Oops...", "Algo salió mal, Por favor verifica los datos capturados en la seccion de " + respuesta.segmento, "warning");
+                        console.log("Segmento: " + respuesta);
+                        sweetAlert("Oops...", "Algo salió mal, Por favor verifica los datos capturados en la seccion de " + respuesta.segmento, "warning");
                         $('#accionesNormales').fadeIn();
                         $('#divAutorizacionBuro').fadeIn();
                     } else if (respuesta.error) {
+                        console.log("Error: " + respuesta);
                         $('#accionesNormales').fadeOut();
                         $('#accionesError').fadeIn();
                         $('#divAutorizacionBuro').fadeOut();
@@ -2047,7 +2108,7 @@ function operacionesModal() {
     $('.pasaporteId').click(function () {
         $('#tipoDeDocumento').val('Pasaportes');
         $('#nombreDeLaIdentificacion').html('frente de tu Pasaporte');
-        inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
+        inicializarDropzone('div#divDropzoneIds', '.foldersBox');
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
         $('#label2Ids').addClass('active_blue');
@@ -2056,12 +2117,13 @@ function operacionesModal() {
         $('#label3Ids').addClass('gray');
         $('#label1Ids').addClass('gray');
         $('#label2Ids').removeClass('gray');
+        cara = "frente";
     });
 
     $('.ineId').click(function () {
         $('#tipoDeDocumento').val('Identicaciones');
         $('#nombreDeLaIdentificacion').html('frente de tu Credencial de Elector');
-        inicializarDropzone('div#divDropzoneIds', '#subirIdentificacion');
+        inicializarDropzone('div#divDropzoneIds', '.foldersBox');
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
         $('#label2Ids').addClass('active_blue');
@@ -2070,6 +2132,7 @@ function operacionesModal() {
         $('#label3Ids').addClass('gray');
         $('#label1Ids').addClass('gray');
         $('#label2Ids').removeClass('gray');
+        cara = "frente";
     });
 
     $('.phoneCapture').click(function () {
@@ -2081,6 +2144,11 @@ function operacionesModal() {
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $('.webcam_capture').fadeIn();
         inicializarCamara('Frente');
+    });
+
+    $('#subirIdentificacion').click(function () {
+        $(this).parent().parent().parent().parent().parent().fadeOut();
+        $('.file_uploads').fadeIn();
     });
 
     $('.camCaptureComp').click(function () {
@@ -2118,7 +2186,7 @@ function operacionesModal() {
     });
 
     $('.cfe').click(function () {
-        $('#tipoDeDocumento').val('UtilityBill');
+        $('#tipoDeDocumento').val('reciboCfe');
         $('#nombreDelDocumento').html('Recibo de C.F.E.');
         inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
         $(this).parent().parent().parent().parent().parent().parent().fadeOut();
@@ -2127,9 +2195,10 @@ function operacionesModal() {
         $('#label1Comp').removeClass('active_blue');
         $('#label1Comp').addClass('gray');
         $('#label2Comp').removeClass('gray');
+        cara = "frente";
     });
     $('.telmex').click(function () {
-        $('#tipoDeDocumento').val('UtilityBill');
+        $('#tipoDeDocumento').val('reciboTelmex');
         $('#nombreDelDocumento').html('Recibo de Telmex');
         inicializarDropzone('div#divDropzoneComp', '#subirComprobante');
         $(this).parent().parent().parent().parent().parent().parent().fadeOut();
@@ -2138,6 +2207,7 @@ function operacionesModal() {
         $('#label1Comp').removeClass('active_blue');
         $('#label1Comp').addClass('gray');
         $('#label2Comp').removeClass('gray');
+        cara = "frente";
     });
 
     $('#paso1CompDom').click(function () {
@@ -2174,8 +2244,11 @@ function operacionesModal() {
         $('#seleccionIdentificacion').show();
         $('#metodoSubidaIdentificacion').hide();
         $('#capturaTelefonoIds').hide();
-        $('#fotoFrente').show();
+        $('#fotoFrente').hide();
         $('#fotoVuelta').hide();
+        $('#archivoFrente').fadeIn();
+        $('#archivoVuelta').fadeOut();
+        $('.file_uploads').fadeOut();
         $('#webcamCaptureIds').hide();
     });
 
@@ -2190,8 +2263,11 @@ function operacionesModal() {
             $('#seleccionIdentificacion').hide();
             $('#metodoSubidaIdentificacion').show();
             $('#capturaTelefonoIds').hide();
-            $('#fotoFrente').show();
+            $('#fotoFrente').hide();
             $('#fotoVuelta').hide();
+            $('#archivoFrente').fadeIn();
+            $('#archivoVuelta').fadeOut();
+            $('.file_uploads').fadeOut();
             $('#webcamCaptureIds').hide();
         }
     });
@@ -2225,7 +2301,7 @@ function enviarShortUrl() {
         success: function (data, textStatus) {
             var resultado = eval(data);
             if (resultado.mensajeEnviado) {
-                if (documento === 'UtilityBill') {
+                if (documento === 'reciboCfe' || documento === 'reciboTelmex') {
                     closeModal('comprobante_domicilio');
                 } else if (documento === 'Pasaportes' || documento === 'Identicaciones') {
                     closeModal('identification_oficial');
@@ -2252,7 +2328,7 @@ function inicializarDropzone(elemento, boton) {
         uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",
-        params: {'docType': $('#tipoDeDocumento').val()},
+        params: {'docType': $('#tipoDeDocumento').val(), 'cara': cara},
         maxFiles: 1,
         maxFilesize: 10,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
@@ -2261,15 +2337,20 @@ function inicializarDropzone(elemento, boton) {
         clickable: boton
     });
     kosmosDropzone.on("addedfile", function (file) {
-        //console.log("Archivo enviado: " + file);
+        console.log("Archivo enviado: " + file);
         $('.dz-preview').hide();
-        $('#progresoConsultaComp').fadeIn();
+        $('.barraProgresoComp').fadeIn();
         $('#progresoConsultaIds').fadeIn();
+    });
+    kosmosDropzone.on("sending", function (file, xhr, formData) {
+        console.log("Antes de enviar");
+        formData.set("docType", $('#tipoDeDocumento').val());
+        formData.set("cara", cara);
     });
     kosmosDropzone.on("success", function (file, response) {
         var respuesta = eval(response);
         //console.log("Respuesta recibida: " + respuesta);
-        $('#progresoConsultaComp').fadeOut();
+        //$('#progresoConsultaComp').fadeOut();
         //console.log("Documento Vigente? " + respuesta.vigente);
         if (respuesta.vigente === true) {
             var pasoActual = $('#pasoInicial').val();
@@ -2278,7 +2359,7 @@ function inicializarDropzone(elemento, boton) {
             } else {
                 var direccion = (respuesta.calle ? respuesta.calle : respuesta.direccion);
                 if (respuesta.direccion) {
-                    sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombrePersona + "<br/><strong>Dirección: </strong>" + respuesta.direccion + "<br/><strong>Fecha del Recibo: </strong> " + respuesta.fechaRecibo + "</br>", type: "success"});
+                    sweetAlert({html: false, title: "¡Excelente!", text: "El documento se ha subido correctamente.", type: "success"});
                     closeModal('comprobante_domicilio');
                     $('#calle').val(direccion);
                     $('#calle').addClass("notEmpty");
@@ -2299,31 +2380,59 @@ function inicializarDropzone(elemento, boton) {
                     $('#paso6CompDom').addClass('colorGreen');
                     $('#pasoPrellenado').val("true");
                     $('.showOnFill').each(function (index) {
-                        verificarCambios(index);
+                        mostrarSiguienteCampo(index);
                     });
                     habilitarTerminarSolicitud();
                     if (document.getElementById('login')) {
                         $('#submitLogin').click();
                     }
                 } else if (respuesta.exito || (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno))) {
-                    sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellido Paterno: </strong>" + respuesta.apellidoPaterno + "<br/><strong>Apellido Materno: </strong> " + respuesta.apellidoMaterno + "</br>", type: "success"});
-                    closeModal('identification_oficial');
-                    $('#paso6IdOf').addClass('colorGreen');
-                    $('#pasoPrellenado').val("true");
-                    $('.showOnFill').each(function (index) {
-                        verificarCambios(index);
-                    });
-                    habilitarTerminarSolicitud();
-                    if (document.getElementById('login')) {
-                        $('#submitLogin').click();
+                    sweetAlert({html: true, title: "¡Excelente!", text: "El documento se ha subido correctamente.", type: "success"});
+                    if ($('#tipoDeDocumento').val() === "Identicaciones" && cara === "frente") {
+                        $('#archivoFrente').fadeOut();
+                        $('#archivoVuelta').fadeIn();
+                        cara = "vuelta";
+                        $('#label3Ids').addClass('active_blue');
+                        $('#label2Ids').removeClass('active_blue');
+                        $('#label1Ids').removeClass('active_blue');
+                        $('#label2Ids').addClass('gray');
+                        $('#label1Ids').addClass('gray');
+                        $('#label3Ids').removeClass('gray');
+                        var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+                        html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
+                        $('#uploadFrente').html(html);
+                    } else if ($('#tipoDeDocumento').val() === "Identicaciones" && cara === "vuelta") {
+                        var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+                        html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
+                        $('#uploadVuelta').html(html);
+                        closeModal('identification_oficial');
+                        $('#paso6IdOf').addClass('colorGreen');
+                        $('#paso6IdOf').removeClass('darkGray');
+                        $('#pasoPrellenado').val("true");
+                        mostrarSiguienteCampo(0);
+                        habilitarTerminarSolicitud();
+                        if (document.getElementById('login')) {
+                            $('#submitLogin').click();
+                        }
+                    } else if ($('#tipoDeDocumento').val() === "Pasaportes") {
+                        closeModal('identification_oficial');
+                        $('#paso6IdOf').addClass('colorGreen');
+                        $('#paso6IdOf').removeClass('darkGray');
+                        $('#pasoPrellenado').val("true");
+                        mostrarSiguienteCampo(0);
+                        habilitarTerminarSolicitud();
+                        if (document.getElementById('login')) {
+                            $('#submitLogin').click();
+                        }
                     }
                 } else if (respuesta.nombre && (respuesta.apellidos || respuesta.noDocumento)) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "Se obtuvieron los siguientes datos: <br/> <strong>Nombre:</strong>" + respuesta.nombre + "<br/><strong>Apellidos: </strong>" + respuesta.apellidos + "<br/><strong>Documento No.: </strong> " + respuesta.noDocumento + "</br>", type: "success"});
                     closeModal('identification_oficial');
                     $('#paso6IdOf').addClass('colorGreen');
+                    $('#paso6IdOf').removeClass('darkGray');
                     $('#pasoPrellenado').val("true");
                     $('.showOnFill').each(function (index) {
-                        verificarCambios(index);
+                        mostrarSiguienteCampo(index);
                     });
                     habilitarTerminarSolicitud();
                     if (document.getElementById('login')) {
@@ -2358,11 +2467,11 @@ function inicializarDropzone(elemento, boton) {
             sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga border blancos.", "warning");
         }
         this.removeAllFiles();
-        $('#progresoConsultaComp').fadeOut();
+        $('.barraProgresoComp').fadeOut();
         $('#progresoConsultaIds').fadeOut();
     });
     kosmosDropzone.on("error", function (file, response) {
-        $('#progresoConsultaComp').fadeOut();
+        $('.barraProgresoComp').fadeOut();
         $('#progresoConsultaIds').fadeOut();
         sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
         this.removeAllFiles();

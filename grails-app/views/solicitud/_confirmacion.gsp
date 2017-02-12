@@ -54,21 +54,21 @@
             </div>
             <div class="titles8">
                 <h3 class="colorblue">SEGUNDO PASO:</h3>
-                <p class="formTitleColor">PRESENTATE EN LA SUCURSAL <span class="colorblue">NISSAN POLACO</span>, UBICADA EN <span class="colorblue">EMILIO CASTELAR NO. 234. MÉXICO DF</span> CON TU DOCUMENTACION:</p>
+                <p class="formTitleColor">PRESENTATE EN LA <span class="colorblue">${productoSolicitud?.solicitud?.sucursal?.toString()?.toUpperCase()}</span>, UBICADA EN <span class="colorblue">${productoSolicitud?.solicitud?.sucursal?.ubicacion?.toUpperCase()}</span> CON TU DOCUMENTACION:</p>
             </div>
             <div class="boxes8 col12 clearFix">
                 <div class="col6 col6-tab col12-mob floatLeft marginTop20 marginBottom20 formTitleColor">
                     <p>IDENTIFICACIÓN OFICIAL</p>
                     <p>COMPROBANTE DE DOMICILIO</p>
-                    <p>COMPROBANTE DE PAGO POR EL ENGANCHE</p>
+                    <p>${productoSolicitud?.documentoElegido?.nombre?.toUpperCase()} (X ${productoSolicitud?.documentoElegido?.cantidadSolicitada})</p>
                 </div>
                 <div class="col6 col6-tab col12-mob floatLeft">
                     <div class="paddingAside10">
-                        <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">UBICA TU SUCURSAL EN EL MAPA</div>
+                        <div class="colorGreen buttonM abrirMapa radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer">UBICA TU SUCURSAL EN EL MAPA</div>
                     </div>
                 </div>
             </div>
-            <div class="titles8">
+            <!--<div class="titles8">
                 <h3 class="colorblue">TERCER PASO:</h3>
                 <p class="formTitleColor">TU EJECUTIVO ROBERTO HERNANDEZ TE ESTARÁ ESPERANDO PARA COTEJAR TU INFORMACIÓN Y TU FIRMA DE CONTRATO.</p>
             </div>
@@ -83,10 +83,16 @@
                         <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">CHATEA CON TU EJECUTIVO</div>
                     </div>  
                 </div>
-            </div>
+            </div>-->
             <div class="center colorRed font14 marginTop50">
-                <p>ESTA SOLICITUD SOLO ES VALIDA HASTA EL DIA 12 DE FEBRERO DEL 2016</p>
+                <p>ESTA SOLICITUD SOLO ES VALIDA HASTA EL DIA 12 DE FEBRERO DEL 2017</p>
             </div>
         </div>
     </div>
 </section>
+<g:render template="modalMapa"/>
+<script>
+    (function() {
+            registrarUbicacion('${raw(sucursal as String)}');
+    })();
+</script>

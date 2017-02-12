@@ -158,15 +158,18 @@ function initSteps() {
 function initActions() {
     $('.nextAction').click(function () {
 //get step and execute step action
-        var parentStep = $(this).closest('.cotizadorStep');
-        var tipoDePaso = $(parentStep).data('tipoDePaso');
-        step = $(parentStep).data('step');
-        console.log("Antes de StepAction");
-        stepAction(step, tipoDePaso, $(this));
-        console.log("Tipo de Paso: " + tipoDePaso + " - aplicacion variable: " + $('#aplicacionVariable').val());
-        if ((tipoDePaso !== "stepProducto" && $('#aplicacionVariable').val() === "true") || ($('#aplicacionVariable').val() === "false")) {
-            console.log("Antes de Habilitar Paso " + step);
-            habilitarPaso(step, lastStep, parentStep);
+        console.log("Opacity: " + $(this).closest('.cotizadorStep').css('opacity'));
+        if ($(this).closest('.cotizadorStep').css('opacity') === '1') {
+            var parentStep = $(this).closest('.cotizadorStep');
+            var tipoDePaso = $(parentStep).data('tipoDePaso');
+            step = $(parentStep).data('step');
+            console.log("Antes de StepAction");
+            stepAction(step, tipoDePaso, $(this));
+            console.log("Tipo de Paso: " + tipoDePaso + " - aplicacion variable: " + $('#aplicacionVariable').val());
+            if ((tipoDePaso !== "stepProducto" && $('#aplicacionVariable').val() === "true") || ($('#aplicacionVariable').val() === "false")) {
+                console.log("Antes de Habilitar Paso " + step);
+                habilitarPaso(step, lastStep, parentStep);
+            }
         }
     });
 }

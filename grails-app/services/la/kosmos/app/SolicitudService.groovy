@@ -3,11 +3,14 @@ package la.kosmos.app
 import grails.transaction.Transactional
 import groovy.sql.Sql
 import la.kosmos.rest.SolicitudRest
+import java.nio.file.Files;
+import org.apache.commons.codec.binary.Base64;
 
 @Transactional
 class SolicitudService {
     
     def dataSource
+    def buroDeCreditoService
 
     def construirDatosTemporales(def datosPreguardados, def params, def pasoEnviado, def identificadores, def entidadFinanciera, def token, def shortUrl) {
         println "Contenido del Mapa: " + datosPreguardados + " - Parametros Enviados:" + params +" - Paso Enviado: " +pasoEnviado + " - Identificadores: " + identificadores
@@ -145,6 +148,15 @@ class SolicitudService {
                     }
                     if(identificadores?.idSolicitud) {
                         println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
+                        def solicitud = SolicitudDeCredito.get(identificadores?.idSolicitud as long)
+                        if(datosPaso.direccionCliente?.sucursal){
+                            solicitud.sucursal = SucursalEntidadFinanciera.get(datosPaso.direccionCliente?.sucursal as long)
+                            if(solicitud.save(flush: true)){
+                                println "La sucursal se ha registrado correctamente..."
+                            } else {
+                                println "La sucursal no se ha registrado..."
+                            }
+                        }
                     } else {
                         def sql = new Sql(dataSource)
                         def solicitudDeCredito = new SolicitudDeCredito()
@@ -354,7 +366,7 @@ class SolicitudService {
             listaDeDoctos.comprobanteDeDomicilio = false
             listaDeDoctos.identificacion = false
         }
-        if(tipoDeDocumentoEnviado == "UtilityBill"){
+        if(tipoDeDocumentoEnviado == "reciboCfe" || tipoDeDocumentoEnviado == "reciboTelmex"){
             listaDeDoctos.comprobanteDeDomicilio = true
         } else if (tipoDeDocumentoEnviado == "Pasaportes" || tipoDeDocumentoEnviado == "Identicaciones"){
             listaDeDoctos.identificacion = true
@@ -373,11 +385,16 @@ class SolicitudService {
             documento.fechaDeSubida = new Date()
             documento.solicitud = solicitud
             documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + archivo.nombreDelArchivo
-            if(tipoDeDocumento == "UtilityBill"){
+            if(tipoDeDocumento == "reciboCfe"){
                 documento.rutaDelArchivo += ".pdf"
                 documento.tipoDeDocumento = TipoDeDocumento.get(1)
-            } else if(tipoDeDocumento == "Identicaciones" || tipoDeDocumento == "Pasaportes"){
+            } else if(tipoDeDocumento == "reciboTelmex"){
+                documento.rutaDelArchivo += ".pdf"
+                documento.tipoDeDocumento = TipoDeDocumento.get(10)
+            } else if(tipoDeDocumento == "Identicaciones"){
                 documento.tipoDeDocumento = TipoDeDocumento.get(2)
+            } else if(tipoDeDocumento == "Pasaportes"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(11)
             } else {
                 documento.tipoDeDocumento = TipoDeDocumento.findByNombreMapeo(tipoDeDocumento)
             }
@@ -385,7 +402,7 @@ class SolicitudService {
                 def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
                 subdir.mkdir()
                 println (documento.rutaDelArchivo)
-                if(tipoDeDocumento == "UtilityBill"){
+                if(tipoDeDocumento == "reciboCfe" || tipoDeDocumento == "reciboTelmex"){
                     def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
                     def fos = new FileOutputStream(documento.rutaDelArchivo)
                     fos << fis
@@ -416,11 +433,15 @@ class SolicitudService {
         if(archivo){
             def documento = new DocumentoTemporal()
             documento.fechaDeSubida = new Date()
-            if(tipoDeDocumento == "UtilityBill"){
+            if(tipoDeDocumento == "reciboCfe"){
                 documento.tipoDeDocumento = TipoDeDocumento.get(1)
-            } else if(tipoDeDocumento == "Identicaciones" || tipoDeDocumento == "Pasaportes"){
+            } else if(tipoDeDocumento == "reciboTelmex"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(10)
+            } else if(tipoDeDocumento == "Identicaciones"){
                 documento.tipoDeDocumento = TipoDeDocumento.get(2)
-            } 
+            } else if(tipoDeDocumento == "Pasaportes"){
+                documento.tipoDeDocumento = TipoDeDocumento.get(11)
+            }
             documento.rutaDelArchivo = "/var/uploads/kosmos/temporales" + "/" + archivo.nombreDelArchivo + (ephesoft ? ".pdf" : "")
             if(documento.save(flush:true)){
                 def subdir = new File("/var/uploads/kosmos/temporales/")
@@ -451,7 +472,7 @@ class SolicitudService {
         if(documentoTemporal){
             def solicitud =  SolicitudDeCredito.get(solicitudId as long)
             def documento = new DocumentoSolicitud()
-            def nombreDelArchivo = documentoTemporal.rutaDelArchivo.minus("/var/uploads/kosmos/documentos/temporales/")
+            def nombreDelArchivo = (documentoTemporal.rutaDelArchivo).replace("/var/uploads/kosmos/temporales/","")
             documento.fechaDeSubida = new Date()
             documento.solicitud = solicitud
             documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + nombreDelArchivo
@@ -459,7 +480,7 @@ class SolicitudService {
             if(documento.save(flush:true)){
                 def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
                 subdir.mkdir()
-                println (documento.rutaDelArchivo)
+                println ("Moviendo el documento de: " + documentoTemporal.rutaDelArchivo + " a: " + documento.rutaDelArchivo)
                 def fis = new FileInputStream(documentoTemporal.rutaDelArchivo)
                 def fos = new FileOutputStream(documento.rutaDelArchivo)
                 fos << fis
@@ -640,7 +661,7 @@ class SolicitudService {
             solicitudRest.solicitud.vivienda = [:]
             solicitudRest.solicitud.empleo = [:]
             solicitudRest.solicitud.documentos = []
-            solicitudRest.solicitud.buroDeCredito = [:]
+            solicitudRest.solicitud.buroDeCredito = ""
         
             solicitudRest.solicitud.datosSolicitud.fechaDeCreacion = (solicitud.fechaDeSolicitud).format('dd/MM/yyyy HH:mm')
             solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = "Solicitante" //Temporal
@@ -696,7 +717,7 @@ class SolicitudService {
             solicitudRest.solicitud.direccion.numeroInterior = ((datosSolicitud.direccionCliente?.numeroInterior) ? datosSolicitud.direccionCliente?.numeroInterior : "")
             solicitudRest.solicitud.direccion.codigoPostal = ((datosSolicitud.direccionCliente?.codigoPostal?.codigo) ? datosSolicitud.direccionCliente?.codigoPostal?.codigo : "")
             solicitudRest.solicitud.direccion.colonia = ((datosSolicitud.direccionCliente?.colonia) ? datosSolicitud.direccionCliente?.colonia : "")
-            solicitudRest.solicitud.direccion.municipio = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.nombre) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.nombre : "")
+            solicitudRest.solicitud.direccion.municipio = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.id : "")
             solicitudRest.solicitud.direccion.ciudad = ((datosSolicitud.direccionCliente?.ciudad) ? datosSolicitud.direccionCliente?.ciudad : "")
             solicitudRest.solicitud.direccion.estado = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.id : "")
             
@@ -720,15 +741,27 @@ class SolicitudService {
             solicitudRest.solicitud.empleo.ingresosTotales = solicitudRest.solicitud.empleo.ingresosFijos + solicitudRest.solicitud.empleo.ingresosVariables
             solicitudRest.solicitud.empleo.gastosMensuales = ((datosSolicitud.empleoCliente?.gastos) ? datosSolicitud.empleoCliente?.gastos : 0)
             
-            solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
+            //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
             
-            /*datosSolicitud.documentosSolicitud.each { documento ->
-            def mapaDocto = [:]
-            mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.nombre
-            mapaDocto.contenidoBase64 = generarBase64(new File(documento.rutaDelArchivo))
-            }*/
+            datosSolicitud.documentosSolicitud?.each { documento ->
+                try{
+                    def mapaDocto = [:]
+                    mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
+                    mapaDocto.contenidoBase64 = generarBase64(new File(documento.rutaDelArchivo))
+                    solicitudRest.solicitud.documentos << mapaDocto
+                }catch(Exception e){
+                    println ("[REST] Excepción ocurrida: " + e.getMessage())
+                    println "[REST] Ocurrio un problema con el archivo con ruta $documento.rutaDelArchivo, verifiquelo por favor..."
+                }
+            }
             
-            solicitudRest.solicitud.buroDeCredito.apellidoPaterno = (datosBuroDeCredito.reporte?.apellidoPaterno ? datosBuroDeCredito.reporte?.apellidoPaterno : "")
+            def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
+            
+            if(bitacoraDeBuro){
+                solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+            }
+            
+            /*solicitudRest.solicitud.buroDeCredito.apellidoPaterno = (datosBuroDeCredito.reporte?.apellidoPaterno ? datosBuroDeCredito.reporte?.apellidoPaterno : "")
             solicitudRest.solicitud.buroDeCredito.apellidoMaterno = (datosBuroDeCredito.reporte?.apellidoMaterno ? datosBuroDeCredito.reporte?.apellidoMaterno : "")
             solicitudRest.solicitud.buroDeCredito.apellidoAdicional = (datosBuroDeCredito.reporte?.apellidoAdicional ? datosBuroDeCredito.reporte?.apellidoAdicional : "")
             solicitudRest.solicitud.buroDeCredito.primerNombre = (datosBuroDeCredito.reporte?.primerNombre ? datosBuroDeCredito.reporte?.primerNombre : "")
@@ -753,131 +786,131 @@ class SolicitudService {
             
             solicitudRest.solicitud.buroDeCredito.consultas = []
             datosBuroDeCredito.consultas.each { consulta ->
-                def mapaConsulta = [:]
-                mapaConsulta.fechaConsulta = (consulta.fechaConsulta ?: "")
-                mapaConsulta.claveDelUsuario = (consulta.claveDelUsuario ?: "")
-                mapaConsulta.nombreDelUsuario = (consulta.nombreDelUsuario ?: "")
-                mapaConsulta.numeroDeTelefono = (consulta.numeroDeTelefono ?: "")
-                mapaConsulta.tipoDeContrato = (consulta.tipoDeContrato ?: "")
-                mapaConsulta.monedaDelCredito = (consulta.monedaDelCredito ?: "")
-                mapaConsulta.importeDelContrato = (consulta.importeDelContrato ?: "")
-                mapaConsulta.tipoResponsabilidadCuenta = (consulta.tipoResponsabilidadCuenta ?: "")
-                mapaConsulta.indicadorDeClienteNuevo = (consulta.indicadorDeClienteNuevo ?: "")
-                solicitudRest.solicitud.buroDeCredito.consultas << mapaConsulta
+            def mapaConsulta = [:]
+            mapaConsulta.fechaConsulta = (consulta.fechaConsulta ?: "")
+            mapaConsulta.claveDelUsuario = (consulta.claveDelUsuario ?: "")
+            mapaConsulta.nombreDelUsuario = (consulta.nombreDelUsuario ?: "")
+            mapaConsulta.numeroDeTelefono = (consulta.numeroDeTelefono ?: "")
+            mapaConsulta.tipoDeContrato = (consulta.tipoDeContrato ?: "")
+            mapaConsulta.monedaDelCredito = (consulta.monedaDelCredito ?: "")
+            mapaConsulta.importeDelContrato = (consulta.importeDelContrato ?: "")
+            mapaConsulta.tipoResponsabilidadCuenta = (consulta.tipoResponsabilidadCuenta ?: "")
+            mapaConsulta.indicadorDeClienteNuevo = (consulta.indicadorDeClienteNuevo ?: "")
+            solicitudRest.solicitud.buroDeCredito.consultas << mapaConsulta
             }
             
             solicitudRest.solicitud.buroDeCredito.creditos = []
             datosBuroDeCredito.creditos.each { credito ->
-                def mapaCredito = [:]
-                mapaCredito.fechaActualizacion = (credito.fechaActualizacion ?: "")
-                mapaCredito.registroImpugnado = (credito.registroImpugnado ?: "")
-                mapaCredito.claveUsuario = (credito.claveUsuario ?: "")
-                mapaCredito.nombreUsuario = (credito.nombreUsuario ?: "")
-                mapaCredito.numeroTelefonoUsuario = (credito.numeroTelefonoUsuario ?: "")
-                mapaCredito.numeroDeCuenta = (credito.numeroDeCuenta ?: "")
-                mapaCredito.tipoResponsabilidadCuenta = (credito.tipoResponsabilidadCuenta ?: "")
-                mapaCredito.tipoDeCuenta = (credito.tipoDeCuenta ?: "")
-                mapaCredito.tipoContratoProducto = (credito.tipoContratoProducto ?: "")
-                mapaCredito.monedaCredito = (credito.monedaCredito ?: "")
-                mapaCredito.importeDelAvaluo = (credito.importeDelAvaluo ?: "")
-                mapaCredito.numeroPagos = (credito.numeroPagos ?: "")
-                mapaCredito.frecuenciaDePagos = (credito.frecuenciaDePagos ?: "")
-                mapaCredito.montoAPagar = (credito.montoAPagar ?: "")
-                mapaCredito.fechaAperturaDeCuenta = (credito.fechaAperturaDeCuenta ?: "")
-                mapaCredito.fechaUltimoPago = (credito.fechaUltimoPago ?: "")
-                mapaCredito.fechaUltimaCompra = (credito.fechaUltimaCompra ?: "")
-                mapaCredito.fechaCierre = (credito.fechaCierre ?: "")
-                mapaCredito.fechaDeReporteDeInformacion = (credito.fechaDeReporteDeInformacion ?: "")
-                mapaCredito.montoAReportar = (credito.montoAReportar ?: "")
-                mapaCredito.ultimaFechaConSaldoEnCero = (credito.ultimaFechaConSaldoEnCero ?: "")
-                mapaCredito.garantia = (credito.garantia ?: "")
-                mapaCredito.creditoMaximoAutorizado = (credito.creditoMaximoAutorizado ?: "")
-                mapaCredito.saldoActual = (credito.saldoActual ?: "")
-                mapaCredito.limiteCredito = (credito.limiteCredito ?: "")
-                mapaCredito.saldoVencido = (credito.saldoVencido ?: "")
-                mapaCredito.numeroDePagosVencidos = (credito.numeroDePagosVencidos ?: "")
-                mapaCredito.clasificacionPuntialidadPago = (credito.clasificacionPuntialidadPago ?: "")
-                mapaCredito.historicoPagos = (credito.historicoPagos ?: "")
-                mapaCredito.fechaMasRecienteHistoricoDePagos = (credito.fechaMasRecienteHistoricoDePagos ?: "")
-                mapaCredito.fechaMasAntiguaHistoricoDePagos = (credito.fechaMasAntiguaHistoricoDePagos ?: "")
-                mapaCredito.claveDeObservacion = (credito.claveDeObservacion ?: "")
-                mapaCredito.totalPagosReportados = (credito.totalPagosReportados ?: "")
-                mapaCredito.totalPagosConMop02 = (credito.totalPagosConMop02 ?: "")
-                mapaCredito.totalPagosConMop03 = (credito.totalPagosConMop03 ?: "")
-                mapaCredito.totalPagosConMop04 = (credito.totalPagosConMop04 ?: "")
-                mapaCredito.totalPagosConMop05oMayor = (credito.totalPagosConMop05oMayor ?: "")
-                mapaCredito.saldoEnlaMorosidadHistoricaMasAlta = (credito.saldoEnlaMorosidadHistoricaMasAlta ?: "")
-                mapaCredito.fechaEnlaMorosidadHistoricaMasAlta = (credito.fechaEnlaMorosidadHistoricaMasAlta ?: "")
-                mapaCredito.clasificacionPuntualidadPagoMopMorosidadMasAlta = (credito.clasificacionPuntualidadPagoMopMorosidadMasAlta ?: "")
-                mapaCredito.fechaInicioRestructura = (credito.fechaInicioRestructura ?: "")
-                mapaCredito.montoUltimoPago = (credito.montoUltimoPago ?: "")
-                solicitudRest.solicitud.buroDeCredito.creditos << mapaCredito
+            def mapaCredito = [:]
+            mapaCredito.fechaActualizacion = (credito.fechaActualizacion ?: "")
+            mapaCredito.registroImpugnado = (credito.registroImpugnado ?: "")
+            mapaCredito.claveUsuario = (credito.claveUsuario ?: "")
+            mapaCredito.nombreUsuario = (credito.nombreUsuario ?: "")
+            mapaCredito.numeroTelefonoUsuario = (credito.numeroTelefonoUsuario ?: "")
+            mapaCredito.numeroDeCuenta = (credito.numeroDeCuenta ?: "")
+            mapaCredito.tipoResponsabilidadCuenta = (credito.tipoResponsabilidadCuenta ?: "")
+            mapaCredito.tipoDeCuenta = (credito.tipoDeCuenta ?: "")
+            mapaCredito.tipoContratoProducto = (credito.tipoContratoProducto ?: "")
+            mapaCredito.monedaCredito = (credito.monedaCredito ?: "")
+            mapaCredito.importeDelAvaluo = (credito.importeDelAvaluo ?: "")
+            mapaCredito.numeroPagos = (credito.numeroPagos ?: "")
+            mapaCredito.frecuenciaDePagos = (credito.frecuenciaDePagos ?: "")
+            mapaCredito.montoAPagar = (credito.montoAPagar ?: "")
+            mapaCredito.fechaAperturaDeCuenta = (credito.fechaAperturaDeCuenta ?: "")
+            mapaCredito.fechaUltimoPago = (credito.fechaUltimoPago ?: "")
+            mapaCredito.fechaUltimaCompra = (credito.fechaUltimaCompra ?: "")
+            mapaCredito.fechaCierre = (credito.fechaCierre ?: "")
+            mapaCredito.fechaDeReporteDeInformacion = (credito.fechaDeReporteDeInformacion ?: "")
+            mapaCredito.montoAReportar = (credito.montoAReportar ?: "")
+            mapaCredito.ultimaFechaConSaldoEnCero = (credito.ultimaFechaConSaldoEnCero ?: "")
+            mapaCredito.garantia = (credito.garantia ?: "")
+            mapaCredito.creditoMaximoAutorizado = (credito.creditoMaximoAutorizado ?: "")
+            mapaCredito.saldoActual = (credito.saldoActual ?: "")
+            mapaCredito.limiteCredito = (credito.limiteCredito ?: "")
+            mapaCredito.saldoVencido = (credito.saldoVencido ?: "")
+            mapaCredito.numeroDePagosVencidos = (credito.numeroDePagosVencidos ?: "")
+            mapaCredito.clasificacionPuntialidadPago = (credito.clasificacionPuntialidadPago ?: "")
+            mapaCredito.historicoPagos = (credito.historicoPagos ?: "")
+            mapaCredito.fechaMasRecienteHistoricoDePagos = (credito.fechaMasRecienteHistoricoDePagos ?: "")
+            mapaCredito.fechaMasAntiguaHistoricoDePagos = (credito.fechaMasAntiguaHistoricoDePagos ?: "")
+            mapaCredito.claveDeObservacion = (credito.claveDeObservacion ?: "")
+            mapaCredito.totalPagosReportados = (credito.totalPagosReportados ?: "")
+            mapaCredito.totalPagosConMop02 = (credito.totalPagosConMop02 ?: "")
+            mapaCredito.totalPagosConMop03 = (credito.totalPagosConMop03 ?: "")
+            mapaCredito.totalPagosConMop04 = (credito.totalPagosConMop04 ?: "")
+            mapaCredito.totalPagosConMop05oMayor = (credito.totalPagosConMop05oMayor ?: "")
+            mapaCredito.saldoEnlaMorosidadHistoricaMasAlta = (credito.saldoEnlaMorosidadHistoricaMasAlta ?: "")
+            mapaCredito.fechaEnlaMorosidadHistoricaMasAlta = (credito.fechaEnlaMorosidadHistoricaMasAlta ?: "")
+            mapaCredito.clasificacionPuntualidadPagoMopMorosidadMasAlta = (credito.clasificacionPuntualidadPagoMopMorosidadMasAlta ?: "")
+            mapaCredito.fechaInicioRestructura = (credito.fechaInicioRestructura ?: "")
+            mapaCredito.montoUltimoPago = (credito.montoUltimoPago ?: "")
+            solicitudRest.solicitud.buroDeCredito.creditos << mapaCredito
             }
             
             solicitudRest.solicitud.buroDeCredito.direcciones = []
             datosBuroDeCredito.direcciones.each { direccion ->
-                def mapaDireccion = [:]
-                mapaDireccion.direccionPrimeraLinea = (direccion.direccionPrimeraLinea ?: "")
-                mapaDireccion.direccionSegundaLinea = (direccion.direccionSegundaLinea ?: "")
-                mapaDireccion.colonia = (direccion.colonia ?: "")
-                mapaDireccion.municipio = (direccion.municipio ?: "")
-                mapaDireccion.ciudad = (direccion.ciudad ?: "")
-                mapaDireccion.estado = (direccion.estado ?: "")
-                mapaDireccion.codigoPostal = (direccion.codigoPostal ?: "")
-                mapaDireccion.fechaResidencia = (direccion.fechaResidencia ?: "")
-                mapaDireccion.numeroTelefono = (direccion.numeroTelefono ?: "")
-                mapaDireccion.extensionTelefono = (direccion.extensionTelefono ?: "")
-                mapaDireccion.numeroFax = (direccion.numeroFax ?: "")
-                mapaDireccion.tipoDomicilio = (direccion.tipoDomicilio ?: "")
-                mapaDireccion.indicadorEspecialDomicilio = (direccion.indicadorEspecialDomicilio ?: "")
-                solicitudRest.solicitud.buroDeCredito.direcciones << mapaDireccion
+            def mapaDireccion = [:]
+            mapaDireccion.direccionPrimeraLinea = (direccion.direccionPrimeraLinea ?: "")
+            mapaDireccion.direccionSegundaLinea = (direccion.direccionSegundaLinea ?: "")
+            mapaDireccion.colonia = (direccion.colonia ?: "")
+            mapaDireccion.municipio = (direccion.municipio ?: "")
+            mapaDireccion.ciudad = (direccion.ciudad ?: "")
+            mapaDireccion.estado = (direccion.estado ?: "")
+            mapaDireccion.codigoPostal = (direccion.codigoPostal ?: "")
+            mapaDireccion.fechaResidencia = (direccion.fechaResidencia ?: "")
+            mapaDireccion.numeroTelefono = (direccion.numeroTelefono ?: "")
+            mapaDireccion.extensionTelefono = (direccion.extensionTelefono ?: "")
+            mapaDireccion.numeroFax = (direccion.numeroFax ?: "")
+            mapaDireccion.tipoDomicilio = (direccion.tipoDomicilio ?: "")
+            mapaDireccion.indicadorEspecialDomicilio = (direccion.indicadorEspecialDomicilio ?: "")
+            solicitudRest.solicitud.buroDeCredito.direcciones << mapaDireccion
             }
             
             solicitudRest.solicitud.buroDeCredito.empleos = []
             datosBuroDeCredito.empleos.each { empleo ->
-                def mapaEmpleo = [:]
-                mapaEmpleo.razonSocial = (empleo.razonSocial ?: "")
-                mapaEmpleo.direccionLinea1 = (empleo.direccionLinea1 ?: "")
-                mapaEmpleo.direccionLinea2 = (empleo.direccionLinea2 ?: "")
-                mapaEmpleo.colonia = (empleo.colonia ?: "")
-                mapaEmpleo.municipio = (empleo.municipio ?: "")
-                mapaEmpleo.ciudad = (empleo.ciudad ?: "")
-                mapaEmpleo.estado = (empleo.estado ?: "")
-                mapaEmpleo.codigoPostal = (empleo.codigoPostal ?: "")
-                mapaEmpleo.numeroTelefonico = (empleo.numeroTelefonico ?: "")
-                mapaEmpleo.extensionTelefonica = (empleo.extensionTelefonica ?: "")
-                mapaEmpleo.numeroFax = (empleo.numeroFax ?: "")
-                mapaEmpleo.cargo = (empleo.cargo ?: "")
-                mapaEmpleo.fechaContratacion = (empleo.fechaContratacion ?: "")
-                mapaEmpleo.claveMonedaPago = (empleo.claveMonedaPago ?: "")
-                mapaEmpleo.sueldo = (empleo.sueldo ?: "")
-                mapaEmpleo.periodoDePago = (empleo.periodoDePago ?: "")
-                mapaEmpleo.numeroEmpleado = (empleo.numeroEmpleado ?: "")
-                mapaEmpleo.fechaUltimoDiaEmpleo = (empleo.fechaUltimoDiaEmpleo ?: "")
-                mapaEmpleo.fechaReporteEmpleo = (empleo.fechaReporteEmpleo ?: "")
-                mapaEmpleo.fechaVerificacionEmpleo = (empleo.fechaVerificacionEmpleo ?: "")
-                mapaEmpleo.modoVerificacion = (empleo.modoVerificacion ?: "")
-                solicitudRest.solicitud.buroDeCredito.empleos << mapaEmpleo
+            def mapaEmpleo = [:]
+            mapaEmpleo.razonSocial = (empleo.razonSocial ?: "")
+            mapaEmpleo.direccionLinea1 = (empleo.direccionLinea1 ?: "")
+            mapaEmpleo.direccionLinea2 = (empleo.direccionLinea2 ?: "")
+            mapaEmpleo.colonia = (empleo.colonia ?: "")
+            mapaEmpleo.municipio = (empleo.municipio ?: "")
+            mapaEmpleo.ciudad = (empleo.ciudad ?: "")
+            mapaEmpleo.estado = (empleo.estado ?: "")
+            mapaEmpleo.codigoPostal = (empleo.codigoPostal ?: "")
+            mapaEmpleo.numeroTelefonico = (empleo.numeroTelefonico ?: "")
+            mapaEmpleo.extensionTelefonica = (empleo.extensionTelefonica ?: "")
+            mapaEmpleo.numeroFax = (empleo.numeroFax ?: "")
+            mapaEmpleo.cargo = (empleo.cargo ?: "")
+            mapaEmpleo.fechaContratacion = (empleo.fechaContratacion ?: "")
+            mapaEmpleo.claveMonedaPago = (empleo.claveMonedaPago ?: "")
+            mapaEmpleo.sueldo = (empleo.sueldo ?: "")
+            mapaEmpleo.periodoDePago = (empleo.periodoDePago ?: "")
+            mapaEmpleo.numeroEmpleado = (empleo.numeroEmpleado ?: "")
+            mapaEmpleo.fechaUltimoDiaEmpleo = (empleo.fechaUltimoDiaEmpleo ?: "")
+            mapaEmpleo.fechaReporteEmpleo = (empleo.fechaReporteEmpleo ?: "")
+            mapaEmpleo.fechaVerificacionEmpleo = (empleo.fechaVerificacionEmpleo ?: "")
+            mapaEmpleo.modoVerificacion = (empleo.modoVerificacion ?: "")
+            solicitudRest.solicitud.buroDeCredito.empleos << mapaEmpleo
             }
             
             solicitudRest.solicitud.buroDeCredito.refCred = []
             datosBuroDeCredito.refCred.each { ref ->
-                def mapaRef = [:]
-                mapaRef.numeroCuenta = (ref.numeroCuenta ?: "")
-                mapaRef.claveUsuario = (ref.claveUsuario ?: "")
-                mapaRef.nombreUsuario = (ref.nombreUsuario ?: "")
-                solicitudRest.solicitud.buroDeCredito.refCred << mapaRef
+            def mapaRef = [:]
+            mapaRef.numeroCuenta = (ref.numeroCuenta ?: "")
+            mapaRef.claveUsuario = (ref.claveUsuario ?: "")
+            mapaRef.nombreUsuario = (ref.nombreUsuario ?: "")
+            solicitudRest.solicitud.buroDeCredito.refCred << mapaRef
             }
             
             solicitudRest.solicitud.buroDeCredito.sintetiza = []
             datosBuroDeCredito.sintetiza.each { sintesis ->
-                def mapaSintesis = [:]
-                mapaSintesis.plantillaSolicitada = (sintesis.plantillaSolicitada ?: "")
-                mapaSintesis.identificador = (sintesis.identificador ?: "")
-                mapaSintesis.numeroCaracteristica = (sintesis.numeroCaracteristica ?: "")
-                mapaSintesis.valorCaracteristica = (sintesis.valorCaracteristica ?: "")
-                mapaSintesis.codigoError = (sintesis.codigoError ?: "")
-                solicitudRest.solicitud.buroDeCredito.refCred = [] << mapaSintesis
+            def mapaSintesis = [:]
+            mapaSintesis.plantillaSolicitada = (sintesis.plantillaSolicitada ?: "")
+            mapaSintesis.identificador = (sintesis.identificador ?: "")
+            mapaSintesis.numeroCaracteristica = (sintesis.numeroCaracteristica ?: "")
+            mapaSintesis.valorCaracteristica = (sintesis.valorCaracteristica ?: "")
+            mapaSintesis.codigoError = (sintesis.codigoError ?: "")
+            solicitudRest.solicitud.buroDeCredito.refCred = [] << mapaSintesis
             }
             
             solicitudRest.solicitud.buroDeCredito.resumenBuroCredito = [:]
@@ -924,7 +957,7 @@ class SolicitudService {
             solicitudRest.solicitud.buroDeCredito.resumenBuroCredito.fechaAperturaMasRecienteDespachoCobranza = (datosBuroDeCredito.resumen?.fechaAperturaMasRecienteDespachoCobranza ? datosBuroDeCredito.resumen?.fechaAperturaMasRecienteDespachoCobranza : "")
             solicitudRest.solicitud.buroDeCredito.resumenBuroCredito.numeroSolicitudesInformeBuroPorDespachoCobranza = (datosBuroDeCredito.resumen?.numeroSolicitudesInformeBuroPorDespachoCobranza ? datosBuroDeCredito.resumen?.numeroSolicitudesInformeBuroPorDespachoCobranza : "")
             solicitudRest.solicitud.buroDeCredito.resumenBuroCredito.fechaConsultaMasRecientePorDespachoCobranza = (datosBuroDeCredito.resumen?.fechaConsultaMasRecientePorDespachoCobranza ? datosBuroDeCredito.resumen?.fechaConsultaMasRecientePorDespachoCobranza : "")
-            
+             */
             respuesta << solicitudRest.solicitud
         }
         respuesta
@@ -999,6 +1032,7 @@ class SolicitudService {
         datosSolicitud.identificadores.idSolicitud = solicitud.id
         datosSolicitud.identificadores.idCliente = cliente.id
         datosSolicitud.identificadores.idProductoSolicitud = productoSolicitud.id
+        datosSolicitud.pasoFormulario.llenadoPrevio = true
         datosSolicitud.pasoFormulario.cliente = [:]
         datosSolicitud.pasoFormulario.cliente.nombre = cliente.nombre
         datosSolicitud.pasoFormulario.cliente.apellidoPaterno = cliente.apellidoPaterno
@@ -1014,7 +1048,7 @@ class SolicitudService {
         datosSolicitud.pasoFormulario.cliente.rfc = cliente.rfc
         datosSolicitud.pasoFormulario.cliente.estadoCivil = (cliente.estadoCivil ? cliente.estadoCivil.id : null)
         datosSolicitud.pasoFormulario.cliente.nivelEducativo = (cliente.nivelEducativo ? cliente.nivelEducativo.id : null)
-        datosSolicitud.pasoFormulario.cliente.dependientesEconomicos = cliente.dependientesEconomicos
+        datosSolicitud.pasoFormulario.cliente.dependientesEconomicos = (cliente.dependientesEconomicos ? cliente.dependientesEconomicos as int : 0)
         datosSolicitud.pasoFormulario.cliente.nombreDelConyugue = cliente.nombreDelConyugue
         datosSolicitud.pasoFormulario.cliente.regimenMatrimonial = (cliente.regimenMatrimonial ? cliente.regimenMatrimonial.id : null)
         datosSolicitud.pasoFormulario.cliente.apellidoPaternoDelConyugue = cliente.apellidoPaternoDelConyugue

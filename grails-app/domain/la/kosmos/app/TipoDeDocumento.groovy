@@ -11,12 +11,14 @@ class TipoDeDocumento implements Serializable{
     TipoDeIngresos tipoDeIngresos
     String nombreMapeo
     int cantidadSolicitada = 1
+    String codigo
 
     static constraints = {
         nombre (blank: false)
         formatosPermitidos (nullable: false)
         tipoDeIngresos (nullable: true)
         nombreMapeo (blank: false)
+        codigo (nullable: true)
     }
     
     static mapping = {

@@ -59,6 +59,7 @@ class SolicitudController {
             session.shortUrl = null
             session.token = null
             session.cargarImagen = null
+            session.archivoTemporal = null
             //redirect action: "formulario"
             redirect action: "test"
         } else {
@@ -650,6 +651,17 @@ class SolicitudController {
                 camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
                 parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
                 if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                    def catalogos = [:]
+                    if(session["pasoFormulario"]?.direccionCliente?.colonia){
+                        def cp = session["pasoFormulario"]?.direccionCliente?.codigoPostal?.replaceFirst('^0+(?!$)', '')
+                        def codigo = CodigoPostal.findAllWhere(codigo: cp)
+                        if(codigo){
+                            catalogos.colonia = codigo*.asentamiento as Set
+                            def estado = codigo.municipio.estado.getAt(0)
+                            catalogos.sucursal = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: estado)
+                        }
+                    }
+
                     statusDeSolicitud = StatusDeSolicitud.get(1)
                     session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
                     modelo = [configuracion: configuracion,
@@ -657,7 +669,8 @@ class SolicitudController {
                         pasosDeSolicitud: pasosDeSolicitud,
                         parrafos: parrafos,
                         pasoActual:pasoActual,
-                        generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
+                        generales:  (session["pasoFormulario"]?:session.respuestaEphesoft),
+                        catalogos: catalogos]
                 } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
                     statusDeSolicitud = StatusDeSolicitud.get(3)
                     modelo = [configuracion: configuracion,
@@ -696,9 +709,21 @@ class SolicitudController {
                 }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
                     statusDeSolicitud = StatusDeSolicitud.get(4)
                     def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                    def sucursal
+                    if(solicitud?.sucursal){
+                        sucursal = [:]
+                        sucursal.coordenadas = [:]
+                        sucursal.id = solicitud.sucursal.id
+                        sucursal.coordenadas.lat = solicitud.sucursal.latitud
+                        sucursal.coordenadas.lng = solicitud.sucursal.longitud
+                        sucursal.ubicacion = solicitud.sucursal.ubicacion
+                        sucursal.numeroDeSucursal = solicitud.sucursal.numeroDeSucursal
+                        sucursal.nombre = solicitud.sucursal.nombre
+                    }
                     def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
                     modelo = [configuracion: configuracion,
                         productoSolicitud: productoSolicitud,
+                        sucursal: sucursal as JSON,
                         pasoActual:pasoActual]
                 }
                 if(session.identificadores?.idSolicitud){
@@ -769,11 +794,16 @@ class SolicitudController {
             session.yaUsoLogin = true
         }
         if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
-            def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
-            respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud ,respuestaPreliminar.dossierId)
-
-        }else if (params.docType == "UtilityBill"){
-            respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos,params.docType);
+            if(params.cara == "frente") {
+                def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
+                respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud ,respuestaPreliminar.dossierId)
+            } else if (params.cara == "vuelta") {
+                respuesta = [:]
+                respuesta.vigente = true
+                respuesta.exito = true
+            }
+        }else if (params.docType == "reciboCfe" || params.docType == "reciboTelmex"){
+            respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos, "UtilityBill");
             ephesoft = true
         } else if (params.docType == "ComprobanteDeIngresos"){
             def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
@@ -803,8 +833,9 @@ class SolicitudController {
     }
     
     def consultarBuroDeCredito(){
-		ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
-		//println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
+        ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
+        println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
+        println "session.identificadores: " + session.identificadores
         def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
         render respuesta as JSON
     }
@@ -878,8 +909,29 @@ class SolicitudController {
                 respuesta.asentamientos = respuesta.asentamientos.sort{ it }
                 respuesta.municipio =  codigo*.municipio[0]
                 respuesta.estado = respuesta.municipio.estado
+                def sucursales = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: respuesta.estado)
+                if(sucursales) {
+                    respuesta.sucursales = []
+                    sucursales.each { sucursal ->
+                        def registro = [:]
+                        registro.coordenadas = [:]
+                        registro.id = sucursal.id
+                        registro.coordenadas.lat = sucursal.latitud
+                        registro.coordenadas.lng = sucursal.longitud
+                        registro.ubicacion = sucursal.ubicacion
+                        registro.numeroDeSucursal = sucursal.numeroDeSucursal
+                        registro.nombre = sucursal.nombre
+                        respuesta.sucursales << registro
+                    }
+                } else {
+                    respuesta.sucursales = [:]
+                    respuesta.sucursales.noHaySucursales = true
+                    respuesta.sucursales.mensaje = ""
+                }
             } else {
-                
+                respuesta.sucursales = [:]
+                respuesta.sucursales.noHaySucursales = true
+                respuesta.sucursales.mensaje = ""
             }
         }
         println "Regresando: " + respuesta
@@ -982,8 +1034,20 @@ class SolicitudController {
             if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
                 if(siguientePaso == 1 && !session["pasoFormulario"]?.llenadoPrevio){
                     session.noChecarCamposLlenos = true
+                } else {
+                    session.noChecarCamposLlenos = null
                 }
-                println ("PasoFormulario: " + session["pasoFormulario"] + ", OCR: " + session.respuestaEphesoft)
+                def catalogos = [:]
+                if(session["pasoFormulario"]?.direccionCliente?.colonia){
+                    def cp = session["pasoFormulario"].direccionCliente?.codigoPostal?.replaceFirst('^0+(?!$)', '')
+                    def codigo = CodigoPostal.findAllWhere(codigo: cp)
+                    if(codigo){
+                        catalogos.colonia = codigo*.asentamiento as Set
+                        def estado = codigo.municipio.estado.getAt(0)
+                        catalogos.sucursal = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: estado)
+                    }
+                }
+                println ("PasoFormulario: " + session["pasoFormulario"] + ", OCR: " + session.respuestaEphesoft + " - Catalogos: " + catalogos)
                 modelo = [configuracion: configuracion,
                     logueado: session.yaUsoLogin,
                     pasosDeSolicitud: pasosDeSolicitud,
@@ -991,7 +1055,8 @@ class SolicitudController {
                     avance: avance as JSON,
                     ponderaciones: ponderaciones as JSON,
                     pasoActual:pasoActual,
-                    generales:  (session["pasoFormulario"]?:session.respuestaEphesoft)]
+                    generales:  (session["pasoFormulario"]?:session.respuestaEphesoft),
+                    catalogos: catalogos]
             } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
                 modelo = [configuracion: configuracion,
                     pasosDeSolicitud: pasosDeSolicitud,
@@ -1031,7 +1096,24 @@ class SolicitudController {
                     documentosSubidos: session.tiposDeDocumento,
                     productoSolicitud: productoSolicitud]
             }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
-                //TODO guardar todo
+                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                def sucursal
+                if(solicitud?.sucursal){
+                    sucursal = [:]
+                    sucursal.coordenadas = [:]
+                    sucursal.coordenadas.lat = solicitud.sucursal.latitud
+                    sucursal.coordenadas.lng = solicitud.sucursal.longitud
+                    sucursal.ubicacion = solicitud.sucursal.ubicacion
+                    sucursal.numeroDeSucursal = solicitud.sucursal.numeroDeSucursal
+                    sucursal.nombre = solicitud.sucursal.nombre
+                }
+                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                modelo = [configuracion: configuracion,
+                    productoSolicitud: productoSolicitud,
+                    avance: avance as JSON,
+                    ponderaciones: ponderaciones as JSON,
+                    sucursal: sucursal as JSON,
+                    pasoActual:pasoActual]
             }
             modelo
         } else{
@@ -1092,19 +1174,24 @@ class SolicitudController {
         if(params.cp){
             def cp = params.cp?.replaceFirst('^0+(?!$)', '')
             def codigo = CodigoPostal.findWhere(codigo: cp)
-            def sucursales = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: codigo.municipio.estado)
-            if(sucursales) {
-                respuesta = []
-                sucursales.each { sucursal ->
-                    def registro = [:]
-                    registro.coordenadas = [:]
-                    registro.id = sucursal.id
-                    registro.coordenadas.lat = sucursal.latitud
-                    registro.coordenadas.lng = sucursal.longitud
-                    registro.ubicacion = sucursal.ubicacion
-                    registro.numeroDeSucursal = sucursal.numeroDeSucursal
-                    registro.nombre = sucursal.nombre
-                    respuesta << registro
+            if(codigo){
+                def sucursales = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: codigo.municipio.estado)
+                if(sucursales) {
+                    respuesta = []
+                    sucursales.each { sucursal ->
+                        def registro = [:]
+                        registro.coordenadas = [:]
+                        registro.id = sucursal.id
+                        registro.coordenadas.lat = sucursal.latitud
+                        registro.coordenadas.lng = sucursal.longitud
+                        registro.ubicacion = sucursal.ubicacion
+                        registro.numeroDeSucursal = sucursal.numeroDeSucursal
+                        registro.nombre = sucursal.nombre
+                        respuesta << registro
+                    }
+                } else {
+                    respuesta.noHaySucursales = true
+                    respuesta.mensaje = ""
                 }
             } else {
                 respuesta.noHaySucursales = true

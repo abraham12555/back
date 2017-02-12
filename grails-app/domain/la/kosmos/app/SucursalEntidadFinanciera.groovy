@@ -32,6 +32,6 @@ class SucursalEntidadFinanciera implements Serializable{
     }
     
     String toString () {
-        "${nombre}"
+        "Sucursal ${numeroDeSucursal} - ${nombre}"
     }
 }

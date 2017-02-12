@@ -432,6 +432,9 @@ class EphesoftService {
         }else {
             mapa.error = respuestaEphesoft.Error.Cause.text()
         }
+        if(mapa != true) {
+            mapa.error = true
+        }
         return mapa
      
     }

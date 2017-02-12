@@ -32,7 +32,7 @@
                     <div class="col6 col12-mob floatLeft">
                         <div class="paddingAside10">
                             <div class="idType pasaporteId iconButton whiteBox pointer">
-                                <img class="icon40" src="${resource(dir:'images', file:'passport.png')}" alt="passport" title="passport"/>
+                                <img class="icon40" src="${resource(dir:'images', file:'passport.png')}" alt="passport"/>
                                 <p class="gray font18 letterspacing1.1  iconButtonTxt">PASAPORTE</p>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                     <div class="col6 col12-mob floatLeft">
                         <div class="paddingAside10">
                             <div class="idType ineId iconButton whiteBox pointer">
-                                <img class="icon40 " src="${resource(dir:'images', file:'identification.png')}" alt="identification" title="identification"/>
+                                <img class="icon40 " src="${resource(dir:'images', file:'identification.png')}" alt="identification"/>
                                 <p class="gray font18 letterspacing1.1 iconButtonTxt">IDENTIFICACIÓN (IFE)</p>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                         <h1 class="font16 gray letterspacing1">Te damos algunos tips para saber como subir el <span id="nombreDeLaIdentificacion" class="headingColor"></span></h1>
                     </div>
                     <div class="autoMargin clearFix">
-                        <div class="col4 col12-mob col floatLeft idDocs">
+                        <div class="col4 col12-mob floatLeft idDocs">
                             <h4 class="gray font16 fontWeight400 letterspacing1">LEGIBLE</h4>
                             <img class="imgResponsive" src="${resource(dir:'images', file:'id1.png')}" alt="id1"/>
                         </div>
@@ -74,11 +74,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col4 col8-mob col6-tab width354 autoMargin marginTop40 marginBottom40">
+                <!--<div class="col4 col8-mob col6-tab width354 autoMargin marginTop40 marginBottom40">
                     <div class="darkGray center radius100 paddingTop12 paddingBottom12">
                         <span class="font16 colorWhite center letterspacing1">VER MÁS TIPS</span>
                     </div>
-                </div>
+                </div>-->
                 <div class="clearFix">
 
                     <div class="col4 col12-tab floatLeft">
@@ -111,16 +111,6 @@
                             </a>
                         </div>
                     </div>
-                    <div id="progresoConsultaIds" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
-                        <div class="spinner">
-                            <div class="rect1"></div>
-                            <div class="rect2"></div>
-                            <div class="rect3"></div>
-                            <div class="rect4"></div>
-                            <div class="rect5"></div>
-                        </div>
-                        <center><span style="color: #71758d;">Estamos subiendo tu identificación, espera por favor...</span></center>
-                    </div>
                 </div>
             </div>
         </div>
@@ -140,8 +130,8 @@
                             <g:if test="${session.cargarImagen}">
                                 <svg class="checkmark" style="margin: 5% auto;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
                                 <p class="gray center marginTop20 marginBottom30"> ¡El mensaje fue enviado correctamente!</p>
-                                </g:if>
-                                <g:else>
+                            </g:if>
+                            <g:else>
                                 <p class="gray center marginTop20 marginBottom30">
                                     Da click en el siguiente botón y reciba la URL personalizada en tu smartphone.
                                 </p>
@@ -278,6 +268,84 @@
                 </div>
                 <div class="clearFloat"></div>
             </div>
+        </div>
+        <div id="subirArchivoIds" class="file_uploads" style="display: none;">
+            <div id="archivoFrente" class="col12 clearFix">
+                <div class="clearFix padding20">
+                    <div  id="divDropzoneIds" class="col6 col12-mob floatLeft mobileDiv" style="margin-top: 10%;">
+                        <div id="uploadFrente" class="col folderContainer center span_4_of_4">
+                            <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder"/>
+                            <p class="center letterspacing1.4 gray">Identificación (Frente)</p>
+                            <div data-box="archivoFrente" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
+                                <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">subir</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col6 col12-mob floatLeft mobileDiv2">
+                        <div class="padding20">
+                            <p class="marginTop30 upldsTitles gray font16 fontWeight500 latterspacing1">
+                                VE LOS EJEMPLOS
+                            </p>
+
+                            <div class="width350">
+                                <img class="upldsWebimage imgResponsive" src="${resource(dir:'images', file:'ids.png')}" alt="ids" />
+                            </div>
+                            <div class="marginLeft30">
+                                <p class=" upldsTitles colorRed font16 latterspacing1">
+                                    Tu documento no puede tener tachaduras o
+                                </p>
+                                <p class="upldsTitles colorRed font16 latterspacing1">
+                                    enmendaduras y debe ser legible y claro
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearFloat"></div>
+            </div>
+            <div id="archivoVuelta" class="col12 clearFix" style="display: none;">
+                <div class="clearFix padding20">
+                    <div  id="divDropzoneIds" class="col6 col12-mob floatLeft mobileDiv" style="margin-top: 10%;">
+                        <div id="uploadVuelta" class="col folderContainer center span_4_of_4">
+                            <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder"/>
+                            <p class="center letterspacing1.4 gray">Identificación (Vuelta)</p>
+                            <div data-box="archivoVuelta" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
+                                <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">subir</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col6 col12-mob floatLeft mobileDiv2">
+                        <div class="padding20">
+                            <p class="marginTop30 upldsTitles gray font16 fontWeight500 latterspacing1">
+                                VE LOS EJEMPLOS
+                            </p>
+
+                            <div class="width350">
+                                <img class="upldsWebimage imgResponsive" src="${resource(dir:'images', file:'ids.png')}" alt="ids" />
+                            </div>
+                            <div class="marginLeft30">
+                                <p class=" upldsTitles colorRed font16 latterspacing1">
+                                    Tu documento no puede tener tachaduras o
+                                </p>
+                                <p class="upldsTitles colorRed font16 latterspacing1">
+                                    enmendaduras y debe ser legible y claro
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearFloat"></div>
+            </div>
+        </div>
+        <div id="progresoConsultaIds" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+            <center><span style="color: #71758d;">Estamos subiendo tu identificación, espera por favor...</span></center>
         </div>
         <div class="idLastStep hide">
         </div>

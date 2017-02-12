@@ -19,6 +19,7 @@ class CotizadorController {
         session.datosLogin = null
         session.yaUsoLogin = null
         session.pasosDelCliente = null
+        session.archivoTemporal = null
         session["pasoFormulario"] = null
         session["consultaBancos"] = null
         session["consultaBuro"] = null
