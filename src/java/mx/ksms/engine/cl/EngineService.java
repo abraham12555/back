@@ -26,24 +26,21 @@ public interface EngineService {
     /**
      * 
      * @param agRiesgoocupacion
+     * @param cantidadIntegrantesFamilia
+     * @param cuotaCredito
+     * @param solicitudId
      * @param ingresosFijosMensuales
-     * @param indicapasnovista
-     * @param d1RConoe1ConOe
-     * @param agMopPeorSis
-     * @param rDSPTOCONSIS
-     * @param cuotaMensualCredito
+     * @param gastosDeAlquiler
+     * @param tipoDeVivienda
+     * @param otrosIngresos
+     * @param cadenaBc
      * @param agPlazo
      * @param edad
      * @param ingresosVariablesMensuales
      * @param riesgogeografico
-     * @param rCOBSLDPAS12
      * @param agEstadocivil
-     * @param rCUOINGFU
      * @param agServicio
      * @param agPeriodicidad
-     * @param rCONOE1CONOE
-     * @param gastosMensuales
-     * @param agHist12Hist24
      * @param antigvivienda
      * @return
      *     returns mx.ksms.engine.cl.EngineDataOutput
@@ -53,45 +50,39 @@ public interface EngineService {
     @RequestWrapper(localName = "calculateProb", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateProb")
     @ResponseWrapper(localName = "calculateProbResponse", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateProbResponse")
     public EngineDataOutput calculateProb(
+        @WebParam(name = "solicitudId", targetNamespace = "")
+        String solicitudId,
         @WebParam(name = "riesgogeografico", targetNamespace = "")
         String riesgogeografico,
         @WebParam(name = "ag_plazo", targetNamespace = "")
         Integer agPlazo,
         @WebParam(name = "ag_periodicidad", targetNamespace = "")
         String agPeriodicidad,
-        @WebParam(name = "R_CUO_INGFU", targetNamespace = "")
-        Double rCUOINGFU,
         @WebParam(name = "ag_riesgoocupacion", targetNamespace = "")
         String agRiesgoocupacion,
         @WebParam(name = "EDAD", targetNamespace = "")
         Integer edad,
-        @WebParam(name = "R_COB_SLDPAS12", targetNamespace = "")
-        Double rCOBSLDPAS12,
         @WebParam(name = "ag_estadocivil", targetNamespace = "")
         String agEstadocivil,
         @WebParam(name = "ag_servicio", targetNamespace = "")
         String agServicio,
-        @WebParam(name = "INDICAPASNOVISTA", targetNamespace = "")
-        String indicapasnovista,
         @WebParam(name = "ANTIGVIVIENDA", targetNamespace = "")
         Integer antigvivienda,
-        @WebParam(name = "ag_hist12_hist24", targetNamespace = "")
-        Double agHist12Hist24,
-        @WebParam(name = "ag_mop_peor_sis", targetNamespace = "")
-        Double agMopPeorSis,
-        @WebParam(name = "R_DSPTOCON_SIS", targetNamespace = "")
-        Double rDSPTOCONSIS,
-        @WebParam(name = "d1_r_conoe1con_oe", targetNamespace = "")
-        String d1RConoe1ConOe,
-        @WebParam(name = "R_CONOE1CON_OE", targetNamespace = "")
-        Double rCONOE1CONOE,
         @WebParam(name = "ingresos_fijos_mensuales", targetNamespace = "")
         Double ingresosFijosMensuales,
         @WebParam(name = "ingresos_variables_mensuales", targetNamespace = "")
         Double ingresosVariablesMensuales,
-        @WebParam(name = "gastos_mensuales", targetNamespace = "")
-        Double gastosMensuales,
-        @WebParam(name = "cuota_mensual_credito", targetNamespace = "")
-        Double cuotaMensualCredito);
+        @WebParam(name = "otros_ingresos", targetNamespace = "")
+        Double otrosIngresos,
+        @WebParam(name = "cantidad_integrantes_familia", targetNamespace = "")
+        Integer cantidadIntegrantesFamilia,
+        @WebParam(name = "gastos_de_alquiler", targetNamespace = "")
+        Double gastosDeAlquiler,
+        @WebParam(name = "cuota_credito", targetNamespace = "")
+        Double cuotaCredito,
+        @WebParam(name = "tipo_de_vivienda", targetNamespace = "")
+        Integer tipoDeVivienda,
+        @WebParam(name = "cadena_bc", targetNamespace = "")
+        String cadenaBc);
 
 }

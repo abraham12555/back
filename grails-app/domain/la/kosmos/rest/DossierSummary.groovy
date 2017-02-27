@@ -13,15 +13,19 @@ class DossierSummary implements Serializable{
     String documentId
     String nameOfCallback
     String dossierId
+    String reference
+    String respuestaOriginal
     
     static constraints = {
         solicitud nullable: true
         status nullable: false
-        value nullable: false
-        source nullable: false
+        value nullable: true
+        source nullable: true
         documentId nullable: false
         nameOfCallback nullable: false
         dossierId nullable: false
+        reference nullable: true
+        respuestaOriginal nullable: false
     }
     
     static mapping = {

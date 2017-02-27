@@ -19,15 +19,48 @@ class ClassificationResultController {
     def save(){
         println "prueba: " + params + " - request: " + request?.JSON
         
-        def mapaRespuesta = [givenname:request?.JSON?.Data?.Givenname,
-            surname:request?.JSON?.Data?.Surname, name:request?.JSON?.Data?.Name,
-            dateOfExpiry:request?.JSON?.Data?.DateOfExpiry, address:request?.JSON?.Data?.Address,
-            address1:request?.JSON?.Data?.Address1, address2:request?.JSON?.Data?.Address2,
-            gender:request?.JSON?.Data?.Gender, clave:request?.JSON?.Data?.Clave, dateOfBirth:request?.JSON?.Data?.DateOfBirth,
-            issuingYear:request?.JSON?.Data?.IssuingYear, yearOfExpiry:request?.JSON?.DynamicData?.YearOfExpiry,
-            districtCode:request?.JSON?.DynamicData?.DistrictCode, curp:request?.JSON?.DynamicData?.Curp,
-            parentNameFather:request?.JSON?.DynamicData?.ParentNameFather, parentNameMother:request?.JSON?.DynamicData?.ParentNameMother, 
-            documentId:request?.JSON?.DocumentId, dossierId:request?.JSON?.DossierId, reference:request?.JSON?.ClientReference]
+        def mapaRespuesta = [:]
+        
+        if(request?.JSON?.DocumentType == "Passport"){
+            def apellidos = separarApellidos(request?.JSON?.MachineReadableZone?.Name)
+            mapaRespuesta = [givenname:request?.JSON?.MachineReadableZone?.GivenNames,
+                surname:request?.JSON?.MachineReadableZone?.Name,
+                name: (request?.JSON?.MachineReadableZone?.GivenNames + " " + request?.JSON?.MachineReadableZone?.Name),
+                dateOfExpiry: request?.JSON?.MachineReadableZone?.DateOfExpiry,
+                address: null,
+                address1: null,
+                address2: null,
+                gender: request?.JSON?.MachineReadableZone?.Gender,
+                clave: request?.JSON?.MachineReadableZone?.DocumentNumber,
+                dateOfBirth: request?.JSON?.MachineReadableZone?.DateOfBirth,
+                issuingYear: null,
+                yearOfExpiry: null,
+                districtCode: null,
+                curp: null,
+                parentNameFather: apellidos?.apellidoPaterno,
+                parentNameMother: apellidos?.apellidoMaterno, 
+                documentId: request?.JSON?.DocumentId,
+                dossierId: request?.JSON?.DossierId,
+                reference: request?.JSON?.ClientReference]
+        } else {
+            mapaRespuesta = [givenname:request?.JSON?.Data?.Givenname,
+                surname:request?.JSON?.Data?.Surname,
+                name:request?.JSON?.Data?.Name,
+                dateOfExpiry:request?.JSON?.Data?.DateOfExpiry,
+                address:request?.JSON?.Data?.Address,
+                address1:request?.JSON?.Data?.Address1,
+                address2:request?.JSON?.Data?.Address2,
+                gender:request?.JSON?.Data?.Gender,
+                clave:request?.JSON?.Data?.Clave, dateOfBirth:request?.JSON?.Data?.DateOfBirth,
+                issuingYear:request?.JSON?.Data?.IssuingYear,
+                yearOfExpiry:request?.JSON?.DynamicData?.YearOfExpiry,
+                districtCode:request?.JSON?.DynamicData?.DistrictCode,
+                curp:request?.JSON?.DynamicData?.Curp,
+                parentNameFather:request?.JSON?.DynamicData?.ParentNameFather,
+                parentNameMother:request?.JSON?.DynamicData?.ParentNameMother, 
+                documentId:request?.JSON?.DocumentId, dossierId:request?.JSON?.DossierId,
+                reference:request?.JSON?.ClientReference]
+        }
         
         def cambios = new ClassificationResult()
         cambios.givenname = mapaRespuesta.givenname
@@ -53,5 +86,39 @@ class ClassificationResultController {
         
         def respuesta = [statusCode:'200', success:'true']
         render respuesta as JSON
+    }
+    
+    def separarApellidos(def apellidosJuntos){
+        def resultado = []
+        def apellidos = [:]
+        def apellido = ""
+        def tokens = apellidosJuntos?.tokenize()
+        def longitud
+        def particulas = ["DE", "LA", "DEL", "LOS", "LAS", "SAN", "Y", "-"]
+        tokens?.each {
+            if(particulas.contains(it)){
+                apellido += (it + " ")
+            } else {
+                apellido += it
+                resultado << apellido
+                apellido = ""
+            }
+        }
+        def x = 0
+        apellidos.apellidoPaterno = ""
+        apellidos.apellidoMaterno = ""
+        resultado.each {
+            if(x == 0){
+                apellidos.apellidoPaterno = it
+            } else if (x >= 1){
+                apellidos.apellidoMaterno += it
+                if((x+1) < resultado.size()){
+                    apellidos.apellidoMaterno += " "
+                }
+            }
+            x++
+        }
+        println apellidos
+        apellidos
     }
 }

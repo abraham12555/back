@@ -9,10 +9,13 @@ class PlazoProducto implements Serializable{
     float importeMinimo
     float importeMaximo
     int saltoSlider = 1
+    boolean usarListaDePlazos = false
+    String plazosPermitidos
     
     static constraints = {
         periodicidad (nullable: false)
         producto (nullable: false)
+        plazosPermitidos (nullable: true)
     }
     
     static mapping = {

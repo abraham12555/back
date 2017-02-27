@@ -25,6 +25,7 @@
         <g:external dir="js" file="dashboard.js" />
         <!--<g:external dir="css" file="jquery-ui-kosmos.css" />-->
         <g:external dir="js" file="jquery-ui-kosmos.js" />
+        <g:external dir="js" file="googleanalytics.js" />
         <g:layoutHead/>
     </head>
     <body>

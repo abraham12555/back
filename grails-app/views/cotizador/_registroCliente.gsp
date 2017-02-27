@@ -2,36 +2,50 @@
     <div class="row">
         <div id="first_name_form" class="input-field col12">
             <label for="first_name" class="darkBluetitle">¿Cuál es tu nombre? <small class="darkBluetitle">(Como aparece en tu INE)</small></label>
-            <input id="first_name" name="nombre" type="text" onkeypress="return event.keyCode != 13;">
+            <input id="first_name" name="nombre" type="text" maxlength="80" onkeypress="return event.keyCode != 13;">
             <p class="sigPaso" style="margin-top: 10px; text-align: center;">
                 <span class='goBtn'>Siguiente</span>
             </p>
+            <p style="margin-top: 10px;" id="leyendaNombre"></p>
         </div>
 
         <div id="email_form" class="input-field col12 hide">
             <label for="email" class="darkBluetitle" >¿A qué correo electrónico enviamos tu confirmación?</label>
-            <input id="email" type="text" name="email" onkeypress="return event.keyCode != 13;">
-            <p class="sigPaso" style="margin-top: 10px; text-align: center;">
-                <span class='goBtn'>Siguiente</span>
-            </p>
+            <input id="email" type="text" name="email" maxlength="60" onkeypress="return event.keyCode != 13;">
+            <div style="text-align: center;">
+                <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
+                    <span class="backBtn">Anterior</span>
+                </p>
+                <p class="sigPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
+                    <span class="goBtn">Siguiente</span>
+                </p>
+            </div>
+            <p style="margin-top: 10px;" id="leyendaEmail"></p>
         </div>
 
         <div id="phone_form" class="input-field col12 hide">
             <label for="phone" class="darkBluetitle">¿Cuál es tu celular con clave lada?</label>
-            <input id="phone" type="text" name="telefonoCelular" class="validate" data-mask="99-99-99-99-99" onkeypress="return event.keyCode != 13;">
-            <p class="sigPaso" style="margin-top: 10px; text-align: center;">
-                <span class='goBtn'>Siguiente</span>
-            </p>
+            <input id="phone" type="text" name="telefonoCelular" class="validate" data-mask="99-99-99-99-99" maxlength="14" onkeypress="return event.keyCode != 13;">
+            <div style="text-align: center;">
+                <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
+                    <span class="backBtn">Anterior</span>
+                </p>
+                <p class="sigPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
+                    <span class="goBtn">Siguiente</span>
+                </p>
+            </div>
             <p style="margin-top: 10px;" id="leyendaTel"><small class="darkBluetitle">* Enviaremos un código de confirmación al número ingresado.</small></p>
         </div>
         <div id="codigo_form" class="input-field col12 hide">
             <label for="codigo" class="darkBluetitle">Ingresa el código que acabas de recibir por SMS</label>
-            <input id="codigo" type="text" name="codigoConfirmacion" class="validate" onkeypress="return event.keyCode != 13;">
-            <p class="sigPaso" style="margin-top: 10px; text-align: center;">
-                <span class='goBtn'>Siguiente</span>
-            </p>
+            <input id="codigo" type="text" name="codigoConfirmacion" class="validate" maxlength="5" onkeypress="return event.keyCode != 13;">
+            <div style="text-align: center;">
+                <p style="display: inline-block;margin-top: 10px; text-align: center;" id="editarTelefono"></p>
+                <p class="sigPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
+                    <span class='goBtn'>Siguiente</span>
+                </p>
+            </div>
             <p style="margin-top: 10px;" id="leyendaCodigo"></p>
-            <p style="margin-top: 10px; text-align: center; display: none;" id="editarTelefono"></p>
         </div>
         <div id="thanks" class="hide">
             <strong>¡Gracias <span id="registeredName" class="darkBluetitle"></span>!</strong>

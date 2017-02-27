@@ -11,7 +11,7 @@ class SucursalEntidadFinanciera implements Serializable{
     Estado estado
     Double latitud
     Double longitud
-    //Riesgo Geografico
+    RiesgoGeografico riesgoGeografico
     
     boolean activo = true
     
@@ -25,6 +25,7 @@ class SucursalEntidadFinanciera implements Serializable{
         estado (nullable: true)
         latitud (nullable: true)
         longitud (nullable: true)
+        riesgoGeografico (nullable: true)
     }
     
     static mapping = {

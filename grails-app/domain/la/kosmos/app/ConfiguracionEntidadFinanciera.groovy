@@ -27,6 +27,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     ConfiguracionBuroCredito configuracionBuroCredito
     boolean aplicacionVariable = false
     boolean navegacionLibre = false
+    boolean subirDocumentosOpcional = false
+    int pasoLimiteNavegacionLibre
     
     static constraints = {
         nombreComercial (blank:false)

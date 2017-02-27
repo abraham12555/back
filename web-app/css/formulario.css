@@ -1609,6 +1609,16 @@ body{
     width: -webkit-calc(100% - 50px);
 }
 
+.errorBoxRed{
+    max-width: 977px;
+    min-height: 60px;
+    border-radius: 100px;
+    background-color: #fb5e48;
+    box-shadow: 0 0 4px 0 #fb5e48;
+    width: calc(100% - 50px);
+    width: -webkit-calc(100% - 50px);
+}
+
 .idDocs img{
     width: 90%;
 }

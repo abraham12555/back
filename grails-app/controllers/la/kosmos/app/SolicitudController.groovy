@@ -60,6 +60,7 @@ class SolicitudController {
             session.token = null
             session.cargarImagen = null
             session.archivoTemporal = null
+            session.estadoRecuperacion = null
             //redirect action: "formulario"
             redirect action: "test"
         } else {
@@ -585,158 +586,227 @@ class SolicitudController {
 
     def cambiarPaso(){
 	println params
-        if(params.siguientePaso){
-            def modelo = [:]
-            def siguientePaso =  params.siguientePaso as int
-            def pasoAnterior =  params.pasoAnterior as int
-            def ultimoPaso
-            def pasosDeSolicitud
-            def parrafos
-            def pasoActual
-            def entidadFinanciera = session.ef
-            def configuracion = session.configuracion
-            session.noChecarCamposLlenos = null
-            if(session.pasosDelCliente){
-                pasosDeSolicitud = session.pasosDelCliente
-            } else {
-                pasosDeSolicitud = PasoSolicitudEntidadFinanciera.findAllWhere(entidadFinanciera: entidadFinanciera);
-                pasosDeSolicitud = pasosDeSolicitud.sort { it.numeroDePaso }
-            }
-            pasosDeSolicitud.each { paso ->
-                if(paso.numeroDePaso == siguientePaso){
-                    pasoActual = paso
-                } else if(paso.numeroDePaso == pasoAnterior){
-                    ultimoPaso = paso
+        if(session.ef){
+            if(params.siguientePaso){
+                def modelo = [:]
+                def siguientePaso =  params.siguientePaso as int
+                def pasoAnterior =  params.pasoAnterior as int
+                def ultimoPaso
+                def pasosDeSolicitud
+                def parrafos
+                def pasoActual
+                def entidadFinanciera = session.ef
+                def configuracion = session.configuracion
+                session.noChecarCamposLlenos = null
+                if(session.pasosDelCliente){
+                    pasosDeSolicitud = session.pasosDelCliente
+                } else {
+                    pasosDeSolicitud = PasoSolicitudEntidadFinanciera.findAllWhere(entidadFinanciera: entidadFinanciera);
+                    pasosDeSolicitud = pasosDeSolicitud.sort { it.numeroDePaso }
                 }
-            }
-            println("Paso a avanzar: " + pasoActual);
-            session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl)
-            if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
-                if(!session.identificadores){
-                    session.identificadores = [:]
+                pasosDeSolicitud.each { paso ->
+                    if(paso.numeroDePaso == siguientePaso){
+                        pasoActual = paso
+                    } else if(paso.numeroDePaso == pasoAnterior){
+                        ultimoPaso = paso
+                    }
                 }
-                if(pasoAnterior == 1){
-                    session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
-                    session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
-                    session.identificadores.idProductoSolicitud = solicitudService.registrarProducto(session.cotizador, session.identificadores)
-                    session.identificadores.idSolicitudTemporal = null
-                    if(session.archivoTemporal){
-                        def archivoMovido = solicitudService.moverDocumento(session.archivoTemporal, session.identificadores.idSolicitud)
-                        if(archivoMovido){
-                            session.archivoTemporal = null
+                println("Paso a avanzar: " + pasoActual);
+                session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl)
+                if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
+                    if(!session.identificadores){
+                        session.identificadores = [:]
+                    }
+                    if(!session.estadoRecuperacion){
+                        session.estadoRecuperacion = [:]
+                    }
+                    if(pasoAnterior == 1){
+                        if(!session.identificadores.idCliente) {
+                            session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
+                        }
+                        if(!session.identificadores.idSolicitud) {
+                            session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
+                        }
+                        if(!session.identificadores.idProductoSolicitud) {
+                            session.identificadores.idProductoSolicitud = solicitudService.registrarProducto(session.cotizador, session.identificadores)
+                        }
+                        session.identificadores.idSolicitudTemporal = null
+                        if(session.archivoTemporal){
+                            def archivoMovido = solicitudService.moverDocumento(session.archivoTemporal, session.identificadores.idSolicitud)
+                            if(archivoMovido){
+                                session.archivoTemporal = null
+                            }
+                        }
+                        if(session.identificadores.idProductoSolicitud){
+                            session.estadoRecuperacion.paso1 = true
+                        }
+                    } else if(pasoAnterior == 2){
+                        if(!session.identificadores.idDireccion) {
+                            session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
+                        }
+                        if(session.identificadores.idDireccion){
+                            session.estadoRecuperacion.paso2 = true
+                        }
+                    } else if(pasoAnterior == 3){
+                        if(!session.identificadores.idEmpleo) {
+                            session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
+                        }
+                        session.identificadores.idReferencia1 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia1
+                        session.identificadores.idReferencia2 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia2
+                        session.identificadores.idReferencia3 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia3
+                        if(session.identificadores.idEmpleo) {
+                            session.estadoRecuperacion.paso3 = true
                         }
                     }
-                } else if(pasoAnterior == 2){
-                    session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
-                } else if(pasoAnterior == 3){
-                    session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
-                    session.identificadores.idReferencia1 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia1
-                    session.identificadores.idReferencia2 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia2
-                    session.identificadores.idReferencia3 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia3
                 }
-            }
-            if(siguientePaso == 0){
-                session.invalidate()
-                render modelo as JSON
-            } else {
-                def respuestaMotor
-                if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
-                    if(session.identificadores){
-                        def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
-                        respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
-                    }
-                }
-                def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
-                def statusDeSolicitud
-                camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
-                parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
-                if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
-                    def catalogos = [:]
-                    if(session["pasoFormulario"]?.direccionCliente?.colonia){
-                        def cp = session["pasoFormulario"]?.direccionCliente?.codigoPostal?.replaceFirst('^0+(?!$)', '')
-                        def codigo = CodigoPostal.findAllWhere(codigo: cp)
-                        if(codigo){
-                            catalogos.colonia = codigo*.asentamiento as Set
-                            def estado = codigo.municipio.estado.getAt(0)
-                            catalogos.sucursal = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: estado)
+                if(siguientePaso == 0){
+                    session.invalidate()
+                    render modelo as JSON
+                } else {
+                    if(session[ultimoPaso.tipoDePaso.nombre].guardadoCorrecto) {
+                        def respuestaMotor
+                        if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
+                            if(session.identificadores){
+                                def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
+                                respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
+                                if(respuestaMotor){
+                                    def resultadoMotorDeDecision = new ResultadoMotorDeDecision()
+                                    resultadoMotorDeDecision.solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
+                                    resultadoMotorDeDecision.probabilidadDeMora = respuestaMotor.probabilidadDeMora
+                                    resultadoMotorDeDecision.razonDeCobertura = respuestaMotor.razonDeCobertura
+                                    resultadoMotorDeDecision.dictamenDePerfil = respuestaMotor.dictamenDePerfil
+                                    resultadoMotorDeDecision.dictamenCapacidadDePago = respuestaMotor.dictamenCapacidadDePago
+                                    resultadoMotorDeDecision.dictamenConjunto = respuestaMotor.dictamenConjunto
+                                    resultadoMotorDeDecision.dictamenDePoliticas = respuestaMotor.dictamenDePoliticas
+                                    resultadoMotorDeDecision.dictamenFinal = respuestaMotor.dictamenFinal
+                                    resultadoMotorDeDecision.log = respuestaMotor.log
+                                    if(resultadoMotorDeDecision.save(flush: true)) {
+                                        session.identificadores.idMotor = resultadoMotorDeDecision.id
+                                    } else {
+                                        if (resultadoMotorDeDecision.hasErrors()) {
+                                            resultadoMotorDeDecision.errors.allErrors.each {
+                                                println it
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    println("No se recibio respuesta del Motor de Decisión....")
+                                }
+                            }
                         }
-                    }
+                        def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
+                        def statusDeSolicitud
+                        camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
+                        parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
+                        if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
+                            def catalogos = [:]
+                            if(session["pasoFormulario"]?.direccionCliente?.colonia){
+                                def cp = session["pasoFormulario"]?.direccionCliente?.codigoPostal?.replaceFirst('^0+(?!$)', '')
+                                def codigo = CodigoPostal.findAllWhere(codigo: cp)
+                                if(codigo){
+                                    catalogos.colonia = codigo*.asentamiento as Set
+                                    def estado = codigo.municipio.estado.getAt(0)
+                                    catalogos.sucursal = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: estado)
+                                }
+                            }
+                            println "Cambiar Paso: " + session.estadoRecuperacion
+                            if(pasoAnterior > siguientePaso) {
+                                session["pasoFormulario"]?.llenadoPrevio = true
+                            } else if(session["pasoFormulario"] && session.estadoRecuperacion){
+                                session["pasoFormulario"].llenadoPrevio = session.estadoRecuperacion."paso$siguientePaso"
+                            } else {
+                                session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
+                            }
 
-                    statusDeSolicitud = StatusDeSolicitud.get(1)
-                    session["pasoFormulario"]?.llenadoPrevio = session.respuestaEphesoft?.llenadoPrevio
-                    modelo = [configuracion: configuracion,
-                        logueado: session.yaUsoLogin,
-                        pasosDeSolicitud: pasosDeSolicitud,
-                        parrafos: parrafos,
-                        pasoActual:pasoActual,
-                        generales:  (session["pasoFormulario"]?:session.respuestaEphesoft),
-                        catalogos: catalogos]
-                } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
-                    statusDeSolicitud = StatusDeSolicitud.get(3)
-                    modelo = [configuracion: configuracion,
-                        pasosDeSolicitud: pasosDeSolicitud,
-                        pasoActual:pasoActual, 
-                        generales: session["consultaBancaria"]]
-                } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
-                    def municipio = null
-                    if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
-                        municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
+                            statusDeSolicitud = StatusDeSolicitud.get(1)
+                            modelo = [configuracion: configuracion,
+                                logueado: session.yaUsoLogin,
+                                pasosDeSolicitud: pasosDeSolicitud,
+                                parrafos: parrafos,
+                                pasoActual:pasoActual,
+                                generales:  (session["pasoFormulario"]?:session.respuestaEphesoft),
+                                catalogos: catalogos]
+                        } else if(pasoActual.tipoDePaso.nombre == "consultaBancaria"){
+                            statusDeSolicitud = StatusDeSolicitud.get(3)
+                            modelo = [configuracion: configuracion,
+                                pasosDeSolicitud: pasosDeSolicitud,
+                                pasoActual:pasoActual, 
+                                generales: session["consultaBancaria"]]
+                        } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
+                            def municipio = null
+                            if(session["pasoFormulario"] != null && session["pasoFormulario"].direccionCliente?.delegacion){
+                                municipio= Municipio.findById(session["pasoFormulario"].direccionCliente?.delegacion as long)
+                            }
+                            statusDeSolicitud = StatusDeSolicitud.get(3)
+                            def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
+                            modelo = [configuracion: configuracion,
+                                logueado: session.yaUsoLogin,
+                                pasosDeSolicitud: pasosDeSolicitud,
+                                pasoActual:pasoActual,
+                                generales: session["consultaBuro"],
+                                personales: session["pasoFormulario"].cliente,
+                                direccion: session["pasoFormulario"].direccionCliente,
+                                municipio:municipio,
+                                razonSocial:configuracion.razonSocial,
+                                reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
+                                errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
+                        } else if(pasoActual.tipoDePaso.nombre == "resumen"){
+                            statusDeSolicitud = StatusDeSolicitud.get(2)
+                            def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                            def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                            def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
+                            modelo = [configuracion: configuracion,
+                                pasosDeSolicitud: pasosDeSolicitud,
+                                pasoActual:pasoActual,
+                                mediosDeContacto: mediosDeContacto,
+                                productoSolicitud:productoSolicitud,
+                                documentosSubidos: session.tiposDeDocumento]
+                        }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
+                            statusDeSolicitud = StatusDeSolicitud.get(4)
+                            def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                            def resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: solicitud)
+                            def sucursal
+                            if(solicitud?.sucursal){
+                                sucursal = [:]
+                                sucursal.coordenadas = [:]
+                                sucursal.id = solicitud.sucursal.id
+                                sucursal.coordenadas.lat = solicitud.sucursal.latitud
+                                sucursal.coordenadas.lng = solicitud.sucursal.longitud
+                                sucursal.ubicacion = solicitud.sucursal.ubicacion
+                                sucursal.numeroDeSucursal = solicitud.sucursal.numeroDeSucursal
+                                sucursal.nombre = solicitud.sucursal.nombre
+                            }
+                            def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                            modelo = [configuracion: configuracion,
+                                productoSolicitud: productoSolicitud,
+                                sucursal: sucursal as JSON,
+                                resultadoMotorDeDecision: resultadoMotorDeDecision,
+                                pasoActual:pasoActual]
+                        }
+                        if(session.identificadores?.idSolicitud){
+                            def solicitud = SolicitudDeCredito.get(session.identificadores?.idSolicitud)
+                            solicitud.ultimoPaso = pasoActual.numeroDePaso
+                            solicitud.statusDeSolicitud = statusDeSolicitud
+                            solicitud.save(flush: true)
+                        }
+                        render(template: pasoActual.tipoDePaso.nombre, model: modelo)
+                    } else {
+                        def respuesta = [:]
+                        respuesta.error = true
+                        respuesta.mensaje = "No se han registrado los datos enviados, verifica que se han llenado los campos requeridos."
+                        render respuesta as JSON
                     }
-                    statusDeSolicitud = StatusDeSolicitud.get(3)
-                    def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
-                    modelo = [configuracion: configuracion,
-                        logueado: session.yaUsoLogin,
-                        pasosDeSolicitud: pasosDeSolicitud,
-                        pasoActual:pasoActual,
-                        generales: session["consultaBuro"],
-                        personales: session["pasoFormulario"].cliente,
-                        direccion: session["pasoFormulario"].direccionCliente,
-                        municipio:municipio,
-                        razonSocial:configuracion.razonSocial,
-                        reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
-                        errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
-                } else if(pasoActual.tipoDePaso.nombre == "resumen"){
-                    statusDeSolicitud = StatusDeSolicitud.get(2)
-                    def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
-                    def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
-                    def mediosDeContacto = MedioDeContacto.findAllWhere(entidadFinanciera: session.ef, activo: true)
-                    modelo = [configuracion: configuracion,
-                        pasosDeSolicitud: pasosDeSolicitud,
-                        pasoActual:pasoActual,
-                        mediosDeContacto: mediosDeContacto,
-                        productoSolicitud:productoSolicitud,
-                        documentosSubidos: session.tiposDeDocumento]
-                }  else if(pasoActual.tipoDePaso.nombre == "confirmacion"){
-                    statusDeSolicitud = StatusDeSolicitud.get(4)
-                    def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
-                    def sucursal
-                    if(solicitud?.sucursal){
-                        sucursal = [:]
-                        sucursal.coordenadas = [:]
-                        sucursal.id = solicitud.sucursal.id
-                        sucursal.coordenadas.lat = solicitud.sucursal.latitud
-                        sucursal.coordenadas.lng = solicitud.sucursal.longitud
-                        sucursal.ubicacion = solicitud.sucursal.ubicacion
-                        sucursal.numeroDeSucursal = solicitud.sucursal.numeroDeSucursal
-                        sucursal.nombre = solicitud.sucursal.nombre
-                    }
-                    def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
-                    modelo = [configuracion: configuracion,
-                        productoSolicitud: productoSolicitud,
-                        sucursal: sucursal as JSON,
-                        pasoActual:pasoActual]
                 }
-                if(session.identificadores?.idSolicitud){
-                    def solicitud = SolicitudDeCredito.get(session.identificadores?.idSolicitud)
-                    solicitud.ultimoPaso = pasoActual.numeroDePaso
-                    solicitud.statusDeSolicitud = statusDeSolicitud
-                    solicitud.save(flush: true)
-                }
-                render(template: pasoActual.tipoDePaso.nombre, model: modelo)
+            } else {
+                println ("Que segun no llego el parametro del paso siguiente :S")
+                redirect action: "test"
             }
         } else {
-            println ("Que segun no llego el parametro del paso siguiente :S")
-            redirect action: "test"
+            session.invalidate()
+            def respuesta = [:]
+            respuesta.sesionExpirada = true
+            respuesta.mensaje = "Tu sesión ha expirado. Para continuar con tu solicitud da click en el siguiente botón."
+            render respuesta as JSON
         }
     }
     
@@ -801,6 +871,7 @@ class SolicitudController {
                 respuesta = [:]
                 respuesta.vigente = true
                 respuesta.exito = true
+                ocr = false
             }
         }else if (params.docType == "reciboCfe" || params.docType == "reciboTelmex"){
             respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos, "UtilityBill");
@@ -813,7 +884,7 @@ class SolicitudController {
             respuesta.error = false
             ocr = false
         }
-        if(!respuesta?.error || respuesta?.vigente == true){
+        if((!respuesta?.error || respuesta?.vigente == true) && !respuesta.motivosRechazo){
             if(ocr){
                 session["pasoFormulario"] = respuesta
             }
@@ -994,7 +1065,7 @@ class SolicitudController {
                     session.shortUrl = resultadoShortener.jsonGoogle.id
                 }
             }
-            println entidadFinanciera
+
             if(session.pasosDelCliente){
                 pasosDeSolicitud = session.pasosDelCliente
             } else {
@@ -1006,6 +1077,13 @@ class SolicitudController {
             } else {
                 siguientePaso = 1
             }
+            
+            println "Test: " + session.estadoRecuperacion
+            if(session["pasoFormulario"] && session.estadoRecuperacion){
+                println ("---->" + "paso$siguientePaso" + " = " + session.estadoRecuperacion."paso$siguientePaso" )
+                session["pasoFormulario"].llenadoPrevio = session.estadoRecuperacion."paso$siguientePaso"
+            }
+            
             pasosDeSolicitud.each { paso ->
                 if(paso.numeroDePaso == siguientePaso){
                     pasoActual = paso
@@ -1137,6 +1215,8 @@ class SolicitudController {
                 session["pasoFormulario"] = datosRecuperados.pasoFormulario
                 session.token = datosRecuperados.token
                 session.shortUrl = datosRecuperados.shortUrl
+                session.estadoRecuperacion = datosRecuperados.llenado
+                println "Estado: " + session.estadoRecuperacion
                 params.keySet().asList().each { params.remove(it) }
                 forward action:'test', params: [paso: ultimoPaso]
             } else {

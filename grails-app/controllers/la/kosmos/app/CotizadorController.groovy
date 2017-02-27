@@ -27,6 +27,7 @@ class CotizadorController {
         session.token = null
         session.sid = null
         session.cargarImagen = null
+        session.estadoRecuperacion = null
         String domain = new URL(request.getRequestURL().toString()).getHost();
         println "Dominio: " + domain
         //if(params.ef){
@@ -90,7 +91,7 @@ class CotizadorController {
             def rubroProducto = RubroDeAplicacionProducto.findWhere(rubro: rubro, tipoDeIngresos: documento.tipoDeIngresos, haTenidoAtrasos: haTenidoAtrasos)
             respuesta.exito = true
             respuesta.idProducto = rubroProducto.producto.id
-            respuesta.nombreDelProducto = rubroProducto.producto.nombreDelProducto
+            respuesta.nombreDelProducto = rubroProducto.producto.tituloEnCotizador
             respuesta.idTipoDeIngresos = documento.tipoDeIngresos.id
             respuesta.montoMaximo = rubroProducto.producto.montoMaximo
             respuesta.montoMinimo = rubroProducto.producto.montoMinimo
@@ -120,12 +121,20 @@ class CotizadorController {
             if(plazo){
                 respuesta.exito = true
                 respuesta.idPlazoProducto = plazo[0].id
-                respuesta.plazoMinimo = plazo[0].plazoMinimo
-                respuesta.plazoMaximo = plazo[0].plazoMaximo
                 respuesta.importeMinimo = plazo[0].importeMinimo
                 respuesta.importeMaximo = plazo[0].importeMaximo
                 respuesta.periodicidad = plazo[0].periodicidad
-                respuesta.saltoSlider = plazo[0].saltoSlider
+                if(plazo[0].usarListaDePlazos){
+                    respuesta.saltoSlider = 1
+                    respuesta.plazoMinimo = 0
+                    respuesta.plazoMaximo = ((plazo[0].plazosPermitidos ? ((plazo[0].plazosPermitidos.tokenize(',')).size() - 1) : 0))
+                } else {
+                    respuesta.plazoMinimo = plazo[0].plazoMinimo
+                    respuesta.plazoMaximo = plazo[0].plazoMaximo
+                    respuesta.saltoSlider = plazo[0].saltoSlider
+                }
+                respuesta.usarListaDePlazos = plazo[0].usarListaDePlazos
+                respuesta.plazosPermitidos = ((plazo[0].plazosPermitidos ? (plazo[0].plazosPermitidos.tokenize(',')) : null))
             }
         } else {
             respuesta.error = true
@@ -139,6 +148,7 @@ class CotizadorController {
         def respuesta = [:]
         if(params.productoId){
             def montoSeguro = 0
+            def montoAsistencia = 0
             def producto = Producto.get(params.productoId as long);
             def montoFinanciado = params.montoFinanciado as float
             def periodicidad = Periodicidad.get(params.periodicidadId as long)
@@ -146,18 +156,31 @@ class CotizadorController {
             println "Periodos Anuales: " + periodicidad.periodosAnuales
             def plazoAnual = (((params.plazoElegido as int)/(periodicidad.periodosAnuales)) as float).round()
             println "Plazo Anual: " + plazoAnual
-            def seguro = SeguroSobreDeuda.executeQuery('Select s from SeguroSobreDeuda s Where s.entidadFinanciera.id = :entidadFinancieraId and s.montoInicial <= :monto and s.montoFinal >= :monto and s.plazoAnual = :plazoAnual',[entidadFinancieraId: (params.entidadFinancieraId as long), monto: montoFinanciado, plazoAnual: plazoAnual])
+            def seguro = SeguroSobreDeuda.executeQuery('Select s from SeguroSobreDeuda s Where s.entidadFinanciera.id = :entidadFinancieraId and ((s.montoInicial <= :monto and s.montoFinal >= :monto) or (s.montoInicial <= :monto and s.montoFinal = 0)) and s.plazoAnual = :plazoAnual',[entidadFinancieraId: (params.entidadFinancieraId as long), monto: montoFinanciado, plazoAnual: plazoAnual])
             if(seguro && seguro?.size() > 0){
-                montoSeguro = seguro[0].importeSeguro
+                def seguroAplicable = seguro[0]
+                if(seguroAplicable.porcentaje){
+                    montoSeguro = (montoFinanciado * seguroAplicable.porcentajeSeguro) 
+                } else {
+                    montoSeguro = seguroAplicable.importeSeguro
+                }
+                montoSeguro = montoSeguro.round(3)
+            }
+            def asistencia = ServicioDeAsistencia.executeQuery('Select s from ServicioDeAsistencia s Where s.entidadFinanciera.id = :entidadFinancieraId and ((s.montoInicial <= :monto and s.montoFinal >= :monto) or (s.montoInicial <= :monto and s.montoFinal = 0)) and s.plazoAnual = :plazoAnual',[entidadFinancieraId: (params.entidadFinancieraId as long), monto: montoFinanciado, plazoAnual: plazoAnual])
+            if(asistencia && asistencia?.size() > 0){
+                def asistenciaAplicable = asistencia[0]
+                println ("Encontrado: " + asistenciaAplicable.montoInicial + " - " + asistenciaAplicable.montoFinal)
+                montoAsistencia = asistenciaAplicable.importeAsistencia
             }
             println "Seguro: " + montoSeguro
+            println "Asistencia: " + montoAsistencia
             def tasaAnual = producto.tasaDeInteres * 12
             println "Tasa Anual: " + tasaAnual
             def tasaConI = tasaAnual*1.16
             println "Tasa con i: " + tasaConI
             def n = params.plazoElegido as int
             println "n: " + n
-            def c = (montoFinanciado + montoSeguro)
+            def c = (montoFinanciado + montoSeguro + montoAsistencia)
             println "c: " + c
             def i = (tasaConI/periodicidad.periodosAnuales)
             println "i: " + i
@@ -224,7 +247,7 @@ class CotizadorController {
         def respuesta = [:]
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '') 
-            String sid = smsService.sendSMS(toPhone)
+            String sid = "12345"//smsService.sendSMS(toPhone)
             if(sid){
                 session.sid = sid
                 respuesta.mensajeEnviado = true
@@ -244,7 +267,7 @@ class CotizadorController {
             String randomCodeTmp = params.codigoConfirmacion
             println "session.sid -> " + sid
             println "randomCodeTmp -> " + randomCodeTmp
-            boolean result = smsService.verify(sid, randomCodeTmp)
+            boolean result = true//smsService.verify(sid, randomCodeTmp)
             respuesta.resultado = result
         } else {
             respuesta.incorrecto = true

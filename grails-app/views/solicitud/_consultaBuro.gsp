@@ -124,9 +124,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="col3 col4-mob floatLeft">
-                    <p class="buttonM colorGreen radius100 colorWhite letterspacing1.5"  id="clock">2:00 min</p>
-                </div>
             </div>
         </div>
     </form>

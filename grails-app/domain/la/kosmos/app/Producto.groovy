@@ -16,6 +16,7 @@ class Producto implements Serializable {
     String claveDeProducto
     Esquema esquema
     String claseIconoPaso
+    float cat = 0
 
     boolean activo = true
 

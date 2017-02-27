@@ -11,6 +11,7 @@
         <div id="pasoActual">
             <g:render template="${pasoActual?.tipoDePaso?.nombre}"/>
         </div>
+        <g:render template="savingData"/>
         <g:render template="modalIdentificaciones"/>
         <g:render template="modalComprobantes"/>
         <script>
@@ -22,6 +23,7 @@
             }
             console.log("Iniciando carga de ponderaciones");
             cargarPonderaciones('${raw(ponderaciones as String)}','${raw(avance as String)}');
+            cargarSucursales('${raw((catalogos?.sucursal as grails.converters.JSON) as String)}');
             console.log("Iniciando funciones...");
             inicializarFormulario();
             });

@@ -17,26 +17,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="solicitudId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="riesgogeografico" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="ag_plazo" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="ag_periodicidad" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="R_CUO_INGFU" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="ag_riesgoocupacion" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="EDAD" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="R_COB_SLDPAS12" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="ag_estadocivil" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="ag_servicio" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="INDICAPASNOVISTA" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="ANTIGVIVIENDA" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="ag_hist12_hist24" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
- *         &lt;element name="ag_mop_peor_sis" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
- *         &lt;element name="R_DSPTOCON_SIS" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
- *         &lt;element name="d1_r_conoe1con_oe" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="R_CONOE1CON_OE" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="ingresos_fijos_mensuales" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="ingresos_variables_mensuales" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
- *         &lt;element name="gastos_mensuales" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
- *         &lt;element name="cuota_mensual_credito" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="otros_ingresos" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="cantidad_integrantes_familia" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="gastos_de_alquiler" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="cuota_credito" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="tipo_de_vivienda" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="cadena_bc" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -47,68 +44,82 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "calculateProb", propOrder = {
+    "solicitudId",
     "riesgogeografico",
     "agPlazo",
     "agPeriodicidad",
-    "rcuoingfu",
     "agRiesgoocupacion",
     "edad",
-    "rcobsldpas12",
     "agEstadocivil",
     "agServicio",
-    "indicapasnovista",
     "antigvivienda",
-    "agHist12Hist24",
-    "agMopPeorSis",
-    "rdsptoconsis",
-    "d1RConoe1ConOe",
-    "rconoe1CONOE",
     "ingresosFijosMensuales",
     "ingresosVariablesMensuales",
-    "gastosMensuales",
-    "cuotaMensualCredito"
+    "otrosIngresos",
+    "cantidadIntegrantesFamilia",
+    "gastosDeAlquiler",
+    "cuotaCredito",
+    "tipoDeVivienda",
+    "cadenaBc"
 })
 public class CalculateProb {
 
+    protected String solicitudId;
     protected String riesgogeografico;
     @XmlElement(name = "ag_plazo")
     protected Integer agPlazo;
     @XmlElement(name = "ag_periodicidad")
     protected String agPeriodicidad;
-    @XmlElement(name = "R_CUO_INGFU")
-    protected Double rcuoingfu;
     @XmlElement(name = "ag_riesgoocupacion")
     protected String agRiesgoocupacion;
     @XmlElement(name = "EDAD")
     protected Integer edad;
-    @XmlElement(name = "R_COB_SLDPAS12")
-    protected Double rcobsldpas12;
     @XmlElement(name = "ag_estadocivil")
     protected String agEstadocivil;
     @XmlElement(name = "ag_servicio")
     protected String agServicio;
-    @XmlElement(name = "INDICAPASNOVISTA")
-    protected String indicapasnovista;
     @XmlElement(name = "ANTIGVIVIENDA")
     protected Integer antigvivienda;
-    @XmlElement(name = "ag_hist12_hist24")
-    protected Double agHist12Hist24;
-    @XmlElement(name = "ag_mop_peor_sis")
-    protected Double agMopPeorSis;
-    @XmlElement(name = "R_DSPTOCON_SIS")
-    protected Double rdsptoconsis;
-    @XmlElement(name = "d1_r_conoe1con_oe")
-    protected String d1RConoe1ConOe;
-    @XmlElement(name = "R_CONOE1CON_OE")
-    protected Double rconoe1CONOE;
     @XmlElement(name = "ingresos_fijos_mensuales")
     protected Double ingresosFijosMensuales;
     @XmlElement(name = "ingresos_variables_mensuales")
     protected Double ingresosVariablesMensuales;
-    @XmlElement(name = "gastos_mensuales")
-    protected Double gastosMensuales;
-    @XmlElement(name = "cuota_mensual_credito")
-    protected Double cuotaMensualCredito;
+    @XmlElement(name = "otros_ingresos")
+    protected Double otrosIngresos;
+    @XmlElement(name = "cantidad_integrantes_familia")
+    protected Integer cantidadIntegrantesFamilia;
+    @XmlElement(name = "gastos_de_alquiler")
+    protected Double gastosDeAlquiler;
+    @XmlElement(name = "cuota_credito")
+    protected Double cuotaCredito;
+    @XmlElement(name = "tipo_de_vivienda")
+    protected Integer tipoDeVivienda;
+    @XmlElement(name = "cadena_bc")
+    protected String cadenaBc;
+
+    /**
+     * Obtiene el valor de la propiedad solicitudId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSolicitudId() {
+        return solicitudId;
+    }
+
+    /**
+     * Define el valor de la propiedad solicitudId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSolicitudId(String value) {
+        this.solicitudId = value;
+    }
 
     /**
      * Obtiene el valor de la propiedad riesgogeografico.
@@ -183,30 +194,6 @@ public class CalculateProb {
     }
 
     /**
-     * Obtiene el valor de la propiedad rcuoingfu.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getRCUOINGFU() {
-        return rcuoingfu;
-    }
-
-    /**
-     * Define el valor de la propiedad rcuoingfu.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setRCUOINGFU(Double value) {
-        this.rcuoingfu = value;
-    }
-
-    /**
      * Obtiene el valor de la propiedad agRiesgoocupacion.
      * 
      * @return
@@ -252,30 +239,6 @@ public class CalculateProb {
      */
     public void setEDAD(Integer value) {
         this.edad = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad rcobsldpas12.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getRCOBSLDPAS12() {
-        return rcobsldpas12;
-    }
-
-    /**
-     * Define el valor de la propiedad rcobsldpas12.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setRCOBSLDPAS12(Double value) {
-        this.rcobsldpas12 = value;
     }
 
     /**
@@ -327,30 +290,6 @@ public class CalculateProb {
     }
 
     /**
-     * Obtiene el valor de la propiedad indicapasnovista.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getINDICAPASNOVISTA() {
-        return indicapasnovista;
-    }
-
-    /**
-     * Define el valor de la propiedad indicapasnovista.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setINDICAPASNOVISTA(String value) {
-        this.indicapasnovista = value;
-    }
-
-    /**
      * Obtiene el valor de la propiedad antigvivienda.
      * 
      * @return
@@ -372,126 +311,6 @@ public class CalculateProb {
      */
     public void setANTIGVIVIENDA(Integer value) {
         this.antigvivienda = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad agHist12Hist24.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getAgHist12Hist24() {
-        return agHist12Hist24;
-    }
-
-    /**
-     * Define el valor de la propiedad agHist12Hist24.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setAgHist12Hist24(Double value) {
-        this.agHist12Hist24 = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad agMopPeorSis.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getAgMopPeorSis() {
-        return agMopPeorSis;
-    }
-
-    /**
-     * Define el valor de la propiedad agMopPeorSis.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setAgMopPeorSis(Double value) {
-        this.agMopPeorSis = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad rdsptoconsis.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getRDSPTOCONSIS() {
-        return rdsptoconsis;
-    }
-
-    /**
-     * Define el valor de la propiedad rdsptoconsis.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setRDSPTOCONSIS(Double value) {
-        this.rdsptoconsis = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad d1RConoe1ConOe.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getD1RConoe1ConOe() {
-        return d1RConoe1ConOe;
-    }
-
-    /**
-     * Define el valor de la propiedad d1RConoe1ConOe.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setD1RConoe1ConOe(String value) {
-        this.d1RConoe1ConOe = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad rconoe1CONOE.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getRCONOE1CONOE() {
-        return rconoe1CONOE;
-    }
-
-    /**
-     * Define el valor de la propiedad rconoe1CONOE.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setRCONOE1CONOE(Double value) {
-        this.rconoe1CONOE = value;
     }
 
     /**
@@ -543,51 +362,147 @@ public class CalculateProb {
     }
 
     /**
-     * Obtiene el valor de la propiedad gastosMensuales.
+     * Obtiene el valor de la propiedad otrosIngresos.
      * 
      * @return
      *     possible object is
      *     {@link Double }
      *     
      */
-    public Double getGastosMensuales() {
-        return gastosMensuales;
+    public Double getOtrosIngresos() {
+        return otrosIngresos;
     }
 
     /**
-     * Define el valor de la propiedad gastosMensuales.
+     * Define el valor de la propiedad otrosIngresos.
      * 
      * @param value
      *     allowed object is
      *     {@link Double }
      *     
      */
-    public void setGastosMensuales(Double value) {
-        this.gastosMensuales = value;
+    public void setOtrosIngresos(Double value) {
+        this.otrosIngresos = value;
     }
 
     /**
-     * Obtiene el valor de la propiedad cuotaMensualCredito.
+     * Obtiene el valor de la propiedad cantidadIntegrantesFamilia.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getCantidadIntegrantesFamilia() {
+        return cantidadIntegrantesFamilia;
+    }
+
+    /**
+     * Define el valor de la propiedad cantidadIntegrantesFamilia.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setCantidadIntegrantesFamilia(Integer value) {
+        this.cantidadIntegrantesFamilia = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad gastosDeAlquiler.
      * 
      * @return
      *     possible object is
      *     {@link Double }
      *     
      */
-    public Double getCuotaMensualCredito() {
-        return cuotaMensualCredito;
+    public Double getGastosDeAlquiler() {
+        return gastosDeAlquiler;
     }
 
     /**
-     * Define el valor de la propiedad cuotaMensualCredito.
+     * Define el valor de la propiedad gastosDeAlquiler.
      * 
      * @param value
      *     allowed object is
      *     {@link Double }
      *     
      */
-    public void setCuotaMensualCredito(Double value) {
-        this.cuotaMensualCredito = value;
+    public void setGastosDeAlquiler(Double value) {
+        this.gastosDeAlquiler = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad cuotaCredito.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getCuotaCredito() {
+        return cuotaCredito;
+    }
+
+    /**
+     * Define el valor de la propiedad cuotaCredito.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setCuotaCredito(Double value) {
+        this.cuotaCredito = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tipoDeVivienda.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getTipoDeVivienda() {
+        return tipoDeVivienda;
+    }
+
+    /**
+     * Define el valor de la propiedad tipoDeVivienda.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setTipoDeVivienda(Integer value) {
+        this.tipoDeVivienda = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad cadenaBc.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCadenaBc() {
+        return cadenaBc;
+    }
+
+    /**
+     * Define el valor de la propiedad cadenaBc.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCadenaBc(String value) {
+        this.cadenaBc = value;
     }
 
 }

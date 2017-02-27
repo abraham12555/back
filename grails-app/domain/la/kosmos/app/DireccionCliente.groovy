@@ -17,6 +17,7 @@ class DireccionCliente implements Serializable{
     boolean vigente = true
     String tiempoDeVivienda
     String tiempoDeEstadia
+    float montoDeLaRenta = 0
     
     static constraints = {
         calle (blank: false)

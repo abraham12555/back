@@ -20,14 +20,6 @@
         <g:if test="${configuracion?.rutaCss}">
             <link rel="stylesheet" href="${configuracion?.rutaCss}">
         </g:if>
-        <g:external dir="js" file="sweetalert.min.js" />
-        <g:external dir="js" file="jquery-3.0.0.min.js" />
-        <g:external dir="js" file="cotizador.js" />
-        <g:external dir="js" file="registro.js" />
-        <g:external dir="js" file="jquery-ui-kosmos.js" />
-        <g:external dir="js" file="jquery-ui-touch-punch.js" />
-        <g:external dir="js" file="jasny-bootstrap.min.js" />
-        <g:external dir="js" file="jquery.mloading.js" />
         <g:layoutHead/>
     </head>
     <body class="marginBottom150">
@@ -40,4 +32,13 @@
             <g:layoutBody/>
         </section>
     </body>
+    <g:external dir="js" file="sweetalert.min.js" />
+    <g:external dir="js" file="jquery-3.0.0.min.js" />
+    <g:external dir="js" file="cotizador.js" />
+    <g:external dir="js" file="registro.js" />
+    <g:external dir="js" file="jquery-ui-kosmos.js" />
+    <g:external dir="js" file="jquery-ui-touch-punch.js" />
+    <g:external dir="js" file="jasny-bootstrap.min.js" />
+    <g:external dir="js" file="jquery.mloading.js" />
+    <g:external dir="js" file="googleanalytics.js" />
 </html>

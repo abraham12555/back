@@ -32,6 +32,8 @@ class CotizadorService {
                         mapa.nombreDelProducto = it.nombre
                         mapa.descripcion = it.descripcion
                         mapa.claseIconoPaso = it.claseIconoPaso
+                        mapa.tooltip = it.tooltip
+                        mapa.textoTooltip = it.textoTooltip
                         mapa.posicion = it.posicion
                         rubros << mapa
                     }

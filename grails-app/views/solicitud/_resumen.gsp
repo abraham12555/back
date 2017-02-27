@@ -8,8 +8,7 @@
             <img class="happines" src="${resource(dir:'images', file:'happines.png')}" alt="happines"/>
             <p class="center marginLeft24 font25 formTitleColor letterspacing2.3">¡FELICIDADES!</p>
             <p class="center marginLeft24 font16 formTitleColor letterspacing1.5 marginTop12">Has terminado tu solicitúd, estás a un click de saber tu resultado.</p>
-            <p class="center marginLeft24 font16 colorblue letterspacing1.5 marginTop12">Solo te falta subir tu documentación, toma una foto de tus documentos</p>
-            <p class="center marginLeft24 font16 colorblue letterspacing1.5 marginTop12">desde tu smartphone.</p>
+            <p class="center marginLeft24 font16 colorblue letterspacing1.5 marginTop12">Solo te falta subir tu documentación.</p>
             <div class="marginTop50 clearFix">
                 <div class="floatLeft col5 col6-tab col12-mob">
                     <div class="paddingAside15">
@@ -96,26 +95,9 @@
                 </div>
             </div>
             <div class="borderLine marginTop12 marginBottom25"></div>
-            <div class="padding20">
-                <div class=" clearFix marginBottom10">
-                    <div class="checkBox whiteCheckBox">
-                        <i class="fa fa-check colorWhite hide" aria-hidden="true"></i>
-                    </div>
-                    <div class="checkboxLabel">
-                        <p class="gray font12 paddingLeft20">ACEPTO TERMINOS Y CONDICIONES</p>
-                    </div>
-                </div>
-                <div class="clearFix marginBottom10">
-                    <div class="checkBox whiteCheckBox">
-                        <i class="fa fa-check colorWhite hide" aria-hidden="true"></i>
-                    </div>
-                    <div class="checkboxLabel">
-                        <p class="gray font12 paddingLeft20">AUTORIZO EL MANEJO CONFIDENCIAL DE MIS DATOS </p>
-                    </div>
-                </div>
-            </div>
+            <div class="padding20"></div>
             <div class="marginBottom25">
-                <div data-numero-de-paso="${(pasoActual.numeroDePaso + 1)}" id="terminarSolicitud" class="width350 blockAuto rectangleRound marginTop30 center font20 letterspacing1.8 textUpper enviarSolicitud">
+                <div data-numero-de-paso="${(pasoActual.numeroDePaso + 1)}" id="terminarSolicitud" class="width350 blockAuto rectangleRound marginTop30 center font20 letterspacing1.8 textUpper enviarSolicitud" style="font-size: 15px;">
                     enviar mi solicitud
                 </div>
             </div>

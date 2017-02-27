@@ -81,6 +81,8 @@ class DocumentSenderService implements AwaitilityTrait{
         jsonRequest.TotalNumberOfParts = 1
         jsonRequest.CrossReferenceData = "null"
         jsonRequest.ImageData =  generarBase64(archivoDelDocumento)
+        //jsonRequest.IncludeImagesInCallback = "true"
+        //jsonRequest.IncludeAdditionalImagesInCallback = ["Signature"]
         jsonRequest.StrongIDBasic = "true" 
         jsonRequest.StrongIDExpert = "false"
         jsonRequest.StrongIDPlusAuto = "false"
@@ -189,81 +191,103 @@ class DocumentSenderService implements AwaitilityTrait{
     
     def verificarRespuestaMitek(def referencia, def solicitud, def dossierId){
         def datosRecibidos = false
+        def datosDocto = false
+        def validacionesDocto = false
         def mapa = [:]
         try {
-            await().atMost(45, SECONDS).until { consultarResultadosMitek(referencia, dossierId) }
+            await().atMost(60, SECONDS).until { consultarResultadosMitek(referencia, dossierId) }
             datosRecibidos = true
         }catch(ConditionTimeoutException e){
-            mapa.error = "No se ha recibido respuesta en 40 seguros. Intente nuevamente por favor."
+            mapa.error = "No se ha recibido respuesta en 60 seguros. Intente nuevamente por favor."
         }
-        if (datosRecibidos){
+        if (datosRecibidos) {
             def classificationResult = ClassificationResult.findByReference(referencia)
-            def dossierSummary = DossierSummary.findByDossierId(dossierId)
-            mapa.cliente = [:]
-            mapa.cliente.nombre = classificationResult.givenname
-            mapa.cliente.apellidoPaterno = classificationResult.parentNameFather
-            mapa.cliente.apellidoMaterno = classificationResult.parentNameMother
-            if(classificationResult.dateOfBirth) {
-                mapa.cliente.fechaDeNacimiento = [:]
-                mapa.cliente.fechaDeNacimiento.anio = classificationResult.dateOfBirth.substring(0,4)
-                mapa.cliente.fechaDeNacimiento.mes = classificationResult.dateOfBirth.substring(5,7)
-                mapa.cliente.fechaDeNacimiento.dia = classificationResult.dateOfBirth.substring(8,10)
-            }
-            mapa.cliente.genero = (classificationResult.gender == "Male" ? 1 : 2)
-            mapa.direccionCliente = [:]
-            mapa.direccionCliente.calle = classificationResult.address
-            //mapa.direccionCliente.numeroExterior = mapa.direccionCliente.calle?.replaceAll("[^\\d.]", "")
-            def direccion = (classificationResult.address1)?.replaceAll("\\.", "")
-            direccion = (direccion)?.replaceAll("-", " ")
-            direccion = direccion?.trim()
-            if(direccion?.toUpperCase()?.contains("CP")){
-                direccion = direccion.substring(direccion.toUpperCase().indexOf("CP"), direccion.length())
-                def cadenas = direccion.tokenize(" ")
-                cadenas.each {
-                    if(it ==~ /\d{5}/ ){
-                        mapa.direccionCliente.codigoPostal = it
-                        def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
-                        if(consulta){
-                            if(!mapa.direccionCliente.colonia){
-                                mapa.direccionCliente.colonia = consulta.asentamiento
+            def dossierSummary = DossierSummary.findByReference(referencia)
+            if(classificationResult) {
+                mapa.cliente = [:]
+                mapa.cliente.nombre = classificationResult.givenname
+                mapa.cliente.apellidoPaterno = classificationResult.parentNameFather
+                mapa.cliente.apellidoMaterno = classificationResult.parentNameMother
+                if(classificationResult.dateOfBirth) {
+                    mapa.cliente.fechaDeNacimiento = [:]
+                    mapa.cliente.fechaDeNacimiento.anio = classificationResult.dateOfBirth.substring(0,4)
+                    mapa.cliente.fechaDeNacimiento.mes = classificationResult.dateOfBirth.substring(5,7)
+                    mapa.cliente.fechaDeNacimiento.dia = classificationResult.dateOfBirth.substring(8,10)
+                }
+                mapa.cliente.genero = (classificationResult.gender == "Male" ? 1 : 2)
+                mapa.direccionCliente = [:]
+                mapa.direccionCliente.calle = classificationResult.address
+                //mapa.direccionCliente.numeroExterior = mapa.direccionCliente.calle?.replaceAll("[^\\d.]", "")
+                def direccion = (classificationResult.address1)?.replaceAll("\\.", "")
+                direccion = (direccion)?.replaceAll("-", " ")
+                direccion = direccion?.trim()
+                if(direccion?.toUpperCase()?.contains("CP")){
+                    direccion = direccion.substring(direccion.toUpperCase().indexOf("CP"), direccion.length())
+                    def cadenas = direccion.tokenize(" ")
+                    cadenas.each {
+                        if(it ==~ /\d{5}/ ){
+                            mapa.direccionCliente.codigoPostal = it
+                            def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
+                            if(consulta){
+                                if(!mapa.direccionCliente.colonia){
+                                    mapa.direccionCliente.colonia = consulta.asentamiento
+                                }
+                                if(!mapa.direccionCliente.municipio){
+                                    mapa.direccionCliente.municipio = consulta.municipio.id
+                                }
+                                if(!mapa.direccionCliente.estado){
+                                    mapa.direccionCliente.estado = consulta.municipio.estado.id
+                                }
                             }
-                            if(!mapa.direccionCliente.municipio){
-                                mapa.direccionCliente.municipio = consulta.municipio.id
-                            }
-                            if(!mapa.direccionCliente.estado){
-                                mapa.direccionCliente.estado = consulta.municipio.estado.id
+                        }
+                    }
+                    println "Valor seleccionado para CP: " + mapa.direccionCliente.codigoPostal
+                } else {
+                    def cadenas = direccion?.tokenize(" ")
+                    cadenas?.each {
+                        if(it ==~ /\d{5}/ && !mapa.direccionCliente.codigoPostal){
+                            mapa.direccionCliente.codigoPostal = it
+                            def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
+                            if(consulta){
+                                if(!mapa.direccionCliente.colonia){
+                                    mapa.direccionCliente.colonia = consulta.asentamiento
+                                }
+                                if(!mapa.direccionCliente.municipio){
+                                    mapa.direccionCliente.municipio = consulta.municipio.id
+                                }
+                                if(!mapa.direccionCliente.estado){
+                                    mapa.direccionCliente.estado = consulta.municipio.estado.id
+                                }
                             }
                         }
                     }
                 }
-                println "Valor seleccionado para CP: " + mapa.direccionCliente.codigoPostal
-            } else {
-                def cadenas = direccion?.tokenize(" ")
-                cadenas.each {
-                    if(it ==~ /\d{5}/ && !mapa.direccionCliente.codigoPostal){
-                        mapa.direccionCliente.codigoPostal = it
-                        def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
-                        if(consulta){
-                            if(!mapa.direccionCliente.colonia){
-                                mapa.direccionCliente.colonia = consulta.asentamiento
-                            }
-                            if(!mapa.direccionCliente.municipio){
-                                mapa.direccionCliente.municipio = consulta.municipio.id
-                            }
-                            if(!mapa.direccionCliente.estado){
-                                mapa.direccionCliente.estado = consulta.municipio.estado.id
-                            }
-                        }
-                    }
+                if(classificationResult.yearOfExpiry) {
+                    int anioActual = Calendar.getInstance().get(Calendar.YEAR);
+                    int anioDeExpiracion = (classificationResult.yearOfExpiry as int)
+                    mapa.vigente = ( anioActual <= anioDeExpiracion ? true : false )
+                } else if (classificationResult.dateOfExpiry){
+                    def fechaDeExpiracion = Date.parse("yyyy-MM-dd", classificationResult.dateOfExpiry.substring(0,10))
+                    def hoy = new Date()
+                    hoy.clearTime()
+                    mapa.vigente = ((fechaDeExpiracion >= hoy) ? true : false)
                 }
+                classificationResult.solicitud = solicitud
+                classificationResult.save(flush: true)
+                datosDocto = true
+                mapa.llenadoPrevio = true
             }
-            if(classificationResult.yearOfExpiry) {
-                int anioActual = Calendar.getInstance().get(Calendar.YEAR);
-                int anioDeExpiracion = (classificationResult.yearOfExpiry as int)
-                mapa.vigente = ( anioActual <= anioDeExpiracion ? true : false )
+            if(dossierSummary) {
+                if(dossierSummary.status == "Rejected") {
+                    def motivos = DossierRejectIssue.findAllWhere(dossierSummary: dossierSummary)
+                    mapa.motivosRechazo = (motivos*.dossierRejectReason)*.descripcion
+                } else if (dossierSummary.status != "Rejected" && datosDocto == false){
+                    println "[OCR Warning] El análisis tiene respuesta satisfactoria, pero no viene el classificationResult"
+                }
+                dossierSummary.solicitud = solicitud
+                dossierSummary.save(flush: true)
+                validacionesDocto = true
             }
-            //mapa.direccionCliente.colonia = classificationResult.address1
-            mapa.llenadoPrevio = true
             mapa.exito = true
         }
         println "Contenido del Mapa: " + mapa
@@ -275,15 +299,18 @@ class DocumentSenderService implements AwaitilityTrait{
     }
     
     def consultarResultadosMitek(def referencia, def dossierId){
-        sleep(1000)
+        sleep(3000)
         println "Parametros recibidos: [referencia: " + referencia + ", dossierId: " + dossierId + "]"
         println "Intentando buscar la respuesta de Mitek..."
         def classificationResultRecibido = ClassificationResult.countByReference(referencia)
-        def dossierSummaryRecibido = DossierSummary.countByDossierId(dossierId)
+        def dossierSummaryRecibido = DossierSummary.countByReference(referencia)
         println "A punto de comparar [classificationResultRecibido: " + classificationResultRecibido + ", dossierSummaryRecibido: " + dossierSummaryRecibido + "]"
         if(classificationResultRecibido > 0 && dossierSummaryRecibido > 0){
             println ("****************** SI HAY RESPUESTA *******************")
             return true   
+        } else if (classificationResultRecibido == 0 && dossierSummaryRecibido > 0) {
+            println ("****************** RESPUESTA PARCIAL *******************")
+            return true
         } else {
             println ("++++++++++++++++++ AUN NO HAY RESPUESTA ++++++++++++++++++")
             return false

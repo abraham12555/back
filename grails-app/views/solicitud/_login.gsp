@@ -38,42 +38,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <p style="text-align: center;color: #1c2b8a;"><strong>Ó</strong></p>
-                            <div class="clearFix">
-                                <div class="col10 col12-mob autoMargin">
-                                    <div class="paddingTop18 marginBottom16">
-                                        <p class="center formTitleColor marginBottom30 font18">
-                                            Conecta tu Facebook<br/> y Pre-llenamos tu formulario.
-                                        </p>
-                                        <a onclick="fb_login();">
-                                            <div class="marginBottom20">
-                                                <div class="width350 facebookColor autoMargin clearFix pointer">
-                                                    <div class="floatLeft col2 col3-mob paddingTop5">
-                                                        <img class="happines" src="${resource(dir:'images', file:'fb-icon.svg')}" alt="FB logo" title="FacebookLogo" />
-                                                    </div>
-                                                    <div class="floatLeft col10 col9-mob">
-                                                        <p class="borderLeft paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
-                                                            CONECTATE CON FACEBOOK
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <a class="test" id="customBtn" style="display: none;">
-                                            <div class="width350 googleColor autoMargin clearFix pointer">
-                                                <div class="floatLeft col2 col3-mob paddingTop18">
-                                                    <img class="happines" src="${resource(dir:'images', file:'google-icon.svg')}" alt="Google+ logo" title="GoogleLogo" />
-                                                </div>
-                                                <div class="floatLeft col10 col9-mob">
-                                                    <p class="borderLeft paddingTop20 paddingBottom15 center font14 colorWhite fontWeight500 letterspacing1">
-                                                        CONECTATE CON GOOGLE
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="borderTopResumen">
                                 <div class="marginTop20 marginBottom20">
                                     <form id="formLogin" method="POST" action="test">

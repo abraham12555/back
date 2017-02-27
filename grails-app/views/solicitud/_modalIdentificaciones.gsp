@@ -81,7 +81,7 @@
                 </div>-->
                 <div class="clearFix">
 
-                    <div class="col4 col12-tab floatLeft">
+                    <div class="col6 col12-tab floatLeft">
                         <div class="paddingAside10">
                             <div class="phoneCapture iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
                                 <img class="icon40" src="${resource(dir:'images', file:'phone-icon.svg')}" alt="Mobile">
@@ -90,23 +90,14 @@
                         </div>
                     </div>
 
-                    <div class="col4 col12-tab floatLeft">
-                        <div class="paddingAside10">
-                            <div class="camCapture iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
-                                <img class="icon40" src="${resource(dir:'images', file:'camera-icon.svg')}" alt="Camera">
-                                <p class="gray font18 letterspacing1.1 iconButtonTxt">Capturar con tu webcam</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="divDropzoneIds" class="col4 col12-tab floatLeft">
+                    <div id="divDropzoneIds" class="col6 col12-tab floatLeft">
                         <div class="paddingAside10">
                             <a id="subirIdentificacion">
                                 <div class="iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
                                     <img class="icon40 desktopCapture" src="${resource(dir:'images', file:'file-icon.svg')}" alt="File">
                                     <img class="icon40 mobileCapture" src="${resource(dir:'images', file:'phone-icon.svg')}" alt="Mobile">
-                                    <p class="desktopCapture" class="gray font18 letterspacing1.1 iconButtonTxt">Subir desde tu PC</p>
-                                    <p class="mobileCapture" class="gray font18 letterspacing1.1 iconButtonTxt">Capturar con tu smartphone</p>
+                                    <p class="desktopCapture gray font18 letterspacing1.1 iconButtonTxt">Subir desde tu PC</p>
+                                    <p class="mobileCapture gray font18 letterspacing1.1 iconButtonTxt">Capturar con tu smartphone</p>
                                 </div>
                             </a>
                         </div>

@@ -7,6 +7,8 @@ class SeguroSobreDeuda implements Serializable{
     float montoFinal
     int plazoAnual
     float importeSeguro
+    boolean porcentaje = false
+    float porcentajeSeguro = 0
     
     static constraints = {
         entidadFinanciera (nullable: false)

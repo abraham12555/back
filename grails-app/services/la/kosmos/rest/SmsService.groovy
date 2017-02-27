@@ -28,9 +28,12 @@ public class SmsService {
                 "Libertad SF - Tu Codigo de Verificacion: " + randomCode)
             .create()
 
-            persistSms(message, randomCode)
-            println(message)
-            respuesta = message.getSid()
+            if(persistSms(message, randomCode)){
+                println(message)
+                respuesta = message.getSid()
+            } else {
+                respuesta = null
+            }
         }catch(ApiException e){
             respuesta = null
         } finally{
@@ -63,14 +66,14 @@ public class SmsService {
     private boolean persistSms(Message message, String randomCode) {
         SmsMessage sms = new SmsMessage()
 
-        sms.bodyMessage = message.getBody()
-        sms.dateCreated = new Timestamp(message.getDateCreated().getMillis())
-        sms.errorCode = message.getErrorCode()
-        sms.errorMessage = message.getErrorMessage()
-        sms.fromPhone = message.getFrom().toString()
-        sms.sid = message.getSid()
-        sms.status = message.getStatus().toString()
-        sms.toPhone = message.getTo().toString()
+        sms.bodyMessage = message?.getBody()
+        sms.dateCreated = new Timestamp(message?.getDateCreated()?.getMillis())
+        sms.errorCode = message?.getErrorCode()
+        sms.errorMessage = message?.getErrorMessage()
+        sms.fromPhone = message?.getFrom()?.toString()
+        sms.sid = message?.getSid()
+        sms.status = message?.getStatus()?.toString()
+        sms.toPhone = message?.getTo()?.toString()
         sms.randomCode = randomCode
 
         sms.save(flush: true)
@@ -80,10 +83,12 @@ public class SmsService {
     public boolean verify(String sid, String randomCodeTmp) {
         boolean result = false
         def mySms = SmsMessage.findBySid(sid)
-        println "mySms.toPhone -> " + mySms.getToPhone()
-        println "mySms.randomCode -> " + mySms.getRandomCode()
-        if (mySms.getRandomCode() == randomCodeTmp.trim()) {
-            result = true
+        if(mySms) {
+            println "mySms.toPhone -> " + mySms.getToPhone()
+            println "mySms.randomCode -> " + mySms.getRandomCode()
+            if (mySms.getRandomCode() == randomCodeTmp.trim()) {
+                result = true
+            }
         }
         result
     }

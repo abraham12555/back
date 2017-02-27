@@ -272,7 +272,7 @@
 
   // Si es un navegador, exporta 'generaCurp' a una variable global.
   // Si es node.js, exporta esa función en module.exports
-  if (global.hasOwnProperty('window') && global.window === global) {
+  if ((global.hasOwnProperty('window') && global.window === global) || global === window) {
     global.generaCurp = generaCurp;
   } else {
     module.exports = generaCurp;

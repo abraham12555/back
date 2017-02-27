@@ -9,18 +9,49 @@ function iniciarFormularioRegistro() {
     }, 3000);
 
     $('.sigPaso').on('click', function () {
-        console.log("i ->" + $(this).parent().attr('id'));
-        if ($(this).parent().attr('id') === 'first_name_form') {
-            submitFirstName();
+        if ($(this).hasClass('locked') === false) {
+            console.log("i ->" + $(this).parent().attr('id'));
+            if ($(this).parent().attr('id') === 'first_name_form') {
+                submitFirstName();
+            }
+            if ($(this).parent().parent().attr('id') === 'email_form') {
+                submitEmail();
+            }
+            if ($(this).parent().parent().attr('id') === 'phone_form') {
+                submitPhone();
+            }
+            if ($(this).parent().parent().attr('id') === 'codigo_form') {
+                submitCodigo();
+            }
         }
-        if ($(this).parent().attr('id') === 'email_form') {
-            submitEmail();
-        }
-        if ($(this).parent().attr('id') === 'phone_form') {
-            submitPhone();
-        }
-        if ($(this).parent().attr('id') === 'codigo_form') {
-            submitCodigo();
+    });
+
+    $('.antPaso').on('click', function () {
+        if ($(this).hasClass('locked') === false) {
+            console.log("i ->" + $(this).parent().attr('id'));
+            if ($(this).parent().parent().attr('id') === 'email_form') {
+                $('#termsPriv').fadeIn();
+                $('.register').addClass('bounceOut');
+                setTimeout(function () {
+                    $('.register').removeClass(' bounceOut');
+                    $('.register').addClass('fadeIn');
+                    $("#email_form").addClass('hide');
+                    $('#first_name_form').removeClass('hide');
+                    $('#first_name_form').addClass('animated fadeIn');
+                    $('.register').removeClass('fadeIn');
+                }, 600);
+            }
+            if ($(this).parent().parent().attr('id') === 'phone_form') {
+                $('.register').addClass('bounceOut');
+                setTimeout(function () {
+                    $('.register').removeClass(' bounceOut');
+                    $('.register').addClass('fadeIn');
+                    $("#phone_form").addClass('hide');
+                    $('#email_form').removeClass('hide');
+                    $('#email_form').addClass('animated fadeIn');
+                    $('.register').removeClass('fadeIn');
+                }, 600);
+            }
         }
     });
 
@@ -60,16 +91,32 @@ function submitFirstName() {
             $('.register').removeClass('shake');
         }, 3000);
     } else {
-        $('#termsPriv').fadeOut();
-        $('.register').addClass('bounceOut');
-        setTimeout(function () {
-            $('.register').removeClass(' bounceOut');
-            $('.register').addClass('fadeIn');
-            $("#first_name_form").addClass('hide');
-            $('#email_form').removeClass('hide');
-            $('#email_form').addClass('animated fadeIn');
-            $('.register').removeClass('fadeIn');
-        }, 600);
+        if (validateName($('#first_name').val())) {
+            $('#leyendaNombre').html("");
+            $('#first_name').removeClass('invalid');
+            $('#first_name').siblings('.fa').removeClass('invalid');
+        }
+        if (!validateName($('#first_name').val())) {
+            $('.register').addClass('shake');
+
+            $('#first_name').addClass('invalid');
+            $('#first_name').siblings('.fa').addClass('invalid');
+            setTimeout(function () {
+                $('.register').removeClass('shake');
+            }, 3000);
+            $('#leyendaNombre').html("<small style='color: red;'>Tu nombre no puede contener caracteres especiales.</small>");
+        } else {
+            $('#termsPriv').fadeOut();
+            $('.register').addClass('bounceOut');
+            setTimeout(function () {
+                $('.register').removeClass(' bounceOut');
+                $('.register').addClass('fadeIn');
+                $("#first_name_form").addClass('hide');
+                $('#email_form').removeClass('hide');
+                $('#email_form').addClass('animated fadeIn');
+                $('.register').removeClass('fadeIn');
+            }, 600);
+        }
     }
 }
 
@@ -81,6 +128,7 @@ function submitEmail() {
         }, 3000);
     } else {
         if (validateEmail($('#email').val())) {
+            $('#leyendaEmail').html("");
             $('#email').removeClass('invalid');
             $('#email').siblings('.fa').removeClass('invalid');
         }
@@ -92,6 +140,7 @@ function submitEmail() {
             setTimeout(function () {
                 $('.register').removeClass('shake');
             }, 3000);
+            $('#leyendaEmail').html("<small style='color: red;'>Tu dirección de correo es incorrecta, verifica la estructura. Ej. ejemplo@mail.com</small>");
         } else {
             $('.register').addClass('bounceOut');
             setTimeout(function () {
@@ -121,6 +170,8 @@ function submitPhone() {
                 $('.register').removeClass('shake');
             }, 3000);
         } else {
+            $('#phone').prop('disabled', true);
+            $('.sigPaso').addClass('locked');
             $.ajax({
                 type: 'POST',
                 data: {
@@ -158,9 +209,13 @@ function submitPhone() {
                     } else {
                         $('#leyendaTel').html("<small style='color: red;'>Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.</small>");
                     }
+                    $('#phone').prop('disabled', false);
+                    $('.sigPaso').removeClass('locked');
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                    $('#phone').prop('disabled', false);
+                    $('.sigPaso').removeClass('locked');
                 }
             });
         }
@@ -219,4 +274,9 @@ function submitCodigo() {
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
+}
+
+function validateName(nombre) {
+    var re = /^([a-zA-Z \. \- \@ ñáéíóúüÑÁÉÍÓÚÜ])+$/;
+    return re.test(nombre);
 }

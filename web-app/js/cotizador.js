@@ -22,6 +22,7 @@ var frecTotalPagos;
 var seguro;
 var tipoDeProductoSelected;
 var pagoCalculado = 0;
+var plazos;
 $(document).ready(function () {
     $(document).tooltip({
         position: {
@@ -544,9 +545,9 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
                 periodicidadElegida = respuesta.periodicidad.id
                 $('#txtPeriodo').val(periodicidadElegida);
                 if ($("#listaDeFrecuencias").slider("instance") !== undefined) {
-                    reiniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider);
+                    reiniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider, respuesta.usarListaDePlazos, respuesta.plazosPermitidos);
                 } else {
-                    iniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider);
+                    iniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider, respuesta.usarListaDePlazos, respuesta.plazosPermitidos);
                 }
                 removeActions();
                 initActions();
@@ -604,8 +605,9 @@ function fakeAjax(action, id) {
     }
 }
 
-function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo, montoInicial, incremento) {
-//slider
+function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo, montoInicial, incremento, usarLista, plazosPermitidos) {
+    plazos = plazosPermitidos;
+
     $("#" + elemento).slider({
         animate: "fast",
         value: montoInicial,
@@ -613,16 +615,25 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
         max: montoMaximo,
         step: incremento,
         create: function (event, ui) {
+            var valorElegido;
             $(this).slider('value', montoInicial);
-            $('#' + elemento + ' .ui-slider-handle').html('< ' + (montoInicial + etiqueta) + ' >');
+            if (usarLista) {
+                valorElegido = plazos[montoInicial];
+            } else {
+                valorElegido = montoInicial;
+            }
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + (valorElegido + etiqueta) + ' >');
             if (tipoDeCifra === "cantidad") {
                 if (enganche === 0) {
-                    restante = montoElegido
+                    restante = montoElegido;
                 } else {
-                    restante = montoElegido - enganche
+                    restante = montoElegido - enganche;
+                }
+                if (usarLista) {
+                    montoInicial = plazos[montoInicial];
                 }
                 $('#txtMontoCredito').val(restante);
-                calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, montoInicial, periodicidadElegida);
+                calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, valorElegido, periodicidadElegida);
             } else if (tipoDeCifra === "dinero") {
                 montoElegido = (montoInicial * 1000);
                 $('#montoElegido').html(formatCurrency(montoElegido, "$"));
@@ -632,6 +643,12 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
             }
         },
         slide: function (event, ui) {
+            var valorElegido;
+            if (usarLista) {
+                valorElegido = plazos[ui.value];
+            } else {
+                valorElegido = ui.value;
+            }
             if (tipoDeCifra === "dinero") {
                 montoElegido = (ui.value * 1000);
                 $('#montoElegido').html(formatCurrency(montoElegido, "$"));
@@ -640,14 +657,38 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
                 $("#montoElegido3").html(formatCurrency(montoElegido, "$"));
             } else {
                 if (enganche === 0) {
-                    restante = montoElegido
+                    restante = montoElegido;
                 } else {
-                    restante = montoElegido - enganche
+                    restante = montoElegido - enganche;
                 }
                 $('#txtMontoCredito').val(restante);
-                calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, ui.value, periodicidadElegida);
+                $('#pagoCalculado').html("Calculando ...");
             }
-            $('#' + elemento + ' .ui-slider-handle').html('< ' + (ui.value + etiqueta) + ' >');
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + (valorElegido + etiqueta) + ' >');
+        },
+        stop: function (event, ui) {
+            var valorElegido;
+            if (usarLista) {
+                valorElegido = plazos[ui.value];
+            } else {
+                valorElegido = ui.value;
+            }
+            if (tipoDeCifra === "dinero") {
+                montoElegido = (ui.value * 1000);
+                $('#montoElegido').html(formatCurrency(montoElegido, "$"));
+                //Optimizar codigo:
+                $("#montoElegido2").html(formatCurrency(montoElegido, "$"));
+                $("#montoElegido3").html(formatCurrency(montoElegido, "$"));
+            } else {
+                if (enganche === 0) {
+                    restante = montoElegido;
+                } else {
+                    restante = montoElegido - enganche;
+                }
+                $('#txtMontoCredito').val(restante);
+                calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, valorElegido, periodicidadElegida);
+            }
+            $('#' + elemento + ' .ui-slider-handle').html('< ' + (valorElegido + etiqueta) + ' >');
         }
 
     });
@@ -745,20 +786,27 @@ function actualizarTexto(elemento, texto) {
     $('#' + elemento).text(texto);
 }
 
-function reiniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo, montoInicial, incremento) {
+function reiniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo, montoInicial, incremento, usarLista, plazosPermitidos) {
+    plazos = plazosPermitidos;
+    var valorElegido;
+    if (usarLista) {
+        valorElegido = plazos[montoInicial];
+    } else {
+        valorElegido = montoInicial;
+    }
     $("#" + elemento).slider("option", "value", montoInicial);
     $("#" + elemento).slider("option", "min", montoMinimo);
     $("#" + elemento).slider("option", "max", montoMaximo);
     $("#" + elemento).slider("option", "step", incremento);
-    $('#' + elemento + ' .ui-slider-handle').html('< ' + (montoInicial + etiqueta) + ' >');
+    $('#' + elemento + ' .ui-slider-handle').html('< ' + (valorElegido + etiqueta) + ' >');
     if (tipoDeCifra === "cantidad") {
         if (enganche === 0) {
-            restante = montoElegido
+            restante = montoElegido;
         } else {
-            restante = montoElegido - enganche
+            restante = montoElegido - enganche;
         }
         $('#txtMontoCredito').val(restante);
-        calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, montoInicial, periodicidadElegida);
+        calcularPago($('#entidadFinancieraId').val(), restante, productoElegido, valorElegido, periodicidadElegida);
     } else if (tipoDeCifra === "dinero") {
         montoElegido = (montoInicial * 1000);
         $('#montoElegido').html(formatCurrency(montoElegido, "$"));

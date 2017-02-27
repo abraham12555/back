@@ -73,7 +73,7 @@
                 </div>-->
                 <div class="clearFix">
 
-                    <div class="col4 col12-tab floatLeft">
+                    <div class="col6 col12-tab floatLeft">
                         <div class="paddingAside10">
                             <div class="phoneCapture iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
                                 <img class="icon40" src="${resource(dir:'images', file:'phone-icon.svg')}" alt="Mobile">
@@ -82,16 +82,7 @@
                         </div>
                     </div>
 
-                    <div class="col4 col12-tab floatLeft">
-                        <div class="paddingAside10">
-                            <div class="camCaptureComp iconButton whiteBox upldsBBottom width350 mobileAuto pointer">
-                                <img class="icon40" src="${resource(dir:'images', file:'camera-icon.svg')}" alt="Camera">
-                                <p class="gray font18 letterspacing1.1 iconButtonTxt">Capturar con tu webcam</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="divDropzoneComp" class="col4 col12-tab floatLeft">
+                    <div id="divDropzoneComp" class="col6 col12-tab floatLeft">
                         <div class="paddingAside10">
                             <a id="subirComprobante">
                                 <div class="iconButton whiteBox upldsBBottom width350 mobileAuto pointer">

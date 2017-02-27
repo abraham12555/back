@@ -34,6 +34,7 @@
         <g:external dir="js" file="facebook.js" />
         <g:external dir="js" file="jasny-bootstrap.min.js" />
         <g:external dir="js" file="jquery-ui-touch-punch.js" />
+        <g:external dir="js" file="googleanalytics.js" />
     </head>
     <body>
         <header class="topHeader">

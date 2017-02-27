@@ -14,7 +14,7 @@
                 <input type="hidden" id="entidadFinancieraId" value="${entidadFinanciera.id}">
                 <div class="col6 col12-mob coti floatLeft down800">
                     <div class="padding15">
-                        <h1 id="nombreDelProducto" class="headingColor font35 fontWeight900 letterspacing1 lato">
+                        <h1 id="nombreDelProducto" class="headingColor font30 fontWeight900 letterspacing1 lato">
                             ${configuracion.textoProductoDefault}
                         </h1>
                         <h3 id="precioDelProducto" class="darkBluetitle font30 fontWeight400 marginBottom20">
