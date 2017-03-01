@@ -32,6 +32,7 @@ class SolicitudController {
     def motorDeDecisionService
     def urlShortenerService
     def smsService
+    def emailSenderService
 	
     int timeWait = 500
     def maximumAttempts = 100
@@ -782,6 +783,9 @@ class SolicitudController {
                                 sucursal: sucursal as JSON,
                                 resultadoMotorDeDecision: resultadoMotorDeDecision,
                                 pasoActual:pasoActual]
+                            if(configuracion?.enviarNotificacionesPorCorreo) {
+                                emailSenderService.envioCorreo(session["pasoFormulario"].cliente, session["pasoFormulario"].emailCliente, modelo)
+                            }
                         }
                         if(session.identificadores?.idSolicitud){
                             def solicitud = SolicitudDeCredito.get(session.identificadores?.idSolicitud)
@@ -887,6 +891,14 @@ class SolicitudController {
         if((!respuesta?.error || respuesta?.vigente == true) && !respuesta.motivosRechazo){
             if(ocr){
                 session["pasoFormulario"] = respuesta
+                if(session.cotizador?.emailCliente && session["pasoFormulario"]){
+                    session["pasoFormulario"].emailCliente = [:]
+                    session["pasoFormulario"].emailCliente.emailPersonal = session.cotizador.emailCliente
+                }
+                if(session.cotizador?.telefonoCliente && session["pasoFormulario"]){
+                    session["pasoFormulario"].telefonoCliente = [:]
+                    session["pasoFormulario"].telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
+                }
             }
             session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
             if(session.identificadores?.idSolicitud){

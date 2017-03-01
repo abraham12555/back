@@ -117,6 +117,21 @@ log4j.main = {
            'net.sf.ehcache.hibernate'
 }
 
+grails {
+    mail {    
+        host = "smtp.zoho.com"
+        port = 465
+        username = "confirmaciones@micreditolibertad.com"
+        password = "Confirmaciones4321"  
+        props = ["mail.smtp.auth":"true",
+        "mail.smtp.socketFactory.port":"465",
+        "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+        "mail.smtp.socketFactory.fallback":"false"]
+     }
+}
+//grails.mail.disabled=true
+// secondary emailaddress 
+// grails.mail.overrideAddress="correo-secundario"
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'la.kosmos.app.Usuario'

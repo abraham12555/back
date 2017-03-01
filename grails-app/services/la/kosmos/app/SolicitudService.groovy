@@ -161,7 +161,7 @@ class SolicitudService {
                         def emailLaboral
                         def emails = EmailCliente.findAllWhere(cliente: cliente, vigente: true)
                         emails?.each {
-                            if(it.tipoDeEmail.id == 1){
+                            if(it.tipoDeEmail.id == 1) {
                                 if(datosPaso.emailCliente?.emailPersonal && (datosPaso.emailCliente?.emailPersonal != it.direccionDeCorreo)){
                                     it.vigente = false
                                     it.save(flush: true)
@@ -170,7 +170,16 @@ class SolicitudService {
                                     emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal
                                     emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
                                     emailPersonal.vigente = true
-                                    emailPersonal.save(flush: true)
+                                    if(emailPersonal.save(flush: true)){
+                                        println "Si se guardo el email personal " + emailPersonal.id
+                                    } else {
+                                        println (":( no se guardo el email personal " + datosPaso.emailCliente?.emailPersonal)
+                                        if (solicitudDeCredito.hasErrors()) {
+                                            solicitudDeCredito.errors.allErrors.each {
+                                                println it
+                                            }
+                                        }
+                                    }
                                 }
                             } else if(it.tipoDeEmail.id == 2){
                                 if(datosPaso.emailCliente?.emailLaboral && (datosPaso.emailCliente?.emailLaboral != it.direccionDeCorreo)){
@@ -240,6 +249,7 @@ class SolicitudService {
                     if(identificadores?.idDireccion){
                         direccionCliente = DireccionCliente.get(identificadores.idDireccion as long)
                     } else {
+                        DireccionCliente.executeUpdate("update DireccionCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                         direccionCliente = new DireccionCliente()
                     }
                     direccionCliente.calle = datosPaso.direccionCliente.calle
@@ -278,6 +288,7 @@ class SolicitudService {
                     if(identificadores?.idEmpleo){
                         empleoCliente = EmpleoCliente.get(identificadores.idEmpleo as long)
                     } else {
+                        EmpleoCliente.executeUpdate("update EmpleoCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                         empleoCliente = new EmpleoCliente()
                     }
                     empleoCliente.puesto = (datosPaso.empleoCliente.puesto ?: null)
@@ -691,6 +702,7 @@ class SolicitudService {
             datosSolicitud.telefonosCliente = TelefonoCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
             datosSolicitud.emailCliente = EmailCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
             datosSolicitud.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
+            datosSolicitud.resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: solicitud)
             
             if(datosSolicitud.telefonosCliente){
                 telefonos = [:]
@@ -723,6 +735,7 @@ class SolicitudService {
             datosBuroDeCredito.refCred = RefCredBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.sintetiza = SintetizaBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.resumen = ResumenBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
+            datosBuroDeCredito.score = ScoreBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito, codigoScore: "007")
             
             def solicitudRest = new SolicitudRest()
             solicitudRest.solicitud = [:]
@@ -740,9 +753,18 @@ class SolicitudService {
             solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = "Solicitante" //Temporal
             solicitudRest.solicitud.datosSolicitud.status = solicitud.statusDeSolicitud.nombre
             solicitudRest.solicitud.datosSolicitud.folio = ("" + solicitud.folio).padLeft(6, '0')
-            solicitudRest.solicitud.datosSolicitud.puntoDeVenta = "Metepec" //Temporal
-            solicitudRest.solicitud.datosSolicitud.puntajeScore = 543
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore = (tipoDeConsulta || tipoDeConsulta == 0 ? "Autorizado" : "")
+            solicitudRest.solicitud.datosSolicitud.puntoDeVenta = (solicitud.sucursal ? solicitud.sucursal.nombre : "")
+            solicitudRest.solicitud.datosSolicitud.puntajeScore = (datosBuroDeCredito.score ? (datosBuroDeCredito.score as int) : 0)
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore = "" //[:]
+            /*if(datosSolicitud.resultadoMotorDeDecision) {
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePoliticas = (datosSolicitud.resultadoMotorDeDecision.dictamenDePoliticas ?: "")
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
+            }*/
             solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ?"Autorizado" : "")
             solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? "Usuario Dictaminador" : "")
             solicitudRest.solicitud.datosSolicitud.fechaDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? (new Date()).format('dd/MM/yyyy HH:mm') : "")
@@ -795,7 +817,7 @@ class SolicitudService {
             solicitudRest.solicitud.direccion.estado = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.id : "")
             
             solicitudRest.solicitud.vivienda.tipoDeVivienda = ((datosSolicitud.direccionCliente?.tipoDeVivienda) ? String.valueOf(datosSolicitud.direccionCliente.tipoDeVivienda.clave) : "")
-            solicitudRest.solicitud.vivienda.montoDeRenta = 0
+            solicitudRest.solicitud.vivienda.montoDeRenta = (datosSolicitud.direccionCliente?.montoDeLaRenta ?: 0)
             def periodoVivienda = (datosSolicitud.direccionCliente?.tiempoDeVivienda)?.split("/");
             solicitudRest.solicitud.vivienda.mesInicioVivienda = (periodoVivienda ? periodoVivienda.getAt(0) : "")
             solicitudRest.solicitud.vivienda.anioInicioVivienda = (periodoVivienda ? periodoVivienda.getAt(1) : "")

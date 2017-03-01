@@ -19,7 +19,7 @@
                             <p>MONTO: <strong><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /></strong></p>
                             <p>PLAZO: <strong>${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}</strong></p>
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
-                            <p>CAT: <strong>${ (productoSolicitud?.producto?.cat) ? (productoSolicitud?.producto?.cat * 100) : 0 } %</strong> sin IVA para fines informativos y de comparación</p>
+                            <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
@@ -79,7 +79,7 @@
                             <p>MONTO: <strong><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /></strong></p>
                             <p>PLAZO: <strong>${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}</strong></p>
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
-                            <p>CAT: <strong>${ (productoSolicitud?.producto?.cat) ? (productoSolicitud?.producto?.cat * 100) : 0 } %</strong> sin IVA para fines informativos y de comparación</p>
+                            <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">

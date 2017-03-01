@@ -565,7 +565,7 @@ function mostrarSiguienteCampo(index) {
                 console.log("Mostrando el siguiente paso....");
                 $(this).fadeIn();
                 $(this).css({'display': 'inline'});
-            } else {
+            } else if (($(elemento).hasClass('noMostrar') === true) && (listaDeControl[indice + 1] === -1)){
                 console.log("Ocultando el siguiente paso....");
                 $(this).fadeOut();
                 $(this).css({'display': 'none'});
@@ -578,7 +578,7 @@ function mostrarSiguienteCampo(index) {
             var elementoMostrado = false;
             while ((indice + 1) < elementos.length && elementoMostrado === false) {
                 if (listaDeControl[indice + 1] === 0) {
-                    //console.log(indice + " - Mostrando el siguiente paso....");
+                    console.log(indice + " - Mostrando el siguiente paso....");
                     var elemento;
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
@@ -594,11 +594,11 @@ function mostrarSiguienteCampo(index) {
                         elementoMostrado = true;
                     }
                 } else if (listaDeControl[indice + 1] === 1) {
-                    //console.log("Mostrando el siguiente paso....");
+                    console.log("Mostrando el siguiente paso....");
                     $('.showOnFill').eq(indice + 1).fadeIn();
                     $('.showOnFill').eq(indice + 1).css({'display': 'inline'});
                 } else if (listaDeControl[indice + 1] === -1) {
-                    //console.log("Mostrando el siguiente paso....");
+                    console.log("Ocultando el paso....");
                     $('.showOnFill').eq(indice + 1).fadeOut();
                     $('.showOnFill').eq(indice + 1).css({'display': 'none'});
                 }
@@ -1310,7 +1310,7 @@ function operacionesResumen() {
     });
 
     $('.solicitud_modal').click(function () {
-        if ($(this).hasClass('blueButton') == true) {
+        if ($(this).hasClass('blueButton') === true) {
             $('#resumen_solicitud').fadeIn();
         }
     });
@@ -2469,6 +2469,20 @@ function inicializarDropzone(elemento, boton) {
                     }
                     mensaje += "</ul>";
                     sweetAlert({html: true, title: "¡Oops!", text: mensaje, type: "warning"});
+                } else if (respuesta.exito === true && respuesta.idArchivo) {
+                    var posicion = $('#doctoCargado').val();
+                    console.log("Posicion: " + posicion);
+                    var cantidadRequerida = $('#cantidadSolicitada').val();
+                    console.log("Cantidad Requerida: " + cantidadRequerida);
+                    var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+                    html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
+                    $('#uploadDocto' + posicion).html(html);
+                    if ($('.checkmark').length === Number(cantidadRequerida)) {
+                        closeModal('documento_solicitud');
+                        $('#paso6Docto').removeClass('darkGray');
+                        $('#paso6Docto').addClass('colorGreen');
+                    }
+                    habilitarTerminarSolicitud();
                 } else if (respuesta.exito || (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno))) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "El documento se ha subido correctamente.", type: "success"});
                     if ($('#tipoDeDocumento').val() === "Identicaciones" && cara === "frente") {
@@ -2536,18 +2550,6 @@ function inicializarDropzone(elemento, boton) {
             }
         } else if (respuesta.vigente === false) {
             sweetAlert("Oops...", "El documento envíado no está vigente. Por favor, suba un documento vigente.", "error");
-        } else if (respuesta.exito === true && respuesta.idArchivo) {
-            var posicion = $('#doctoCargado').val();
-            var cantidadRequerida = $('#cantidadSolicitada').val();
-            var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
-            html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
-            $('#uploadDocto' + posicion).html(html);
-            if ($('.checkmark').length === Number(cantidadRequerida)) {
-                closeModal('documento_solicitud');
-                $('#paso6Docto').removeClass('darkGray');
-                $('#paso6Docto').addClass('colorGreen');
-            }
-            habilitarTerminarSolicitud();
         } else {
             sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga border blancos.", "warning");
         }

@@ -25,6 +25,7 @@ class EmpleoCliente implements Serializable{
     float ingresosFijos
     float ingresosVariables
     float gastos
+    boolean vigente = true
     
     static constraints = {
 
