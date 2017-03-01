@@ -247,7 +247,7 @@ class CotizadorController {
         def respuesta = [:]
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '') 
-            String sid = "12345" //smsService.sendSMS(toPhone)
+            String sid = smsService.sendSMS(toPhone)
             if(sid){
                 session.sid = sid
                 respuesta.mensajeEnviado = true
@@ -267,7 +267,7 @@ class CotizadorController {
             String randomCodeTmp = params.codigoConfirmacion
             println "session.sid -> " + sid
             println "randomCodeTmp -> " + randomCodeTmp
-            boolean result = true //smsService.verify(sid, randomCodeTmp)
+            boolean result = smsService.verify(sid, randomCodeTmp)
             respuesta.resultado = result
         } else {
             respuesta.incorrecto = true

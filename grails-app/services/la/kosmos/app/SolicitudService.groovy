@@ -150,6 +150,7 @@ class SolicitudService {
                     if(clienteNuevo && datosPaso.emailCliente) {
                         def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
                         if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
+                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                             def emailPersonal = new EmailCliente()
                             emailPersonal.cliente = cliente
                             emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
@@ -163,6 +164,7 @@ class SolicitudService {
                     } else if(!clienteNuevo && datosPaso.emailCliente) {
                         def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
                         if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
+                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                             def emailPersonal = new EmailCliente()
                             emailPersonal.cliente = cliente
                             emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()

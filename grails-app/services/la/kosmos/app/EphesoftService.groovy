@@ -169,8 +169,8 @@ class EphesoftService {
                     direccion = (mapa.direccion)?.replaceAll("-", " ")
                     direccion = direccion?.trim()
                     if(direccion?.toUpperCase()?.contains("CP")){
-                        direccion = direccion.substring(direccion.toUpperCase().indexOf("CP"), direccion.length())
-                        def cadenas = direccion.tokenize(" ")
+                        direccion = direccion?.substring(direccion.toUpperCase().indexOf("CP"), direccion.length())
+                        def cadenas = direccion?.tokenize(" ")
                         cadenas.each {
                             if(it ==~ /\d{5}/ ){
                                 mapa.codigoPostal = it
@@ -187,8 +187,8 @@ class EphesoftService {
                         }
                         println "Valor seleccionado para CP: " + mapa.codigoPostal
                     } else {
-                        def cadenas = direccion.tokenize(" ")
-                        cadenas.each {
+                        def cadenas = direccion?.tokenize(" ")
+                        cadenas?.each {
                             if(it ==~ /\d{5}/ && !mapa.codigoPostal){
                                 mapa.codigoPostal = it
                                 def consulta = CodigoPostal.findByCodigo(mapa.codigoPostal)
