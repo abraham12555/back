@@ -147,52 +147,31 @@ class SolicitudService {
                             }
                         }
                     }
-                    if(clienteNuevo && datosPaso.emailCliente){
-                        if(datosPaso.emailCliente?.emailPersonal) {
+                    if(clienteNuevo && datosPaso.emailCliente) {
+                        def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                        if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
                             def emailPersonal = new EmailCliente()
                             emailPersonal.cliente = cliente
-                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal
+                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
                             emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
                             emailPersonal.vigente = true
                             emailPersonal.save(flush: true)
+                        } else if (correoExistente) {
+                            correoExistente.vigente = true
+                            correoExistente.save(flush: true)
                         }
-                    } else if(!clienteNuevo && datosPaso.emailCliente){
-                        def emailPersonal
-                        def emailLaboral
-                        def emails = EmailCliente.findAllWhere(cliente: cliente, vigente: true)
-                        emails?.each {
-                            if(it.tipoDeEmail.id == 1) {
-                                if(datosPaso.emailCliente?.emailPersonal && (datosPaso.emailCliente?.emailPersonal != it.direccionDeCorreo)){
-                                    it.vigente = false
-                                    it.save(flush: true)
-                                    emailPersonal = new EmailCliente()
-                                    emailPersonal.cliente = cliente
-                                    emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal
-                                    emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
-                                    emailPersonal.vigente = true
-                                    if(emailPersonal.save(flush: true)){
-                                        println "Si se guardo el email personal " + emailPersonal.id
-                                    } else {
-                                        println (":( no se guardo el email personal " + datosPaso.emailCliente?.emailPersonal)
-                                        if (solicitudDeCredito.hasErrors()) {
-                                            solicitudDeCredito.errors.allErrors.each {
-                                                println it
-                                            }
-                                        }
-                                    }
-                                }
-                            } else if(it.tipoDeEmail.id == 2){
-                                if(datosPaso.emailCliente?.emailLaboral && (datosPaso.emailCliente?.emailLaboral != it.direccionDeCorreo)){
-                                    it.vigente = false
-                                    it.save(flush: true)
-                                    emailLaboral = new EmailCliente()
-                                    emailLaboral.cliente = cliente
-                                    emailLaboral.direccionDeCorreo = datosPaso.emailCliente.emailLaboral
-                                    emailLaboral.tipoDeEmail = TipoDeEmail.get(2);
-                                    emailLaboral.vigente = true
-                                    emailLaboral.save(flush: true)
-                                }
-                            }
+                    } else if(!clienteNuevo && datosPaso.emailCliente) {
+                        def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                        if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
+                            def emailPersonal = new EmailCliente()
+                            emailPersonal.cliente = cliente
+                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
+                            emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
+                            emailPersonal.vigente = true
+                            emailPersonal.save(flush: true)
+                        } else if (correoExistente) {
+                            correoExistente.vigente = true
+                            correoExistente.save(flush: true)
                         }
                     }
                     if(identificadores?.idSolicitud) {
@@ -757,13 +736,13 @@ class SolicitudService {
             solicitudRest.solicitud.datosSolicitud.puntajeScore = (datosBuroDeCredito.score ? (datosBuroDeCredito.score as int) : 0)
             solicitudRest.solicitud.datosSolicitud.resultadoDelScore = "" //[:]
             /*if(datosSolicitud.resultadoMotorDeDecision) {
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePoliticas = (datosSolicitud.resultadoMotorDeDecision.dictamenDePoliticas ?: "")
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
-                solicitudRest.solicitud.datosSolicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePoliticas = (datosSolicitud.resultadoMotorDeDecision.dictamenDePoliticas ?: "")
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
             }*/
             solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ?"Autorizado" : "")
             solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? "Usuario Dictaminador" : "")

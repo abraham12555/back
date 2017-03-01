@@ -565,7 +565,7 @@ function mostrarSiguienteCampo(index) {
                 console.log("Mostrando el siguiente paso....");
                 $(this).fadeIn();
                 $(this).css({'display': 'inline'});
-            } else if (($(elemento).hasClass('noMostrar') === true) && (listaDeControl[indice + 1] === -1)){
+            } else if (($(elemento).hasClass('noMostrar') === true) && (listaDeControl[indice + 1] === -1)) {
                 console.log("Ocultando el siguiente paso....");
                 $(this).fadeOut();
                 $(this).css({'display': 'none'});
@@ -1305,6 +1305,7 @@ function operacionesResumen() {
 
     $('#terminarSolicitud').click(function () {
         if ($(this).hasClass("blueButton")) {
+            $('#resumen_solicitud').fadeOut();
             avanzarPaso($(this).data("numeroDePaso"));
         }
     });
@@ -1328,8 +1329,12 @@ function cargarOpcionesDeContacto(opcion) {
             var resultado = eval(data);
             var html = "";
             if (resultado.length > 0) {
+                $('.enviarSolicitud').removeClass('blueButton pointer');
+                $('.enviarSolicitud').css({'color': '#005398'});
                 html += "<option value=''>Elija una opción...</option>";
             } else {
+                $('.enviarSolicitud').addClass('blueButton pointer');
+                $('.enviarSolicitud').css({'color': '#FFFFFF'});
                 html += "<option value=''>No hay opciones disponibles</option>";
             }
             for (var x = 0; x < resultado.length; x++) {
