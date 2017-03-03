@@ -16,7 +16,7 @@ class EmailSenderService {
             mailService.sendMail {
                 from "confirmaciones@micreditolibertad.com"
                 to correos.emailPersonal
-                subject (".:" + datosSolicitud?.configuracion?.nombreComercial + ":. Solicitud " + datosSolicitud?.productoSolicitud?.solicitud?.folio?.padLeft(6, '0'))
+                subject (".:" + datosSolicitud?.configuracion?.nombreComercial + ":. Detalles de tu Crédito Libertad ")
                 html (view:"/solicitud/correoConfirmacion", model: [configuracion: datosSolicitud?.configuracion, productoSolicitud: datosSolicitud?.productoSolicitud, resultadoMotorDeDecision: datosSolicitud?.resultadoMotorDeDecision, pasoActual: datosSolicitud?.pasoActual])
             }
         } catch(Exception e){

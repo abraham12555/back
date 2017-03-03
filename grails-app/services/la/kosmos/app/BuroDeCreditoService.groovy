@@ -225,7 +225,8 @@ class BuroDeCreditoService {
                     }else{
                         //Response FAIL
                         //response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>ERRRUR25                         1101YES05000530002**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
-                        response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>ERRRUR251234567890     &&&45678900506PA05050609PA0403ASDES05000710002**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
+                        //response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>ERRRUR251234567890     &&&45678900506PA05050609PA0403ASDES05000710002**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
+                        response = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>ERRRAR25LIB-0000000000000000002820014NO AUTENTICADOES05000660002**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
                     }
                 }else{
                     //Response PROD
@@ -240,7 +241,10 @@ class BuroDeCreditoService {
                 println "REPORTE A ANALIZAR..."+response
                 return analizarReporte(response,solicitud,configuracion.reintentos,referenciaOperador)
             }catch(Exception e){
-                println "EXCEPTION GENERAL" +e
+                respuesta.error = 500
+                respuesta.errorDesc = "No se pudo obtener el reporte de buro de credito en un primer intento, En breve recibiras ayuda."
+                println "EXCEPTION GENERAL: " +e
+                return respuesta
             }		  
         }else{
             if(solicitud.reporteBuroCredito.errorConsulta == null){
@@ -298,13 +302,24 @@ class BuroDeCreditoService {
                 //SE PUEDE DETECTAR EL SEGMENTO DE ERROR
                 if(segmentos != null){
                     Integer peticiones = BitacoraBuroCredito.countBySolicitud(solicitud)
-                    if( peticiones <= reintentos )
-                    segmentos.each{ ReporteBuroSegmentoError segmento ->
-                        respuesta.segmento = segmento.segmentoError.pasoPlataforma
+                    if( peticiones <= reintentos ) {
+                        if(segmentos && (segmentos?.size() > 0)) {
+                            respuesta.problemasBuro  = []
+                            segmentos.each { segmento ->
+                                def mapa = [:]
+                                mapa.segmento = segmento.segmentoError.descripcion
+                                mapa.pasoError = [:]
+                                mapa.pasoError.numeroDePaso = segmento.segmentoError.pasoSolicitud?.numeroDePaso
+                                mapa.pasoError.tituloPaso = segmento.segmentoError.pasoSolicitud?.titulo
+                                respuesta.problemasBuro << mapa
+                            }
+                        }
                     }
                 }
                 //NO SE PUDO AUTENTICAR AL USUARIO.
                 if(reporteBuroCredito.tipoErrorBuroCredito.tipo == "AR" && reporteBuroCredito.tipoErrorBuroCredito.numeroCampo == "00"){
+                    respuesta.problemasBuro = null
+                    respuesta.remove("problemasBuro")
                     respuesta.segmento = "AUTENTICADOR"
                 }
             }

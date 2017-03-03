@@ -119,8 +119,7 @@
                         <div class="floatLeft marginLeft10">
                             <p class="formTitleColor font16 letterspacing1.5">NOS
                                 COMUNICAREMOS</p>
-                            <p class="formTitleColor font16 letterspacing1.5">CONTIGO VIA
-                                TELEFONICA EN:</p>
+                            <p class="formTitleColor font16 letterspacing1.5">CONTIGO.</p>
                         </div>
                     </div>
                 </div>

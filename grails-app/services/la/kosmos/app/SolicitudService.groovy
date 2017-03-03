@@ -760,9 +760,18 @@ class SolicitudService {
             solicitudRest.solicitud.productoSeleccionado.seguro = datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda
             solicitudRest.solicitud.productoSeleccionado.tasaDeInteres =  datosSolicitud.productoSolicitud?.producto?.tasaDeInteres
             solicitudRest.solicitud.productoSeleccionado.montoDelCredito = datosSolicitud.productoSolicitud?.montoDelCredito
-        
-            solicitudRest.solicitud.generales.nombre = solicitud.cliente.nombre
-            solicitudRest.solicitud.generales.segundoNombre = ""
+            
+            def primerNombre
+            def segundoNombre
+            def nombreCompleto = solicitud.cliente.nombre?.split()
+            primerNombre = nombreCompleto?.getAt(0)
+            if(nombreCompleto.size() > 1) {
+                nombreCompleto = nombreCompleto[1..nombreCompleto.size()-1]
+                segundoNombre = nombreCompleto.join(' ')
+            }
+            
+            solicitudRest.solicitud.generales.nombre = primerNombre
+            solicitudRest.solicitud.generales.segundoNombre = (segundoNombre ?: "")
             solicitudRest.solicitud.generales.apellidoPaterno = solicitud.cliente.apellidoPaterno
             solicitudRest.solicitud.generales.apellidoMaterno = solicitud.cliente.apellidoMaterno
             solicitudRest.solicitud.generales.numeroCelular = (telefonos?.telefonoCelular ?: "")
