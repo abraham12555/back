@@ -31,6 +31,6 @@ class SolicitudDeCredito implements Serializable{
     }
     
     static mapping = {
-        id generator: 'sequence', column: 'id_status_de_solicitud', params:[sequence:'status_de_solicitud_id_seq']
+        id generator: 'sequence', column: 'id_solicitud_de_credito', params:[sequence:'solicitud_de_credito_id_seq']
     }
 }

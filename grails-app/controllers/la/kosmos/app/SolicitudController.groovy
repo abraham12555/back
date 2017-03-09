@@ -63,7 +63,7 @@ class SolicitudController {
             session.archivoTemporal = null
             session.estadoRecuperacion = null
             //redirect action: "formulario"
-            redirect action: "test"
+            redirect action: "formulario"
         } else {
             redirect controller: "cotizador", action: "index"
         }
@@ -497,7 +497,7 @@ class SolicitudController {
         return accountResume 
     }
 	
-    def formulario() {
+    def test() {
         println params
         def tipoLogin;
         def datosLogin;
@@ -658,6 +658,11 @@ class SolicitudController {
                         if(session.identificadores.idEmpleo) {
                             session.estadoRecuperacion.paso3 = true
                         }
+                    } else if (pasoAnterior == 4) {
+                        if(!session.identificadores.idParametroConsultaBuro) {
+                            println session["consultaBuro"]
+                            session.identificadores.idParametroConsultaBuro = session["consultaBuro"]?.idParametroConsultaBuro
+                        }
                     }
                 }
                 if(siguientePaso == 0){
@@ -668,30 +673,36 @@ class SolicitudController {
                         def respuestaMotor
                         if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
                             if(session.identificadores){
-                                def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
-                                respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
-                                if(respuestaMotor){
-                                    def resultadoMotorDeDecision = new ResultadoMotorDeDecision()
-                                    resultadoMotorDeDecision.solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
-                                    resultadoMotorDeDecision.probabilidadDeMora = respuestaMotor.probabilidadDeMora
-                                    resultadoMotorDeDecision.razonDeCobertura = respuestaMotor.razonDeCobertura
-                                    resultadoMotorDeDecision.dictamenDePerfil = respuestaMotor.dictamenDePerfil
-                                    resultadoMotorDeDecision.dictamenCapacidadDePago = respuestaMotor.dictamenCapacidadDePago
-                                    resultadoMotorDeDecision.dictamenConjunto = respuestaMotor.dictamenConjunto
-                                    resultadoMotorDeDecision.dictamenDePoliticas = respuestaMotor.dictamenDePoliticas
-                                    resultadoMotorDeDecision.dictamenFinal = respuestaMotor.dictamenFinal
-                                    resultadoMotorDeDecision.log = respuestaMotor.log
-                                    if(resultadoMotorDeDecision.save(flush: true)) {
-                                        session.identificadores.idMotor = resultadoMotorDeDecision.id
-                                    } else {
-                                        if (resultadoMotorDeDecision.hasErrors()) {
-                                            resultadoMotorDeDecision.errors.allErrors.each {
-                                                println it
+                                def solicitudAntesMotor = SolicitudDeCredito.get(session.identificadores.idSolicitud)
+                                if(solicitudAntesMotor?.reporteBuroCredito && !solicitudAntesMotor?.reporteBuroCredito?.tipoErrorBuroCredito) {
+                                    def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
+                                    respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
+                                    if(respuestaMotor){
+                                        def resultadoMotorDeDecision = new ResultadoMotorDeDecision()
+                                        resultadoMotorDeDecision.solicitud = solicitudAntesMotor
+                                        resultadoMotorDeDecision.probabilidadDeMora = respuestaMotor.probabilidadDeMora
+                                        resultadoMotorDeDecision.razonDeCobertura = respuestaMotor.razonDeCobertura
+                                        resultadoMotorDeDecision.dictamenDePerfil = respuestaMotor.dictamenDePerfil
+                                        resultadoMotorDeDecision.dictamenCapacidadDePago = respuestaMotor.dictamenCapacidadDePago
+                                        resultadoMotorDeDecision.dictamenConjunto = respuestaMotor.dictamenConjunto
+                                        resultadoMotorDeDecision.dictamenDePoliticas = respuestaMotor.dictamenDePoliticas
+                                        resultadoMotorDeDecision.dictamenFinal = respuestaMotor.dictamenFinal
+                                        resultadoMotorDeDecision.log = respuestaMotor.log
+                                        if(resultadoMotorDeDecision.save(flush: true)) {
+                                            session.identificadores.idMotor = resultadoMotorDeDecision.id
+                                        } else {
+                                            if (resultadoMotorDeDecision.hasErrors()) {
+                                                resultadoMotorDeDecision.errors.allErrors.each {
+                                                    println it
+                                                }
                                             }
                                         }
+                                    } else {
+                                        println("No se recibio respuesta del Motor de Decisión....")
                                     }
                                 } else {
-                                    println("No se recibio respuesta del Motor de Decisión....")
+                                    println "No se invoca el motor porque no se tiene respuesta del buro o porque se tienen errores"
+                                    println "Reporte Buro: " + solicitudAntesMotor?.reporteBuroCredito + " - " + solicitudAntesMotor?.reporteBuroCredito?.tipoErrorBuroCredito
                                 }
                             }
                         }
@@ -803,7 +814,7 @@ class SolicitudController {
                 }
             } else {
                 println ("Que segun no llego el parametro del paso siguiente :S")
-                redirect action: "test"
+                redirect action: "formulario"
             }
         } else {
             session.invalidate()
@@ -878,7 +889,7 @@ class SolicitudController {
                 ocr = false
             }
         }else if (params.docType == "reciboCfe" || params.docType == "reciboTelmex"){
-            respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos, "UtilityBill");
+            respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos, session.identificadores?.idSolicitud, "UtilityBill");
             ephesoft = true
         } else if (params.docType == "ComprobanteDeIngresos"){
             def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
@@ -1038,7 +1049,7 @@ class SolicitudController {
         render respuesta as JSON
     }
     
-    def test(){
+    def formulario(){
         if(session.cotizador){
             def tipoLogin;
             def datosLogin;
@@ -1230,7 +1241,7 @@ class SolicitudController {
                 session.estadoRecuperacion = datosRecuperados.llenado
                 println "Estado: " + session.estadoRecuperacion
                 params.keySet().asList().each { params.remove(it) }
-                forward action:'test', params: [paso: ultimoPaso]
+                forward action:'formulario', params: [paso: ultimoPaso]
             } else {
                 def temporal = SolicitudTemporal.findWhere(token: params.token)
                 if(temporal){
@@ -1246,7 +1257,7 @@ class SolicitudController {
                     session.cargarImagen = datosRecuperados.cargarImagen
                     session.respuestaEphesoft = datosRecuperados.prefilled
                     params.keySet().asList().each { params.remove(it) }
-                    forward action:'test', params: [paso: datosRecuperados.ultimoPaso]
+                    forward action:'formulario', params: [paso: datosRecuperados.ultimoPaso]
                 } else {
                     def entidadFinanciera = EntidadFinanciera.get(6)
                     def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
@@ -1298,7 +1309,7 @@ class SolicitudController {
     
     def enviarShortUrl() {
         def respuesta = [:]
-        def toPhone = (session.cotizador?.telefonoCliente ?: generales?.telefonoCliente?.telefonoCelular)
+        def toPhone = (session.cotizador?.telefonoCliente ?: session["pasoFormulario"]?.telefonoCliente?.telefonoCelular)
         if(toPhone){
             toPhone = toPhone.replaceAll('-', '') 
             if(smsService.sendShortUrl(toPhone, session.shortUrl, "Libertad SF - Tu URL personalizada es: ")){

@@ -11,7 +11,7 @@ class DashboardService {
     def listaGeneralDeSolicitudes() {
         def respuesta = []
         def usuario = springSecurityService.currentUser
-        def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id
+        def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " order by ps.solicitud.fechaDeSolicitud"
         def resultados = ProductoSolicitud.executeQuery(query)
         resultados?.each {
             def solicitud = [:]
@@ -23,6 +23,27 @@ class DashboardService {
             solicitud.autenticadoMediante = "Plataforma"
             solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
             solicitud.fechaDeSolicitud = it.solicitud.fechaDeSolicitud
+            solicitud.montoCredito = it.montoDelCredito
+            respuesta << solicitud
+        }
+        return respuesta
+    }
+    
+    def listaDeSolicitudesTemporales() {
+        def respuesta = []
+        def usuario = springSecurityService.currentUser
+        def query = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " order by s.fechaDeSolicitud"
+        def resultados = SolicitudTemporal.executeQuery(query)
+        resultados?.each {
+            def solicitud = [:]
+            solicitud.id = it.id
+            solicitud.folio = "-"
+            solicitud.nombreCliente = it.nombreDelCliente
+            solicitud.statusDeSolicitud = "LLENADO DE SOLICITUD"
+            solicitud.puntoDeVenta = ""
+            solicitud.autenticadoMediante = "Plataforma"
+            solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
+            solicitud.fechaDeSolicitud = it.fechaDeSolicitud
             solicitud.montoCredito = it.montoDelCredito
             respuesta << solicitud
         }
@@ -136,12 +157,13 @@ class DashboardService {
             respuesta.solicitud = solicitud
             respuesta.referenciasCliente = ReferenciaPersonalCliente.findAllWhere(cliente: respuesta.cliente)
             respuesta.direccionCliente = DireccionCliente.findWhere(cliente: respuesta.cliente, vigente: true)
-            respuesta.empleoCliente = EmpleoCliente.findWhere(cliente: respuesta.cliente)
+            respuesta.empleoCliente = EmpleoCliente.findWhere(cliente: respuesta.cliente, vigente: true)
             respuesta.telefonosCliente = TelefonoCliente.findAllWhere(cliente: respuesta.cliente, vigente: true)
             respuesta.emailCliente = EmailCliente.findAllWhere(cliente: respuesta.cliente, vigente: true)
             respuesta.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: respuesta.solicitud)
             respuesta.productoSolicitud = ProductoSolicitud.findWhere(solicitud: respuesta.solicitud)
             respuesta.verificacion = VerificacionSolicitud.findWhere(solicitud: respuesta.solicitud)
+            respuesta.resultadoMotor = ResultadoMotorDeDecision.findWhere(solicitud: respuesta.solicitud)
             respuesta.preguntas = PreguntaVerificacionSolicitud.findAllWhere(solicitud: respuesta.solicitud)
             respuesta.fotosFachada = FotografiaSolicitud.findAll("from FotografiaSolicitud fs where fs.solicitud.id = :idSolicitud And fs.tipoDeFotografia.referencia like 'fachada%'", [idSolicitud: solicitud.id])
             respuesta.fotosInterior = FotografiaSolicitud.findAll("from FotografiaSolicitud fs where fs.solicitud.id = :idSolicitud And fs.tipoDeFotografia.referencia like 'interior%'", [idSolicitud: solicitud.id])

@@ -10,7 +10,7 @@
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
 			hook: 'rel', /* the attribute tag to use for prettyPhoto hooks. default: 'rel'. For HTML5, use "data-rel" or similar. */
-			animation_speed: 'fast', /* fast/slow/normal */
+			animation_speed: 'normal', /* fast/slow/normal */
 			ajaxcallback: function() {},
 			slideshow: 5000, /* false OR interval time in ms */
 			autoplay_slideshow: false, /* true/false */
@@ -21,11 +21,11 @@
 			default_width: 500,
 			default_height: 344,
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
-			theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
+			theme: 'light_rounded ', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
 			horizontal_padding: 20, /* The padding on each side of the picture */
 			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */
 			wmode: 'opaque', /* Set the flash wmode attribute */
-			autoplay: true, /* Automatically start videos: True/False */
+			autoplay: false, /* Automatically start videos: True/False */
 			modal: false, /* If set to true, only the close button will close the window */
 			deeplinking: true, /* Allow prettyPhoto to update the url to enable deeplinking. */
 			overlay_gallery: true, /* If set to true, a gallery will overlay the fullscreen image on mouse over */
@@ -495,6 +495,8 @@
 
 			// Calculate the opened top position of the pic holder
 			projectedTop = scroll_pos['scrollTop'] + ((windowHeight/2) - (pp_dimensions['containerHeight']/2));
+                        projectedTop = projectedTop * 0.05;
+                        console.log("Altura proyectada: " + projectedTop);
 			if(projectedTop < 0) projectedTop = 0;
 
 			$ppt.fadeTo(settings.animation_speed,1);
@@ -507,6 +509,7 @@
 				},settings.animation_speed);
 			
 			// Resize picture the holder
+                        console.log("Altura proyectada: " + projectedTop);
 			$pp_pic_holder.animate({
 				'top': projectedTop,
 				'left': ((windowWidth/2) - (pp_dimensions['containerWidth']/2) < 0) ? 0 : (windowWidth/2) - (pp_dimensions['containerWidth']/2),
@@ -678,6 +681,7 @@
 				contentHeight = $pp_pic_holder.height(), contentwidth = $pp_pic_holder.width();
 
 				projectedTop = (windowHeight/2) + scroll_pos['scrollTop'] - (contentHeight/2);
+                                projectedTop = projectedTop * 0.05;
 				if(projectedTop < 0) projectedTop = 0;
 				
 				if(contentHeight > windowHeight)

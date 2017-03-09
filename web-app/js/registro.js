@@ -1,5 +1,4 @@
 function iniciarFormularioRegistro() {
-    console.log("Entrando a inicializar los elementos nuevos...");
 // animacion de fadeIn
     $('.register').addClass('animated fadeIn');
 
@@ -10,7 +9,6 @@ function iniciarFormularioRegistro() {
 
     $('.sigPaso').on('click', function () {
         if ($(this).hasClass('locked') === false) {
-            console.log("i ->" + $(this).parent().attr('id'));
             if ($(this).parent().attr('id') === 'first_name_form') {
                 submitFirstName();
             }
@@ -28,7 +26,6 @@ function iniciarFormularioRegistro() {
 
     $('.antPaso').on('click', function () {
         if ($(this).hasClass('locked') === false) {
-            console.log("i ->" + $(this).parent().attr('id'));
             if ($(this).parent().parent().attr('id') === 'email_form') {
                 $('#termsPriv').fadeIn();
                 $('.register').addClass('bounceOut');

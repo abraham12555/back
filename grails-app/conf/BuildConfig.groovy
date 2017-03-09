@@ -76,7 +76,7 @@ grails.project.dependency.resolution = {
         compile ':sequence-generator:1.2'
         compile "org.grails.plugins:spring-security-core:2.0.0"
         compile "org.grails.plugins:spring-security-ui:1.0-RC3"
-        
+        compile "org.grails.plugins:grails-melody:1.59.0"
         compile ":mail:1.0.7"
         //runtime ":jquery:1.11.1"
 

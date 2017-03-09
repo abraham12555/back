@@ -41,6 +41,7 @@ import java.nio.file.Files;
 
 import la.kosmos.app.ConfiguracionKosmos
 import la.kosmos.app.CodigoPostal
+import la.kosmos.app.SolicitudDeCredito
 import java.security.MessageDigest
 import org.awaitility.groovy.AwaitilityTrait
 import org.awaitility.core.ConditionTimeoutException
@@ -272,8 +273,10 @@ class DocumentSenderService implements AwaitilityTrait{
                     hoy.clearTime()
                     mapa.vigente = ((fechaDeExpiracion >= hoy) ? true : false)
                 }
-                classificationResult.solicitud = solicitud
-                classificationResult.save(flush: true)
+                if(solicitud) {
+                    classificationResult.solicitud = SolicitudDeCredito.get(solicitud as long)
+                    classificationResult.save(flush: true)
+                }
                 datosDocto = true
                 mapa.llenadoPrevio = true
             }
@@ -284,8 +287,10 @@ class DocumentSenderService implements AwaitilityTrait{
                 } else if (dossierSummary.status != "Rejected" && datosDocto == false){
                     println "[OCR Warning] El análisis tiene respuesta satisfactoria, pero no viene el classificationResult"
                 }
-                dossierSummary.solicitud = solicitud
-                dossierSummary.save(flush: true)
+                if(solicitud) {
+                    dossierSummary.solicitud = SolicitudDeCredito.get(solicitud as long)
+                    dossierSummary.save(flush: true)
+                }
                 validacionesDocto = true
             }
             mapa.exito = true

@@ -21,11 +21,12 @@ public class SmsService {
         def respuesta
         try{
             String randomCode = getRandomCode()
+            String mensajeArmado = ("Libertad SF - Tu Clave es: " + randomCode)
             Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
             Message message = Message.creator(
                 new PhoneNumber("+52" + to),
                 new PhoneNumber(PHONE_NUMBER),
-                "Libertad SF - Tu Codigo de Verificacion: " + randomCode)
+                mensajeArmado?.toUpperCase())
             .create()
 
             if(persistSms(message, randomCode)){
@@ -59,7 +60,8 @@ public class SmsService {
     }
     
     private String getRandomCode() {
-        def result = RandomStringUtils.randomAlphanumeric(5).toUpperCase()
+        //def result = RandomStringUtils.randomAlphanumeric(5).toUpperCase()
+        def result = RandomStringUtils.randomNumeric(5).toUpperCase()
         result
     }
 

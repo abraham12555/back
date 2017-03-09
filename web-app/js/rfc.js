@@ -40,12 +40,14 @@ function generarHomoclave(nombre, apellidoPaterno, apellidoMaterno, rfcParcial) 
     residuo = (sum % 11);
     if (residuo === 0) {
         rfcParcial += 0;
-    } else if (residuo === 10 || residuo === 1) {
-        rfcParcial += 'A';
-    } else if (residuo > 0) {
-        rfcParcial += (11 - residuo);
+    } else { 
+        residuo = (11 - residuo);
+        if (residuo === 10) {
+            rfcParcial += 'A';
+        } else {
+            rfcParcial += residuo;
+        }
     }
-
     return rfcParcial;
 }
 

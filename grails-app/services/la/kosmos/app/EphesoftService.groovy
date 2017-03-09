@@ -40,29 +40,29 @@ class EphesoftService {
     
     File finalImage;
 
-    def ocrClassifyExtract(def listaDeArchivos, def docType) {
+    def ocrClassifyExtract(def listaDeArchivos, def idSolicitud, def docType) {
         def datosArchivo = listaDeArchivos?.getAt(0);
         PostMethod mPost
         def responseBody = [:]
         File file0
         File file1
         if (datosArchivo.extension == ".pdf") {
-            file0 = new File("/tmp/BCC_Doc0.pdf")
+            file0 = new File("/tmp/BCC_Doc" + idSolicitud + ".pdf")
         } else {
-            file0 = new File("/tmp/BCC_Doc0" + datosArchivo.extension)
+            file0 = new File("/tmp/BCC_Doc" + idSolicitud + datosArchivo.extension)
         }
         println("#######Ruta del archivo0: " + file0.absolutePath)
         file0.withOutputStream { fos ->
             fos << datosArchivo.archivo
         }
-        println("#######Ruta del archivo1: " + file0.absolutePath)
         String ruta = file0.absolutePath.toString();
         if (datosArchivo.extension == ".pdf") {
             file1 = file0
         } else {
-            String namePDF = convertPDF(ruta);
+            String namePDF = convertPDF(ruta, idSolicitud);
             file1 = new File(namePDF)
         }
+        println("#######Ruta del archivo1: " + file1.absolutePath)
         Part[] parts = new Part[3];
         try {
             def configuracion = ConfiguracionKosmos.get(1)
@@ -125,7 +125,7 @@ class EphesoftService {
         }
     }
 
-    public String convertPDF(String path) {
+    public String convertPDF(String path, long idSolicitud) {
         String nombrePDF
         Document document = new Document();
         try {
@@ -133,7 +133,7 @@ class EphesoftService {
             Image image = Image.getInstance(filename);
             def height = image.getHeight()
             def width = image.getWidth()
-            nombrePDF = "/tmp/BCC_Doc0.pdf";
+            nombrePDF = "/tmp/BCC_Doc" + idSolicitud + ".pdf";
             println("//////////INICIALIZANDO....")
             Rectangle size = new Rectangle(width,height);
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(nombrePDF));
@@ -432,16 +432,16 @@ class EphesoftService {
         }else {
             mapa.error = respuestaEphesoft.Error.Cause.text()
         }
-        if(mapa != true) {
+        /*if(mapa.error != true) {
             mapa.error = true
-        }
+        }*/
         return mapa
      
     }
 
     def generarBase64() {
         def base64
-        byte[] array = Files.readAllBytes(new File("/tmp/BCC_Doc0.pdf").toPath());
+        byte[] array = Files.readAllBytes(new File("/tmp/BCC_Doc.pdf").toPath());
         base64 = Base64.encodeBase64String(array)
         return base64
     }

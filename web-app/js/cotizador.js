@@ -102,14 +102,11 @@ function initSteps() {
     $('.cambiar').click(function () {
 //get step and execute step action
         var parentStep = $(this).closest('.cotizadorStep');
-        //var nextActionElm = $(parentStep).find('.nextAction');
+
         var currentStep = step;
         step = $(parentStep).data('step');
         step = step - 1;
-        //stepAction(step,'back');
 
-        //Slide UP this step
-        console.log("Paso a cambiar: " + step);
         if (step === 0) {
             priceSelected = 0;
             enganche = 0;
@@ -158,17 +155,16 @@ function initSteps() {
 
 function initActions() {
     $('.nextAction').click(function () {
-//get step and execute step action
-        console.log("Opacity: " + $(this).closest('.cotizadorStep').css('opacity'));
+
         if ($(this).closest('.cotizadorStep').css('opacity') === '1') {
             var parentStep = $(this).closest('.cotizadorStep');
             var tipoDePaso = $(parentStep).data('tipoDePaso');
             step = $(parentStep).data('step');
-            console.log("Antes de StepAction");
+
             stepAction(step, tipoDePaso, $(this));
-            console.log("Tipo de Paso: " + tipoDePaso + " - aplicacion variable: " + $('#aplicacionVariable').val());
+
             if ((tipoDePaso !== "stepProducto" && $('#aplicacionVariable').val() === "true") || ($('#aplicacionVariable').val() === "false")) {
-                console.log("Antes de Habilitar Paso " + step);
+
                 habilitarPaso(step, lastStep, parentStep);
             }
         }
@@ -180,9 +176,7 @@ function removeActions() {
 }
 
 function habilitarPaso(step, lastStep, parentStep) {
-    console.log("Step: " + step);
-    console.log("lastStep: " + lastStep);
-    console.log("parentStep: " + parentStep);
+
     if (step === lastStep) {
         $('.summaryDiv').slideDown();
         $('.actionsDiv').slideUp();
@@ -256,7 +250,7 @@ function stepAction(step, tipoDePaso, elm) {
         var modelID = $(elm).data('id');
         var modelPrice = $(elm).data('price');
         priceSelected = modelPrice;
-        console.log("Precio: " + priceSelected);
+
         modelName = $(elm).html();
         $('#precioDelProducto').html(formatCurrency(priceSelected, "$"));
         $("#modeloElegido").html(modelName);
@@ -307,8 +301,7 @@ function stepAction(step, tipoDePaso, elm) {
             frecMonto = $(elm).find('.frecuenciaCantidad').html();
             frecMonto = Number(frecMonto.replace(/[^0-9\.]+/g, ""));
             frecTotalPagos = $(elm).find('.frecuenciaTotal').html();
-            console.log(frecMonto);
-            console.log(frecTotalPagos);
+
         }
         $("#txtPlazo").val(frecTotalPagos);
         $("#txtPago").val(frecMonto);
@@ -321,7 +314,6 @@ function stepAction(step, tipoDePaso, elm) {
         $("#txtSeguro").val(seguroID);
     }
     if (step === ultimoPaso) {
-//show button
         $("#btnCotSub").prop("disabled", false);
         $('#submitCotizador').removeClass('blur');
         $('#terminosYCondiciones').fadeIn();
@@ -480,7 +472,6 @@ function identificarProducto(rubro, documento, atraso) {
                 var maximo = (Number(respuesta.montoMaximo) / 1000);
                 var inicial = minimo;
                 var incremento = 1;
-                console.log("Existe Slider Monto: " + $("#slider").slider("instance"));
                 if ($("#slider").slider("instance") !== undefined) {
                     reiniciarSlider('slider', ' Mil', 'dinero', minimo, maximo, inicial, incremento);
                 } else {
@@ -514,13 +505,6 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
             var respuesta = eval(data);
             var html = "";
             if (respuesta.exito) {
-                /*html += "<div class='payChoice'>";
-                 html += "<div class='col6 floatLeft marginBottom10'>";
-                 html += "<div class='paddingAside5'>";
-                 html += "<p data-frecuencia='" + respuesta.periodicidad.nombre.toLowerCase() + "' class='width350 cotizador-box frecuencia blueButton'>" + respuesta.periodicidad.nombre + "</p>";
-                 html += "</div>";
-                 html += "</div>";
-                 html += "</div>";*/
                 html += "<h1 class='dark-blue-titles font20 fontWeight400 letterspacing1 marginBottom20 clearFloat' style='color:#005398;'><span id='pagosleyenda'>¿En Cuántas " + respuesta.periodicidad.nomenclatura + " Pagarás tu Crédito?</span></h1>";
                 html += "<div class='marginTop52'>";
                 html += "<div class='marginBottom25 clearFix loading-bar-container inner marginBottom40'>";
@@ -542,7 +526,7 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
                 $('#periodicidadList').html('');
                 $('#periodicidadList').html(html);
                 frecuencia = respuesta.periodicidad.nombre.toLowerCase();
-                periodicidadElegida = respuesta.periodicidad.id
+                periodicidadElegida = respuesta.periodicidad.id;
                 $('#txtPeriodo').val(periodicidadElegida);
                 if ($("#listaDeFrecuencias").slider("instance") !== undefined) {
                     reiniciarSlider('listaDeFrecuencias', '', 'cantidad', respuesta.plazoMinimo, respuesta.plazoMaximo, respuesta.plazoMinimo, respuesta.saltoSlider, respuesta.usarListaDePlazos, respuesta.plazosPermitidos);
@@ -600,7 +584,6 @@ function fakeAjax(action, id) {
                 '../images/nissan/2016-xtrail-blanca.png',
                 '../images/nissan/2016-xtrail-negra.png',
                 '../images/nissan/2016-xtrail-verde.png');
-        console.log("-------> Seleccionado el color: " + modelColorBG[id] + " - id " + id);
         return modelColorBG[id];
     }
 }
@@ -652,7 +635,6 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
             if (tipoDeCifra === "dinero") {
                 montoElegido = (ui.value * 1000);
                 $('#montoElegido').html(formatCurrency(montoElegido, "$"));
-                //Optimizar codigo:
                 $("#montoElegido2").html(formatCurrency(montoElegido, "$"));
                 $("#montoElegido3").html(formatCurrency(montoElegido, "$"));
             } else {
@@ -676,7 +658,7 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
             if (tipoDeCifra === "dinero") {
                 montoElegido = (ui.value * 1000);
                 $('#montoElegido').html(formatCurrency(montoElegido, "$"));
-                //Optimizar codigo:
+
                 $("#montoElegido2").html(formatCurrency(montoElegido, "$"));
                 $("#montoElegido3").html(formatCurrency(montoElegido, "$"));
             } else {
@@ -696,7 +678,7 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
 }
 
 function iniciarSliderEnganche(elemento, porcentajeMinimo, porcentajeMaximo, valorInicial, incremento) {
-    //slider
+
     $("#" + elemento).slider({
         animate: "fast",
         value: valorInicial,
@@ -708,7 +690,7 @@ function iniciarSliderEnganche(elemento, porcentajeMinimo, porcentajeMaximo, val
             restante = montoElegido - enganche;
             $('#engancheElegido').html("$" + (enganche).formatMoney(2, '.', ','));
             $('#' + elemento + ' .ui-slider-handle').html('< ' + valorInicial + '% >');
-            //Optimizar codigo:
+
             $("#engancheElegido2").html("$" + enganche.formatMoney(2, '.', ','));
             $("#engancheElegido3").html("$" + enganche.formatMoney(2, '.', ','));
         },
@@ -717,7 +699,7 @@ function iniciarSliderEnganche(elemento, porcentajeMinimo, porcentajeMaximo, val
             restante = montoElegido - enganche;
             $('#engancheElegido').html("$" + (enganche).formatMoney(2, '.', ','));
             $('#' + elemento + ' .ui-slider-handle').html('< ' + ui.value + '% >');
-            //Optimizar codigo:
+
             $("#engancheElegido2").html("$" + enganche.formatMoney(2, '.', ','));
             $("#engancheElegido3").html("$" + enganche.formatMoney(2, '.', ','));
         }
@@ -744,8 +726,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
                 montoSeguro = respuesta.montoSeguro;
                 $('#txtMontoSeguro').val(montoSeguro);
                 $('#pagoCalculado').html("Pago " + respuesta.nombrePeriodo + ": " + formatCurrency(respuesta.renta, "$"));
-                /*$('#datosSeguro').html("Tu crédito incluye un seguro financiado por " + formatCurrency(respuesta.montoSeguro, "$"));
-                 $('#montoElegido').html(formatCurrency(montoElegido, "$") + " + " + formatCurrency(respuesta.montoSeguro, "$") + " de Seguro");*/
+
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "warning");
             }
@@ -758,7 +739,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
 
 function inicializarBotonesPeriodicidad() {
     $('.frecuencia').click(function () {
-        console.log("Lo que sea");
+
         $('.frecuencia').removeClass('blueButton');
         $(this).addClass('blueButton');
         frecuencia = $(this).data('frecuencia');
@@ -849,7 +830,7 @@ function cargarImagen(tipo, identificador) {
                     });
                 });
             } else {
-                ///images/cajaLibertad/logo.png
+
                 $('#imagenDelProducto').animate({
                     opacity: 0
                 }, 'fast', function () {
@@ -875,13 +856,10 @@ function esperePorFavor() {
         icon: "/images/spinner.gif",
         mask: true
     });
-    console.log("Se ha mostrado el modal");
 }
 
 function cargaCompletada() {
-    //$("body").mLoading('hide');
     setTimeout(function () {
         $("body").mLoading('hide');
     }, 1000);
-    console.log("Se ha ocultado el modal");
 }

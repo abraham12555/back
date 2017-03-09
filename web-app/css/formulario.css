@@ -391,6 +391,11 @@ body{
     box-shadow: 0 0 7px 0 #fb5e48;
 }
 
+.yellowButton{
+    background-color: #f0ad4e;
+    box-shadow: 0 0 7px 0 #f0ad4e;
+}
+
 .backgroundGrayColor{
     background-color:#9da2be;
 }

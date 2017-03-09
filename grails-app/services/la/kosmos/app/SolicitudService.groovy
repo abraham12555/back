@@ -385,12 +385,42 @@ class SolicitudService {
             datosPaso.consultaBancaria.retiroCorrecto=(params.retiroCorrecto ? params.retiroCorrecto:null)
             datosPaso.consultaBancaria.saldoCorrecto=(params.saldoCorrecto ? params.saldoCorrecto:null)
         } else if (pasoEnviado.tipoDePaso.nombre == "consultaBuro"){
-            if(!datosPaso.consultaBuro){
+            println "Entra a guardar datos del buro!!!"
+            println params.tCredito
+            println params.creditoA
+            println params.creditoH
+            println params.numeroTarjeta
+            if(!datosPaso.consultaBuro) {
                 datosPaso.consultaBuro = [:]
             }
-            datosPaso.consultaBuro.tCredito=(params.tCredito ? params.tCredito:null)
-            datosPaso.consultaBuro.creditoA=(params.creditoA ? params.creditoA:null)
-            datosPaso.consultaBuro.creditoH=(params.creditoH ? params.creditoH:null)
+            datosPaso.consultaBuro.tCredito = (params.tCredito ? params.tCredito : null)
+            datosPaso.consultaBuro.creditoA = (params.creditoA ? params.creditoA : null)
+            datosPaso.consultaBuro.creditoH = (params.creditoH ? params.creditoH : null)
+            datosPaso.consultaBuro.numeroTarjeta = (params.numeroTarjeta ? params.numeroTarjeta : null)
+            
+            def parametroConsultaBuro
+            def solicitud = SolicitudDeCredito.get(identificadores?.idSolicitud as long)
+            if(identificadores?.idParametroConsultaBuro) {
+                parametroConsultaBuro = ParametroConsultaBuro.get(identificadores?.idParametroConsultaBuro as long)
+            } else {
+                parametroConsultaBuro = new ParametroConsultaBuro()
+            }
+            parametroConsultaBuro.solicitud = solicitud
+            parametroConsultaBuro.numeroDeTarjeta = datosPaso.consultaBuro.numeroTarjeta
+            parametroConsultaBuro.tieneTarjeta = ((datosPaso.consultaBuro.tCredito == "SI") ? true : false )
+            parametroConsultaBuro.tieneCreditoAutomotriz = ((datosPaso.consultaBuro.creditoA == "SI") ? true : false )
+            parametroConsultaBuro.tieneCreditoHipotecario = ((datosPaso.consultaBuro.creditoH == "SI") ? true : false )
+            if(parametroConsultaBuro.save(flush: true)) {
+                println("Los parametros de consulta a buro se han registrado correctamente")
+                datosPaso.consultaBuro.idParametroConsultaBuro = parametroConsultaBuro.id
+            } else {
+                if (parametroConsultaBuro.hasErrors()) {
+                    parametroConsultaBuro.errors.allErrors.each {
+                        println it
+                    }
+                }
+            }
+            
         } else if (pasoEnviado.tipoDePaso.nombre == "resumen"){
             
         }
@@ -441,7 +471,7 @@ class SolicitudService {
                 subdir.mkdir()
                 println (documento.rutaDelArchivo)
                 if(tipoDeDocumento == "reciboCfe" || tipoDeDocumento == "reciboTelmex"){
-                    def fis = new FileInputStream("/tmp/BCC_Doc0.pdf")
+                    def fis = new FileInputStream("/tmp/BCC_Doc" + solicitud.id + ".pdf")
                     def fos = new FileOutputStream(documento.rutaDelArchivo)
                     fos << fis
                     fis.close()
@@ -486,7 +516,8 @@ class SolicitudService {
                 subdir.mkdir()
                 println (documento.rutaDelArchivo)
                 if(ephesoft){
-                    def fis = new FileInputStream("/tmp/" + (ephesoft ? "BCC_Doc0.pdf" : archivo.nombreDelArchivo ))
+                    println "Moviendo documento temporal de Ephesoft..."
+                    def fis = new FileInputStream("/tmp/" + (ephesoft ? "BCC_Doc0" +  +".pdf" : archivo.nombreDelArchivo ))
                     def fos = new FileOutputStream(documento.rutaDelArchivo)
                     fos << fis
                     fis.close()
@@ -840,10 +871,14 @@ class SolicitudService {
                 }
             }
             
-            def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
+            if(datosBuroDeCredito?.reporte?.tipoErrorBuroCredito) {
+                solicitudRest.solicitud.buroDeCredito = ""
+            } else {
+                def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
             
-            if(bitacoraDeBuro){
-                solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+                if(bitacoraDeBuro){
+                    solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+                }
             }
             
             /*solicitudRest.solicitud.buroDeCredito.apellidoPaterno = (datosBuroDeCredito.reporte?.apellidoPaterno ? datosBuroDeCredito.reporte?.apellidoPaterno : "")
@@ -1108,6 +1143,7 @@ class SolicitudService {
         def telefonosCliente = TelefonoCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
         def emailCliente = EmailCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
         def documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
+        def consultaBuro = ParametroConsultaBuro.findWhere(solicitud: solicitud)
         
         datosSolicitud.identificadores = [:]
         datosSolicitud.pasoFormulario = [:]
@@ -1267,6 +1303,15 @@ class SolicitudService {
             documentosSolicitud.each {
                 datosSolicitud.tiposDeDocumento."$it.tipoDeDocumento.nombreMapeo" = true
             }
+        }
+        
+        if(consultaBuro){
+            datosSolicitud.identificadores.idParametroConsultaBuro = consultaBuro.id
+            datosSolicitud.consultaBuro = [:]
+            datosSolicitud.consultaBuro.tCredito = consultaBuro.tieneTarjeta
+            datosSolicitud.consultaBuro.creditoA = consultaBuro.tieneCreditoAutomotriz
+            datosSolicitud.consultaBuro.creditoH = consultaBuro.tieneCreditoHipotecario
+            datosSolicitud.consultaBuro.numeroTarjeta = consultaBuro.numeroDeTarjeta
         }
         datosSolicitud
     }

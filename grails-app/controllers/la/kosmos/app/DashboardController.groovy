@@ -16,11 +16,14 @@ class DashboardController {
     
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
+        def temporales = dashboardService.listaDeSolicitudesTemporales()
         def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
         session.configuracion = configuracion
         session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
+        solicitudes.addAll(temporales)
+        solicitudes = solicitudes.sort { it.fechaDeSolicitud }
         println "Regresando: " + solicitudes
-        [solicitudes: solicitudes]
+        [solicitudes: solicitudes, temporales: temporales]
     }
     
     def solicitudes() { 
@@ -91,7 +94,7 @@ class DashboardController {
         def usuarios = Usuario.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
         def roles = Rol.list()
         def productos = Producto.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
-		def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(springSecurityService.currentUser.entidadFinanciera).configuracionBuroCredito
+        def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(springSecurityService.currentUser.entidadFinanciera).configuracionBuroCredito
         [listaDeUsuarios: usuarios, listaDeRoles: roles, listaDeProductos: productos, configuracionBuroCredito:configuracionBuroCredito]
     }
     
@@ -192,11 +195,12 @@ class DashboardController {
         println params
         if(params.id){
             def archivo = DocumentoSolicitud.get(params.id as long)
+            def extension = (archivo.rutaDelArchivo.substring(archivo.rutaDelArchivo.lastIndexOf(".") + 1)).toLowerCase()
             println "Ruta: " + archivo.rutaDelArchivo
             def file = new File(archivo.rutaDelArchivo)
             if (file.exists()){
                 response.setContentType("application/octet-stream") // or or image/JPEG or text/xml or whatever type the file is
-                response.setHeader("Content-disposition", "attachment;filename=\""+archivo.tipoDeDocumento+"-" + archivo.solicitud.id + ".pdf\"")
+                response.setHeader("Content-disposition", "attachment;filename=\""+archivo.tipoDeDocumento+"-" + archivo.solicitud.id + "." + extension + "\"")
                 response.outputStream << file.bytes
             } else {
                 render "Error!"
@@ -270,6 +274,39 @@ class DashboardController {
             response.contentType = 'image/' + extension
             response.outputStream << imageInByte 
             response.outputStream.flush()
+        } else {
+            def respuesta = [:]
+            respuesta.mensaje = "No cuenta con fotografia."
+            render respuesta as JSON
+        }
+    }
+    
+    def previsualizarDocumento() {
+        println params
+        if(params.id){
+            try {
+                def documento = DocumentoSolicitud.get(params.id as long)
+                String ruta = documento.rutaDelArchivo
+                def extension = (documento.rutaDelArchivo.substring(documento.rutaDelArchivo.lastIndexOf(".") + 1)).toLowerCase()
+                println extension
+                if(extension == "pdf") {
+                
+                } else {
+                    File imageFile = new File(ruta);
+                    if (imageFile.exists()){
+                        byte[] imageInByte = imageFile.bytes
+                        response.setHeader('Content-length', imageInByte.length.toString())
+                        response.contentType = 'image/' + extension
+                        response.outputStream << imageInByte 
+                        response.outputStream.flush()
+                    } else {
+                        println "El archivo " + ruta + " NO  existe..."
+                    }
+                }
+            } catch(Exception e) {
+                println "Ocurrio un error al consultar la imagen del documento"
+                e.printStackTrace()
+            }
         } else {
             def respuesta = [:]
             respuesta.mensaje = "No cuenta con fotografia."
