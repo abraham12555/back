@@ -45,7 +45,7 @@
                     <span class='goBtn'>Siguiente</span>
                 </p>
             </div>
-            <p style="margin-top: 10px;" id="leyendaCodigo"></p>
+            <p style="margin-top: 10px;" id="leyendaCodigo"><small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código..</strong></small></p>
         </div>
         <div id="thanks" class="hide">
             <strong>¡Gracias <span id="registeredName" class="darkBluetitle"></span>!</strong>

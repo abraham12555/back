@@ -4,6 +4,8 @@
     <form method="POST" name="formFormulario" id="formFormulario">
         <input type="hidden" name="siguientePaso" id="siguientePaso">
         <input type="hidden" name="pasoAnterior" id="pasoAnterior" value="${pasoActual?.numeroDePaso}">
+        <input type="hidden" name="medioDeContacto" id="valorMedioDeContacto">
+        <input type="hidden" name="opcionMedioDeContacto" id="opcMedioDeContacto">
         <div class="padding20">
             <img class="happines" src="${resource(dir:'images', file:'happines.png')}" alt="happines"/>
             <p class="center marginLeft24 font25 formTitleColor letterspacing2.3">¡FELICIDADES!</p>
@@ -78,13 +80,14 @@
                             <span class="headingColor"><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /> MXN</span>.
                         </g:else>    
                     </p>
-                    <p class="paddingTop20">A UNA TAZA ORDINARIA DEL
+                    <p class="paddingTop20">A UNA TAsA ORDINARIA FIJA DEL
                         <span class="headingColor"> ${((productoSolicitud.producto.tasaDeInteres * 12) * 100).round(2)} % ANUAL </span>
                     </p>
                     <p class="paddingTop20">TUS PAGOS SERÁN ${(productoSolicitud.periodicidad.nombre + "es").toUpperCase()} POR </p>
                     <p> 
                         <span class="headingColor"> <g:formatNumber number="${productoSolicitud?.montoDelPago}" format="\044###,###,###.##" /> MXN </span>
                     </p>
+                    <p class="paddingTop20">CAT PROMEDIO <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                     <p class="paddingTop20">
                         POR UN PERIODO DE
                         <span class="headingColor"> ${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}.</span>

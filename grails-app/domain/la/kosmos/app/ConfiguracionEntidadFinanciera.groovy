@@ -30,6 +30,9 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     boolean subirDocumentosOpcional = false
     int pasoLimiteNavegacionLibre
     boolean enviarNotificacionesPorCorreo = true
+    boolean usarTwilio = false
+    String mensajeConfirmacionCelular
+    String mensajeEnvioShortUrl
     
     static constraints = {
         nombreComercial (blank:false)
@@ -52,6 +55,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         wsdlMotorDeDecision (nullable: true)
         htmlTitle (nullable: false)
         configuracionBuroCredito (nullable: true)
+        mensajeConfirmacionCelular (nullable: true)
+        mensajeEnvioShortUrl (nullable: true)
     }
 
     static mapping = {

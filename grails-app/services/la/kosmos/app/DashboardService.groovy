@@ -1,12 +1,14 @@
 package la.kosmos.app
 
 import grails.transaction.Transactional
+import groovy.sql.Sql
 
 @Transactional
 class DashboardService {
 
     def springSecurityService
     def geocoderService
+    def dataSource
     
     def listaGeneralDeSolicitudes() {
         def respuesta = []
@@ -89,7 +91,7 @@ class DashboardService {
             query += "IN (6) " 
         }
         query += "AND ps.solicitud.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
-        println "Query: " + query
+        //println "Query: " + query
         def resultados = ProductoSolicitud.executeQuery(query)
         resultados?.each {
             def solicitud = [:]
@@ -178,7 +180,7 @@ class DashboardService {
         rango.fechaInicio = calendar.getTime();
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         rango.fechaFinal = calendar.getTime();
-        println rango
+        //println rango
         return rango;
     }
     
@@ -190,7 +192,7 @@ class DashboardService {
         calendar.add(Calendar.WEEK_OF_YEAR, 1);
         calendar.add(Calendar.DATE, -1);
         rango.fechaFinal = calendar.getTime();
-        println rango
+        //println rango
         return rango;
     }
     
@@ -366,5 +368,95 @@ class DashboardService {
             }
         }
         return exito
+    }
+    
+    def obtenerEstadisticasPorGrafica(def grafica, def temporalidad, def fechaInicio, def fechaFinal) {
+        def respuesta = [:]
+        def usuario = springSecurityService.currentUser
+        def query
+        if(temporalidad){
+            switch(temporalidad){
+            case 1:
+                def fechaFormateada = (new Date()).format('dd/MM/yyyy')
+                fechaInicio = (new Date()).format('dd/MM/yyyy')
+                fechaFinal = (new Date()).format('dd/MM/yyyy')
+                break;
+            case 7:
+                def rango = getFechasSemanaActual()
+                fechaInicio = rango.fechaInicio.format('dd/MM/yyyy')
+                fechaFinal = rango.fechaFinal.format('dd/MM/yyyy')
+                break;
+            case 31:
+                def rango = getFechasMesActual()
+                fechaInicio = rango.fechaInicio.format('dd/MM/yyyy')
+                fechaFinal = rango.fechaFinal.format('dd/MM/yyyy')
+                break;
+            case 365:
+                def anio = Calendar.getInstance().get(Calendar.YEAR)
+                fechaInicio = "01/01/" + anio
+                fechaFinal = "31/12/" + anio
+                break;
+            default:
+                println "Entrando a DEFAULT"
+                break;
+            }
+        }
+        if(grafica == "general"){
+            if(temporalidad == 1 || temporalidad == 7) {
+                query = "SELECT * FROM solicitudes_por_dia WHERE fecha BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
+            } else if (temporalidad == 31 || temporalidad == 365){
+                query = "SELECT * FROM solicitudes_por_mes WHERE fecha BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
+            } else {
+                query = "SELECT DATE_TRUNC('month',fecha) AS fecha, SUM(solicitudes) AS solicitudes FROM solicitudes_por_dia WHERE fecha BETWEEN TO_TIMESTAMP('" + fechaInicio+ " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi') group by 1 order by 1"
+            }
+            def sql = new Sql(dataSource)
+            def resultados = sql.rows(query)
+            respuesta.periodos = [:]
+            respuesta.periodos.categories = []
+            respuesta.periodos.crosshair = true
+
+            respuesta.estadisticas = []
+            def datosEstadisticas = [:]
+            datosEstadisticas.name = "Solicitudes"
+            datosEstadisticas.type = "column"
+            datosEstadisticas.yAxis = 0
+            datosEstadisticas.data = []
+            datosEstadisticas.tooltip = [:]
+            datosEstadisticas.tooltip.valuePrefix = ""
+            
+            resultados.each {
+                respuesta.periodos.categories << ( (temporalidad == 1 || temporalidad == 7) ? it.fecha.format("dd/MM/yyyy") : (it.fecha.format("MMMM")))
+                datosEstadisticas.data << it.solicitudes
+            }
+            respuesta.estadisticas << datosEstadisticas
+        } else if (grafica == "status") {
+            query = "SELECT status, sum(solicitudes) as solicitudes from solicitudes_por_estado_por_dia WHERE fecha BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi') GROUP BY 1 HAVING sum(solicitudes) > 0 ORDER BY 2 DESC"
+            def sql = new Sql(dataSource)
+            def resultados = sql.rows(query)
+            respuesta.estadisticas = []
+            def datosEstadisticas = [:]
+            datosEstadisticas.name = "Solicitudes por Estatus"
+            datosEstadisticas.data = []
+            
+            resultados.each {
+                datosEstadisticas.data << [it.status ,it.solicitudes]
+            }
+            respuesta.estadisticas << datosEstadisticas
+        } else if (grafica == "productos") {
+            query = "SELECT producto, sum(cantidad) as cantidad from producto_por_dia WHERE fecha BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi') GROUP BY 1 HAVING sum(cantidad) > 0 ORDER BY 2 DESC"
+            def sql = new Sql(dataSource)
+            def resultados = sql.rows(query)
+            respuesta.estadisticas = []
+            def datosEstadisticas = [:]
+            datosEstadisticas.name = "Productos"
+            datosEstadisticas.colorByPoint = true
+            datosEstadisticas.data = []
+            
+            resultados.each {
+                datosEstadisticas.data << [name: (it.producto + " ($it.cantidad)"), y: it.cantidad]
+            }
+            respuesta.estadisticas << datosEstadisticas
+        }
+        return respuesta
     }
 }

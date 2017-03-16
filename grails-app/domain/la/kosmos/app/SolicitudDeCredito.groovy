@@ -15,6 +15,8 @@ class SolicitudDeCredito implements Serializable{
     String shortUrl
     SucursalEntidadFinanciera sucursal
     int ultimoPaso = 1
+    MedioDeContacto medioDeContacto
+    long opcionMedioDeContacto = 0
     
     static constraints = {
         fechaDeSolicitud (nullable: false)
@@ -28,6 +30,7 @@ class SolicitudDeCredito implements Serializable{
         token (nullable: true)
         shortUrl (nullable: true)
         sucursal (nullable: true)
+        medioDeContacto (nullable: true)
     }
     
     static mapping = {

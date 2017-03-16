@@ -22,7 +22,7 @@ class DashboardController {
         session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
         solicitudes.addAll(temporales)
         solicitudes = solicitudes.sort { it.fechaDeSolicitud }
-        println "Regresando: " + solicitudes
+        println "Regresando: " + solicitudes?.size() + " Solicitudes"
         [solicitudes: solicitudes, temporales: temporales]
     }
     
@@ -30,9 +30,9 @@ class DashboardController {
         def solicitudesDictaminadas = dashboardService.obtenerSolicitudesPorStatus("dictaminadas", 1, null, null)
         def solicitudesNoDictaminadas = dashboardService.obtenerSolicitudesPorStatus("noDictaminadas", 1, null, null)
         def solicitudesConComplemento = dashboardService.obtenerSolicitudesPorStatus("complementoSolicitado", 1, null, null)
-        println "Regresando: solicitudesDictaminadas -> " + solicitudesDictaminadas
-        println "Regresando: solicitudesNoDictaminadas -> " + solicitudesNoDictaminadas
-        println "Regresando: solicitudesConComplemento -> " + solicitudesConComplemento
+        println "Regresando: solicitudesDictaminadas -> " + solicitudesDictaminadas?.size()
+        println "Regresando: solicitudesNoDictaminadas -> " + solicitudesNoDictaminadas?.size()
+        println "Regresando: solicitudesConComplemento -> " + solicitudesConComplemento?.size()
         [solicitudesDictaminadas: solicitudesDictaminadas, solicitudesNoDictaminadas: solicitudesNoDictaminadas, solicitudesConComplemento: solicitudesConComplemento]
     }
     
@@ -312,6 +312,15 @@ class DashboardController {
             respuesta.mensaje = "No cuenta con fotografia."
             render respuesta as JSON
         }
+    }
+    
+    def getEstadisticas() {
+        println params
+        def estadisticas = []
+        if(params.temporalidad && params.grafica) {
+            estadisticas = dashboardService.obtenerEstadisticasPorGrafica(params.grafica, (params.temporalidad as int) , params.fechaInicio, params.fechaFinal)
+        }
+        render estadisticas as JSON
     }
     
 }

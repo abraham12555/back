@@ -247,7 +247,7 @@ class CotizadorController {
         def respuesta = [:]
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '') 
-            String sid = smsService.sendSMS(toPhone)
+            String sid = smsService.sendSMS(toPhone, session.configuracion)
             if(sid){
                 session.sid = sid
                 respuesta.mensajeEnviado = true

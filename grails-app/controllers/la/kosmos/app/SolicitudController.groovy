@@ -1312,7 +1312,7 @@ class SolicitudController {
         def toPhone = (session.cotizador?.telefonoCliente ?: session["pasoFormulario"]?.telefonoCliente?.telefonoCelular)
         if(toPhone){
             toPhone = toPhone.replaceAll('-', '') 
-            if(smsService.sendShortUrl(toPhone, session.shortUrl, "Libertad SF - Tu URL personalizada es: ")){
+            if(smsService.sendShortUrl(toPhone, session.shortUrl, session.configuracion)){
                 respuesta.mensajeEnviado = true
                 def solicitud = SolicitudTemporal.get(session.identificadores.idSolicitudTemporal)
                 if(solicitud){

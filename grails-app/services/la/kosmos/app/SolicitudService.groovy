@@ -422,7 +422,12 @@ class SolicitudService {
             }
             
         } else if (pasoEnviado.tipoDePaso.nombre == "resumen"){
-            
+            if(identificadores?.idSolicitud && params.opcionMedioDeContacto && params.medioDeContacto) {
+                def solicitud = SolicitudDeCredito.get(identificadores?.idSolicitud as long)
+                solicitud.medioDeContacto = MedioDeContacto.get(params.medioDeContacto as long)
+                solicitud.opcionMedioDeContacto = (params.opcionMedioDeContacto as long)
+                solicitud.save(flush: true)
+            }
         }
         datosPaso.guardadoCorrecto = guardadoCorrecto
         return datosPaso
@@ -600,7 +605,7 @@ class SolicitudService {
                 println("El producto se ha registrado correctamente")
                 return productoSolicitud.id
             } else {
-                println("No se guardo nada")
+                println("[Guardado-ProductoSolicitud] No se guardo nada")
                 if (productoSolicitud.hasErrors()) {
                     productoSolicitud.errors.allErrors.each {
                         println it
@@ -683,9 +688,9 @@ class SolicitudService {
         def respuesta = []
         def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
         if(tipoDeConsulta && (tipoDeConsulta as int) == 0) {
-            query += " AND s.statusDeSolicitud.id IN (5,7)"
+            query += " AND s.statusDeSolicitud.id NOT IN (1,2,3)"
         } else if (tipoDeConsulta && (tipoDeConsulta as int) == 1) {
-            query += " AND s.statusDeSolicitud.id NOT IN (5,7)" 
+            query += " AND s.statusDeSolicitud.id IN (1,2,3)" 
         }
         
         switch(opcion){
@@ -801,10 +806,10 @@ class SolicitudService {
                 segundoNombre = nombreCompleto.join(' ')
             }
             
-            solicitudRest.solicitud.generales.nombre = primerNombre
-            solicitudRest.solicitud.generales.segundoNombre = (segundoNombre ?: "")
-            solicitudRest.solicitud.generales.apellidoPaterno = solicitud.cliente.apellidoPaterno
-            solicitudRest.solicitud.generales.apellidoMaterno = solicitud.cliente.apellidoMaterno
+            solicitudRest.solicitud.generales.nombre = primerNombre?.toUpperCase()
+            solicitudRest.solicitud.generales.segundoNombre = (segundoNombre ?: "")?.toUpperCase()
+            solicitudRest.solicitud.generales.apellidoPaterno = solicitud.cliente.apellidoPaterno?.toUpperCase()
+            solicitudRest.solicitud.generales.apellidoMaterno = solicitud.cliente.apellidoMaterno?.toUpperCase()
             solicitudRest.solicitud.generales.numeroCelular = (telefonos?.telefonoCelular ?: "")
             solicitudRest.solicitud.generales.numeroFijo = (telefonos?.telefonoCasa ?: "")
             solicitudRest.solicitud.generales.correoElectronico = (emails?.emailPersonal ?: "")
@@ -871,7 +876,7 @@ class SolicitudService {
                 }
             }
             
-            if(datosBuroDeCredito?.reporte?.tipoErrorBuroCredito) {
+            if(!datosBuroDeCredito?.reporte || datosBuroDeCredito?.reporte?.tipoErrorBuroCredito) {
                 solicitudRest.solicitud.buroDeCredito = ""
             } else {
                 def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")

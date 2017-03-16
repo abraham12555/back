@@ -271,6 +271,18 @@ function consultarSolicitudesPorTiempo(temporalidad, idDiv, fechaInicio, fechaFi
 
 function genererarEstadisticasPor(criterio) {
     seleccionarTemporalidad(criterio);
+    if (criterio !== 5 && criterio !== 0) {
+        cargarGraficas(criterio, null, null);
+    } else if (criterio === 5) {
+        $('#rangoDeFechas').fadeIn();
+        habilitarDatepicker();
+    } else if (criterio === 0) {
+        if ($('#from').val() && $('#to').val()) {
+            cargarGraficas(criterio, $('#from').val(), $('#to').val());
+        } else {
+            sweetAlert("¡Espera!", "¡Debes colocar ambas fechas antes de realizar la consulta!", "warning");
+        }
+    }
 }
 
 function seleccionarTemporalidad(opcion) {
@@ -323,17 +335,17 @@ function cambiarEstatus(estatus, idSolicitud) {
     }
 }
 
-function actualizarConfiguracionBuroCredito(){
-	jQuery.ajax({
+function actualizarConfiguracionBuroCredito() {
+    jQuery.ajax({
         type: 'POST',
         data: $('#configuracionBuroCreditoForm').serialize(),
         url: '/configuracionBuroCredito/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
-                sweetAlert("¡Excelente!", respuesta.mensaje , "success");
+                sweetAlert("¡Excelente!", respuesta.mensaje, "success");
             } else {
-                sweetAlert("Oops...", respuesta.mensaje , "error");
+                sweetAlert("Oops...", respuesta.mensaje, "error");
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

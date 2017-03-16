@@ -5,6 +5,10 @@ import com.twilio.Twilio
 import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
 import com.twilio.exception.ApiException
+import com.auronix.calixta.GatewayException;
+import com.auronix.calixta.sms.SMSGateway;
+import org.apache.commons.lang.RandomStringUtils
+import java.security.MessageDigest
 import org.apache.commons.lang.RandomStringUtils
 
 import java.sql.Timestamp
@@ -17,23 +21,52 @@ public class SmsService {
     public static final String AUTH_TOKEN = "29e92c58d2eae04752dff3ce075799c9"
     public static final String PHONE_NUMBER = "+13152194197"
 
-    public String sendSMS(String to) {
+    public String sendSMS(String to, def configuracion) {
         def respuesta
         try{
-            String randomCode = getRandomCode()
-            String mensajeArmado = ("Libertad SF - Tu Clave es: " + randomCode)
-            Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-            Message message = Message.creator(
-                new PhoneNumber("+52" + to),
-                new PhoneNumber(PHONE_NUMBER),
-                mensajeArmado?.toUpperCase())
-            .create()
+            if(configuracion && to) {
+                String randomCode = getRandomCode()
+                String mensajeArmado = (configuracion.mensajeConfirmacionCelular + randomCode)
+                if(configuracion?.usarTwilio) {
+                    Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
+                    Message message = Message.creator(
+                        new PhoneNumber("+52" + to),
+                        new PhoneNumber(PHONE_NUMBER),
+                        mensajeArmado?.toUpperCase())
+                    .create()
+                
+                    if(persistSms(message, randomCode, configuracion?.usarTwilio)){
+                        println(message)
+                        respuesta = message.getSid()
+                    } else {
+                        respuesta = null
+                    }
+                } else {
+                    SMSGateway smsGateway = new SMSGateway();
 
-            if(persistSms(message, randomCode)){
-                println(message)
-                respuesta = message.getSid()
-            } else {
-                respuesta = null
+                    int idEnvio = smsGateway.sendMessageOL(to, mensajeArmado);
+                    println("Estados Calixta -> [ 3 - Enviado al carrier | 6 - No móvil | 10 - Inválido | 101 - Falta de saldo | -1 - Error general ]")
+                    println("Resultado del envio de SMS al " + to + " mediante Calixta: " + idEnvio)
+                    if(idEnvio == 3) {
+                        def message = [:]
+                        message.bodyMessage = mensajeArmado
+                        message.dateCreated = new Date()
+                        message.errorCode = null
+                        message.errorMessage = null
+                        message.fromPhone = "unknown"
+                        message.sid = ("SM" + generarToken(randomCode + generarCadenaAleatoria(32) + "|" + (new Date().toString())))
+                        message.status = "complete"
+                        message.toPhone = to
+                        if(persistSms(message, randomCode, configuracion?.usarTwilio)){
+                            println(message)
+                            respuesta = message.sid
+                        } else  { 
+                            respuesta = null
+                        }
+                    } else {
+                        respuesta = null
+                    }
+                }
             }
         }catch(ApiException e){
             respuesta = null
@@ -42,16 +75,28 @@ public class SmsService {
         }
     }
 
-    public boolean sendShortUrl(String to, String shortUrl, String text){
+    public boolean sendShortUrl(String to, String shortUrl, def configuracion){
         def respuesta = false
         try{
-            Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-            Message message = Message.creator(
-                new PhoneNumber("+52" + to),
-                new PhoneNumber(PHONE_NUMBER),
-                text + shortUrl)
-            .create()
-            respuesta = true
+            if(configuracion?.usarTwilio) {
+                Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
+                Message message = Message.creator(
+                    new PhoneNumber("+52" + to),
+                    new PhoneNumber(PHONE_NUMBER),
+                    configuracion.mensajeEnvioShortUrl + shortUrl)
+                .create()
+                respuesta = true
+            } else {
+                SMSGateway smsGateway = new SMSGateway();
+                int idEnvio = smsGateway.sendMessageOL(to, (configuracion.mensajeEnvioShortUrl + shortUrl));
+                println("Estados Calixta -> [ 3 - Enviado al carrier | 6 - No móvil | 10 - Inválido | 101 - Falta de saldo | -1 - Error general ]")
+                println("Resultado del envio del ShortURL: " + idEnvio)
+                if(idEnvio == 3) {
+                    respuesta = true
+                } else {
+                    respuesta = false
+                }
+            }
         }catch(ApiException e){
             respuesta = false
         } finally{
@@ -65,18 +110,29 @@ public class SmsService {
         result
     }
 
-    private boolean persistSms(Message message, String randomCode) {
+    private boolean persistSms(def message, def randomCode, def usarTwilio) {
         SmsMessage sms = new SmsMessage()
-
-        sms.bodyMessage = message?.getBody()
-        sms.dateCreated = new Timestamp(message?.getDateCreated()?.getMillis())
-        sms.errorCode = message?.getErrorCode()
-        sms.errorMessage = message?.getErrorMessage()
-        sms.fromPhone = message?.getFrom()?.toString()
-        sms.sid = message?.getSid()
-        sms.status = message?.getStatus()?.toString()
-        sms.toPhone = message?.getTo()?.toString()
-        sms.randomCode = randomCode
+        if(usarTwilio == true) {
+            sms.bodyMessage = message?.getBody()
+            sms.dateCreated = new Timestamp(message?.getDateCreated()?.getMillis())
+            sms.errorCode = message?.getErrorCode()
+            sms.errorMessage = message?.getErrorMessage()
+            sms.fromPhone = message?.getFrom()?.toString()
+            sms.sid = message?.getSid()
+            sms.status = message?.getStatus()?.toString()
+            sms.toPhone = message?.getTo()?.toString()
+            sms.randomCode = randomCode
+        } else {
+            sms.bodyMessage = message?.bodyMessage
+            sms.dateCreated = message?.dateCreated?.toTimestamp()
+            sms.errorCode = message?.errorCode
+            sms.errorMessage = message?.errorMessage
+            sms.fromPhone = message?.fromPhone
+            sms.sid = message?.sid
+            sms.status = message?.status
+            sms.toPhone = message?.toPhone
+            sms.randomCode = randomCode
+        }
 
         sms.save(flush: true)
 
@@ -93,5 +149,16 @@ public class SmsService {
             }
         }
         result
+    }
+    
+    def generarToken(String s){
+        MessageDigest.getInstance("MD5").digest(s.bytes).encodeHex().toString()
+    }
+    
+    def generarCadenaAleatoria(longitud){
+        int randomStringLength = longitud
+        String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
+        String randomString = RandomStringUtils.random(randomStringLength, charset.toCharArray())
+        randomString
     }
 }

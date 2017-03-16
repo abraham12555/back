@@ -1202,6 +1202,8 @@ function operacionesResumen() {
     $('#terminarSolicitud').click(function () {
         if ($(this).hasClass("blueButton")) {
             $('#resumen_solicitud').fadeOut();
+            $("#valorMedioDeContacto").val($('#medioDeContacto').val());
+            $("#opcMedioDeContacto").val($('#opcionMedioDeContacto').val());
             avanzarPaso($(this).data("numeroDePaso"));
         }
     });
@@ -1320,16 +1322,16 @@ $(window).resize(function () {
 
 function setFooter() {
     /*if ((headerH + contentH) >= (winH - footerH)) {
-        $('.footerContainer').css({
-            top: (headerH + contentH),
-            bottom: 'auto'
-        });
-    } else {
-        $('.footerContainer').css({
-            bottom: 0,
-            top: 'auto'
-        });
-    }*/
+     $('.footerContainer').css({
+     top: (headerH + contentH),
+     bottom: 'auto'
+     });
+     } else {
+     $('.footerContainer').css({
+     bottom: 0,
+     top: 'auto'
+     });
+     }*/
 }
 
 // ***************************** Inicio de Funciones Auxiliares

@@ -1,7 +1,12 @@
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
 body {
-    min-height: 400px;
-    margin-bottom: 100px;
-    clear: both;
+    position: relative;
+    margin: 0;
+    min-height: 100%;
 }
 
 .headingColor, .darkBluetitle span.headingColor {
@@ -24,8 +29,7 @@ body {
     padding-bottom: 0;
 }
 
-.cotizador-box-container .cotizador-box.blueButton,
-.cotizador-box-container .cotizador-box:hover {
+.cotizador-box-container .cotizador-box.blueButton, .cotizador-box-container .cotizador-box:hover {
     color: #fff;
     background-image: -webkit-linear-gradient(0deg, #005398, #1573d4);
     background-image: linear-gradient(90deg, #005398, #1573d4);
@@ -110,8 +114,10 @@ body {
 }
 
 .footerContainer {
-    width: 100%;
-    margin: auto;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 #mySidenav {
@@ -164,7 +170,7 @@ body {
 }
 
 .width337 {
-    width: 310px;
+    width: 290;
 }
 
 .buttonM {
@@ -209,11 +215,11 @@ body {
 
 #button {
     background-image: none !important;
-    background-color: #005398;
+    background-color: #DDD;
     filter: none !important;
-    -webkit-box-shadow: inset 0 -8px 10px rgba(0, 83, 152), 0 1px 0 rgba(21, 115, 12, 0.3), inset 0 1px 0 rgba(21, 115, 12, 0.3);
-    -moz-box-shadow: inset 0 -8px 10px rgba(0, 83, 152), 0 1px 0 rgba(21, 115, 12, 0.3), inset 0 1px 0 rgba(21, 115, 12, 0.3);
-    box-shadow: inset 0 -8px 10px rgba(0, 83, 152), 0 1px 0 rgba(21, 115, 12, 0.3), inset 0 1px 0 rgba(21, 115, 12, 0.3);
+    -webkit-box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    -moz-box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .blueCircle {
@@ -289,18 +295,11 @@ body {
     color: white;
 }
 
-.side-nav a.btn,
-.side-nav a.btn-large,
-.side-nav a.btn-large,
-.side-nav a.btn-flat,
-.side-nav a.btn-floating {
+.side-nav a.btn, .side-nav a.btn-large, .side-nav a.btn-large, .side-nav a.btn-flat, .side-nav a.btn-floating {
     margin: 10px 15px;
 }
 
-.side-nav a.btn,
-.side-nav a.btn-large,
-.side-nav a.btn-large,
-.side-nav a.btn-floating {
+.side-nav a.btn, .side-nav a.btn-large, .side-nav a.btn-large, .side-nav a.btn-floating {
     color: #fff;
 }
 
@@ -308,9 +307,7 @@ body {
     color: #343434;
 }
 
-.side-nav a.btn:hover,
-.side-nav a.btn-large:hover,
-.side-nav a.btn-large:hover {
+.side-nav a.btn:hover, .side-nav a.btn-large:hover, .side-nav a.btn-large:hover {
     background-color: #2bbbad;
 }
 
@@ -371,9 +368,7 @@ body {
     z-index: -1;
 }
 
-.side-nav .userView .circle,
-.side-nav .userView .name,
-.side-nav .userView .email {
+.side-nav .userView .circle, .side-nav .userView .name, .side-nav .userView .email {
     display: block;
 }
 
@@ -382,8 +377,7 @@ body {
     width: 64px;
 }
 
-.side-nav .userView .name,
-.side-nav .userView .email {
+.side-nav .userView .name, .side-nav .userView .email {
     font-size: 14px;
     line-height: 24px;
 }
@@ -418,6 +412,157 @@ body {
     left: auto;
 }
 
+.fixed-action-btn {
+    position: fixed;
+    right: 0;
+    bottom: 23px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    z-index: 998;
+}
+
+.btn-large {
+    width: 124px;
+    height: 40px;
+}
+
+.btn-large {
+    height: 54px;
+    line-height: 54px;
+}
+
+.btn-help.btn-large i {
+    line-height: 30px;
+    font-size: 1rem;
+    padding: 0 15px;
+}
+
+.btn-help {
+    display: inline-block;
+    color: #F1F1F1;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0;
+    background-color: #005398;
+    border-radius: 20px 0 0 20px;
+    -webkit-transition: 0.3s;
+    transition: 0.3s;
+    cursor: pointer;
+    vertical-align: middle;
+    text-transform: capitalize;
+    font-size: 14px;
+    font-weight: 100;
+}
+
+.btn-help:hover, .btn-help:active {
+    width: 230px;
+}
+
+.fixed-action-btn.active ul {
+    visibility: visible;
+}
+
+.fixed-action-btn.horizontal {
+    padding: 0 0 0 15px;
+}
+
+.fixed-action-btn.horizontal ul {
+    text-align: right;
+    right: 64px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    height: 100%;
+    left: auto;
+    width: 500px;
+    /*width 100% only goes to width of button container */
+}
+
+.fixed-action-btn.horizontal ul li {
+    display: inline-block;
+    margin: 15px 15px 0 0;
+}
+
+.fixed-action-btn.toolbar {
+    padding: 0;
+    height: 130px;
+}
+
+.fixed-action-btn.toolbar.active>a i {
+    opacity: 0;
+}
+
+.fixed-action-btn.toolbar ul {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    top: 0;
+    bottom: 0;
+}
+
+.fixed-action-btn.toolbar ul li {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: inline-block;
+    margin: 0;
+    height: 100%;
+    transition: none;
+}
+
+.fixed-action-btn.toolbar ul li a {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    box-shadow: none;
+    color: #fff;
+    line-height: 56px;
+    z-index: 1;
+}
+
+.fixed-action-btn.toolbar ul li a i {
+    line-height: inherit;
+}
+
+.fixed-action-btn ul {
+    left: 0;
+    right: 0;
+    text-align: center;
+    position: absolute;
+    bottom: 64px;
+    margin: 0;
+    visibility: hidden;
+}
+
+.fixed-action-btn ul li {
+    margin-bottom: 15px;
+}
+
+.fixed-action-btn ul a.btn-floating {
+    opacity: 0;
+}
+
+.fixed-action-btn .fab-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 40px;
+    height: 40px;
+    background-color: #26a69a;
+    border-radius: 50%;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+}
+
+
 /*
 Max width before this PARTICULAR table gets nasty
 This query will take effect for any screen smaller than 760px
@@ -426,12 +571,7 @@ and also iPads specifically.
 
 @media only screen and (max-width: 1024px) {
     /* Force table to not be like tables anymore */
-
-    .solicitudes_table thead,
-    .solicitudes_table tbody,
-    .solicitudes_table th,
-    .solicitudes_table td,
-    .solicitudes_table tr {
+    .solicitudes_table thead, .solicitudes_table tbody, .solicitudes_table th, .solicitudes_table td, .solicitudes_table tr {
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
@@ -475,7 +615,7 @@ and also iPads specifically.
 
     /*
     Label the data
-  
+
     td:nth-of-type(1):before { content: "First Name"; }
     td:nth-of-type(2):before { content: "Last Name"; }
     td:nth-of-type(3):before { content: "Job Title"; }
@@ -519,8 +659,7 @@ and also iPads specifically.
         margin-top: 13px;
     }
 
-    #hipotecario_correcto_si,
-    #hipotecario_correcto_no {
+    #hipotecario_correcto_si, #hipotecario_correcto_no {
         margin-top: 18px;
     }
 
@@ -536,12 +675,12 @@ and also iPads specifically.
 }
 
 @media screen and (max-width: 800px) {
-    .progressTile.mobile{
-        position:static;
+    .progressTile.mobile {
+        position: static;
         transform: translate(0, 0);
         -webkit-transform: translate(0, 0);
-        display:inline-block;
-        margin:30px auto 0 auto;
+        display: inline-block;
+        margin: 30px auto 0 auto;
     }
 
     .progressWrap {
@@ -623,7 +762,9 @@ and also iPads specifically.
 
 @media only screen and (max-width: 421px), (min-width: 421px) and (max-device-width: 740px) {
     /** cotizador **/
-
+    body {
+          padding-bottom: 4rem;
+    }
     .opcConfiguracion {
         width: 100%;
     }
@@ -746,8 +887,7 @@ and also iPads specifically.
         height: 30px;
     }
 
-    .font20,
-    .font17 {
+    .font20, .font17 {
         font-size: 0.8em;
         font-weight: 400;
     }
@@ -891,13 +1031,10 @@ and also iPads specifically.
     }
 
     .footerContainer {
-        position: fixed;
+        position: absolute;
+        right: 0;
         bottom: 0;
         left: 0;
-        right: 0;
-        height: 50px;
-        display: inline-block;
-        padding-top: 0;
     }
 
     #idPasoActual {
@@ -1008,6 +1145,18 @@ and also iPads specifically.
 
     .pageMarker .fa {
         font-size: 16px;
+    }
+    .fixed-action-btn.toolbar {
+        padding: 0;
+        height: 103px;
+    }
+    .fixed-action-btn {
+        position: fixed;
+        right: 0;
+        bottom: 0px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
     }
 }
 
@@ -1226,13 +1375,11 @@ and also iPads specifically.
     }
 }
 
-.side-nav .collapsible-body>ul:not(.collapsible)>li.active,
-.side-nav.fixed .collapsible-body>ul:not(.collapsible)>li.active {
+.side-nav .collapsible-body>ul:not(.collapsible)>li.active, .side-nav.fixed .collapsible-body>ul:not(.collapsible)>li.active {
     background-color: #ee6e73;
 }
 
-.side-nav .collapsible-body>ul:not(.collapsible)>li.active a,
-.side-nav.fixed .collapsible-body>ul:not(.collapsible)>li.active a {
+.side-nav .collapsible-body>ul:not(.collapsible)>li.active a, .side-nav.fixed .collapsible-body>ul:not(.collapsible)>li.active a {
     color: #fff;
 }
 
@@ -1324,9 +1471,7 @@ and also iPads specifically.
     margin-bottom: 0;
 }
 
-@media only screen
-and (min-width : 768px)
-and (max-width : 1024px)  {
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
     #descripcionDelProducto .font14 {
         font-size: 1.5rem;
     }
@@ -1335,174 +1480,27 @@ and (max-width : 1024px)  {
     }
 }
 
-@media only screen
-and (max-width : 421px){
+@media only screen and (max-width: 421px) {
     #bubbleMensajeTarjeta {
         width: 60%;
     }
     .inPuts4a, .inPuts4B {
         width: calc(100% - 265px);
-        -webkit-calc(100% - 265px); 
+        -webkit-calc(100% - 265px);
     }
     .creditBtns .col5half {
         width: 100%;
     }
-}
-
-@media only screen
-and (max-width : 320px){
-    .inPuts4a, .inPuts4B {
-        width: calc(100% - 210px);
-        -webkit-calc(100% - 210px);
+    @media only screen and (max-width: 320px) {
+        .inPuts4a, .inPuts4B {
+            width: calc(100% - 210px);
+            -webkit-calc(100% - 210px);
+        }
     }
-}
-
-.fixed-action-btn {
-    position: fixed;
-    right: 0;
-    bottom: 23px;
-    padding-top: 15px;
-    margin-bottom: 0;
-    z-index: 998;
-}
-
-.btn-large {
-    width: 124px;
-    height: 40px;
-}
-
-.btn-large {
-    height: 54px;
-    line-height: 54px;
-}
-
-.btn-help.btn-large i {
-    line-height: 30px;
-    font-size: 1rem;
-    padding: 0 15px;
-}
-
-.btn-help {
-    display: inline-block;
-    color: #F1F1F1;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    width: 100px;
-    height: 30px;
-    line-height: 30px;
-    padding: 0;
-    background-color: #005398;
-    border-radius: 20px 0 0 20px;
-    -webkit-transition: 0.3s;
-    transition: 0.3s;
-    cursor: pointer;
-    vertical-align: middle;
-    text-transform: capitalize;
-    font-size: 14px;
-    font-weight: 100;
-}
-
-.btn-help:hover {
-    width: 230px;
-}
-
-.fixed-action-btn.active ul {
-    visibility: visible;
-}
-
-.fixed-action-btn.horizontal {
-    padding: 0 0 0 15px;
-}
-
-.fixed-action-btn.horizontal ul {
-    text-align: right;
-    right: 64px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
-    height: 100%;
-    left: auto;
-    width: 500px;
-    /*width 100% only goes to width of button container */
-}
-
-.fixed-action-btn.horizontal ul li {
-    display: inline-block;
-    margin: 15px 15px 0 0;
-}
-
-.fixed-action-btn.toolbar {
-    padding: 0;
-    height: 130px;
-}
-
-.fixed-action-btn.toolbar.active>a i {
-    opacity: 0;
-}
-
-.fixed-action-btn.toolbar ul {
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    top: 0;
-    bottom: 0;
-}
-
-.fixed-action-btn.toolbar ul li {
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-    display: inline-block;
-    margin: 0;
-    height: 100%;
-    transition: none;
-}
-
-.fixed-action-btn.toolbar ul li a {
-    display: block;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    box-shadow: none;
-    color: #fff;
-    line-height: 56px;
-    z-index: 1;
-}
-
-.fixed-action-btn.toolbar ul li a i {
-    line-height: inherit;
-}
-
-.fixed-action-btn ul {
-    left: 0;
-    right: 0;
-    text-align: center;
-    position: absolute;
-    bottom: 64px;
-    margin: 0;
-    visibility: hidden;
-}
-
-.fixed-action-btn ul li {
-    margin-bottom: 15px;
-}
-
-.fixed-action-btn ul a.btn-floating {
-    opacity: 0;
-}
-
-.fixed-action-btn .fab-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    width: 40px;
-    height: 40px;
-    background-color: #26a69a;
-    border-radius: 50%;
-    -webkit-transform: scale(0);
-    transform: scale(0);
+    @media only screen and (max-width: 320px) {
+        .inPuts4a, .inPuts4B {
+            width: calc(100% - 210px);
+            -webkit-calc(100% - 210px);
+        }
+    }
 }
