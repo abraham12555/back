@@ -192,7 +192,7 @@ class BuroDeCreditoService {
 	println "Request Buro de Credito::::::> "+ soap_request
 	 
 	 
-        if(solicitud.reporteBuroCredito == null || solicitud.reporteBuroCredito.errorConsulta.contains("ERRR")){
+        if(solicitud?.reporteBuroCredito == null || solicitud?.reporteBuroCredito?.errorConsulta?.contains("ERRR")){
             try{
                 if(configuracion.habilitarMockBuroCredito){
                     if(configuracion.habilitarMockBuroCreditoSuccess){
@@ -861,12 +861,19 @@ class BuroDeCreditoService {
 		
     def generarCadenaBC(def xml){
         def cadenaBuro
-        Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
-        NodeList reporteImpreso = doc.getElementsByTagName("ReporteImpreso");
-        if (reporteImpreso.getLength() > 0) {
-            Element  reporte = (Element)reporteImpreso.item(0);
-            cadenaBuro = reporte.getTextContent()
-            cadenaBuro = cadenaBuro.replaceAll(/\$/,"N").replaceAll('&','N').replaceAll('@','N').replaceAll('ñ','N').replaceAll('Ñ','N')
+        try {
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+            NodeList reporteImpreso = doc.getElementsByTagName("ReporteImpreso");
+            if (reporteImpreso.getLength() > 0) {
+                Element  reporte = (Element)reporteImpreso.item(0);
+                cadenaBuro = reporte.getTextContent()
+                cadenaBuro = cadenaBuro.replaceAll(/\$/,"N").replaceAll('&','N').replaceAll('@','N').replaceAll('ñ','N').replaceAll('Ñ','N')
+            }
+        } catch(Exception e){
+            cadenaBuro = ""
+            println "Ocurrio un error al parsear la respuesta del buró..."
+            println "Respuesta a parsear: " + xml
+            println "Excepcion: " + e.getMessage() + "  - " + e.toString()
         }
         return cadenaBuro
     }

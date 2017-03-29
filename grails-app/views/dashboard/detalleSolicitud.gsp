@@ -550,6 +550,11 @@
                                     <span class="slash">/</span>
                                     <a title="Valor" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.colorModelo?.modelo?.producto?.toString()} - <g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.##"/></a>
                                 </li>
+                                 <li class="floatLeft paddingLeft5 paddingRight5">
+                                    <span class="slash">/</span>
+                                    <a title="Producto" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto?.nombreDelProducto}</a>
+
+                                </li>
                             </ul>
                         </div>
                         <div class="radius2 lightGrayBG autoMargin" style='position: static;'>
@@ -1026,23 +1031,6 @@
                             <h1 class="darkBluetitle font18 fontWeight600 letterspacing2">3. HISTORIAL DE CRÉDITO</h1>
                         </div>
                         <div class="col12 clearFix">
-                            <div class="col4 col6-tab col12-mob floatLeft">
-                                <div class="solicitudWhiteBox radius2 mobileAside10 paddingBottom15">
-                                    <div class="clearFix ">
-                                        <div class="marginRight20 clearFix">
-                                            <div class="floatLeft paddingLeft15">
-                                                <p class="font14 fontWeight500 letterspacing1 gray paddingTop20">BURÓ DE CRÉDITO</p>
-                                            </div>
-                                            <div class="floatRight paddingTop15">
-                                                <img src="${resource(dir:'images', file:'expand.png')}" alt="expand" title="expand"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="marginTop19 marginBottom14">
-                                        <div class="grayBox autoMargin clearFix height403"></div>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="col8 col6-tab col12-mob floatLeft clearFix">
                                 <div class="col6 col12-tab floatLeft">
                                     <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12">

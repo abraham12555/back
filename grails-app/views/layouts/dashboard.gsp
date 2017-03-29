@@ -9,10 +9,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="UTF-8">
         <g:external dir="css" file="bootstrap.css" title="text/css" rel="stylesheet" />
-        <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />       
+        <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />     
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
+        <!--<g:external dir="css" file="select2.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="slick.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="slick-theme.css" title="text/css" rel="stylesheet" />-->
         <g:external dir="css" file="spectrum.css" title="text/css" rel="stylesheet" />
         <g:if test="${session.configuracion?.rutaCss}">
             <link rel="stylesheet" href="${session.configuracion?.rutaCss}">
@@ -23,9 +26,13 @@
         <g:external dir="js" file="spectrum.js" />
         <g:external dir="js" file="dateFormat.min.js" />
         <g:external dir="js" file="dashboard.js" />
-        <!--<g:external dir="css" file="jquery-ui-kosmos.css" />-->
+        <!--<g:external dir="js" file="select2.js" />
+        <g:external dir="js" file="slick.js" />-->
+
+        <g:external dir="css" file="jquery-ui-kosmos.css" />
         <g:external dir="js" file="jquery-ui-kosmos.js" />
         <g:external dir="js" file="googleanalytics.js" />
+        <script src="http://harvesthq.github.io/chosen/chosen.jquery.js"></script>
         <g:layoutHead/>
     </head>
     <body>
@@ -38,7 +45,7 @@
                         <div class="clearFix floatLeft ">
                             <img class="userPicture dashboard floatLeft" src="${resource(dir:'images', file:'profile.png')}"/>
                         </div>
-                        <p class="userName dashboard floatLeft">Hola Joseph</p>
+                        <p class="userName dashboard floatLeft">Hola ${session.usuarioNombre} </p>
                         <div class="dropBox floatLeft marginTop20 marginLeft5 desktop">
                             <i class="fa fa-angle-down paddingTop4 paddingRight5 paddingLeft5 dropbtn" aria-hidden="true" onclick="mostrarOpciones();"></i>
                             <div id="opcionesUsuario" class="dropdown-content">

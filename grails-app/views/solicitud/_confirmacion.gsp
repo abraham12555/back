@@ -57,6 +57,10 @@
                         en www.libertad.com.mx . Recuerde que Libertad Servicios Financieros nunca le solicitará que proporcione ningún tipo de información confidencial mediante un correo 
                         electrónico o mediante una liga que lo lleve a nuestra página de Internet.
                     </p>
+                    
+                     <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                            verificar la carpeta de "Correo no deseado" (SPAM).</p>
+                        
                 </div>
             </div>
         </div>
@@ -114,6 +118,9 @@
                         <p class="formTitleColor">LIBERTAD@LIBERTAD.COM.MX</p>
                         <p class="formTitleColor">TEL. 01800 714 02 74</p>
                         <p class="formTitleColor">NUESTRO HORARIO DE ATENCIÓN ES DE LUNES A VIERNES DE 9:00 A 19:00 HORAS Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.</p>
+                     <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                            verificar la carpeta de "Correo no deseado" (SPAM).</p>
+                        
                     </div>
                 </div>
                 <br />
@@ -182,6 +189,8 @@
                         <p class="formTitleColor">LIBERTAD@LIBERTAD.COM.MX</p>
                         <p class="formTitleColor">TEL. 01800 714 02 74</p>
                         <p class="formTitleColor">NUESTRO HORARIO DE ATENCIÓN ES DE LUNES A VIERNES DE 9:00 A 19:00 HORAS Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.</p>
+                     <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                            verificar la carpeta de "Correo no deseado" (SPAM).</p>
                     </div>
                 </div>
                 <br />

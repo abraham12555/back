@@ -18,6 +18,8 @@ class DashboardController {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
         def temporales = dashboardService.listaDeSolicitudesTemporales()
         def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
+        //linea agregada para obtener el usuario 
+        session.usuarioNombre= springSecurityService.currentUser.nombre
         session.configuracion = configuracion
         session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
         solicitudes.addAll(temporales)
@@ -94,8 +96,20 @@ class DashboardController {
         def usuarios = Usuario.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
         def roles = Rol.list()
         def productos = Producto.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
+        def tipoDeIngresos = TipoDeIngresos.getAll()
+        def tipoDeDocumento = TipoDeDocumento.findAll();
+        def listaTipoDeAsentamiento = TipoDeAsentamiento.findAll();
+        def listaTipoDeVivienda = TipoDeVivienda.findAll();
+        def listaTipoDeTasaDeInteres = TipoDeTasaDeInteres.findAll();
+
         def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(springSecurityService.currentUser.entidadFinanciera).configuracionBuroCredito
-        [listaDeUsuarios: usuarios, listaDeRoles: roles, listaDeProductos: productos, configuracionBuroCredito:configuracionBuroCredito]
+        println tipoDeIngresos
+        [listaDeUsuarios: usuarios,listaDeTiposDeIngresos:tipoDeIngresos, 
+            listaDeRoles: roles, listaDeProductos: productos, 
+            configuracionBuroCredito:configuracionBuroCredito,
+            tipoDeDocumento:tipoDeDocumento,tipoDeIngresos:tipoDeIngresos,
+            listaTipoDeAsentamiento:listaTipoDeAsentamiento,
+            listaTipoDeVivienda:listaTipoDeVivienda,listaTipoDeTasaDeInteres:listaTipoDeTasaDeInteres]
     }
     
     def administracion(){
@@ -212,7 +226,38 @@ class DashboardController {
         def respuesta = dashboardService.guardarUsuario(params)
         redirect action: "configuracion"
     }
-    
+    def registrarProducto(){
+        def respuesta = dashboardService.guardarProducto(params)
+        redirect action: "configuracion"
+    }
+    def registrarTipoDeDocumento(){
+        def respuesta = dashboardService.guardarTipoDeDocumento(params)
+        redirect action: "configuracion"
+    }
+    def registrarTipoDeAsentamiento(){
+        def respuesta = dashboardService.guardarTipoDeAsentamiento(params)
+        redirect action: "configuracion"
+    }
+    def registrarTipoDeVivienda(){
+        def respuesta = dashboardService.guardarTipoDeVivienda(params)
+        redirect action: "configuracion"
+    }
+    def registrarTipoDeTasaDeInteres(){
+        def respuesta = dashboardService.guardarTipoDeTasaDeInteres(params)
+        redirect action: "configuracion"
+    }
+     def guardarTipoDeAsentamiento(){
+        def respuesta = dashboardService.updateTipoDeAsentamiento(params)
+        redirect action: "configuracion"
+    }
+    def guardarTipoDeVivienda(){
+        def respuesta = dashboardService.updateTipoDeVivienda(params)
+        redirect action: "configuracion"
+    }
+    def guardarTipoDeTasaDeInteres(){
+        def respuesta = dashboardService.updateTipoDeTasaDeInteres(params)
+        redirect action: "configuracion"
+    }  
     def agregarPregunta(){
         println params
         def respuesta
