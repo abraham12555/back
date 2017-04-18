@@ -82,6 +82,7 @@ class ClassificationResultController {
         cambios.reference = mapaRespuesta.reference
         cambios.documentId = mapaRespuesta.documentId
         cambios.dossierId = mapaRespuesta.dossierId
+        cambios.respuestaOriginal = request?.JSON
         cambios.save(flush:true);
         
         def respuesta = [statusCode:'200', success:'true']
