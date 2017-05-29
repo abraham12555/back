@@ -18,6 +18,7 @@ class Usuario implements Serializable {
     boolean accountLocked
     boolean passwordExpired
     EntidadFinanciera entidadFinanciera
+    SucursalEntidadFinanciera sucursal
     String nombre
     String apellidoPaterno
     String apellidoMaterno
@@ -57,6 +58,7 @@ class Usuario implements Serializable {
         apellidoPaterno nullable: false
         apellidoMaterno nullable: false
         email nullable: false
+        sucursal nullable: true
     }
 
     static mapping = {

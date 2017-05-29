@@ -2,10 +2,11 @@ dataSource {
     pooled = true
     jmxExport = true
     driverClassName = "org.postgresql.Driver"
-    //username = "kuser"
-    //password = "5as50n3J2017"
-    username = "seisan"
-    password = "K0suMo5u!"
+    username = "kuser"
+    //password = "kpasswd"
+    password = "5as50n3J2017"
+    //username = "seisan"
+    //password = "K0suMo5u!"
 }
 hibernate {
     cache.use_second_level_cache = true

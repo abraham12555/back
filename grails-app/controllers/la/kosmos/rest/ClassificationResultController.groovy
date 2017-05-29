@@ -83,7 +83,27 @@ class ClassificationResultController {
         cambios.documentId = mapaRespuesta.documentId
         cambios.dossierId = mapaRespuesta.dossierId
         cambios.respuestaOriginal = request?.JSON
-        cambios.save(flush:true);
+        if(cambios.save(flush:true)){
+            if(request?.JSON?.Data?.PassPhoto){
+                def imagenRecuperada = new ImagenRecuperada()
+                imagenRecuperada.classificationResult = cambios
+                imagenRecuperada.documentoBase64 = request?.JSON?.Data?.PassPhoto
+                imagenRecuperada.tipoDeImagen = "ROSTRO"
+                imagenRecuperada.save(flush:true)
+            }
+            if(request?.JSON?.ImageData){
+                request?.JSON?.ImageData?.each {
+                    def imagenRecuperada = new ImagenRecuperada()
+                    imagenRecuperada.classificationResult = cambios
+                    imagenRecuperada.documentoBase64 = it
+                    imagenRecuperada.tipoDeImagen = "DOCUMENTO"
+                    imagenRecuperada.save(flush:true)
+                }
+            }
+            if(request?.JSON?.AdditionalImages){
+                println("Trae imagenes adicionales, la firma?")
+            }
+        }
         
         def respuesta = [statusCode:'200', success:'true']
         render respuesta as JSON

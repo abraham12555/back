@@ -26,6 +26,7 @@ class SolicitudTemporal {
     String shortUrl
     int ultimoPaso = 1
     boolean cargarImagen = false
+    String folio
     
     static constraints = {
         colorModelo (nullable: true)
@@ -43,6 +44,7 @@ class SolicitudTemporal {
         entidadFinanciera (nullable: false)
         token (nullable: false)
         shortUrl (nullable: false)
+        folio (nullable: true)
     }
     
     static mapping = {

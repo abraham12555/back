@@ -15,7 +15,7 @@
         <script src="https://maps.google.com.mx/maps/api/js?language=es&key=AIzaSyA1CPLFAC5mFixfxBFB5OYnirzijeTopRI" async defer></script>
     </head>
     <body>
-        <input type="hidden" id="opcionMenu" value="4">
+        <input type="hidden" id="opcionMenu" value="5">
         <section class="container marginBottom20">
             <div class="width990 solicitudBox autoMargin">
                 <div class="clearFix">

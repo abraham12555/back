@@ -62,6 +62,7 @@ class SolicitudController {
             session.cargarImagen = null
             session.archivoTemporal = null
             session.estadoRecuperacion = null
+            session.contadorOcr = 0
             //redirect action: "formulario"
             redirect action: "formulario"
         } else {
@@ -613,7 +614,7 @@ class SolicitudController {
                     }
                 }
                 println("Paso a avanzar: " + pasoActual);
-                session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl)
+                session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl, null)
                 if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
                     if(!session.identificadores){
                         session.identificadores = [:]
@@ -880,8 +881,11 @@ class SolicitudController {
         }
         if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
             if(params.cara == "frente") {
-                def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
-                respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud ,respuestaPreliminar.dossierId)
+                if(session.contadorOcr == 0) {
+                    def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
+                    respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId)
+                    session.contadorOcr++
+                }
             } else if (params.cara == "vuelta") {
                 respuesta = [:]
                 respuesta.vigente = true
@@ -899,7 +903,7 @@ class SolicitudController {
             respuesta.error = false
             ocr = false
         }
-        if((!respuesta?.error || respuesta?.vigente == true) && !respuesta.motivosRechazo){
+        if((!respuesta?.error || respuesta?.vigente == true) && !respuesta.motivosRechazo) {
             if(ocr){
                 session["pasoFormulario"] = respuesta
                 if(session.cotizador?.emailCliente && session["pasoFormulario"]){
@@ -911,16 +915,16 @@ class SolicitudController {
                     session["pasoFormulario"].telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
                 }
             }
-            session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
-            if(session.identificadores?.idSolicitud){
-                if(ocr){
-                    solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
-                } else {
-                    respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
-                }
+        }
+        session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
+        if(session.identificadores?.idSolicitud){
+            if(ocr){
+                solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
             } else {
-                session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
+                respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
             }
+        } else {
+            session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
         }
         println respuesta
         render respuesta as JSON

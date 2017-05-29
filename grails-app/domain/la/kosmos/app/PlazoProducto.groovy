@@ -11,6 +11,7 @@ class PlazoProducto implements Serializable{
     int saltoSlider = 1
     boolean usarListaDePlazos = false
     String plazosPermitidos
+    boolean usarEnPerfilador = false
     
     static constraints = {
         periodicidad (nullable: false)

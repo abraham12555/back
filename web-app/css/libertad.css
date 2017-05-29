@@ -176,6 +176,7 @@ body {
 .buttonM {
     padding: 10px 8px;
     font-size: 14px;
+    text-transform: none;
 }
 
 .paddingAside15 {

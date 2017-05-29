@@ -2,6 +2,7 @@ package la.kosmos.app
 
 import grails.converters.JSON
 import groovy.json.*
+import static java.util.Calendar.*
 
 import java.text.SimpleDateFormat
 
@@ -13,6 +14,10 @@ class DashboardController {
     def dashboardService
     def passwordEncoder
     def springSecurityService
+    def cotizadorService
+    def solicitudService
+    def perfiladorService
+    def smsService
     
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
@@ -61,11 +66,15 @@ class DashboardController {
         def segmentoHistorialDeCredito
         def documentos
         def complementoSolicitado
-        if(params.id){
+        if(params.id && !params.temporal){
             datosSolicitud = dashboardService.obtenerDatosDeLaSolicitud(params.id)
             segmentoHistorialDeCredito = detalleSegmentoService.historialDeCredito(params.id)
             documentos = TipoDeDocumento.findAllWhere(activo: true)
             complementoSolicitado = ComplementoSolicitud.findAllWhere(solicitud: datosSolicitud.solicitud, pendiente: true)
+        } else if(params.id && params.temporal?.toBoolean()){
+            println("Si es temporal");
+            datosSolicitud = dashboardService.obtenerDatosDeLaSolicitudTemporal(params.id)
+            println datosSolicitud
         }
         [datosSolicitud: datosSolicitud,segmentoHistorialDeCredito:segmentoHistorialDeCredito,documentos:documentos, complementoSolicitado: complementoSolicitado]
     }
@@ -246,7 +255,7 @@ class DashboardController {
         def respuesta = dashboardService.guardarTipoDeTasaDeInteres(params)
         redirect action: "configuracion"
     }
-     def guardarTipoDeAsentamiento(){
+    def guardarTipoDeAsentamiento(){
         def respuesta = dashboardService.updateTipoDeAsentamiento(params)
         redirect action: "configuracion"
     }
@@ -368,4 +377,106 @@ class DashboardController {
         render estadisticas as JSON
     }
     
+    def perfilarCliente(){
+        session.ofertas = null
+        session.pasoFormulario = null
+        session.identificadores = null
+        session.perfil = null
+        def hoy = new Date()
+        [razonSocial:session.configuracion?.razonSocial, fechaActual: (hoy[DATE] + " de " + hoy.format("MMMM") + " de " + hoy[YEAR])]
+    }
+    
+    def solicitarCodigo() {
+        println params
+        def respuesta = [:]
+        if(params.telefonoCelular){
+            def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
+            String sid = smsService.sendSMS(toPhone, session.configuracion)
+            if(sid){
+                session.sid = sid
+                respuesta.mensajeEnviado = true
+            } else {
+                respuesta.mensajeEnviado = false
+            }
+        } else {
+            respuesta.mensajeEnviado = false
+        }
+        render respuesta as JSON
+    }
+
+    def resultadoVerificacion() {
+        def respuesta = [:]
+        if(params.codigoConfirmacion){
+            String sid = session.sid
+            String randomCodeTmp = params.codigoConfirmacion
+            println "session.sid -> " + sid
+            println "randomCodeTmp -> " + randomCodeTmp
+            boolean result = smsService.verify(sid, randomCodeTmp)
+            respuesta.resultado = result
+        } else {
+            respuesta.incorrecto = true
+        }
+        render respuesta as JSON
+    }
+    
+    def estructurarSolicitud(){
+        println params
+        def respuesta = [:]
+        def ultimoPaso = [:]
+        ultimoPaso.tipoDePaso = [:]
+        ultimoPaso.tipoDePaso.nombre = "pasoFormulario"
+        session["pasoFormulario"] = solicitudService.construirDatosTemporales(session["pasoFormulario"], params, ultimoPaso, session.identificadores, springSecurityService.currentUser.entidadFinanciera, null, null, springSecurityService.currentUser)
+        if(session["pasoFormulario"]?.cliente?.clienteGuardado){
+            if(!session.identificadores){
+                session.identificadores = [:]
+            }
+            if(!session.identificadores.idCliente) {
+                session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
+                session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
+                session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
+                session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
+            }
+        }
+        println session.identificadores
+        render respuesta as JSON
+    }
+    
+    def obtenerOfertas(){
+        println params
+        def respuesta
+        session.ofertas = null
+        respuesta = perfiladorService.obtenerPropuestas("perfilador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, session["pasoFormulario"]?.cliente?.clienteExistente, session.perfil)
+        println "Propuestas Obtenidas: " + respuesta
+        session.ofertas = respuesta
+        render respuesta as JSON
+        //render(template: "perfilador/ofertas", model: [ofertas: respuesta])
+    }
+    
+    def recalcularOferta() {
+        println params
+        def respuesta = [:]
+        respuesta = perfiladorService.recalcularOferta(session.ofertas, params)
+        render respuesta as JSON
+    }
+    
+    def seleccionarOferta() {
+        println params
+        def respuesta
+        respuesta = perfiladorService.guardarOferta(session.ofertas, session.pasoFormulario, session.identificadores , params)
+        session.ofertas = null
+        session.pasoFormulario = null
+        session.identificadores = null
+        session.perfil = null
+        render(template: "perfilador/confirmacion", model: [ofertaSeleccionada: respuesta])
+    }
+    
+    def buscarPerfilExistente(){
+        println params
+        def respuesta
+        respuesta = perfiladorService.buscarPerfilExistente(params.rfcClienteExistente)
+        if(respuesta.encontrado){
+            session.perfil = respuesta.perfil
+        }
+        render respuesta as JSON
+    }
 }

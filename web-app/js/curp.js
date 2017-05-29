@@ -42,7 +42,8 @@
       'LOCA' ];
 
     if (inconvenientes.indexOf(str) > -1) {
-      str = str.replace(/^(\w)\w/, '$1X');
+      //str = str.replace(/^(\w)\w/, '$1X');
+      str = str.replace(/.$/, 'X');
     }
 
     return str;
@@ -191,6 +192,18 @@
 
     return nombres[0].substring(0, 1);
   }
+  
+    function extraerDosPrimerasLetras(nombre) {
+    var nombres, primerNombreEsComun;
+    nombres = nombre.toUpperCase().trim().split(/\s+/);
+    primerNombreEsComun = (nombres.length > 1 && comunes.indexOf(nombres[0]) > -1);
+
+    if (primerNombreEsComun) {
+      return nombres[1].substring(0, 2);
+    }
+
+    return nombres[0].substring(0, 2);
+  }
 
   /**
   * generaCurp()
@@ -269,13 +282,93 @@
 
     return agregaDigitoVerificador(curp);
   }
+  
+    function generarRfcParcial(param) {
+        var inicial_nombre, vocal_apellido, posicion_1_4, rfcParcial, primera_letra_paterno, primera_letra_materno, nombres, nombre_a_usar, pad;
+
+        pad = zeropad.bind(null, 2);
+
+        param.nombre = ajustaCompuesto(normalizaString(param.nombre.toUpperCase())).trim();
+        param.apellido_paterno = ajustaCompuesto(normalizaString(param.apellido_paterno.toUpperCase())).trim();
+
+        param.apellido_materno = param.apellido_materno || "";
+        param.apellido_materno = ajustaCompuesto(normalizaString(param.apellido_materno.toUpperCase())).trim();
+        
+        console.log("Particulas: " + param.nombre + ", " + param.apellido_paterno + ", " + param.apellido_materno);
+        console.log("Longitudes: " + param.nombre.length + ", " + param.apellido_paterno.length + ", " + param.apellido_materno.length);
+
+        if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length > 0) {
+            console.log("Entra a 1");
+            inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+
+            vocal_apellido = "";
+
+            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+
+            primera_letra_materno = param.apellido_materno.substring(0, 1);
+        } else if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length <= 0) {
+            console.log("Entra a 2");
+            inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+
+            vocal_apellido = "";
+
+            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+
+            primera_letra_materno = "";
+        } else if (!param.apellido_materno || param.apellido_materno === "") {
+            console.log("Entra a 3");
+            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+
+            vocal_apellido = param.apellido_paterno.substring(1, 2);
+            
+            primera_letra_materno = ""
+            
+            inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+        } else {
+            console.log("Entra a 4");
+            inicial_nombre = extraerInicial(param.nombre);
+
+            vocal_apellido = param.apellido_paterno.trim().substring(1).replace(/[BCDFGHJKLMNÑPQRSTVWXYZ]/g, '').substring(0, 1);
+
+            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+
+            primera_letra_materno = param.apellido_materno.substring(0, 1);
+        }
+
+        posicion_1_4 = [
+            primera_letra_paterno,
+            vocal_apellido,
+            primera_letra_materno,
+            inicial_nombre
+        ].join('');
+
+        posicion_1_4 = filtraInconvenientes(filtraCaracteres(posicion_1_4));
+
+        nombres = param.nombre.split(" ").filter(function (palabra) {
+            return palabra !== "";
+        });
+        nombre_a_usar = comunes.indexOf(nombres[0]) > -1 ? (nombres.length > 1 ? nombres[1] : nombres[0]) : nombres[0];
+
+        rfcParcial = [
+            posicion_1_4,
+            pad(param.fecha_nacimiento[2] - 1900),
+            pad(param.fecha_nacimiento[1]),
+            pad(param.fecha_nacimiento[0]),
+        ].join('');
+
+        return rfcParcial;
+    }
 
   // Si es un navegador, exporta 'generaCurp' a una variable global.
   // Si es node.js, exporta esa función en module.exports
   if ((global.hasOwnProperty('window') && global.window === global) || global === window) {
     global.generaCurp = generaCurp;
+    global.generarRfcParcial = generarRfcParcial;
   } else {
-    module.exports = generaCurp;
+    module.exports = { 
+        generaCurp: generaCurp,
+        generarRfcParcial: generarRfcParcial
+    };
   }
 
 }(this));

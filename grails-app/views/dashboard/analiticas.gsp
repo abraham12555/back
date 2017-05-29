@@ -42,7 +42,7 @@
         </script>
     </head>
     <body>
-        <input type="hidden" id="opcionMenu" value="3">
+        <input type="hidden" id="opcionMenu" value="4">
         <section class="container width990">
             <div class="col12 clearFix radius2 solicitudBox">
                 <div class="paddingTop15 paddingLeft15">

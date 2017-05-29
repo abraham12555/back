@@ -55,7 +55,7 @@
         <title>Sample title</title>
     </head>
     <body>
-        <input type="hidden" id="opcionMenu" value="4">
+        <input type="hidden" id="opcionMenu" value="5">
         <input type="hidden" id="tipoDeDocumento">
         <section class="container marginBottom28">
             <div class="width990 solicitudBox autoMargin">

@@ -2249,7 +2249,7 @@ function inicializarDropzone(elemento, boton) {
         paramName: "archivo",
         params: {'docType': $('#tipoDeDocumento').val(), 'cara': cara},
         maxFiles: 1,
-        maxFilesize: 5,
+        maxFilesize: 3,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
         autoQueue: true,
         createImageThumbnails: false,
@@ -2393,6 +2393,7 @@ function inicializarDropzone(elemento, boton) {
         } else if (respuesta.vigente === false) {
             sweetAlert("Oops...", "El documento envíado no está vigente. Por favor, suba un documento vigente.", "error");
         } else {
+            //To Do Cerrar modal, deshabilitar boton de envio
             sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga border blancos.", "warning");
         }
         this.removeAllFiles();

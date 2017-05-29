@@ -17,8 +17,12 @@ class Producto implements Serializable {
     Esquema esquema
     String claseIconoPaso
     float cat = 0
-
+    boolean usoEnPerfilador = true
+    boolean segundoCredito = false
+    boolean primerCredito = true
     boolean activo = true
+    int edadMinima
+    int edadMaxima
 
     static constraints = {
         nombreDelProducto(blank: false)
