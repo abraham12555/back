@@ -934,7 +934,12 @@ class SolicitudController {
         ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
         println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
         println "session.identificadores: " + session.identificadores
-        def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+        def respuesta
+        if(params.intl && params.intl == "true") {
+            respuesta = buroDeCreditoService.consultaINTL(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+        } else {
+            respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+        }
         render respuesta as JSON
     }
     

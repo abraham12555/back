@@ -23,6 +23,7 @@ class Usuario implements Serializable {
     String apellidoPaterno
     String apellidoMaterno
     String email
+    String numeroDeEmpleado
 
     Usuario(String username, String password) {
         this()
@@ -59,6 +60,7 @@ class Usuario implements Serializable {
         apellidoMaterno nullable: false
         email nullable: false
         sucursal nullable: true
+        numeroDeEmpleado nullable: true
     }
 
     static mapping = {

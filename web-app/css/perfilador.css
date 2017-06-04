@@ -40,9 +40,7 @@ h2 {
 }
 .flexer, .progress-indicator {
     display: -webkit-box;
-    display: -moz-box;
     display: -ms-flexbox;
-    display: -webkit-flex;
     display: flex
 }
 
@@ -52,8 +50,8 @@ h2 {
 
 .no-flexer-element {
     -ms-flex: 0;
-    -webkit-flex: 0;
     -moz-flex: 0;
+    -webkit-box-flex: 0;
     flex: 0
 }
 
@@ -238,6 +236,8 @@ h2 {
 
 .progress-indicator.stacked .stacked-text span.substep {
     margin: 20px 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     text-transform: capitalize;
     font-size: 13px;
@@ -454,6 +454,7 @@ select:focus {
     position: relative;
     padding-top: 27px;
 }
+
 .mdl-selectfield:after {
     position: absolute;
     top: 2em;
@@ -589,7 +590,7 @@ select:focus {
 }
 
 .ui-slider-horizontal .ui-state-default {
-    margin-left: 0 !important; */
+    margin-left: 0 !important;
     text-align: center;
     padding-top: 0;
 }
@@ -754,6 +755,10 @@ select:focus {
     -o-transition: width 1s, height 1s, top 1s, left 1s;
     -ms-transition: width 1s, height 1s, top 1s, left 1s;
     transition: width 1s, height 1s, top 1s, left 1s
+}
+
+.holder_bu_no_display {
+  display: none;
 }
 
 @media (min-width: 40em) {

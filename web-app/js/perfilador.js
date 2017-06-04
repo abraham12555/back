@@ -67,10 +67,18 @@ function operacionesPerfilador() {
                 }
             } else if ($(this).hasClass('validarEmail')) {
                 if (validateEmail($(this).val())) {
-                    $(this).removeClass('mat-input-error');
-                    $(this).addClass('mat-input');
-                    $(this).addClass('notEmpty');
-                    $(this).addClass('headingColor');
+                    if (validateDefaultAddress($(this).val())) {
+                        $(this).removeClass('mat-input-error');
+                        $(this).addClass('mat-input');
+                        $(this).addClass('notEmpty');
+                        $(this).addClass('headingColor');
+                    } else {
+                        $(this).removeClass('mat-input');
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                        $(this).addClass('mat-input-error');
+                        vNotify.error({text: 'Ha introducido un correo de LIbertad SF, solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Error de Validación.', visibleDuration: 15000});
+                    }
                 } else {
                     $(this).removeClass('mat-input');
                     $(this).removeClass('notEmpty');
@@ -380,6 +388,7 @@ function goStep2() {
                     $('.step2 .step').addClass('active');
                     $('#menuPersonales').addClass('active');
                     sweetAlert("¡Excelente!", "El R.F.C indicado ha sido encontrado. Complementa los datos que son solicitados en los siguientes apartados.", "success");
+                    vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
                 } else {
                     sweetAlert("¡Atención!", "El R.F.C indicado no ha sido encontrado, Verificalo e intenta nuevamente por favor.", "warning");
                 }
@@ -399,6 +408,7 @@ function goStep2() {
         $('.step2').addClass('active');
         $('.step2 .step').addClass('active');
         $('#menuPersonales').addClass('active');
+        vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
     }
 }
 
@@ -462,6 +472,11 @@ function goStep5() {
 }
 
 function goConsultaBuro() {
+    $("body").mLoading({
+        text: "Guardando los datos de la solicitud, espere por favor...",
+        icon: "/images/spinner.gif",
+        mask: true
+    });
     $.ajax({
         type: 'POST',
         data: $('#perfiladorForm').serialize(),
@@ -475,8 +490,10 @@ function goConsultaBuro() {
             $('.step3').addClass('active');
             $('.step3 .step').addClass('active');
             $('#menuEmpleo').removeClass('active');
+            $("body").mLoading('hide');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("body").mLoading('hide');
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
         }
     });
@@ -999,6 +1016,7 @@ function mostrarOfertas(data) {
 
     var Conclave = (function () {
         var buArr = [], arlen;
+        var numPromos = $('.promo').length;
         return {
             init: function () {
                 this.addCN();
@@ -1008,6 +1026,15 @@ function mostrarOfertas(data) {
                 var buarr = ["holder_bu_center", "holder_bu_awayR1", "holder_bu_awayL1", "holder_bu_awayR2", "holder_bu_awayL2"];
                 for (var i = 1; i <= buarr.length; ++i) {
                     $("#bu" + i).removeClass().addClass(buarr[i - 1] + " holder_bu");
+                }
+                if (buarr.length < numPromos) {
+                    var dif = numPromos - buarr.length;
+                    var firstIndexBeforeArrLength = buarr.length + 1;
+                    while (dif > 0) {
+                        $("#bu" + firstIndexBeforeArrLength).removeClass().addClass("holder_bu_no_display holder_bu");
+                        dif--;
+                        firstIndexBeforeArrLength++;
+                    }
                 }
             },
             clickReg: function () {
@@ -1216,6 +1243,19 @@ function seleccionarOferta(posicion, producto) {
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
+}
+
+function validateDefaultAddress(email) {
+    var regex = /.+@libertad.com.mx$/;
+    if (regex.test(email)) {
+        if (email !== "1234@libertad.com.mx") {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return true;
+    }
 }
 
 function validateName(nombre) {

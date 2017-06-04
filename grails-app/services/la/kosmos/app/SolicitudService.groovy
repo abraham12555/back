@@ -149,35 +149,38 @@ class SolicitudService {
                             }
                         }
                     }
-                    if(clienteNuevo && datosPaso.emailCliente) {
+                    if(datosPaso.emailCliente) {
                         def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                        EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                         if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
-                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
-                            def emailPersonal = new EmailCliente()
-                            emailPersonal.cliente = cliente
-                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
-                            emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
-                            emailPersonal.vigente = true
-                            emailPersonal.save(flush: true)
+                            correoExistente = EmailCliente.findWhere(direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                            if(!correoExistente || datosPaso.emailCliente.emailPersonal.toLowerCase().equals("1234@libertad.com.mx")) {
+                                def emailPersonal = new EmailCliente()
+                                emailPersonal.cliente = cliente
+                                emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
+                                emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
+                                emailPersonal.vigente = true
+                                emailPersonal.save(flush: true)
+                            }
                         } else if (correoExistente) {
                             correoExistente.vigente = true
                             correoExistente.save(flush: true)
                         }
-                    } else if(!clienteNuevo && datosPaso.emailCliente) {
-                        def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
-                        if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
-                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
-                            def emailPersonal = new EmailCliente()
-                            emailPersonal.cliente = cliente
-                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
-                            emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
-                            emailPersonal.vigente = true
-                            emailPersonal.save(flush: true)
-                        } else if (correoExistente) {
-                            correoExistente.vigente = true
-                            correoExistente.save(flush: true)
-                        }
+                    } /*else if(!clienteNuevo && datosPaso.emailCliente) {
+                    def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                    if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
+                    EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
+                    def emailPersonal = new EmailCliente()
+                    emailPersonal.cliente = cliente
+                    emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
+                    emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
+                    emailPersonal.vigente = true
+                    emailPersonal.save(flush: true)
+                    } else if (correoExistente) {
+                    correoExistente.vigente = true
+                    correoExistente.save(flush: true)
                     }
+                    }*/
                     if(identificadores?.idSolicitud) {
                         println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
                         def solicitud = SolicitudDeCredito.get(identificadores?.idSolicitud as long)
@@ -813,7 +816,7 @@ class SolicitudService {
             solicitudRest.solicitud.buroDeCredito = ""
         
             solicitudRest.solicitud.datosSolicitud.fechaDeCreacion = (solicitud.fechaDeSolicitud).format('dd/MM/yyyy HH:mm')
-            solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = "Solicitante" //Temporal
+            solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = (solicitud.registradaPor ? solicitud.registradaPor.username : "Solicitante") //Temporal
             solicitudRest.solicitud.datosSolicitud.status = solicitud.statusDeSolicitud.nombre
             solicitudRest.solicitud.datosSolicitud.folio = ("" + solicitud.folio).padLeft(6, '0')
             solicitudRest.solicitud.datosSolicitud.puntoDeVenta = (solicitud.sucursal ? solicitud.sucursal.nombre : "")
@@ -869,8 +872,17 @@ class SolicitudService {
             solicitudRest.solicitud.generales.regimenDeBienes = ((solicitud.cliente.regimenMatrimonial) ? String.valueOf(solicitud.cliente.regimenMatrimonial.clave) : "")
             solicitudRest.solicitud.generales.dependientesEconomicos = solicitud.cliente.dependientesEconomicos
             
-            solicitudRest.solicitud.conyugue.nombre = ((solicitud.cliente.nombreDelConyugue) ? solicitud.cliente.nombreDelConyugue : "")?.trim()?.toUpperCase()
-            solicitudRest.solicitud.conyugue.segundoNombre = ""
+            def primerNombreConyugue
+            def segundoNombreConyugue
+            def nombreCompletoConyugue = solicitud.cliente.nombreDelConyugue?.split()
+            primerNombreConyugue = nombreCompletoConyugue?.getAt(0)
+            if(nombreCompletoConyugue?.size() > 1) {
+                nombreCompletoConyugue = nombreCompletoConyugue[1..nombreCompletoConyugue.size()-1]
+                segundoNombreConyugue = nombreCompletoConyugue.join(' ')
+            }
+            
+            solicitudRest.solicitud.conyugue.nombre = (primerNombreConyugue ?: "")?.trim()?.toUpperCase()
+            solicitudRest.solicitud.conyugue.segundoNombre = (segundoNombreConyugue ?: "")?.trim()?.toUpperCase()
             solicitudRest.solicitud.conyugue.apellidoPaterno = ((solicitud.cliente.apellidoPaternoDelConyugue) ? solicitud.cliente.apellidoPaternoDelConyugue : "")?.trim()?.toUpperCase()
             solicitudRest.solicitud.conyugue.apellidoMaterno = ((solicitud.cliente.apellidoMaternoDelConyugue) ? solicitud.cliente.apellidoMaternoDelConyugue : "")?.trim()?.toUpperCase()
             solicitudRest.solicitud.conyugue.fechaDeNacimiento = ((solicitud.cliente.fechaDeNacimientoDelConyugue) ? (solicitud.cliente.fechaDeNacimientoDelConyugue).format('dd/MM/yyyy HH:mm') : "")
@@ -1150,12 +1162,12 @@ class SolicitudService {
         def empleo = EmpleoCliente.get(identificadores.idEmpleo)
         def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
         datos.solicitudId = solicitud.id
-        datos.riesgoGeografico = solicitud.sucursal?.riesgoGeografico?.nombre?.toUpperCase()
+        datos.riesgoGeografico = solicitud.sucursal?.riesgoGeografico?.nombre?.replaceAll("\\s+", "")?.toUpperCase()
         datos.plazo = productoSolicitud.plazos
         datos.periodicidad = productoSolicitud.periodicidad.nombre.toUpperCase()
-        datos.riesgoOcupacion = empleo.ocupacion.riesgoDeOcupacion?.nombre?.toUpperCase()
+        datos.riesgoOcupacion = empleo.ocupacion.riesgoDeOcupacion?.nombre?.replaceAll("\\s+", "")?.toUpperCase()
         datos.edad = calcularTiempoTranscurrido(solicitud.cliente.fechaDeNacimiento)
-        datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.toUpperCase()
+        datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.replaceAll("\\s+", "").toUpperCase()
         datos.productoServicio = productoSolicitud.producto.claveDeProducto
         datos.antiguedadVivienda = calcularTiempoTranscurrido(new Date().parse("dd/MM/yyyy", ("01/" + direccion.tiempoDeVivienda)))
         datos.ingresosFijosMensuales = new Double(empleo.ingresosFijos)
