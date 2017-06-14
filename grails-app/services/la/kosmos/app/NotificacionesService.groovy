@@ -158,8 +158,7 @@ class NotificacionesService {
         phoneNumber = phoneNumber.replaceAll('-', '')
 
         Future future = executorService.submit([call: {
-                    boolean value = false
-//                    this.smsService.sendSMS(phoneNumber, message, configuracion)
+                    boolean value = this.smsService.sendSMS(phoneNumber, message, configuracion)
                     return value
                 }] as Callable)
         boolean response = future.get()
