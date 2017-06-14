@@ -19,6 +19,8 @@ class DashboardService {
             query += " And ps.solicitud.sucursal.id = " + usuario.sucursal.id
             if (roles.contains('ROLE_EJECUTIVO')) {
                 query += " And ps.solicitud.registradaPor.id = " + usuario.id
+            } else {
+                query += " And ps.solicitud.registradaPor IS NOT NULL "
             }
         }
         query += " order by ps.solicitud.fechaDeSolicitud"
@@ -108,6 +110,8 @@ class DashboardService {
             query += " And ps.solicitud.sucursal.id = " + usuario.sucursal.id + " "
             if (roles.contains('ROLE_EJECUTIVO')) {
                 query += " And ps.solicitud.registradaPor.id = " + usuario.id + " "
+            }  else {
+                query += " And ps.solicitud.registradaPor IS NOT NULL "
             }
         }
         query += "AND ps.solicitud.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
@@ -170,6 +174,8 @@ class DashboardService {
             query += " And ps.solicitud.sucursal.id = " + usuario.sucursal.id
             if (roles.contains('ROLE_EJECUTIVO')) {
                 query += " And ps.solicitud.registradaPor.id = " + usuario.id
+            } else {
+                query += " And ps.solicitud.registradaPor IS NOT NULL "
             }
         }
         def resultados = ProductoSolicitud.executeQuery(query)

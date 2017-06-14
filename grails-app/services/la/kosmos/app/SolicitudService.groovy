@@ -324,7 +324,12 @@ class SolicitudService {
                     empleoCliente.ocupacion = ( datosPaso.empleoCliente.ocupacion ? Ocupacion.get(datosPaso.empleoCliente.ocupacion as long) : null)
                     empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? ((datosPaso.empleoCliente.antiguedad?.mes?.toString()?.padLeft(2, '0')) + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
                     empleoCliente.ingresosFijos = (datosPaso.empleoCliente.ingresosFijos ? datosPaso.empleoCliente.ingresosFijos as float : 0)
-                    empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
+                    try {
+                        empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
+                    } catch(NumberFormatException nfe) {
+                        println "Cliente colocó caracteres no númericos, seteando ingresos variables a 0"
+                        empleoCliente.ingresosVariables = 0
+                    }
                     empleoCliente.gastos = (datosPaso.empleoCliente.gastos ? datosPaso.empleoCliente.gastos as int : 0)
                     if(empleoCliente.save(flush:true)){
                         println("El empleo se ha registrado correctamente")
@@ -730,10 +735,12 @@ class SolicitudService {
         def respuesta = []
         def folioSolicitud
         def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
+        def query2
         if(tipoDeConsulta && (tipoDeConsulta as int) == 0) {
             query += " AND s.statusDeSolicitud.id NOT IN (1,2,3)"
         } else if (tipoDeConsulta && (tipoDeConsulta as int) == 1) {
             query += " AND s.statusDeSolicitud.id IN (1,2,3)" 
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
         }
         
         try {
@@ -747,10 +754,14 @@ class SolicitudService {
             query += " AND s.solicitudEnviada = false"
             break
         case 2: //obtenerSolicitudesPorfecha / list
-            query += " AND s.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"     
+            query += " AND s.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
+            if(query2) {
+                query2 += " AND s.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
+            }
             break
         case 3: //obtenerSolicitudPorFolio / show
-            query += " AND s.folio = '" + folioSolicitud + "' " 
+            query += " AND s.folio = '" + folioSolicitud + "' "
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id + " AND s.folio = '" + folioSolicitud + "' "
             break
         default:
             break
@@ -794,13 +805,13 @@ class SolicitudService {
             
             def datosBuroDeCredito = [:]
             datosBuroDeCredito.reporte = solicitud.reporteBuroCredito
-            datosBuroDeCredito.consultas = ConsultasBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
+            /*datosBuroDeCredito.consultas = ConsultasBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.creditos = CreditoClienteBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.direcciones = DireccionBuroDeCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.empleos = EmpleoBuroDeCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.refCred = RefCredBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.sintetiza = SintetizaBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
-            datosBuroDeCredito.resumen = ResumenBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
+            datosBuroDeCredito.resumen = ResumenBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito)*/
             datosBuroDeCredito.score = ScoreBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito, codigoScore: "007")
             
             def solicitudRest = new SolicitudRest()
@@ -1143,6 +1154,151 @@ class SolicitudService {
              */
             respuesta << solicitudRest.solicitud
         }
+        println "Contenido de query2 antes de ser evaluado... " + query2
+        if(query2) {
+            def compuestos = [ "DA", "DAS", "DE", "DEL", "DER", "DI", "DIE", "DD", "EL", "LA", "LOS", "LAS", "LE", "LES", "MAC", "MC", "VAN", "VON", "Y" ];
+            println "Query2: " + query2
+            resultados = SolicitudTemporal.executeQuery(query2)
+            resultados.each { solicitud ->
+            
+                def solicitudRest = new SolicitudRest()
+                solicitudRest.solicitud = [:]
+                solicitudRest.solicitud.datosSolicitud = [:]
+                solicitudRest.solicitud.productoSeleccionado = [:]
+                solicitudRest.solicitud.generales = [:]
+                solicitudRest.solicitud.conyugue = [:]
+                solicitudRest.solicitud.direccion = [:]
+                solicitudRest.solicitud.vivienda = [:]
+                solicitudRest.solicitud.empleo = [:]
+                solicitudRest.solicitud.documentos = []
+                solicitudRest.solicitud.buroDeCredito = ""
+        
+                solicitudRest.solicitud.datosSolicitud.fechaDeCreacion = (solicitud.fechaDeSolicitud).format('dd/MM/yyyy HH:mm')
+                solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = "Solicitante"
+                solicitudRest.solicitud.datosSolicitud.status = "LLENADO DE SOLICITUD"
+                solicitudRest.solicitud.datosSolicitud.folio = (solicitud.folio ? ("" + solicitud.folio).padLeft(6, '0') : "")
+                solicitudRest.solicitud.datosSolicitud.puntoDeVenta = ""
+                solicitudRest.solicitud.datosSolicitud.puntajeScore = 0
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore = ""
+                solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""
+                solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""
+                solicitudRest.solicitud.datosSolicitud.fechaDeDictaminacion = ""
+        
+                solicitudRest.solicitud.productoSeleccionado.producto = solicitud?.producto?.claveDeProducto
+                solicitudRest.solicitud.productoSeleccionado.modelo = ((solicitud?.modelo) ? solicitud?.modelo.nombre : "")
+                solicitudRest.solicitud.productoSeleccionado.color = ((solicitud?.colorModelo) ? solicitud.colorModelo?.nombre : "")
+                solicitudRest.solicitud.productoSeleccionado.enganche = solicitud?.enganche
+                solicitudRest.solicitud.productoSeleccionado.montoDelPago = solicitud?.montoDelPago
+                solicitudRest.solicitud.productoSeleccionado.periodicidad = solicitud?.periodicidad?.nombre
+                solicitudRest.solicitud.productoSeleccionado.plazo = solicitud?.plazos
+                solicitudRest.solicitud.productoSeleccionado.seguro = solicitud?.montoDelSeguroDeDeuda
+                solicitudRest.solicitud.productoSeleccionado.tasaDeInteres =  solicitud?.producto?.tasaDeInteres
+                solicitudRest.solicitud.productoSeleccionado.montoDelCredito = solicitud?.montoDelCredito
+            
+                def primerNombre
+                def segundoNombre
+                def apellidoPaterno
+                def apellidoMaterno
+                def nombreCompleto = solicitud.nombreDelCliente?.split(' ')
+                def particulas = []
+                def cadena = "";
+                println "++++++++++++++++++++++++++++++++++++++++++++++++++"
+                nombreCompleto.each {
+                    println "Revisando la cadena: " + it
+                    if(compuestos.contains(it)) {
+                        if(cadena.length() > 0) {
+                            cadena += (" " + it)
+                        } else {
+                            cadena += it
+                        }
+                    } else {
+                        if(cadena.length() > 0) {
+                            cadena += (" " + it)
+                        } else {
+                            cadena += it
+                        }
+                        particulas << cadena
+                        cadena = ""
+                    }
+                }
+               
+                println "Resultado del parseo: " + particulas
+                
+                if(particulas.size() > 0) {
+                    primerNombre = particulas?.getAt(0)
+                    if(particulas.size() == 2) {
+                        apellidoPaterno = particulas.getAt(1)
+                    } else if (particulas.size() == 3) {
+                        apellidoPaterno = particulas.getAt(1)
+                        apellidoMaterno = particulas.getAt(2)
+                    } else if (particulas.size() == 4) {
+                        segundoNombre = particulas.getAt(1)
+                        apellidoPaterno = particulas.getAt(2)
+                        apellidoMaterno = particulas.getAt(3)
+                    } else if (particulas.size() > 4){
+                        
+                    }
+                }
+                
+                solicitudRest.solicitud.generales.nombre = primerNombre?.toUpperCase()
+                solicitudRest.solicitud.generales.segundoNombre = (segundoNombre ?: "")?.toUpperCase()
+                solicitudRest.solicitud.generales.apellidoPaterno = (apellidoPaterno ?: "")?.toUpperCase()
+                solicitudRest.solicitud.generales.apellidoMaterno = (apellidoMaterno ?: "")?.toUpperCase()
+                solicitudRest.solicitud.generales.numeroCelular = (solicitud?.telefonoCliente ?: "")
+                solicitudRest.solicitud.generales.numeroFijo = ""
+                solicitudRest.solicitud.generales.correoElectronico = (solicitud?.emailCliente ?: "")
+                solicitudRest.solicitud.generales.sexo = ""
+                solicitudRest.solicitud.generales.fechaDeNacimiento = ""
+                solicitudRest.solicitud.generales.lugarDeNacimiento = ""
+                solicitudRest.solicitud.generales.nacionalidad = ""
+                solicitudRest.solicitud.generales.rfc = ""
+                solicitudRest.solicitud.generales.curp = ""
+                solicitudRest.solicitud.generales.estadoCivil = ""
+                solicitudRest.solicitud.generales.regimenDeBienes = ""
+                solicitudRest.solicitud.generales.dependientesEconomicos = 0
+            
+                solicitudRest.solicitud.conyugue.nombre = ""
+                solicitudRest.solicitud.conyugue.segundoNombre = ""
+                solicitudRest.solicitud.conyugue.apellidoPaterno = ""
+                solicitudRest.solicitud.conyugue.apellidoMaterno = ""
+                solicitudRest.solicitud.conyugue.fechaDeNacimiento = ""
+                solicitudRest.solicitud.conyugue.lugarDeNacimiento = ""
+                solicitudRest.solicitud.conyugue.nacionalidad = ""
+                solicitudRest.solicitud.conyugue.rfc = ""
+                solicitudRest.solicitud.conyugue.curp = ""
+            
+                solicitudRest.solicitud.direccion.calle = ""
+                solicitudRest.solicitud.direccion.numeroExterior = ""
+                solicitudRest.solicitud.direccion.numeroInterior = ""
+                solicitudRest.solicitud.direccion.codigoPostal = ""
+                solicitudRest.solicitud.direccion.colonia = ""
+                solicitudRest.solicitud.direccion.municipio = ""
+                solicitudRest.solicitud.direccion.ciudad = ""
+                solicitudRest.solicitud.direccion.estado = ""
+            
+                solicitudRest.solicitud.vivienda.tipoDeVivienda = ""
+                solicitudRest.solicitud.vivienda.montoDeRenta = 0
+                solicitudRest.solicitud.vivienda.mesInicioVivienda = ""
+                solicitudRest.solicitud.vivienda.anioInicioVivienda = ""
+                solicitudRest.solicitud.vivienda.mesInicioResidencia = ""
+                solicitudRest.solicitud.vivienda.anioInicioResidencia = ""
+            
+                solicitudRest.solicitud.empleo.profesion = ""
+                solicitudRest.solicitud.empleo.ocupacion = ""
+                solicitudRest.solicitud.empleo.empresa = ""
+                solicitudRest.solicitud.empleo.mesInicioEmpleo = ""
+                solicitudRest.solicitud.empleo.anioInicioEmpleo = ""
+                solicitudRest.solicitud.empleo.ingresosFijos = 0
+                solicitudRest.solicitud.empleo.ingresosVariables = 0
+                solicitudRest.solicitud.empleo.ingresosTotales = 0
+                solicitudRest.solicitud.empleo.gastosMensuales = 0
+            
+                respuesta << solicitudRest.solicitud
+            }
+        } else {
+            println "Query 2 es null"
+        }
+        
         respuesta
     }
     

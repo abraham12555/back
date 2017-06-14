@@ -903,7 +903,7 @@ class SolicitudController {
             respuesta.error = false
             ocr = false
         }
-        if((!respuesta?.error || respuesta?.vigente == true) && !respuesta.motivosRechazo) {
+        if((!respuesta?.error || respuesta?.vigente == true) && !respuesta?.motivosRechazo) {
             if(ocr){
                 session["pasoFormulario"] = respuesta
                 if(session.cotizador?.emailCliente && session["pasoFormulario"]){
