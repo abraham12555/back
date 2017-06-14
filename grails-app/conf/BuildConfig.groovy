@@ -48,7 +48,7 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
         // runtime 'mysql:mysql-connector-java:5.1.29'
-        // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+        runtime 'org.postgresql:postgresql:9.4.1211'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
         compile 'org.apache.httpcomponents:httpclient:4.5'
         compile 'com.google.code.gson:gson:2.3.1'
@@ -85,5 +85,8 @@ grails.project.dependency.resolution = {
         //compile ":less-asset-pipeline:1.10.0"
         //compile ":coffee-asset-pipeline:1.8.0"
         //compile ":handlebars-asset-pipeline:1.3.0.3"
+        
+        compile 'org.grails.plugins:quartz:1.0.2'
+        compile "org.grails.plugins:executor:0.3"
     }
 }

@@ -10,6 +10,7 @@ class Usuario implements Serializable {
     private static final long serialVersionUID = 1
 
     transient springSecurityService
+    transient entidadTemporal
 
     String username
     String password
@@ -22,7 +23,8 @@ class Usuario implements Serializable {
     String apellidoPaterno
     String apellidoMaterno
     String email
-
+    Date fechaPassword
+    
     Usuario(String username, String password) {
         this()
         this.username = username
@@ -46,8 +48,8 @@ class Usuario implements Serializable {
     protected void encodePassword() {
         password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
     }
-
-    static transients = ['springSecurityService']
+    
+    static transients = ['springSecurityService', 'entidadTemporal']
 
     static constraints = {
         username blank: false, unique: true
@@ -57,11 +59,18 @@ class Usuario implements Serializable {
         apellidoPaterno nullable: false
         apellidoMaterno nullable: false
         email nullable: false
+        fechaPassword nullable: false
+        sesionUsuario nullable: true
     }
 
     static mapping = {
         password column: '`password`'
+        sesionUsuario cascade: 'all-delete-orphan'
     }
+    
+    static hasOne = [sesionUsuario:SesionUsuario]
+    
+    static hasMany = [userPasswords: UsuarioPasswords]
         
     String toString () {
         "${nombre} ${apellidoPaterno} ${apellidoMaterno}"

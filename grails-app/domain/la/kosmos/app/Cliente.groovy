@@ -1,6 +1,8 @@
 package la.kosmos.app
 
 class Cliente implements Serializable{
+
+    transient TelefonoCliente telefonoCliente
     
     String nombre
     String apellidoPaterno
@@ -24,7 +26,7 @@ class Cliente implements Serializable{
     String curpDelConyugue
     Date fechaDeRegistro = new Date()
     RegimenMatrimonial regimenMatrimonial
-    
+
     static constraints = {
 
         nombre (blank: false,)
@@ -49,11 +51,15 @@ class Cliente implements Serializable{
         fechaDeRegistro (nullable: false)
         regimenMatrimonial (nullable: true)
     }
-    
+
     static mapping = {
         id generator: 'sequence', column: 'id_cliente', params:[sequence:'cliente_id_seq']
     }
-    
+
+    static hasMany = [telefonosCliente: TelefonoCliente]
+
+    static transients = [ "telefonoCliente" ]
+
     String toString(){
         "${nombre} ${apellidoPaterno} ${apellidoMaterno}"
     }

@@ -125,7 +125,33 @@ function mostrarApartado(claseBoton, claseDiv, apartado) {
     if (claseBoton === "opcConfiguracion") {
         $('.configuracionSubMenu').fadeOut();
         $('#' + apartado + 'SubMenu').fadeIn();
+
+        $('#' + apartado + 'SubMenu').find('ul').find("li").find("a").each(function() {
+            var tab = this.getAttribute('data-id');
+            if(apartado === tab){
+                $(this).addClass("greenTitle");
+            } else {
+                $(this).removeClass("greenTitle");
+                $(this).addClass("gray");
+            }
+        });
     }
+}
+
+function mostrarApartadoSubmenu(e) {
+    var currentTab = e.getAttribute('data-id');
+
+    $(e).closest('ul').find('li').find("a").each(function() {
+        var tab = this.getAttribute('data-id');
+        if(currentTab === tab){
+            $('#' + currentTab).fadeIn();
+            $(this).addClass("greenTitle");
+        } else {
+            $('#' + tab).fadeOut();
+            $(this).removeClass("greenTitle");
+            $(this).addClass("gray");
+        }
+    });
 }
 
 function iniciarVisita() {
@@ -552,4 +578,89 @@ function mostrarPreguntas(data) {
 
 function iniciarPrettyPhoto() {
     $("a[rel^='prettyPhoto[pp_gal]']").prettyPhoto();
+}
+
+function pagination(totalPages, page) {
+    if (totalPages > 1) {
+        $('#pagination').empty();
+        $('#pagination').append(function () {
+            var li = $('<li class="floatLeft">');
+            li.append(function () {
+                var a = $('<a class="font14 fontWeight600 displayInline pageMarker">');
+                if (page !== 1) {
+                    a.addClass('page');
+                }
+                a.attr('title', "Anterior");
+                a.attr('data-page', page - 1);
+                a.attr('href', '#').append('<i class="fa fa-angle-left" aria-hidden="true"></i>');
+
+                return a;
+            });
+            if (page === 1) {
+                li.addClass('disabled');
+            }
+            return li;
+        });
+
+        var paginationLength = 6;
+        var leftValue = 3;
+        var middleValue = leftValue + 1;
+        var rightValue = 2;
+
+        if (totalPages <= paginationLength || page <= middleValue) {
+            var previousPages = page - (page - 1);
+            var followingPages = (totalPages > paginationLength) ? paginationLength : totalPages;
+            for (var i = previousPages; i <= followingPages; i++) {
+                buildPagination(i, page);
+            }
+        } else if (page > middleValue && page <= (totalPages - rightValue)) {
+            var previousPages = page - leftValue;
+            var followingPages = page + rightValue;
+            for (var i = previousPages; i <= followingPages; i++) {
+                buildPagination(i, page);
+            }
+        } else if (page > (totalPages - rightValue)) {
+            var previousPages = page - (paginationLength - ((totalPages - page) + 1));
+            for (var i = previousPages; i <= totalPages; i++) {
+                buildPagination(i, page);
+            }
+        }
+        $('#pagination').append(function () {
+            var li = $('<li class="floatLeft">');
+            li.append(function () {
+                var a = $('<a class="font14 fontWeight600 displayInline pageMarker">');
+                if (page !== (totalPages)) {
+                    a.addClass('page');
+                }
+                a.attr('title', "Siguiente");
+                a.attr('data-page', page + 1);
+                a.attr('href', '#').append('<i class="fa fa-angle-right" aria-hidden="true"></i>');
+
+                return a;
+            });
+            if (page === (totalPages)) {
+                li.addClass('disabled');
+            }
+            return li;
+        });
+    }
+}
+
+function buildPagination(i, page) {
+    $('#pagination').append(function () {
+        var li = $('<li class="floatLeft">');
+        li.append(function () {
+            var a = $('<a class="font14 fontWeight400 displayInline pageMarker">');
+            if (i === page) {
+                a.addClass('pageSelected');
+            } else {
+                a.addClass('page');
+            }
+            a.attr('title', "Página " + i);
+            a.attr('data-page', i);
+            return a.attr('href', '#').append(i);
+        });
+
+        return li;
+    });
 }

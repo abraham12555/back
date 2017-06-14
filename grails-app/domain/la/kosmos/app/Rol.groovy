@@ -7,20 +7,22 @@ import groovy.transform.ToString
 @ToString(includes='authority', includeNames=true, includePackage=false)
 class Rol implements Serializable {
 
-	private static final long serialVersionUID = 1
+    private static final long serialVersionUID = 1
 
-	String authority
+    String authority
 
-	Rol(String authority) {
-		this()
-		this.authority = authority
-	}
+    def static final ROLE_ADMIN = 1
 
-	static constraints = {
-		authority blank: false, unique: true
-	}
+    Rol(String authority) {
+        this()
+        this.authority = authority
+    }
 
-	static mapping = {
-		cache true
-	}
+    static constraints = {
+        authority blank: false, unique: true
+    }
+
+    static mapping = {
+        cache true
+    }
 }

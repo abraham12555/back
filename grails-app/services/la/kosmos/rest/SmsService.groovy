@@ -7,6 +7,8 @@ import com.twilio.type.PhoneNumber
 import com.twilio.exception.ApiException
 import com.auronix.calixta.GatewayException;
 import com.auronix.calixta.sms.SMSGateway;
+import la.kosmos.app.ConfiguracionEntidadFinanciera
+import la.kosmos.app.vo.Constants.StatusResponseCalixta
 import org.apache.commons.lang.RandomStringUtils
 import java.security.MessageDigest
 import org.apache.commons.lang.RandomStringUtils
@@ -34,7 +36,7 @@ public class SmsService {
                         new PhoneNumber(PHONE_NUMBER),
                         mensajeArmado?.toUpperCase())
                     .create()
-                
+
                     if(persistSms(message, randomCode, configuracion?.usarTwilio)){
                         println(message)
                         respuesta = message.getSid()
@@ -60,7 +62,7 @@ public class SmsService {
                         if(persistSms(message, randomCode, configuracion?.usarTwilio)){
                             println(message)
                             respuesta = message.sid
-                        } else  { 
+                        } else  {
                             respuesta = null
                         }
                     } else {
@@ -76,34 +78,42 @@ public class SmsService {
     }
 
     public boolean sendShortUrl(String to, String shortUrl, def configuracion){
-        def respuesta = false
-        try{
-            if(configuracion?.usarTwilio) {
-                Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-                Message message = Message.creator(
-                    new PhoneNumber("+52" + to),
-                    new PhoneNumber(PHONE_NUMBER),
-                    configuracion.mensajeEnvioShortUrl + shortUrl)
-                .create()
-                respuesta = true
-            } else {
-                SMSGateway smsGateway = new SMSGateway();
-                int idEnvio = smsGateway.sendMessageOL(to, (configuracion.mensajeEnvioShortUrl + shortUrl));
-                println("Estados Calixta -> [ 3 - Enviado al carrier | 6 - No móvil | 10 - Inválido | 101 - Falta de saldo | -1 - Error general ]")
-                println("Resultado del envio del ShortURL: " + idEnvio)
-                if(idEnvio == 3) {
-                    respuesta = true
-                } else {
-                    respuesta = false
-                }
-            }
-        }catch(ApiException e){
-            respuesta = false
-        } finally{
-            respuesta
+        try {
+            return this.sendSMS(to, configuracion.mensajeEnvioShortUrl + shortUrl, configuracion)
+        } catch (Exception e) {
+            return Boolean.FALSE
         }
     }
-    
+
+    public boolean sendSMS (String to, String contentMsg, ConfiguracionEntidadFinanciera configuracion) throws Exception {
+        try {
+            if(configuracion?.usarTwilio) {
+//                Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
+//                Message message = Message.creator(
+//                    new PhoneNumber("+52" + to),
+//                    new PhoneNumber(PHONE_NUMBER),
+//                    contentMsg)
+//                .create()
+                return Boolean.TRUE
+            } else {
+//                SMSGateway smsGateway = new SMSGateway();
+                int idEnvio = 3 //smsGateway.sendMessageOL(to, (contentMsg));
+                
+                if(idEnvio == StatusResponseCalixta.ENVIADO.value) {
+                    return Boolean.TRUE
+                } else if (idEnvio == StatusResponseCalixta.NO_SALDO.value){
+                    throw new Exception("Error. No hay saldo para el envío de mensajes")
+                } else if (idEnvio == StatusResponseCalixta.ERROR.value){
+                    throw new Exception("Error desconocido")
+                } else {
+                    return Boolean.FALSE
+                }
+            }
+        } catch(Exception e) {
+            throw e
+        }
+    }
+
     private String getRandomCode() {
         //def result = RandomStringUtils.randomAlphanumeric(5).toUpperCase()
         def result = RandomStringUtils.randomNumeric(5).toUpperCase()
@@ -150,11 +160,11 @@ public class SmsService {
         }
         result
     }
-    
+
     def generarToken(String s){
         MessageDigest.getInstance("MD5").digest(s.bytes).encodeHex().toString()
     }
-    
+
     def generarCadenaAleatoria(longitud){
         int randomStringLength = longitud
         String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()

@@ -127,7 +127,7 @@ grails {
         "mail.smtp.socketFactory.port":"465",
         "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
         "mail.smtp.socketFactory.fallback":"false"]
-     }
+    }
 }
 //grails.mail.disabled=true
 // secondary emailaddress 
@@ -137,9 +137,9 @@ grails {
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'la.kosmos.app.Usuario'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'la.kosmos.app.UsuarioRol'
 grails.plugin.springsecurity.authority.className = 'la.kosmos.app.Rol'
-//grails.plugin.springsecurity.successHandler.alwaysUseDefault = true
+grails.plugin.springsecurity.successHandler.alwaysUseDefault = true
 //grails.plugin.springsecurity.successHandler.alwaysUseDefaultTargetUrl = true
-//grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/dashboard/index'
+grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/dashboard/index'
 grails.plugin.springsecurity.adh.errorPage = '/denied'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                ['permitAll'],
@@ -153,6 +153,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/images/**':    ['permitAll'],
 	'/**/favicon.ico':  ['permitAll'],
     	'/dashboard/**':    ['isFullyAuthenticated()'],
+        '/notificaciones/**':  ['ROLE_ADMIN'],
         '/entidadFinanciera/**':    ['ROLE_ADMIN'],
         '/configuracionBuroCredito/**':    ['ROLE_ADMIN'],
         '/producto/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],
@@ -163,3 +164,17 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
         '/monitoring/**': ['ROLE_ADMIN']
 ]
 
+grails.plugin.springsecurity.apf.storeLastUsername=true
+grails.plugin.springsecurity.ui.forgotPassword.emailSubject = 'Restablecimiento de contraseña'
+grails.plugin.springsecurity.useSecurityEventListener = true
+
+//Failed login attempts
+bruteforcedefender {
+    //minutes
+    time = 5
+    //attempts
+    allowedNumberOfAttempts = 3
+}
+
+//Password recovery. Minutes
+password.recovery = 30 

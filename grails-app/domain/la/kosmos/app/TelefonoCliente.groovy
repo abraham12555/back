@@ -16,4 +16,6 @@ class TelefonoCliente implements Serializable{
     static mapping = {
         id generator: 'sequence', column: 'id_telefono', params:[sequence:'telefono_id_seq']
     }
+    
+    static belongsTo = [cliente: Cliente]
 }

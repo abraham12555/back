@@ -5,7 +5,7 @@ dataSource {
     //username = "kuser"
     //password = "5as50n3J2017"
     username = "seisan"
-    password = "K0suMo5u!"
+    password = "seisan4"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -21,7 +21,7 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:postgresql://localhost:5432/kosmosprod"
+            url = "jdbc:postgresql://localhost:5432/kosmos"
         }
     }
     test {

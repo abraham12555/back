@@ -35,6 +35,7 @@
     <g:external dir="js" file="sweetalert.min.js" />
     <g:external dir="js" file="jquery-3.0.0.min.js" />
     <g:external dir="js" file="cotizador.js" />
+    <g:external dir="js" file="validaciones.js" />
     <g:external dir="js" file="registro.js" />
     <g:external dir="js" file="jquery-ui-kosmos.js" />
     <g:external dir="js" file="jquery-ui-touch-punch.js" />

@@ -26,6 +26,9 @@ class SolicitudTemporal {
     String shortUrl
     int ultimoPaso = 1
     boolean cargarImagen = false
+    String folio
+    
+    def static PASO_FINAL = 6 
     
     static constraints = {
         colorModelo (nullable: true)

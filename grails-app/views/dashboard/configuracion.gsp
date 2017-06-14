@@ -9,6 +9,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <sec:ifAnyGranted roles='ROLE_ADMIN'>
+            <g:external dir="js" file="dashboard/notificaciones/notificaciones.min.js" />
+            <g:external dir="js" file="dashboard/notificaciones/envioNotificaciones.min.js" />
+            <g:external dir="js" file="jasny-bootstrap.min.js" />
+            <g:external dir="js" file="jquery.ui.timepicker.js" />
+            <g:external dir="css" file="jquery.ui.timepicker.css" />
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+            <g:external dir="js" file="validaciones.min.js" />
+            <g:external dir="js" file="dashboard/usuarios/usuarios.min.js" />
+        </sec:ifAnyGranted>
         <title>Sample title</title>
     </head>
     <body>
@@ -44,6 +55,11 @@
                             <li id="productosButton" class="opcConfiguracion floatLeft paddingLeft5 paddingRight5">
                                 <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','productos');"  title="PRODUCTOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">PRODUCTOS</a>
                             </li>
+                        </sec:ifAnyGranted>    
+                        <sec:ifAnyGranted roles='ROLE_ADMIN'>
+                            <li id="notificacionesButton" class="opcConfiguracion floatLeft paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','notificaciones');" title="NOTIFICACIONES" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">NOTIFICACIONES</a>
+                            </li>
                         </sec:ifAnyGranted>
                     </ul>
                 </div>
@@ -51,7 +67,7 @@
                     <div id="usuariosSubMenu" class="configuracionSubMenu lightGrayBG">
                         <ul class="clearFix paddingLeft30">
                             <li class="floatLeft">
-                                <a title="Reportar contratiempo" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" onclick="openModal('modalAltaDeUsuario');">NUEVO USUARIO</a>
+                                <a title="Nuevo usuario" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" id="newUser-btn">NUEVO USUARIO</a>
                             </li>
                         </ul>
                     </div>
@@ -88,6 +104,18 @@
                             </li>
                         </ul>
                     </div>
+                </sec:ifAnyGranted>    
+                <sec:ifAnyGranted roles='ROLE_ADMIN'>                    
+                    <div id="notificacionesSubMenu" class="configuracionSubMenu lightGrayBG" style="display: none;">
+                        <ul class="clearFix paddingLeft30">
+                            <li class="floatLeft">
+                                <a title="Plantilla SMS" class="displayInline font14 paddingTop10 paddingBottom10 paddingRight20 pointer" onclick="mostrarApartadoSubmenu(this);" data-id="notificaciones">PLANTILLA SMS</a>
+                            </li>
+                            <li class="floatLeft">
+                                <a title="Envío" class="displayInline font14 gray paddingTop10 paddingBottom10 paddingRight20 pointer" onclick="mostrarApartadoSubmenu(this);" data-id="envioNotificaciones">ENVÍO</a>
+                            </li>
+                        </ul>
+                    </div>
                 </sec:ifAnyGranted>
             </div>
         </section>
@@ -109,6 +137,14 @@
     <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
         <div class="configuracionTab" id="productos" style="display: none;">
             <g:render template="productos"/>
+        </div>
+    </sec:ifAnyGranted>    
+    <sec:ifAnyGranted roles='ROLE_ADMIN'>
+        <div class="configuracionTab" id="notificaciones" style="display: none;">
+            <g:render template="configuracion/notificaciones/notificaciones"/>
+        </div>
+        <div class="configuracionTab" id="envioNotificaciones" style="display: none;">
+            <g:render template="configuracion/notificaciones/envioNotificaciones"/>
         </div>
     </sec:ifAnyGranted>
     <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>

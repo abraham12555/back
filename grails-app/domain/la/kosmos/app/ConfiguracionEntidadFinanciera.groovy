@@ -33,6 +33,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     boolean usarTwilio = false
     String mensajeConfirmacionCelular
     String mensajeEnvioShortUrl
+    int registroSesiones
+    int expirarPasswords
     
     static constraints = {
         nombreComercial (blank:false)

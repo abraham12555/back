@@ -4,6 +4,8 @@ import grails.converters.JSON
 import groovy.json.*
 
 import java.text.SimpleDateFormat
+import la.kosmos.app.bo.Pager
+import la.kosmos.app.bo.User
 
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 
@@ -13,12 +15,16 @@ class DashboardController {
     def dashboardService
     def passwordEncoder
     def springSecurityService
-    
+    def notificacionesService
+    def userService
+
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
         def temporales = dashboardService.listaDeSolicitudesTemporales()
-        def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
-        //linea agregada para obtener el usuario 
+        def entidadFinanciera = session.usuario.entidadFinanciera
+        
+        def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+        //linea agregada para obtener el usuario
         session.usuarioNombre= springSecurityService.currentUser.nombre
         session.configuracion = configuracion
         session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
@@ -27,8 +33,8 @@ class DashboardController {
         println "Regresando: " + solicitudes?.size() + " Solicitudes"
         [solicitudes: solicitudes, temporales: temporales]
     }
-    
-    def solicitudes() { 
+
+    def solicitudes() {
         def solicitudesDictaminadas = dashboardService.obtenerSolicitudesPorStatus("dictaminadas", 1, null, null)
         def solicitudesNoDictaminadas = dashboardService.obtenerSolicitudesPorStatus("noDictaminadas", 1, null, null)
         def solicitudesConComplemento = dashboardService.obtenerSolicitudesPorStatus("complementoSolicitado", 1, null, null)
@@ -37,7 +43,7 @@ class DashboardController {
         println "Regresando: solicitudesConComplemento -> " + solicitudesConComplemento?.size()
         [solicitudesDictaminadas: solicitudesDictaminadas, solicitudesNoDictaminadas: solicitudesNoDictaminadas, solicitudesConComplemento: solicitudesConComplemento]
     }
-    
+
     def consultarSolicitudes(){
         println params
         def solicitudes = []
@@ -54,7 +60,7 @@ class DashboardController {
             render solicitudes as JSON
         }
     }
-    
+
     def detalleSolicitud(){
         println params
         def datosSolicitud
@@ -69,14 +75,14 @@ class DashboardController {
         }
         [datosSolicitud: datosSolicitud,segmentoHistorialDeCredito:segmentoHistorialDeCredito,documentos:documentos, complementoSolicitado: complementoSolicitado]
     }
-    
+
     def analiticas() { }
-    
+
     def verificaciones() {
         def solicitudesPorVerificar = dashboardService.obtenerSolicitudesPorVerificar()
         [solicitudesPorVerificar: solicitudesPorVerificar, solicitudesJSON: (solicitudesPorVerificar as JSON)]
     }
-    
+
     def detalleVerificacion(){
         println params
         if(params.id){
@@ -91,35 +97,51 @@ class DashboardController {
             [error: true, mensaje: "No se especifico la solicitud a verificar. Intente nuevamente en unos momentos."]
         }
     }
-    
+
     def configuracion() {
-        def usuarios = Usuario.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
-        def roles = Rol.list()
-        def productos = Producto.findAllWhere(entidadFinanciera: springSecurityService.currentUser.entidadFinanciera)
+        def entidadFinanciera = session.usuario.entidadFinanciera
+        def roles = Rol.where {id != Rol.ROLE_ADMIN}.findAll()
+        def productos = Producto.findAllWhere(entidadFinanciera: entidadFinanciera)
         def tipoDeIngresos = TipoDeIngresos.getAll()
         def tipoDeDocumento = TipoDeDocumento.findAll();
         def listaTipoDeAsentamiento = TipoDeAsentamiento.findAll();
         def listaTipoDeVivienda = TipoDeVivienda.findAll();
         def listaTipoDeTasaDeInteres = TipoDeTasaDeInteres.findAll();
 
-        def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(springSecurityService.currentUser.entidadFinanciera).configuracionBuroCredito
+        def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(entidadFinanciera).configuracionBuroCredito
+
+        def notificacion
+        def cronConfigurationMessage
+        def listCronOptions
+        def listweekDayOptions
+        if (springSecurityService.currentUser.authorities.any { it.id == Rol.ROLE_ADMIN }) {
+            notificacion = notificacionesService.loadSMSTemplate(entidadFinanciera)
+            cronConfigurationMessage = notificacionesService.loadCronContent(notificacion)
+            listCronOptions = notificacionesService.loadCronInformation()
+            listweekDayOptions = notificacionesService.loadDaysInformation()
+        }
+
         println tipoDeIngresos
-        [listaDeUsuarios: usuarios,listaDeTiposDeIngresos:tipoDeIngresos, 
-            listaDeRoles: roles, listaDeProductos: productos, 
+        [   listaDeTiposDeIngresos:tipoDeIngresos,
+            listaDeRoles: roles, listaDeProductos: productos,
             configuracionBuroCredito:configuracionBuroCredito,
             tipoDeDocumento:tipoDeDocumento,tipoDeIngresos:tipoDeIngresos,
             listaTipoDeAsentamiento:listaTipoDeAsentamiento,
-            listaTipoDeVivienda:listaTipoDeVivienda,listaTipoDeTasaDeInteres:listaTipoDeTasaDeInteres]
+            listaTipoDeVivienda:listaTipoDeVivienda,listaTipoDeTasaDeInteres:listaTipoDeTasaDeInteres,
+            notificacion: notificacion,
+            cronConfigurationMessage: cronConfigurationMessage,
+            listCronOptions: listCronOptions,
+            listweekDayOptions: listweekDayOptions]
     }
-    
+
     def administracion(){
         [entidadesList: EntidadFinanciera.list()]
     }
-    
+
     def editarPerfil(){
-        
+
     }
-    
+
     def subirImagen(){
         println params
         def fileNames = request.getFileNames()
@@ -142,7 +164,7 @@ class DashboardController {
         def respuesta = dashboardService.subirImagen(params.imgType, params.origen, params.solicitudId, listaDeArchivos)
         render respuesta as JSON
     }
-    
+
     def autorizarSolicitud(){
         println params
         def usuario = springSecurityService.currentUser
@@ -163,7 +185,7 @@ class DashboardController {
         }
         redirect action: "detalleSolicitud", params: [id: params.solicitudId]
     }
-    
+
     def cambiarEstadoSolicitud(){
         println params
         def respuesta = [:]
@@ -204,7 +226,7 @@ class DashboardController {
         }
         render respuesta as JSON
     }
-    
+
     def descargarArchivo(){
         println params
         if(params.id){
@@ -221,11 +243,13 @@ class DashboardController {
             }
         }
     }
-    
-    def registrarUsuario(){
-        def respuesta = dashboardService.guardarUsuario(params)
-        redirect action: "configuracion"
+
+    def guardarUsuario(){
+        def entidadFinanciera = session.usuario.entidadFinanciera
+        def respuesta = dashboardService.guardarUsuario(params, entidadFinanciera)
+        render respuesta as JSON
     }
+
     def registrarProducto(){
         def respuesta = dashboardService.guardarProducto(params)
         redirect action: "configuracion"
@@ -246,7 +270,7 @@ class DashboardController {
         def respuesta = dashboardService.guardarTipoDeTasaDeInteres(params)
         redirect action: "configuracion"
     }
-     def guardarTipoDeAsentamiento(){
+    def guardarTipoDeAsentamiento(){
         def respuesta = dashboardService.updateTipoDeAsentamiento(params)
         redirect action: "configuracion"
     }
@@ -257,7 +281,7 @@ class DashboardController {
     def guardarTipoDeTasaDeInteres(){
         def respuesta = dashboardService.updateTipoDeTasaDeInteres(params)
         redirect action: "configuracion"
-    }  
+    }
     def agregarPregunta(){
         println params
         def respuesta
@@ -272,13 +296,13 @@ class DashboardController {
             respuesta = [:]
         }
         def x = 0
-        session.preguntas.each{ 
+        session.preguntas.each{
             x++
             it.id = x
         }
         render session.preguntas as JSON
     }
-    
+
     def eliminarPregunta(){
         println params
         def respuesta
@@ -288,13 +312,13 @@ class DashboardController {
             }
         }
         def x = 0
-        session.preguntas.each{ 
+        session.preguntas.each{
             x++
             it.id = x
         }
         render session.preguntas as JSON
     }
-    
+
     def registrarVisitaOcular(){
         println params
         def exito = dashboardService.registrarVerificacion(params)
@@ -304,7 +328,7 @@ class DashboardController {
             redirect action: "detalleVerificacion", params: [id: params.solicitudId]
         }
     }
-    
+
     def mostrarFotografia() {
         println params
         if(params.id){
@@ -317,7 +341,7 @@ class DashboardController {
             byte[] imageInByte = imageFile.bytes
             response.setHeader('Content-length', imageInByte.length.toString())
             response.contentType = 'image/' + extension
-            response.outputStream << imageInByte 
+            response.outputStream << imageInByte
             response.outputStream.flush()
         } else {
             def respuesta = [:]
@@ -325,7 +349,7 @@ class DashboardController {
             render respuesta as JSON
         }
     }
-    
+
     def previsualizarDocumento() {
         println params
         if(params.id){
@@ -335,14 +359,14 @@ class DashboardController {
                 def extension = (documento.rutaDelArchivo.substring(documento.rutaDelArchivo.lastIndexOf(".") + 1)).toLowerCase()
                 println extension
                 if(extension == "pdf") {
-                
+
                 } else {
                     File imageFile = new File(ruta);
                     if (imageFile.exists()){
                         byte[] imageInByte = imageFile.bytes
                         response.setHeader('Content-length', imageInByte.length.toString())
                         response.contentType = 'image/' + extension
-                        response.outputStream << imageInByte 
+                        response.outputStream << imageInByte
                         response.outputStream.flush()
                     } else {
                         println "El archivo " + ruta + " NO  existe..."
@@ -358,7 +382,7 @@ class DashboardController {
             render respuesta as JSON
         }
     }
-    
+
     def getEstadisticas() {
         println params
         def estadisticas = []
@@ -367,5 +391,55 @@ class DashboardController {
         }
         render estadisticas as JSON
     }
+
+    def getUsers() {
+        Pager pager = new Pager(request.JSON)
+        def entidadFinanciera = session.usuario.entidadFinanciera
+        def users = userService.getUsers(entidadFinanciera, pager)
+
+        def response = [:]
+        response.usuarios = users
+        response.totalPages = pager.totalPages
+        response.page = pager.page
+        render response as JSON
+    }
+
+    def getUserDetails(){
+        def response = userService.getUserDetails(params)
+        render response as JSON
+    }
+
+    def validUsername(){
+        User usuario = new User(request.JSON)
+
+        def response = [:]
+        response.estatus = userService.validUsername(usuario)
+        render response as JSON
+    }
+
+    def validEmail(){
+        User usuario = new User(request.JSON)
+
+        def response = [:]
+        response.estatus = userService.validEmail(usuario)
+        render response as JSON
+    }
     
+    def autenticarUsuario(){
+        def response = [:]
+        
+        Usuario usuario = springSecurityService.currentUser
+        if (usuario == null){
+            response.estatus = Boolean.FALSE
+            response.message = "Error. Los datos del usuario son inválidos"
+        } else {
+            boolean validation = userService.userAuthentication(usuario, params)
+            response.estatus = validation
+            if(!validation){
+                response.message = "La contraseña es incorrecta"
+            }
+        }
+        
+        render response as JSON
+    }
 }

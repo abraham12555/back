@@ -5,6 +5,7 @@
         <title>Login</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="utf-8">
+        <g:external dir="css" file="bootstrap.min.css" title="text/css" rel="stylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,700italic,500,500italic" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" type="text/css">
@@ -21,19 +22,20 @@
             <div class="loginBox">
                 <g:if test='${flash.message}'>
                     <br/>
-                    <div class="alert alert-danger">
-                        El usuario y/o la contraseña no son válidos.
+                    <div class="alert alert-danger center"> 
+                        ${flash.message}
                     </div>
                 </g:if>
                 <form class="loginForm gray font14" action="/j_spring_security_check" method="post" name="loginForm" id="loginForm" autocomplete="off">
                     <p class="loginTitle gray textUpper letterspacing1 center">NÚMERO DE CLIENTE</p>
                     <div class="formContainer">
-                        <label class="formLabel letterspacing1 emailLabel">CORREO</label>
-                        <input class="inputs emailInput lightGray letterspacing1 font14" type="text" placeholder="Escribe tu correo" name="${securityConfig.apf.usernameParameter}" id="username"/>
+                        <label class="formLabel letterspacing1 emailLabel">NOMBRE DE USUARIO</label>
+                        <input class="inputs emailInput lightGray letterspacing1 font14" type="text" placeholder="Escribe tu nombre de usuario" name="${securityConfig.apf.usernameParameter}" id="username"/>
                         <label class="formLabel letterspacing1 passwordLabel">CONTRASEÑA</label>
                         <input class="inputs passwordInput lightGray letterspacing1 font14" type="password" placeholder="Escribe tu contraseña" name="${securityConfig.apf.passwordParameter}" id="password"/>
                         <button type="submit" class="loginButton blueButton letterspacing2 font14" value="${message(code: 'springSecurity.login.button')}">INGRESAR</button>
-                        <p class="letterspacing1 lightGray font14 center">¿Olvidaste tu cuenta? <a href="#" class="gray">Da click acá.</a></p>
+                        <p class="letterspacing1 lightGray font14 center">¿Olvidaste tu cuenta? 
+                            <a href="${createLink(controller:'register', action:'forgotPassword')}" class="gray"/>Da click acá.</a></p>
                     </div>
                 </form>
             </div>

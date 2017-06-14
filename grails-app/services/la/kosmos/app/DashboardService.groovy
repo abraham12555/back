@@ -2,6 +2,7 @@ package la.kosmos.app
 
 import grails.transaction.Transactional
 import groovy.sql.Sql
+import java.util.Calendar
 
 @Transactional
 class DashboardService {
@@ -9,7 +10,8 @@ class DashboardService {
     def springSecurityService
     def geocoderService
     def dataSource
-    
+    def userService
+
     def listaGeneralDeSolicitudes() {
         def respuesta = []
         def usuario = springSecurityService.currentUser
@@ -30,7 +32,7 @@ class DashboardService {
         }
         return respuesta
     }
-    
+
     def listaDeSolicitudesTemporales() {
         def respuesta = []
         def usuario = springSecurityService.currentUser
@@ -51,7 +53,7 @@ class DashboardService {
         }
         return respuesta
     }
-    
+
     def obtenerSolicitudesPorStatus(def opcion, def temporalidad, def fechaInicio, def fechaFinal){
         def respuesta = []
         def usuario = springSecurityService.currentUser
@@ -86,9 +88,9 @@ class DashboardService {
         if(opcion == "dictaminadas") {
             query += "IN (5,7) "
         } else if (opcion == "noDictaminadas") {
-            query += "NOT IN (5,6,7) " 
+            query += "NOT IN (5,6,7) "
         } else if (opcion == "complementoSolicitado") {
-            query += "IN (6) " 
+            query += "IN (6) "
         }
         query += "AND ps.solicitud.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
         //println "Query: " + query
@@ -108,7 +110,7 @@ class DashboardService {
         }
         return respuesta
     }
-    
+
     def obtenerSolicitudesPorVerificar(){
         def respuesta = []
         def usuario = springSecurityService.currentUser
@@ -124,7 +126,7 @@ class DashboardService {
         }
         respuesta
     }
-    
+
     def obtenerDatosSolicitud(def idSolicitud){
         def respuesta = [:]
         def solicitud = SolicitudDeCredito.get(idSolicitud as long)
@@ -140,7 +142,7 @@ class DashboardService {
         respuesta.datosMapa << datos
         respuesta
     }
-    
+
     def obtenerCantidadDeSolicitudesPendientes(){
         def respuesta = 0
         def usuario = springSecurityService.currentUser
@@ -149,7 +151,7 @@ class DashboardService {
         respuesta = resultados.size()
         return respuesta
     }
-    
+
     def obtenerDatosDeLaSolicitud(def id){
         def respuesta = [:]
         def solicitud = SolicitudDeCredito.get(id as long)
@@ -172,7 +174,7 @@ class DashboardService {
         }
         return respuesta
     }
-    
+
     def getFechasMesActual() {
         def rango = [:];
         Calendar calendar = getCalendar(new Date());
@@ -183,7 +185,7 @@ class DashboardService {
         //println rango
         return rango;
     }
-    
+
     def getFechasSemanaActual() {
         def rango = [:];
         Calendar calendar = getCalendar(new Date());
@@ -195,7 +197,7 @@ class DashboardService {
         //println rango
         return rango;
     }
-    
+
     def getAniosTranscurridos(Date fechaInicial, Date fechaFinal) {
         Calendar a = getCalendar(fechaInicial);
         Calendar b = getCalendar(fechaFinal);
@@ -211,7 +213,7 @@ class DashboardService {
         calendar.setTime(fecha);
         return calendar;
     }
-    
+
     def subirImagen(def tipoDeImagen, def origen, def solicitudId, def listaDeArchivos){
         def respuesta = [:]
         def pasoOrigen = origen as int;
@@ -257,7 +259,7 @@ class DashboardService {
                 }
             } else {
                 def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: usuario.entidadFinanciera)
-                def ruta = "/var/uploads/kosmos/config/" + nombreEmpresa 
+                def ruta = "/var/uploads/kosmos/config/" + nombreEmpresa
                 if(configuracion){
                     println ""
                     configuracion.rutaLogotipo = ruta + "/" + archivo.nombreDelArchivo
@@ -294,49 +296,126 @@ class DashboardService {
         }
         return respuesta
     }
-    
-    def guardarUsuario(params){
+
+    def guardarUsuario(params, EntidadFinanciera entidadFinanciera){
         def respuesta = [:]
-        def usuario = new Usuario();
-        usuario.username = params.username
-        usuario.password = params.password
-        usuario.enabled = true
-        usuario.accountExpired = false
-        usuario.accountLocked = false
-        usuario.passwordExpired = false
-        usuario.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
-        usuario.nombre = params.nombre
-        usuario.apellidoPaterno = params.apellidoPaterno
-        usuario.apellidoMaterno = params.apellidoMaterno
-        usuario.email = params.email
-        if(usuario.save()){
-            def rol = Rol.get(params.rol.id as long)
-            def rolUsuario = new UsuarioRol()
-            rolUsuario.usuario = usuario
-            rolUsuario.rol = rol
-            if(rolUsuario.save()){
-                respuesta.usuario = usuario
-            } else {
-                if (rolUsuario.hasErrors()) {
-                    rolUsuario.errors.allErrors.each {
-                        println it
+        def id = (params.id).toBigInteger()
+        
+        if(id == 0) {
+            def usuario = new Usuario();
+            usuario.username = params.username
+            usuario.password = params.password
+            usuario.enabled = Boolean.TRUE
+            usuario.accountExpired = Boolean.FALSE
+            usuario.accountLocked = Boolean.FALSE
+            usuario.passwordExpired = Boolean.TRUE
+            usuario.entidadFinanciera = entidadFinanciera
+            usuario.nombre = params.nombre
+            usuario.apellidoPaterno = params.apellidoPaterno
+            usuario.apellidoMaterno = params.apellidoMaterno
+            usuario.email = params.email
+            usuario.fechaPassword = Calendar.getInstance().getTime()
+            
+            if(!usuario.save()){
+                if (usuario.hasErrors()) {
+                    usuario.errors.allErrors.each {
+                        log.error(it)
                     }
                 }
-                respuesta.error = true
-                respuesta.mensaje = "Ocurrio un problema al asignar el rol al usuario. Intente nuevamente más tarde."
+                respuesta.error = Boolean.TRUE
+                respuesta.mensaje = "Ocurrió un problema al registrar al usuario. Intente nuevamente más tarde."
+                return respuesta
+            }
+            
+            params.roles.each {
+                Rol rol = Rol.get(it)
+                UsuarioRol.create(usuario, rol)
             }
         } else {
-            if (usuario.hasErrors()) {
-                usuario.errors.allErrors.each {
-                    println it
+            Usuario usuario = Usuario.get(params.id)
+            if(usuario == null){
+                respuesta.error = Boolean.TRUE
+                respuesta.mensaje = "Ocurrió un problema. La operación es inválida"
+                return respuesta
+            } else if (usuario.entidadFinanciera != entidadFinanciera){
+                respuesta.error = Boolean.TRUE
+                respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información del usuario"
+                return respuesta
+            }
+            
+            usuario.nombre = params.nombre
+            usuario.apellidoPaterno = params.apellidoPaterno
+            usuario.apellidoMaterno = params.apellidoMaterno
+            usuario.username = params.username
+            usuario.email = params.email
+            usuario.accountLocked = params.accountLocked.toBoolean()
+            usuario.enabled = params.enabled.toBoolean()
+            
+            def deletedRoles = []
+            def exists
+            usuario.authorities.each {
+                def authority = it
+                exists = Boolean.FALSE
+                params.roles.each {
+                    def newRol = (it).toBigInteger()
+                    if (BigInteger.valueOf(authority.id).compareTo(newRol) == 0) {
+                        exists = Boolean.TRUE
+                    }
+                }
+                
+                if(!exists) {
+                    deletedRoles << authority
                 }
             }
-            respuesta.error = true
-            respuesta.mensaje = "Ocurrio un problema al guardar el usuario. Intente nuevamente más tarde."
+            
+            def valueAddedRole = []
+            params.roles.each {
+                def newRol = (it).toBigInteger()
+                exists = Boolean.FALSE
+                usuario.authorities.each {
+                    if (BigInteger.valueOf(it.id).compareTo(newRol) == 0) {
+                        exists = Boolean.TRUE
+                    }
+                }
+                
+                if(!exists){
+                    valueAddedRole << newRol
+                }
+            }
+            
+            //Add changes to log
+            Usuario currentUser = springSecurityService.currentUser
+            deletedRoles.each {
+                userService.addUserInformationLog(currentUser, usuario, BitacoraMovimientos.ELIMINAR_PERFIL, it.authority)
+            }
+            
+            valueAddedRole.each {
+                Rol rol = Rol.get(it)
+                userService.addUserInformationLog(currentUser, usuario, BitacoraMovimientos.AGREGAR_PERFIL, rol.authority)
+            }
+            
+            //Remove all user roles
+            deletedRoles.each {
+                Rol rol = Rol.get(it.id)
+                UsuarioRol.remove(usuario, rol)
+            }
+            
+            //Add new roles
+            valueAddedRole.each {
+                Rol rol = Rol.get(it)
+                UsuarioRol.create(usuario, rol)
+            }
+            
+            if(!usuario.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
+                respuesta.error = Boolean.TRUE
+                respuesta.mensaje = "Ocurrió un problema al guardar los datos del usuario. Intente nuevamente más tarde."
+                return respuesta
+            }
         }
-        respuesta
+        
+        return respuesta
     }
-    
+
     def registrarVerificacion(def params){
         def exito = false
         def x = 0;
@@ -369,7 +448,7 @@ class DashboardService {
         }
         return exito
     }
-    
+
     def obtenerEstadisticasPorGrafica(def grafica, def temporalidad, def fechaInicio, def fechaFinal) {
         def respuesta = [:]
         def usuario = springSecurityService.currentUser
@@ -423,7 +502,7 @@ class DashboardService {
             datosEstadisticas.data = []
             datosEstadisticas.tooltip = [:]
             datosEstadisticas.tooltip.valuePrefix = ""
-            
+
             resultados.each {
                 respuesta.periodos.categories << ( (temporalidad == 1 || temporalidad == 7) ? it.fecha.format("dd/MM/yyyy") : (it.fecha.format("MMMM")))
                 datosEstadisticas.data << it.solicitudes
@@ -437,7 +516,7 @@ class DashboardService {
             def datosEstadisticas = [:]
             datosEstadisticas.name = "Solicitudes por Estatus"
             datosEstadisticas.data = []
-            
+
             resultados.each {
                 datosEstadisticas.data << [it.status ,it.solicitudes]
             }
@@ -451,7 +530,7 @@ class DashboardService {
             datosEstadisticas.name = "Productos"
             datosEstadisticas.colorByPoint = true
             datosEstadisticas.data = []
-            
+
             resultados.each {
                 datosEstadisticas.data << [name: (it.producto + " ($it.cantidad)"), y: it.cantidad]
             }
