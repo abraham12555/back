@@ -15,7 +15,17 @@ class DashboardService {
     def listaGeneralDeSolicitudes() {
         def respuesta = []
         def usuario = springSecurityService.currentUser
-        def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " order by ps.solicitud.fechaDeSolicitud"
+        def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id 
+        def roles = springSecurityService.principal?.authorities*.authority
+        if( roles.contains('ROLE_EJECUTIVO') || roles.contains('ROLE_SUCURSAL')){
+            query += " And ps.solicitud.sucursal.id = " + usuario.sucursal.id
+            if (roles.contains('ROLE_EJECUTIVO')) {
+                query += " And ps.solicitud.registradaPor.id = " + usuario.id
+            } else {
+                query += " And ps.solicitud.registradaPor IS NOT NULL "
+            }
+        }
+        query += " order by ps.solicitud.fechaDeSolicitud"
         def resultados = ProductoSolicitud.executeQuery(query)
         resultados?.each {
             def solicitud = [:]
@@ -28,6 +38,7 @@ class DashboardService {
             solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
             solicitud.fechaDeSolicitud = it.solicitud.fechaDeSolicitud
             solicitud.montoCredito = it.montoDelCredito
+            solicitud.temporal = false
             respuesta << solicitud
         }
         return respuesta
@@ -36,20 +47,24 @@ class DashboardService {
     def listaDeSolicitudesTemporales() {
         def respuesta = []
         def usuario = springSecurityService.currentUser
-        def query = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " order by s.fechaDeSolicitud"
-        def resultados = SolicitudTemporal.executeQuery(query)
-        resultados?.each {
-            def solicitud = [:]
-            solicitud.id = it.id
-            solicitud.folio = "-"
-            solicitud.nombreCliente = it.nombreDelCliente
-            solicitud.statusDeSolicitud = "LLENADO DE SOLICITUD"
-            solicitud.puntoDeVenta = ""
-            solicitud.autenticadoMediante = "Plataforma"
-            solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
-            solicitud.fechaDeSolicitud = it.fechaDeSolicitud
-            solicitud.montoCredito = it.montoDelCredito
-            respuesta << solicitud
+        def roles = springSecurityService.principal?.authorities*.authority
+        if( !roles.contains('ROLE_EJECUTIVO') && !roles.contains('ROLE_SUCURSAL')) {
+            def query = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " order by s.fechaDeSolicitud"
+            def resultados = SolicitudTemporal.executeQuery(query)
+            resultados?.each {
+                def solicitud = [:]
+                solicitud.id = it.id
+                solicitud.folio = (it.folio ?: "-")
+                solicitud.nombreCliente = it.nombreDelCliente
+                solicitud.statusDeSolicitud = "LLENADO DE SOLICITUD"
+                solicitud.puntoDeVenta = ""
+                solicitud.autenticadoMediante = "Plataforma"
+                solicitud.producto = ((it.producto) ?: (it.colorModelo.modelo.producto.toString()))
+                solicitud.fechaDeSolicitud = it.fechaDeSolicitud
+                solicitud.montoCredito = it.montoDelCredito
+                solicitud.temporal = true
+                respuesta << solicitud
+            }
         }
         return respuesta
     }
@@ -57,6 +72,7 @@ class DashboardService {
     def obtenerSolicitudesPorStatus(def opcion, def temporalidad, def fechaInicio, def fechaFinal){
         def respuesta = []
         def usuario = springSecurityService.currentUser
+        def roles = springSecurityService.principal?.authorities*.authority
         if(temporalidad){
             switch(temporalidad){
             case 1:
@@ -90,7 +106,15 @@ class DashboardService {
         } else if (opcion == "noDictaminadas") {
             query += "NOT IN (5,6,7) "
         } else if (opcion == "complementoSolicitado") {
-            query += "IN (6) "
+            query += "IN (6) " 
+        }
+        if( roles.contains('ROLE_EJECUTIVO') || roles.contains('ROLE_SUCURSAL')){
+            query += " And ps.solicitud.sucursal.id = " + usuario.sucursal.id + " "
+            if (roles.contains('ROLE_EJECUTIVO')) {
+                query += " And ps.solicitud.registradaPor.id = " + usuario.id + " "
+            }  else {
+                query += " And ps.solicitud.registradaPor IS NOT NULL "
+            }
         }
         query += "AND ps.solicitud.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
         //println "Query: " + query
@@ -146,7 +170,16 @@ class DashboardService {
     def obtenerCantidadDeSolicitudesPendientes(){
         def respuesta = 0
         def usuario = springSecurityService.currentUser
+        def roles = springSecurityService.principal?.authorities*.authority
         def query = "SELECT ps FROM ProductoSolicitud ps WHERE ps.solicitud.entidadFinanciera.id = " + usuario.entidadFinanciera.id + " AND ps.solicitud.statusDeSolicitud.id NOT IN (5,7)"
+        if( roles.contains('ROLE_EJECUTIVO') || roles.contains('ROLE_SUCURSAL')){
+            query += " And ps.solicitud.sucursal.id = " + usuario.sucursal.id
+            if (roles.contains('ROLE_EJECUTIVO')) {
+                query += " And ps.solicitud.registradaPor.id = " + usuario.id
+            } else {
+                query += " And ps.solicitud.registradaPor IS NOT NULL "
+            }
+        }
         def resultados = ProductoSolicitud.executeQuery(query)
         respuesta = resultados.size()
         return respuesta
@@ -174,7 +207,21 @@ class DashboardService {
         }
         return respuesta
     }
-
+    
+    def obtenerDatosDeLaSolicitudTemporal(def id){
+        def respuesta = [:]
+        def solicitud = SolicitudTemporal.get(id as long)
+        if(solicitud){
+            respuesta.cliente = solicitud.nombreDelCliente
+            respuesta.telefonosCliente = [[tipoDeTelefono: [nombre: "TELÉFONO CELULAR"], numeroTelefonico: solicitud.telefonoCliente]]
+            respuesta.emailCliente = solicitud.emailCliente
+            respuesta.productoSolicitud = solicitud
+            respuesta.solicitud = solicitud
+            respuesta.temporal = true
+        }
+        return respuesta
+    }
+    
     def getFechasMesActual() {
         def rango = [:];
         Calendar calendar = getCalendar(new Date());
@@ -310,6 +357,8 @@ class DashboardService {
             usuario.accountLocked = Boolean.FALSE
             usuario.passwordExpired = Boolean.TRUE
             usuario.entidadFinanciera = entidadFinanciera
+            usuario.sucursal = SucursalEntidadFinanciera.get(params.sucursal.id)
+            usuario.numeroDeEmpleado = params.numeroDeEmpleado
             usuario.nombre = params.nombre
             usuario.apellidoPaterno = params.apellidoPaterno
             usuario.apellidoMaterno = params.apellidoMaterno
@@ -337,7 +386,7 @@ class DashboardService {
                 respuesta.error = Boolean.TRUE
                 respuesta.mensaje = "Ocurrió un problema. La operación es inválida"
                 return respuesta
-            } else if (usuario.entidadFinanciera != entidadFinanciera){
+            } else if (usuario.entidadFinanciera.id != entidadFinanciera.id){
                 respuesta.error = Boolean.TRUE
                 respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información del usuario"
                 return respuesta
@@ -350,6 +399,8 @@ class DashboardService {
             usuario.email = params.email
             usuario.accountLocked = params.accountLocked.toBoolean()
             usuario.enabled = params.enabled.toBoolean()
+            usuario.sucursal = SucursalEntidadFinanciera.get(params.sucursal.id)
+            usuario.numeroDeEmpleado = params.numeroDeEmpleado
             
             def deletedRoles = []
             def exists
@@ -537,5 +588,22 @@ class DashboardService {
             respuesta.estadisticas << datosEstadisticas
         }
         return respuesta
+    }
+    
+    def getRoles(){
+        Long id = (Long) Rol.ROLE_ADMIN
+        def criteria = Rol.createCriteria()
+        def results = criteria.list {
+            ne ('id', id)
+            order("authority", "asc")
+        }
+    }
+    
+    def getSucursalesByEntidadFinanciera(EntidadFinanciera entidad){
+        def criteria = SucursalEntidadFinanciera.createCriteria()
+        def results = criteria.list {
+            eq ('entidadFinanciera', entidad)
+            order("nombre", "asc")
+        }
     }
 }

@@ -13,13 +13,13 @@ h3 {
 }
 
 .faDos {
-  background-color: white;
-  color: #25a3ff;
-  float: right;
-  margin-top: 20px;
-  font-size: 20px;
-  position: relative;
-  z-index: 2;
+    background-color: white;
+    color: #25a3ff;
+    float: right;
+    margin-top: 20px;
+    font-size: 20px;
+    position: relative;
+    z-index: 2;
 }
 
 .input-field label.active {
@@ -87,6 +87,18 @@ input[type=text]:focus:not([readonly]).invalid {
     border-radius: 10px;
     background-image: linear-gradient(90deg, #ba1b05, #fb5e48);
     box-shadow: 0 11px 19px 0 #b8bdcd;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px 3px 5px;
+    text-decoration: none;
+}
+
+.resumenBtn {
+    border-radius: 10px;
+    background-color: #33c56e;
+    box-shadow: 0 0 4px 0 rgba(51, 197, 110, 0.5);
     color: white;
     font-weight: bold;
     border: none;

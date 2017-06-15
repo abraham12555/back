@@ -28,6 +28,7 @@ class CotizadorController {
         session.sid = null
         session.cargarImagen = null
         session.estadoRecuperacion = null
+        session.contadorOcr = 0
         String domain = new URL(request.getRequestURL().toString()).getHost();
         println "Dominio: " + domain
         //if(params.ef){
@@ -244,16 +245,20 @@ class CotizadorController {
     }
     
     def solicitarCodigo() {
+        println params
         def respuesta = [:]
         if(params.telefonoCelular){
-            def toPhone = params.telefonoCelular.replaceAll('-', '') 
-            String sid = smsService.sendSMS(toPhone, session.configuracion)
-            if(sid){
-                session.sid = sid
-                respuesta.mensajeEnviado = true
-            } else {
-                respuesta.mensajeEnviado = false
-            }
+            def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
+            //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
+            //if(!respuesta.encontrado) {
+                String sid = smsService.sendSMS(toPhone, session.configuracion)
+                if(sid){
+                    session.sid = sid
+                    respuesta.mensajeEnviado = true
+                } else {
+                    respuesta.mensajeEnviado = false
+                }
+            //}
         } else {
             respuesta.mensajeEnviado = false
         }

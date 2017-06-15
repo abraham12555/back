@@ -27,9 +27,9 @@ class SolicitudTemporal {
     int ultimoPaso = 1
     boolean cargarImagen = false
     String folio
-    
+
     def static PASO_FINAL = 6 
-    
+ 
     static constraints = {
         colorModelo (nullable: true)
         modelo (nullable: true)
@@ -46,6 +46,7 @@ class SolicitudTemporal {
         entidadFinanciera (nullable: false)
         token (nullable: false)
         shortUrl (nullable: false)
+        folio (nullable: true)
     }
     
     static mapping = {

@@ -19,12 +19,14 @@ class Usuario implements Serializable {
     boolean accountLocked
     boolean passwordExpired
     EntidadFinanciera entidadFinanciera
+    SucursalEntidadFinanciera sucursal
     String nombre
     String apellidoPaterno
     String apellidoMaterno
     String email
     Date fechaPassword
-    
+    String numeroDeEmpleado
+
     Usuario(String username, String password) {
         this()
         this.username = username
@@ -59,6 +61,8 @@ class Usuario implements Serializable {
         apellidoPaterno nullable: false
         apellidoMaterno nullable: false
         email nullable: false
+        sucursal nullable: true
+        numeroDeEmpleado nullable: true
         fechaPassword nullable: false
         sesionUsuario nullable: true
     }

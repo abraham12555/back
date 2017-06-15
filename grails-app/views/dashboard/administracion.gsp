@@ -12,7 +12,7 @@
         <title>Sample title</title>
     </head>
     <body>
-        <input type="hidden" id="opcionMenu" value="6">
+        <input type="hidden" id="opcionMenu" value="7">
         <section class="container marginBottom28">
             <div class="width998 solicitudBox autoMargin radius2">
                 <div class="">

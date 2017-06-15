@@ -187,7 +187,7 @@
             }]
             });
 
-            var mopResume = ${raw(segmentoHistorialDeCredito.graficaMopJ)};
+            var mopResume = ${raw(segmentoHistorialDeCredito?.graficaMopJ) ?: []};
             $('#graficaMop').highcharts({
             chart: {
             plotBackgroundColor: null,
@@ -262,7 +262,7 @@
             }]
             });
 
-            var desgloseTipoCredito = ${raw(segmentoHistorialDeCredito.graficaDesglocePrestamosPorTipoCreditoJ)};
+            var desgloseTipoCredito = ${raw(segmentoHistorialDeCredito?.graficaDesglocePrestamosPorTipoCreditoJ) ?: []};
             $('#graficaPrestamosSeg').highcharts({
             chart: {
             plotBackgroundColor: null,
@@ -319,14 +319,14 @@
             series: [{
             name: 'Origen',
             colorByPoint: true,
-            data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
+            data: [ {name: 'PDV A',y: 0}, {name: 'PDV B',y: 0}, {name: 'PDV C',y: 0}]
             }]
             });
 
 
 
 
-            var desglose = ${raw(segmentoHistorialDeCredito.graficaDesglocePrestamosJ)};
+            var desglose = ${raw(segmentoHistorialDeCredito?.graficaDesglocePrestamosJ) ?: []};
             $('#graficaPrestamos').highcharts({
             chart: {
             plotBackgroundColor: null,
@@ -353,7 +353,7 @@
             series: [{
             name: 'Origen',
             colorByPoint: true,
-            //data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
+            //data: [ {name: 'PDV A',y: 0}, {name: 'PDV B',y: 0}, {name: 'PDV C',y: 0}]
             data: desglose
             }]
             });
@@ -383,7 +383,7 @@
             series: [{
             name: 'Origen',
             colorByPoint: true,
-            data: [ {name: 'PDV A',y: 56.33}, {name: 'PDV B',y: 24.03}, {name: 'PDV C',y: 19.64}]
+            data: [ {name: 'PDV A',y: 0}, {name: 'PDV B',y: 0}, {name: 'PDV C',y: 0}]
             }]
             });
 
@@ -415,13 +415,13 @@
             colorByPoint: true,
             data: [{
             name: 'PDV A',
-            y: 56.33
+            y: 0
             }, {
             name: 'PDV B',
-            y: 24.03
+            y: 0
             }, {
             name: 'PDV C',
-            y: 19.64
+            y: 0
             }]
             }]
             });
@@ -468,14 +468,14 @@
             colorByPoint: true,
             data: [{
             name: 'Ingresos',
-            y: 349235,
+            y: 0,
             }, {
             name: 'Pagos',
-            y: 500234
+            y: 0
             }]
             }]
             });
-            var ingresoVsPagos = ${raw(segmentoHistorialDeCredito.graficaIngvsPagosBuroJ)};
+            var ingresoVsPagos = ${raw(segmentoHistorialDeCredito?.graficaIngvsPagosBuroJ) ?: []};
             $('#graficaIngPagos').highcharts({
             chart: {
             type: 'column'
@@ -540,7 +540,7 @@
                         <div class="solicitudDetailHeader">
                             <ul class="clearFix">
                                 <li class="floatLeft paddingTop7 paddingLeft5 paddingRight5">
-                                    <a href="#" title="SOLICITUDES" class="displayInline font24 fontWeight700 darkBluetitle paddingTop17 paddingBottom17 paddingLeft20">SOLICITUD</a>
+                                    <a title="SOLICITUDES" class="displayInline font24 fontWeight700 darkBluetitle paddingTop17 paddingBottom17 paddingLeft20">SOLICITUD ${datosSolicitud.solicitud?.folio}</a>
                                 </li>
                                 <li class="floatLeft paddingLeft5 paddingRight5">
                                     <span class="slash">/</span>
@@ -550,7 +550,7 @@
                                     <span class="slash">/</span>
                                     <a title="Valor" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.colorModelo?.modelo?.producto?.toString()} - <g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.##"/></a>
                                 </li>
-                                 <li class="floatLeft paddingLeft5 paddingRight5">
+                                <li class="floatLeft paddingLeft5 paddingRight5">
                                     <span class="slash">/</span>
                                     <a title="Producto" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto?.nombreDelProducto}</a>
 
@@ -684,65 +684,118 @@
                             </div>
                             <div class="col8 col8-tab col12-mob floatLeft clearFix">
                                 <div class="col6 col12-tab floatLeft">
-                                    <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
-                                        <div class="navyBg radius2">
-                                            <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">INFORMACIÓN BÁSICA</p>
-                                        </div>
-                                        <div class="marginLeft32">
-                                            <p class="font12 fontWeight500 gray paddingTop10">APLICANTE</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente}</p>
-                                        </div>
-                                        <div class="paddingLeft30 lightGrayBG">
-                                            <p class="font12 fontWeight500 gray paddingTop10">MAIL</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">
-                                                <g:each var='mail' in='${datosSolicitud.emailCliente}' status='i'>
-                                                    ${mail.direccionDeCorreo}
-                                                </g:each>
-                                            </p>
-                                        </div>
-                                        <div class="marginLeft32">
-                                            <p class="font12 fontWeight500 gray paddingTop10">FECHA DE NACIMIENTO</p>
-                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatDate format="dd / MM / yyyy" date="${datosSolicitud.cliente?.fechaDeNacimiento}"/></p>
-                                        </div>
-                                        <div class="marginLeft32 lightGrayBG">
-                                            <p class="font12 fontWeight500 gray paddingTop10">LUGAR DE NACIMIENTO</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.lugarDeNacimiento}</p>
-                                        </div>
-                                        <div class="paddingLeft30 ">
-                                            <p class="font12 fontWeight500 gray paddingTop10">NACIONALIDAD</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente?.nacionalidad}</p>
-                                        </div>
-                                        <div class="marginLeft32 lightGrayBG">
-                                            <p class="font12 fontWeight500 gray paddingTop10">EDAD</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.edadCliente} Años</p>
-                                        </div>
-                                        <div class="paddingLeft30">
-                                            <p class="font12 fontWeight500 gray paddingTop10">GENERO</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.genero}</p>
-                                        </div>
-                                        <div class="marginLeft32 lightGrayBG">
-                                            <p class="font12 fontWeight500 gray paddingTop10">R.F.C.</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.rfc}</p>
-                                        </div>
-                                        <div class="paddingLeft30">
-                                            <p class="font12 fontWeight500 gray paddingTop10">C.U.R.P.</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.curp}</p>
-                                        </div>
-                                        <div class="paddingLeft30 lightGrayBG">
-                                            <p class="font12 fontWeight500 gray paddingTop10">ESTADO CIVIL</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.estadoCivil}</p>
-                                        </div>
-                                        <g:if test="${datosSolicitud.cliente.estadoCivil?.id == 2 || datosSolicitud.cliente.estadoCivil?.id == 3}">
-                                            <div class="paddingLeft30">
-                                                <p class="font12 fontWeight500 gray paddingTop10">REGIMEN MATRIMONIAL</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.regimenMatrimonial}</p>
+                                    <g:if test="${datosSolicitud.temporal}">
+                                        <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
+                                            <div class="navyBg radius2">
+                                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">INFORMACIÓN BÁSICA</p>
                                             </div>
-                                        </g:if>
-                                        <div class="paddingLeft30 lightGrayBG">
-                                            <p class="font12 fontWeight500 gray paddingTop10">DEPENDIENTES ECONOMICOS</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.dependientesEconomicos}</p>
+                                            <div class="marginLeft32">
+                                                <p class="font12 fontWeight500 gray paddingTop10">APLICANTE</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente}</p>
+                                            </div>
+                                            <div class="paddingLeft30 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">MAIL</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.emailCliente}</p>
+                                            </div>
+                                            <div class="marginLeft32">
+                                                <p class="font12 fontWeight500 gray paddingTop10">FECHA DE NACIMIENTO</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="marginLeft32 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">LUGAR DE NACIMIENTO</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="paddingLeft30 ">
+                                                <p class="font12 fontWeight500 gray paddingTop10">NACIONALIDAD</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="marginLeft32 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">EDAD</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="paddingLeft30">
+                                                <p class="font12 fontWeight500 gray paddingTop10">GENERO</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="marginLeft32 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">R.F.C.</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="paddingLeft30">
+                                                <p class="font12 fontWeight500 gray paddingTop10">C.U.R.P.</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="paddingLeft30 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">ESTADO CIVIL</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
+                                            <div class="paddingLeft30 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">DEPENDIENTES ECONOMICOS</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">DATO NO CAPTURADO</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
+                                            <div class="navyBg radius2">
+                                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">INFORMACIÓN BÁSICA</p>
+                                            </div>
+                                            <div class="marginLeft32">
+                                                <p class="font12 fontWeight500 gray paddingTop10">APLICANTE</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente}</p>
+                                            </div>
+                                            <div class="paddingLeft30 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">MAIL</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">
+                                                    <g:each var='mail' in='${datosSolicitud.emailCliente}' status='i'>
+                                                        ${mail.direccionDeCorreo}
+                                                    </g:each>
+                                                </p>
+                                            </div>
+                                            <div class="marginLeft32">
+                                                <p class="font12 fontWeight500 gray paddingTop10">FECHA DE NACIMIENTO</p>
+                                                <p class="font18 fontWeight500 darkBluetitle"><g:formatDate format="dd / MM / yyyy" date="${datosSolicitud.cliente?.fechaDeNacimiento}"/></p>
+                                            </div>
+                                            <div class="marginLeft32 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">LUGAR DE NACIMIENTO</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.lugarDeNacimiento}</p>
+                                            </div>
+                                            <div class="paddingLeft30 ">
+                                                <p class="font12 fontWeight500 gray paddingTop10">NACIONALIDAD</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente?.nacionalidad}</p>
+                                            </div>
+                                            <div class="marginLeft32 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">EDAD</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.edadCliente} Años</p>
+                                            </div>
+                                            <div class="paddingLeft30">
+                                                <p class="font12 fontWeight500 gray paddingTop10">GENERO</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.genero}</p>
+                                            </div>
+                                            <div class="marginLeft32 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">R.F.C.</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.rfc}</p>
+                                            </div>
+                                            <div class="paddingLeft30">
+                                                <p class="font12 fontWeight500 gray paddingTop10">C.U.R.P.</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.curp}</p>
+                                            </div>
+                                            <div class="paddingLeft30 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">ESTADO CIVIL</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.estadoCivil}</p>
+                                            </div>
+                                            <g:if test="${datosSolicitud.cliente.estadoCivil?.id == 2 || datosSolicitud.cliente.estadoCivil?.id == 3}">
+                                                <div class="paddingLeft30">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">REGIMEN MATRIMONIAL</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.regimenMatrimonial}</p>
+                                                </div>
+                                            </g:if>
+                                            <div class="paddingLeft30 lightGrayBG">
+                                                <p class="font12 fontWeight500 gray paddingTop10">DEPENDIENTES ECONOMICOS</p>
+                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.dependientesEconomicos}</p>
+                                            </div>
+                                        </div>
+                                    </g:else>
                                 </div>
                                 <div class="col6 col12-tab floatLeft">
                                     <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
@@ -828,43 +881,45 @@
                                         </div>
                                     </div>
                                 </g:each>
-                                <g:if test="${datosSolicitud.cliente.estadoCivil?.id == 2 || datosSolicitud.cliente.estadoCivil?.id == 3}">
-                                    <div class="col6 col12-tab floatLeft">
-                                        <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
-                                            <div class="navyBg radius2">
-                                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DATOS DEL CONYUGUE</p>
-                                            </div>
-                                            <div class="marginLeft32">
-                                                <p class="font12 fontWeight500 gray paddingTop10">NOMBRE</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${ (datosSolicitud.cliente.nombreDelConyugue ?: "") + " " + (datosSolicitud.cliente.apellidoPaternoDelConyugue ?: "") + " " + (datosSolicitud.cliente.apellidoMaternoDelConyugue ?: "")}</p>
-                                            </div>
-                                            <div class="marginLeft32">
-                                                <p class="font12 fontWeight500 gray paddingTop10">FECHA DE NACIMIENTO</p>
-                                                <p class="font18 fontWeight500 darkBluetitle"><g:formatDate format="dd / MM / yyyy" date="${datosSolicitud.cliente?.fechaDeNacimientoDelConyugue}"/></p>
-                                            </div>
-                                            <div class="marginLeft32 lightGrayBG">
-                                                <p class="font12 fontWeight500 gray paddingTop10">LUGAR DE NACIMIENTO</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.lugarDeNacimientoDelConyugue}</p>
-                                            </div>
-                                            <div class="paddingLeft30 ">
-                                                <p class="font12 fontWeight500 gray paddingTop10">NACIONALIDAD</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente?.nacionalidadDelConyugue}</p>
-                                            </div>
-                                            <div class="paddingLeft30">
-                                                <p class="font12 fontWeight500 gray paddingTop10">GENERO</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${((datosSolicitud.cliente.genero?.id == 1) ? "Mujer" : "Hombre")}</p>
-                                            </div>
-                                            <div class="marginLeft32 lightGrayBG">
-                                                <p class="font12 fontWeight500 gray paddingTop10">R.F.C.</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.rfcDelConyugue}</p>
-                                            </div>
-                                            <div class="paddingLeft30">
-                                                <p class="font12 fontWeight500 gray paddingTop10">C.U.R.P.</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.curpDelConyugue}</p>
+                                <g:if test="${!datosSolicitud.temporal}">
+                                    <g:if test="${datosSolicitud.cliente.estadoCivil?.id == 2 || datosSolicitud.cliente.estadoCivil?.id == 3}">
+                                        <div class="col6 col12-tab floatLeft">
+                                            <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
+                                                <div class="navyBg radius2">
+                                                    <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DATOS DEL CONYUGUE</p>
+                                                </div>
+                                                <div class="marginLeft32">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">NOMBRE</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${ (datosSolicitud.cliente.nombreDelConyugue ?: "") + " " + (datosSolicitud.cliente.apellidoPaternoDelConyugue ?: "") + " " + (datosSolicitud.cliente.apellidoMaternoDelConyugue ?: "")}</p>
+                                                </div>
+                                                <div class="marginLeft32">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">FECHA DE NACIMIENTO</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle"><g:formatDate format="dd / MM / yyyy" date="${datosSolicitud.cliente?.fechaDeNacimientoDelConyugue}"/></p>
+                                                </div>
+                                                <div class="marginLeft32 lightGrayBG">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">LUGAR DE NACIMIENTO</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.lugarDeNacimientoDelConyugue}</p>
+                                                </div>
+                                                <div class="paddingLeft30 ">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">NACIONALIDAD</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente?.nacionalidadDelConyugue}</p>
+                                                </div>
+                                                <div class="paddingLeft30">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">GENERO</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${((datosSolicitud.cliente.genero?.id == 1) ? "Mujer" : "Hombre")}</p>
+                                                </div>
+                                                <div class="marginLeft32 lightGrayBG">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">R.F.C.</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.rfcDelConyugue}</p>
+                                                </div>
+                                                <div class="paddingLeft30">
+                                                    <p class="font12 fontWeight500 gray paddingTop10">C.U.R.P.</p>
+                                                    <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.cliente.curpDelConyugue}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </g:if>   
+                                    </g:if>
+                                </g:if> 
                                 <div class="col6 col12-tab floatLeft">
                                     <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
                                         <div class="navyBg radius2">
@@ -1031,6 +1086,23 @@
                             <h1 class="darkBluetitle font18 fontWeight600 letterspacing2">3. HISTORIAL DE CRÉDITO</h1>
                         </div>
                         <div class="col12 clearFix">
+                            <div class="col4 col6-tab col12-mob floatLeft">
+                                <div class="solicitudWhiteBox radius2 mobileAside10 paddingBottom15">
+                                    <div class="clearFix ">
+                                        <div class="marginRight20 clearFix">
+                                            <div class="floatLeft paddingLeft15">
+                                                <p class="font14 fontWeight500 letterspacing1 gray paddingTop20">BURÓ DE CRÉDITO</p>
+                                            </div>
+                                            <div class="floatRight paddingTop15">
+                                                <img src="${resource(dir:'images', file:'expand.png')}" alt="expand" title="expand"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="marginTop19 marginBottom14">
+                                        <div class="grayBox autoMargin clearFix height403"></div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col8 col6-tab col12-mob floatLeft clearFix">
                                 <div class="col6 col12-tab floatLeft">
                                     <div class="boxMargins solicitudWhiteBox radius2 paddingBottom12">
@@ -1199,33 +1271,35 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 5 && datosSolicitud.solicitud?.statusDeSolicitud.id != 7}">
-                                        <div id="opcionesScore" class="col6 col12-mob floatRight">
-                                            <div class="mobileAside10">
-                                                <a onclick="mostrarModal('loginAutorizacion');" id="autorizarCredito">
-                                                    <div class="width400 blueButton radius2 autoCenter marginBottom20">
-                                                        <p class="autorizar_credito letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center pointer">AUTORIZAR</p>
-                                                    </div>
-                                                </a>
-                                                <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 8 && !datosSolicitud.verificacion}">
-                                                    <a onclick="mostrarModal('modalPreguntas');" id="solicitarVisita">
-                                                        <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
-                                                            <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center darkBluetitle pointer">SOLICITAR VISITA</p>
+                                    <g:if test="${!datosSolicitud.temporal}">
+                                        <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud?.id != 5 && datosSolicitud.solicitud?.statusDeSolicitud?.id != 7}">
+                                            <div id="opcionesScore" class="col6 col12-mob floatRight">
+                                                <div class="mobileAside10">
+                                                    <a onclick="mostrarModal('loginAutorizacion');" id="autorizarCredito">
+                                                        <div class="width400 blueButton radius2 autoCenter marginBottom20">
+                                                            <p class="autorizar_credito letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center pointer">AUTORIZAR</p>
                                                         </div>
                                                     </a>
-                                                </g:if>
-                                                <a onclick="mostrarModal('modalComplemento');" id="solicitarComplemento">
-                                                    <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
-                                                        <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center gray pointer">SOLICITAR COMPLEMENTO</p>
-                                                    </div>
-                                                </a>
-                                                <a onclick="cambiarEstatus(7, ${datosSolicitud.solicitud?.id});" id="rechazar">
-                                                    <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
-                                                        <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center colorRed pointer">RECHAZAR</p>
-                                                    </div>
-                                                </a>
+                                                    <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 8 && !datosSolicitud.verificacion}">
+                                                        <a onclick="mostrarModal('modalPreguntas');" id="solicitarVisita">
+                                                            <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
+                                                                <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center darkBluetitle pointer">SOLICITAR VISITA</p>
+                                                            </div>
+                                                        </a>
+                                                    </g:if>
+                                                    <a onclick="mostrarModal('modalComplemento');" id="solicitarComplemento">
+                                                        <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
+                                                            <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center gray pointer">SOLICITAR COMPLEMENTO</p>
+                                                        </div>
+                                                    </a>
+                                                    <a onclick="cambiarEstatus(7, ${datosSolicitud.solicitud?.id});" id="rechazar">
+                                                        <div class="width400 solicitudWhiteBox radius2 autoCenter marginBottom20">
+                                                            <p class="letterspacing2 font18 fontWeight600 paddingTop18 paddingBottom15 center colorRed pointer">RECHAZAR</p>
+                                                        </div>
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </g:if>
                                     </g:if>
                                 </div>
                                 <div class="col12 clearFix">
@@ -1279,106 +1353,108 @@
                                     </div>
                                 </div>
                                 </section>
-                                <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 5 && datosSolicitud.solicitud?.statusDeSolicitud.id != 7}">
-                                    <div class="solicitudLightbox hide" id="loginAutorizacion">
-                                        <div class="overlay"></div>
-                                        <div class="loginContainer creditLb">
-                                            <div class="dashBordBox">
-                                                <form action="/dashboard/autorizarSolicitud" method="POST" class="loginForm gray font14">
-                                                    <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
-                                                    <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">APROBACIÓN DE CRÉDITO</p>
-                                                    <div class="solicitudTitle width166 autoMargin">
-                                                        <p class="center font14 lightGray">Para autorizar este crédito ingresa tu contraseña</p>
-                                                    </div>
-                                                    <div class="formContainer">
-                                                        <input class="inputs marginBottom30 lightGray letterspacing1 font14" name="claveUsuario" type="password" required placeholder="Contraseña"/>
-                                                        <button type="submit" class="loginButton blueButton letterspacing2 font14 pointer">AUTORIZAR</button>
-                                                        <button type="button" onclick="cerrarModal('loginAutorizacion');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
-                                                    </div>
-                                                </form>
+                                <g:if test="${!datosSolicitud.temporal}">
+                                    <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud?.id != 5 && datosSolicitud.solicitud?.statusDeSolicitud?.id != 7}">
+                                        <div class="solicitudLightbox hide" id="loginAutorizacion">
+                                            <div class="overlay"></div>
+                                            <div class="loginContainer creditLb">
+                                                <div class="dashBordBox">
+                                                    <form action="/dashboard/autorizarSolicitud" method="POST" class="loginForm gray font14">
+                                                        <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
+                                                        <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">APROBACIÓN DE CRÉDITO</p>
+                                                        <div class="solicitudTitle width166 autoMargin">
+                                                            <p class="center font14 lightGray">Para autorizar este crédito ingresa tu contraseña</p>
+                                                        </div>
+                                                        <div class="formContainer">
+                                                            <input class="inputs marginBottom30 lightGray letterspacing1 font14" name="claveUsuario" type="password" required placeholder="Contraseña"/>
+                                                            <button type="submit" class="loginButton blueButton letterspacing2 font14 pointer">AUTORIZAR</button>
+                                                            <button type="button" onclick="cerrarModal('loginAutorizacion');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="loginShadow"></div>
                                             </div>
-                                            <div class="loginShadow"></div>
                                         </div>
-                                    </div>
-                                    <div class="solicitudLightbox hide" id="modalComplemento">
-                                        <div class="overlay"></div>
-                                        <div class="visitaContainer">
-                                            <div class="dashBordBox">
-                                                <div class="loginForm gray font14">
-                                                    <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">DOCUMENTOS A SOLICITAR</p>
-                                                    <div class="solicitudTitle autoMargin" style="width: 100%;">
-                                                        <p class="center font14 lightGray">Indica los documentos que requiere proporcionar el cliente</p>
-                                                    </div>
-                                                    <div class="formContainer" style="width: 90%">
-                                                        <div class='col12 marginBottom20' style='display:inline-block;'>
-                                                            <center>
-                                                                <g:each var='documento' in='${documentos}' status='i'>
-                                                                    <div class='col4 col12-mob' style='display:inline-block;' class="button marginTop20">
-                                                                        <div id="documento${documento.id}" data-id-documento="${documento.id}" class="checkVerificacion whiteBox col11 marginTop10 autoCenter block" style="margin-left: 10px;margin-right: 10px;">
-                                                                            <a onclick="confirmarAccion('documento',${documento.id});" title="${documento.nombre}" class="block font14 letterspacing1 fontWeight500 lightGray paddingTop15 paddingBottom15 center">${documento.nombre}</a>
+                                        <div class="solicitudLightbox hide" id="modalComplemento">
+                                            <div class="overlay"></div>
+                                            <div class="visitaContainer">
+                                                <div class="dashBordBox">
+                                                    <div class="loginForm gray font14">
+                                                        <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">DOCUMENTOS A SOLICITAR</p>
+                                                        <div class="solicitudTitle autoMargin" style="width: 100%;">
+                                                            <p class="center font14 lightGray">Indica los documentos que requiere proporcionar el cliente</p>
+                                                        </div>
+                                                        <div class="formContainer" style="width: 90%">
+                                                            <div class='col12 marginBottom20' style='display:inline-block;'>
+                                                                <center>
+                                                                    <g:each var='documento' in='${documentos}' status='i'>
+                                                                        <div class='col4 col12-mob' style='display:inline-block;' class="button marginTop20">
+                                                                            <div id="documento${documento.id}" data-id-documento="${documento.id}" class="checkVerificacion whiteBox col11 marginTop10 autoCenter block" style="margin-left: 10px;margin-right: 10px;">
+                                                                                <a onclick="confirmarAccion('documento',${documento.id});" title="${documento.nombre}" class="block font14 letterspacing1 fontWeight500 lightGray paddingTop15 paddingBottom15 center">${documento.nombre}</a>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                </g:each>
-                                                            </center>
-                                                        </div>
-                                                        <div class="col12" style="text-align: center;">
-                                                            <div class="col4" style="display: inline-block;">
-                                                                <button type="button" id="btnComplemento" onclick="cambiarEstatus(6, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>ACEPTAR</button>
+                                                                    </g:each>
+                                                                </center>
                                                             </div>
-                                                            <div class="col4" style="display: inline-block;">
-                                                                <button type="button" onclick="cerrarModal('modalComplemento');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </g:if>
-                                <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud.id != 8}">
-                                    <div class="solicitudLightbox hide" id="modalPreguntas">
-                                        <div class="overlay"></div>
-                                        <div class="visitaContainer">
-                                            <div class="dashBordBox">
-                                                <div class="loginForm gray font14">
-                                                    <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
-                                                    <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">PREGUNTAS PARA VISITA OCULAR</p>
-                                                    <div class="solicitudTitle autoMargin" style="width: 100%;">
-                                                        <p class="center font14 lightGray">Indica las preguntas a realizar durante la visita ocular</p>
-                                                    </div>
-                                                    <div class="formContainer">
-                                                        <div class='col12' style='display:inline-block; position:relative;'>
-                                                            <textarea rows='8' class="col12 inputs marginBottom30 lightGray letterspacing1 font14" id="textoPregunta" type="text" required placeholder="Pregunta a realizar"></textarea>
-                                                            <button type="button" onclick="agregarPregunta();" class="loginButton blueButton letterspacing2 font14 pointer" style="width: 15%; position:absolute; bottom:10px; right:10px;">Agregar</button>
-                                                        </div>
-                                                        <div>
-                                                            <table id='preguntasAgregadas' style="width: 100%; margin-bottom: 20px; border-bottom: 5px #369;">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th colspan="2" class="navyBg"><h1 class="graphHeading colorWhite letterspacing2 textUpper center">Preguntas Añadidas</h1></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td colspan="2" class="tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper center borderGrayBottom">No se han agregado preguntas</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <input type="hidden" id="cantidadDePreguntas">
-                                                        </div>
-                                                        <div class="col12" style="text-align: center;">
-                                                            <div class="col4" style="display: inline-block;">
-                                                                <button type="button" id="btnVerificar" onclick="cambiarEstatus(8, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>REGISTRAR PREGUNTAS</button>
-                                                            </div>
-                                                            <div class="col4" style="display: inline-block;">
-                                                                <button type="button" onclick="cerrarModal('modalPreguntas');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                                                            <div class="col12" style="text-align: center;">
+                                                                <div class="col4" style="display: inline-block;">
+                                                                    <button type="button" id="btnComplemento" onclick="cambiarEstatus(6, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>ACEPTAR</button>
+                                                                </div>
+                                                                <div class="col4" style="display: inline-block;">
+                                                                    <button type="button" onclick="cerrarModal('modalComplemento');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </g:if>
+                                    <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud?.id != 8}">
+                                        <div class="solicitudLightbox hide" id="modalPreguntas">
+                                            <div class="overlay"></div>
+                                            <div class="visitaContainer">
+                                                <div class="dashBordBox">
+                                                    <div class="loginForm gray font14">
+                                                        <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
+                                                        <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">PREGUNTAS PARA VISITA OCULAR</p>
+                                                        <div class="solicitudTitle autoMargin" style="width: 100%;">
+                                                            <p class="center font14 lightGray">Indica las preguntas a realizar durante la visita ocular</p>
+                                                        </div>
+                                                        <div class="formContainer">
+                                                            <div class='col12' style='display:inline-block; position:relative;'>
+                                                                <textarea rows='8' class="col12 inputs marginBottom30 lightGray letterspacing1 font14" id="textoPregunta" type="text" required placeholder="Pregunta a realizar"></textarea>
+                                                                <button type="button" onclick="agregarPregunta();" class="loginButton blueButton letterspacing2 font14 pointer" style="width: 15%; position:absolute; bottom:10px; right:10px;">Agregar</button>
+                                                            </div>
+                                                            <div>
+                                                                <table id='preguntasAgregadas' style="width: 100%; margin-bottom: 20px; border-bottom: 5px #369;">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th colspan="2" class="navyBg"><h1 class="graphHeading colorWhite letterspacing2 textUpper center">Preguntas Añadidas</h1></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td colspan="2" class="tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper center borderGrayBottom">No se han agregado preguntas</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <input type="hidden" id="cantidadDePreguntas">
+                                                            </div>
+                                                            <div class="col12" style="text-align: center;">
+                                                                <div class="col4" style="display: inline-block;">
+                                                                    <button type="button" id="btnVerificar" onclick="cambiarEstatus(8, ${datosSolicitud.solicitud?.id});" class="loginButton letterspacing2 font14 pointer" disabled>REGISTRAR PREGUNTAS</button>
+                                                                </div>
+                                                                <div class="col4" style="display: inline-block;">
+                                                                    <button type="button" onclick="cerrarModal('modalPreguntas');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </g:if>
                                 </g:if>
                             </div>
                         </div>

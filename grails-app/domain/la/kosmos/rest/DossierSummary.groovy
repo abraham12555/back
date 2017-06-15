@@ -15,6 +15,7 @@ class DossierSummary implements Serializable{
     String dossierId
     String reference
     String respuestaOriginal
+    String folioSolicitud
     
     static constraints = {
         solicitud nullable: true
@@ -26,6 +27,7 @@ class DossierSummary implements Serializable{
         dossierId nullable: false
         reference nullable: true
         respuestaOriginal nullable: false
+        folioSolicitud nullable: true
     }
     
     static mapping = {

@@ -302,6 +302,16 @@ body{
     padding-right:15px;
 }
 
+.redBox{
+    width: 133px;
+    height: 43px;
+    border-radius: 4px;
+    background-color: #fb5e48;
+    box-shadow: 0 0 4px 0 rgba(200, 75, 57, 0.8);
+    padding-left:15px;
+    padding-right:15px;
+}
+
 .grayDashboardBox{
     width: 154px;
     border-radius: 2px;

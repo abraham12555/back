@@ -100,8 +100,12 @@ function mostrarOpciones() {
     $('#opcionesUsuario').toggleClass("show");
 }
 
-function consultarSolicitud(numeroDeSolicitud) {
-    window.location.href = "/dashboard/detalleSolicitud/" + numeroDeSolicitud;
+function consultarSolicitud(numeroDeSolicitud, temporal) {
+    if (temporal === false) {
+        window.location.href = "/dashboard/detalleSolicitud/" + numeroDeSolicitud;
+    } else {
+        window.location.href = "/dashboard/detalleSolicitud?id=" + numeroDeSolicitud + "&temporal=true";
+    }
 }
 
 function realizarVerificacion(numeroDeSolicitud) {

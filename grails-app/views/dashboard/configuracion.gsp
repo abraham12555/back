@@ -16,14 +16,14 @@
             <g:external dir="js" file="jquery.ui.timepicker.js" />
             <g:external dir="css" file="jquery.ui.timepicker.css" />
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
             <g:external dir="js" file="validaciones.min.js" />
             <g:external dir="js" file="dashboard/usuarios/usuarios.min.js" />
         </sec:ifAnyGranted>
         <title>Sample title</title>
     </head>
     <body>
-        <input type="hidden" id="opcionMenu" value="5">
+        <input type="hidden" id="opcionMenu" value="6">
         <section class="container marginBottom28">
             <div class="width998 solicitudBox autoMargin radius2">
                 <div class="">
@@ -31,7 +31,7 @@
                         <li class="floatLeft paddingLeft5 paddingRight5">
                             <a title="CONFIGURACIÓN" class="displayInline font24 fontWeight700 darkBluetitle paddingTop17 paddingBottom17 paddingLeft20 paddingRight20 pointer">CONFIGURACIÓN</a>
                         </li>
-                        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
                             <li id="usuariosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                                 <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','usuarios');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">USUARIOS</a>
                             </li>
@@ -63,7 +63,7 @@
                         </sec:ifAnyGranted>
                     </ul>
                 </div>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
                     <div id="usuariosSubMenu" class="configuracionSubMenu lightGrayBG">
                         <ul class="clearFix paddingLeft30">
                             <li class="floatLeft">
@@ -119,7 +119,7 @@
                 </sec:ifAnyGranted>
             </div>
         </section>
-    <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+    <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
         <div class="configuracionTab" id="usuarios">
             <g:render template="usuarios"/>
         </div>

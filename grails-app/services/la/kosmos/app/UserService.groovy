@@ -340,4 +340,18 @@ class UserService {
             criteria.deleteAll()
         }
     }
+    
+    def validNoEmpleado(User usuario){
+        Usuario user = Usuario.findByNumeroDeEmpleado(usuario.noEmpleado)
+        if(user == null) {
+            return Boolean.TRUE
+        } else {
+            def id = (usuario.id).toBigInteger()
+            if (BigInteger.valueOf(user.id).compareTo(id) == 0) {
+                return Boolean.TRUE
+            } else {
+                return Boolean.FALSE
+            }
+        }
+    }
 }

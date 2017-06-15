@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="gastos_de_alquiler" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="cuota_credito" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="tipo_de_vivienda" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="asalariado" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="cadena_bc" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -60,6 +61,7 @@ import javax.xml.bind.annotation.XmlType;
     "gastosDeAlquiler",
     "cuotaCredito",
     "tipoDeVivienda",
+    "asalariado",
     "cadenaBc"
 })
 public class CalculateProb {
@@ -94,6 +96,7 @@ public class CalculateProb {
     protected Double cuotaCredito;
     @XmlElement(name = "tipo_de_vivienda")
     protected Integer tipoDeVivienda;
+    protected boolean asalariado;
     @XmlElement(name = "cadena_bc")
     protected String cadenaBc;
 
@@ -479,6 +482,22 @@ public class CalculateProb {
      */
     public void setTipoDeVivienda(Integer value) {
         this.tipoDeVivienda = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad asalariado.
+     * 
+     */
+    public boolean isAsalariado() {
+        return asalariado;
+    }
+
+    /**
+     * Define el valor de la propiedad asalariado.
+     * 
+     */
+    public void setAsalariado(boolean value) {
+        this.asalariado = value;
     }
 
     /**

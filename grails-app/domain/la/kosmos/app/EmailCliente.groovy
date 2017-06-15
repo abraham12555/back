@@ -8,7 +8,7 @@ class EmailCliente implements Serializable{
     boolean vigente = true
     
     static constraints = {
-        direccionDeCorreo (blank: false, unique : true)
+        direccionDeCorreo (blank: false)//, unique : true)
         tipoDeEmail (nullable: false)
         cliente (nullable: false)
     }

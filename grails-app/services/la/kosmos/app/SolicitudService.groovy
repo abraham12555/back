@@ -5,6 +5,8 @@ import groovy.sql.Sql
 import la.kosmos.rest.SolicitudRest
 import java.nio.file.Files;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang.StringUtils
 
 @Transactional
 class SolicitudService {
@@ -12,7 +14,7 @@ class SolicitudService {
     def dataSource
     def buroDeCreditoService
 
-    def construirDatosTemporales(def datosPreguardados, def params, def pasoEnviado, def identificadores, def entidadFinanciera, def token, def shortUrl) {
+    def construirDatosTemporales(def datosPreguardados, def params, def pasoEnviado, def identificadores, def entidadFinanciera, def token, def shortUrl, def usuario) {
         println "Contenido del Mapa: " + datosPreguardados + " - Parametros Enviados:" + params +" - Paso Enviado: " +pasoEnviado + " - Identificadores: " + identificadores
 	def cliente
         def clienteNuevo = false
@@ -65,9 +67,9 @@ class SolicitudService {
                         }
                     }
                 }
-                cliente.nombre = datosPaso.cliente.nombre
+                cliente.nombre = (datosPaso.cliente.segundoNombre ? (datosPaso.cliente.nombre + " " + datosPaso.cliente.segundoNombre) : datosPaso.cliente.nombre)
                 cliente.apellidoPaterno = datosPaso.cliente.apellidoPaterno
-                cliente.apellidoMaterno = datosPaso.cliente.apellidoMaterno
+                cliente.apellidoMaterno = (datosPaso.cliente.apellidoMaterno.toUpperCase() == "NA" ? "" : datosPaso.cliente.apellidoMaterno) 
                 cliente.lugarDeNacimiento = (datosPaso.cliente.lugarDeNacimiento ? Estado.get(datosPaso.cliente.lugarDeNacimiento) : null)
                 if(datosPaso.cliente.nacionalidad){
                     cliente.nacionalidad = Nacionalidad.get(datosPaso.cliente.nacionalidad as long)
@@ -147,35 +149,38 @@ class SolicitudService {
                             }
                         }
                     }
-                    if(clienteNuevo && datosPaso.emailCliente) {
+                    if(datosPaso.emailCliente) {
                         def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                        EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                         if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
-                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
-                            def emailPersonal = new EmailCliente()
-                            emailPersonal.cliente = cliente
-                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
-                            emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
-                            emailPersonal.vigente = true
-                            emailPersonal.save(flush: true)
+                            correoExistente = EmailCliente.findWhere(direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                            if(!correoExistente || datosPaso.emailCliente.emailPersonal.toLowerCase().equals("1234@libertad.com.mx")) {
+                                def emailPersonal = new EmailCliente()
+                                emailPersonal.cliente = cliente
+                                emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
+                                emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
+                                emailPersonal.vigente = true
+                                emailPersonal.save(flush: true)
+                            }
                         } else if (correoExistente) {
                             correoExistente.vigente = true
                             correoExistente.save(flush: true)
                         }
-                    } else if(!clienteNuevo && datosPaso.emailCliente) {
-                        def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
-                        if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
-                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
-                            def emailPersonal = new EmailCliente()
-                            emailPersonal.cliente = cliente
-                            emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
-                            emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
-                            emailPersonal.vigente = true
-                            emailPersonal.save(flush: true)
-                        } else if (correoExistente) {
-                            correoExistente.vigente = true
-                            correoExistente.save(flush: true)
-                        }
+                    } /*else if(!clienteNuevo && datosPaso.emailCliente) {
+                    def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                    if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
+                    EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
+                    def emailPersonal = new EmailCliente()
+                    emailPersonal.cliente = cliente
+                    emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
+                    emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
+                    emailPersonal.vigente = true
+                    emailPersonal.save(flush: true)
+                    } else if (correoExistente) {
+                    correoExistente.vigente = true
+                    correoExistente.save(flush: true)
                     }
+                    }*/
                     if(identificadores?.idSolicitud) {
                         println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
                         def solicitud = SolicitudDeCredito.get(identificadores?.idSolicitud as long)
@@ -193,10 +198,34 @@ class SolicitudService {
                         solicitudDeCredito.fechaDeSolicitud = new Date()
                         solicitudDeCredito.statusDeSolicitud = StatusDeSolicitud.get(1)
                         solicitudDeCredito.entidadFinanciera = entidadFinanciera
-                        solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
+                        //solicitudDeCredito.folio = new Long(sql.firstRow("select nextval('folios_entidad_" + (solicitudDeCredito.entidadFinanciera.id) + "')").nextval)
                         solicitudDeCredito.cliente = cliente
                         solicitudDeCredito.token = token
                         solicitudDeCredito.shortUrl = shortUrl
+                        solicitudDeCredito.registradaPor = usuario
+                        if(usuario) {
+                            solicitudDeCredito.sucursal = usuario.sucursal
+                            solicitudDeCredito.medioDeContacto = MedioDeContacto.get(1)
+                            solicitudDeCredito.opcionMedioDeContacto = usuario.sucursal.id
+                        }
+                        if(identificadores?.idSolicitudTemporal) {
+                            def solicitudTemporal = SolicitudTemporal.get(identificadores?.idSolicitudTemporal as long)
+                            println("Si trae solicitud temporal, tiene folio? " + solicitudTemporal.folio)
+                            if(solicitudTemporal.folio) {
+                                solicitudDeCredito.folio = solicitudTemporal.folio
+                            } else {
+                                solicitudDeCredito.folio = generarFolioAlfanumerico(7);
+                                while(verificarExistenciaDeFolio(solicitudDeCredito.folio, solicitudDeCredito.entidadFinanciera, 1)) {
+                                    solicitudDeCredito.folio = generarFolioAlfanumerico(7);
+                                }
+                            }
+                        } else {
+                            println("No trae solicitud temporal ...")
+                            solicitudDeCredito.folio = generarFolioAlfanumerico(7);
+                            while(verificarExistenciaDeFolio(solicitudDeCredito.folio, solicitudDeCredito.entidadFinanciera, 1)) {
+                                solicitudDeCredito.folio = generarFolioAlfanumerico(7);
+                            }
+                        }
                         if(solicitudDeCredito.save(flush: true)){
                             println "Si se guardo la solicitud: " + solicitudDeCredito?.id
                             datosPaso.cliente.idSolicitud = solicitudDeCredito.id
@@ -224,8 +253,9 @@ class SolicitudService {
                 }
             }
             if(datosPaso.direccionCliente) {
-                if(identificadores?.idCliente) {
-                    cliente = Cliente.get(identificadores.idCliente as long)
+                if(identificadores?.idCliente || (usuario && datosPaso?.cliente?.idCliente)) {
+                    def idCliente = (identificadores?.idCliente ?: datosPaso?.cliente?.idCliente)
+                    cliente = Cliente.get(idCliente as long)
                     def direccionCliente
                     if(identificadores?.idDireccion){
                         direccionCliente = DireccionCliente.get(identificadores.idDireccion as long)
@@ -263,8 +293,9 @@ class SolicitudService {
                 }
             }
             if (datosPaso.empleoCliente){
-                if(identificadores?.idCliente) {
-                    cliente = Cliente.get(identificadores.idCliente as long)
+                if(identificadores?.idCliente || (usuario && datosPaso?.cliente?.idCliente)) {
+                    def idCliente = (identificadores?.idCliente ?: datosPaso?.cliente?.idCliente)
+                    cliente = Cliente.get(idCliente as long)
                     def empleoCliente
                     if(identificadores?.idEmpleo){
                         empleoCliente = EmpleoCliente.get(identificadores.idEmpleo as long)
@@ -293,7 +324,12 @@ class SolicitudService {
                     empleoCliente.ocupacion = ( datosPaso.empleoCliente.ocupacion ? Ocupacion.get(datosPaso.empleoCliente.ocupacion as long) : null)
                     empleoCliente.fechaIngreso = ((datosPaso.empleoCliente.antiguedad?.mes && datosPaso.empleoCliente.antiguedad?.anio) ? ((datosPaso.empleoCliente.antiguedad?.mes?.toString()?.padLeft(2, '0')) + "/" + datosPaso.empleoCliente.antiguedad?.anio) : null)
                     empleoCliente.ingresosFijos = (datosPaso.empleoCliente.ingresosFijos ? datosPaso.empleoCliente.ingresosFijos as float : 0)
-                    empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
+                    try {
+                        empleoCliente.ingresosVariables = (datosPaso.empleoCliente.ingresosVariables ? datosPaso.empleoCliente.ingresosVariables as float : 0)
+                    } catch(NumberFormatException nfe) {
+                        println "Cliente colocó caracteres no númericos, seteando ingresos variables a 0"
+                        empleoCliente.ingresosVariables = 0
+                    }
                     empleoCliente.gastos = (datosPaso.empleoCliente.gastos ? datosPaso.empleoCliente.gastos as int : 0)
                     if(empleoCliente.save(flush:true)){
                         println("El empleo se ha registrado correctamente")
@@ -501,6 +537,13 @@ class SolicitudService {
         return respuesta 
     }
     
+    def generarFolioAlfanumerico(def longitud){
+        int randomStringLength = longitud
+        String charset = (('a'..'k') + ('m'..'z') + ('A'..'H') + ('J'..'N') + ('P'..'Z') + ('0'..'9')).join()
+        String randomString = RandomStringUtils.random(randomStringLength, charset.toCharArray())
+        randomString
+    }
+    
     def guardarDocumentoTemporal(def archivo, def tipoDeDocumento, def ephesoft){
         def respuesta = null
         if(archivo){
@@ -522,7 +565,7 @@ class SolicitudService {
                 println (documento.rutaDelArchivo)
                 if(ephesoft){
                     println "Moviendo documento temporal de Ephesoft..."
-                    def fis = new FileInputStream("/tmp/" + (ephesoft ? "BCC_Doc0" +  +".pdf" : archivo.nombreDelArchivo ))
+                    def fis = new FileInputStream("/tmp/" + (ephesoft ? "BCC_Doc0" + generarFolioAlfanumerico(2) +".pdf" : archivo.nombreDelArchivo ))
                     def fos = new FileOutputStream(documento.rutaDelArchivo)
                     fos << fis
                     fis.close()
@@ -653,6 +696,10 @@ class SolicitudService {
             solicitud.enganche = datosCotizador.enganche as float
             solicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
             solicitud.plazos = datosCotizador.plazo as int
+            solicitud.folio = generarFolioAlfanumerico(7);
+            while(verificarExistenciaDeFolio(solicitud.folio, solicitud.entidadFinanciera, 0)) {
+                solicitud.folio = generarFolioAlfanumerico(7);
+            }
             if(solicitud.save(flush:true)){
                 println("La solicitud temporal se ha registrado correctamente")
                 return solicitud.id
@@ -686,11 +733,20 @@ class SolicitudService {
     
     def consultaSolicitudes (def auth, def opcion, def tipoDeConsulta, def fechaInicio, def fechaFinal, def folio){
         def respuesta = []
+        def folioSolicitud
         def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
+        def query2
         if(tipoDeConsulta && (tipoDeConsulta as int) == 0) {
             query += " AND s.statusDeSolicitud.id NOT IN (1,2,3)"
         } else if (tipoDeConsulta && (tipoDeConsulta as int) == 1) {
             query += " AND s.statusDeSolicitud.id IN (1,2,3)" 
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
+        }
+        
+        try {
+            folioSolicitud = (folio as int)
+        } catch(Exception e){
+            folioSolicitud = folio
         }
         
         switch(opcion){
@@ -698,10 +754,14 @@ class SolicitudService {
             query += " AND s.solicitudEnviada = false"
             break
         case 2: //obtenerSolicitudesPorfecha / list
-            query += " AND s.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"     
+            query += " AND s.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
+            if(query2) {
+                query2 += " AND s.fechaDeSolicitud BETWEEN TO_TIMESTAMP('" + fechaInicio + " 00:00','dd/mm/yyyy hh24:mi') AND TO_TIMESTAMP('" + fechaFinal + " 23:59','dd/mm/yyyy hh24:mi')"
+            }
             break
         case 3: //obtenerSolicitudPorFolio / show
-            query += " AND s.folio = '" + folio + "' " 
+            query += " AND s.folio = '" + folioSolicitud + "' "
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id + " AND s.folio = '" + folioSolicitud + "' "
             break
         default:
             break
@@ -745,13 +805,13 @@ class SolicitudService {
             
             def datosBuroDeCredito = [:]
             datosBuroDeCredito.reporte = solicitud.reporteBuroCredito
-            datosBuroDeCredito.consultas = ConsultasBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
+            /*datosBuroDeCredito.consultas = ConsultasBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.creditos = CreditoClienteBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.direcciones = DireccionBuroDeCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.empleos = EmpleoBuroDeCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.refCred = RefCredBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
             datosBuroDeCredito.sintetiza = SintetizaBuroCredito.findAllWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
-            datosBuroDeCredito.resumen = ResumenBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito)
+            datosBuroDeCredito.resumen = ResumenBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito)*/
             datosBuroDeCredito.score = ScoreBuroCredito.findWhere(reporteBuroCredito: solicitud.reporteBuroCredito, codigoScore: "007")
             
             def solicitudRest = new SolicitudRest()
@@ -767,7 +827,7 @@ class SolicitudService {
             solicitudRest.solicitud.buroDeCredito = ""
         
             solicitudRest.solicitud.datosSolicitud.fechaDeCreacion = (solicitud.fechaDeSolicitud).format('dd/MM/yyyy HH:mm')
-            solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = "Solicitante" //Temporal
+            solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = (solicitud.registradaPor ? solicitud.registradaPor.username : "Solicitante") //Temporal
             solicitudRest.solicitud.datosSolicitud.status = solicitud.statusDeSolicitud.nombre
             solicitudRest.solicitud.datosSolicitud.folio = ("" + solicitud.folio).padLeft(6, '0')
             solicitudRest.solicitud.datosSolicitud.puntoDeVenta = (solicitud.sucursal ? solicitud.sucursal.nombre : "")
@@ -815,7 +875,7 @@ class SolicitudService {
             solicitudRest.solicitud.generales.correoElectronico = (emails?.emailPersonal ?: "")
             solicitudRest.solicitud.generales.sexo = String.valueOf(solicitud.cliente.genero.clave)
             solicitudRest.solicitud.generales.fechaDeNacimiento = (solicitud.cliente.fechaDeNacimiento).format('dd/MM/yyyy HH:mm')
-            solicitudRest.solicitud.generales.lugarDeNacimiento = solicitud.cliente?.lugarDeNacimiento?.id
+            solicitudRest.solicitud.generales.lugarDeNacimiento = solicitud.cliente?.lugarDeNacimiento?.numeroOficial
             solicitudRest.solicitud.generales.nacionalidad = solicitud.cliente.nacionalidad?.nombre
             solicitudRest.solicitud.generales.rfc = solicitud.cliente.rfc
             solicitudRest.solicitud.generales.curp = solicitud.cliente.curp
@@ -823,10 +883,19 @@ class SolicitudService {
             solicitudRest.solicitud.generales.regimenDeBienes = ((solicitud.cliente.regimenMatrimonial) ? String.valueOf(solicitud.cliente.regimenMatrimonial.clave) : "")
             solicitudRest.solicitud.generales.dependientesEconomicos = solicitud.cliente.dependientesEconomicos
             
-            solicitudRest.solicitud.conyugue.nombre = ((solicitud.cliente.nombreDelConyugue) ? solicitud.cliente.nombreDelConyugue : "")
-            solicitudRest.solicitud.conyugue.segundoNombre = ""
-            solicitudRest.solicitud.conyugue.apellidoPaterno = ((solicitud.cliente.apellidoPaternoDelConyugue) ? solicitud.cliente.apellidoPaternoDelConyugue : "")
-            solicitudRest.solicitud.conyugue.apellidoMaterno = ((solicitud.cliente.apellidoMaternoDelConyugue) ? solicitud.cliente.apellidoMaternoDelConyugue : "")
+            def primerNombreConyugue
+            def segundoNombreConyugue
+            def nombreCompletoConyugue = solicitud.cliente.nombreDelConyugue?.split()
+            primerNombreConyugue = nombreCompletoConyugue?.getAt(0)
+            if(nombreCompletoConyugue?.size() > 1) {
+                nombreCompletoConyugue = nombreCompletoConyugue[1..nombreCompletoConyugue.size()-1]
+                segundoNombreConyugue = nombreCompletoConyugue.join(' ')
+            }
+            
+            solicitudRest.solicitud.conyugue.nombre = (primerNombreConyugue ?: "")?.trim()?.toUpperCase()
+            solicitudRest.solicitud.conyugue.segundoNombre = (segundoNombreConyugue ?: "")?.trim()?.toUpperCase()
+            solicitudRest.solicitud.conyugue.apellidoPaterno = ((solicitud.cliente.apellidoPaternoDelConyugue) ? solicitud.cliente.apellidoPaternoDelConyugue : "")?.trim()?.toUpperCase()
+            solicitudRest.solicitud.conyugue.apellidoMaterno = ((solicitud.cliente.apellidoMaternoDelConyugue) ? solicitud.cliente.apellidoMaternoDelConyugue : "")?.trim()?.toUpperCase()
             solicitudRest.solicitud.conyugue.fechaDeNacimiento = ((solicitud.cliente.fechaDeNacimientoDelConyugue) ? (solicitud.cliente.fechaDeNacimientoDelConyugue).format('dd/MM/yyyy HH:mm') : "")
             solicitudRest.solicitud.conyugue.lugarDeNacimiento = ((solicitud.cliente.lugarDeNacimientoDelConyugue) ? solicitud.cliente.lugarDeNacimientoDelConyugue.id : "")
             solicitudRest.solicitud.conyugue.nacionalidad = ((solicitud.cliente.nacionalidadDelConyugue) ? solicitud.cliente.nacionalidadDelConyugue.nombre : "")
@@ -840,7 +909,7 @@ class SolicitudService {
             solicitudRest.solicitud.direccion.colonia = ((datosSolicitud.direccionCliente?.colonia) ? datosSolicitud.direccionCliente?.colonia : "")
             solicitudRest.solicitud.direccion.municipio = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.id : "")
             solicitudRest.solicitud.direccion.ciudad = ((datosSolicitud.direccionCliente?.ciudad) ? datosSolicitud.direccionCliente?.ciudad : "")
-            solicitudRest.solicitud.direccion.estado = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.id : "")
+            solicitudRest.solicitud.direccion.estado = ((datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado) ? datosSolicitud.direccionCliente?.codigoPostal?.municipio?.estado?.numeroOficial : "")
             
             solicitudRest.solicitud.vivienda.tipoDeVivienda = ((datosSolicitud.direccionCliente?.tipoDeVivienda) ? String.valueOf(datosSolicitud.direccionCliente.tipoDeVivienda.clave) : "")
             solicitudRest.solicitud.vivienda.montoDeRenta = (datosSolicitud.direccionCliente?.montoDeLaRenta ?: 0)
@@ -1085,6 +1154,151 @@ class SolicitudService {
              */
             respuesta << solicitudRest.solicitud
         }
+        println "Contenido de query2 antes de ser evaluado... " + query2
+        if(query2) {
+            def compuestos = [ "DA", "DAS", "DE", "DEL", "DER", "DI", "DIE", "DD", "EL", "LA", "LOS", "LAS", "LE", "LES", "MAC", "MC", "VAN", "VON", "Y" ];
+            println "Query2: " + query2
+            resultados = SolicitudTemporal.executeQuery(query2)
+            resultados.each { solicitud ->
+            
+                def solicitudRest = new SolicitudRest()
+                solicitudRest.solicitud = [:]
+                solicitudRest.solicitud.datosSolicitud = [:]
+                solicitudRest.solicitud.productoSeleccionado = [:]
+                solicitudRest.solicitud.generales = [:]
+                solicitudRest.solicitud.conyugue = [:]
+                solicitudRest.solicitud.direccion = [:]
+                solicitudRest.solicitud.vivienda = [:]
+                solicitudRest.solicitud.empleo = [:]
+                solicitudRest.solicitud.documentos = []
+                solicitudRest.solicitud.buroDeCredito = ""
+        
+                solicitudRest.solicitud.datosSolicitud.fechaDeCreacion = (solicitud.fechaDeSolicitud).format('dd/MM/yyyy HH:mm')
+                solicitudRest.solicitud.datosSolicitud.usuarioQueRegistro = "Solicitante"
+                solicitudRest.solicitud.datosSolicitud.status = "LLENADO DE SOLICITUD"
+                solicitudRest.solicitud.datosSolicitud.folio = (solicitud.folio ? ("" + solicitud.folio).padLeft(6, '0') : "")
+                solicitudRest.solicitud.datosSolicitud.puntoDeVenta = ""
+                solicitudRest.solicitud.datosSolicitud.puntajeScore = 0
+                solicitudRest.solicitud.datosSolicitud.resultadoDelScore = ""
+                solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""
+                solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""
+                solicitudRest.solicitud.datosSolicitud.fechaDeDictaminacion = ""
+        
+                solicitudRest.solicitud.productoSeleccionado.producto = solicitud?.producto?.claveDeProducto
+                solicitudRest.solicitud.productoSeleccionado.modelo = ((solicitud?.modelo) ? solicitud?.modelo.nombre : "")
+                solicitudRest.solicitud.productoSeleccionado.color = ((solicitud?.colorModelo) ? solicitud.colorModelo?.nombre : "")
+                solicitudRest.solicitud.productoSeleccionado.enganche = solicitud?.enganche
+                solicitudRest.solicitud.productoSeleccionado.montoDelPago = solicitud?.montoDelPago
+                solicitudRest.solicitud.productoSeleccionado.periodicidad = solicitud?.periodicidad?.nombre
+                solicitudRest.solicitud.productoSeleccionado.plazo = solicitud?.plazos
+                solicitudRest.solicitud.productoSeleccionado.seguro = solicitud?.montoDelSeguroDeDeuda
+                solicitudRest.solicitud.productoSeleccionado.tasaDeInteres =  solicitud?.producto?.tasaDeInteres
+                solicitudRest.solicitud.productoSeleccionado.montoDelCredito = solicitud?.montoDelCredito
+            
+                def primerNombre
+                def segundoNombre
+                def apellidoPaterno
+                def apellidoMaterno
+                def nombreCompleto = solicitud.nombreDelCliente?.split(' ')
+                def particulas = []
+                def cadena = "";
+                println "++++++++++++++++++++++++++++++++++++++++++++++++++"
+                nombreCompleto.each {
+                    println "Revisando la cadena: " + it
+                    if(compuestos.contains(it)) {
+                        if(cadena.length() > 0) {
+                            cadena += (" " + it)
+                        } else {
+                            cadena += it
+                        }
+                    } else {
+                        if(cadena.length() > 0) {
+                            cadena += (" " + it)
+                        } else {
+                            cadena += it
+                        }
+                        particulas << cadena
+                        cadena = ""
+                    }
+                }
+               
+                println "Resultado del parseo: " + particulas
+                
+                if(particulas.size() > 0) {
+                    primerNombre = particulas?.getAt(0)
+                    if(particulas.size() == 2) {
+                        apellidoPaterno = particulas.getAt(1)
+                    } else if (particulas.size() == 3) {
+                        apellidoPaterno = particulas.getAt(1)
+                        apellidoMaterno = particulas.getAt(2)
+                    } else if (particulas.size() == 4) {
+                        segundoNombre = particulas.getAt(1)
+                        apellidoPaterno = particulas.getAt(2)
+                        apellidoMaterno = particulas.getAt(3)
+                    } else if (particulas.size() > 4){
+                        
+                    }
+                }
+                
+                solicitudRest.solicitud.generales.nombre = primerNombre?.toUpperCase()
+                solicitudRest.solicitud.generales.segundoNombre = (segundoNombre ?: "")?.toUpperCase()
+                solicitudRest.solicitud.generales.apellidoPaterno = (apellidoPaterno ?: "")?.toUpperCase()
+                solicitudRest.solicitud.generales.apellidoMaterno = (apellidoMaterno ?: "")?.toUpperCase()
+                solicitudRest.solicitud.generales.numeroCelular = (solicitud?.telefonoCliente ?: "")
+                solicitudRest.solicitud.generales.numeroFijo = ""
+                solicitudRest.solicitud.generales.correoElectronico = (solicitud?.emailCliente ?: "")
+                solicitudRest.solicitud.generales.sexo = ""
+                solicitudRest.solicitud.generales.fechaDeNacimiento = ""
+                solicitudRest.solicitud.generales.lugarDeNacimiento = ""
+                solicitudRest.solicitud.generales.nacionalidad = ""
+                solicitudRest.solicitud.generales.rfc = ""
+                solicitudRest.solicitud.generales.curp = ""
+                solicitudRest.solicitud.generales.estadoCivil = ""
+                solicitudRest.solicitud.generales.regimenDeBienes = ""
+                solicitudRest.solicitud.generales.dependientesEconomicos = 0
+            
+                solicitudRest.solicitud.conyugue.nombre = ""
+                solicitudRest.solicitud.conyugue.segundoNombre = ""
+                solicitudRest.solicitud.conyugue.apellidoPaterno = ""
+                solicitudRest.solicitud.conyugue.apellidoMaterno = ""
+                solicitudRest.solicitud.conyugue.fechaDeNacimiento = ""
+                solicitudRest.solicitud.conyugue.lugarDeNacimiento = ""
+                solicitudRest.solicitud.conyugue.nacionalidad = ""
+                solicitudRest.solicitud.conyugue.rfc = ""
+                solicitudRest.solicitud.conyugue.curp = ""
+            
+                solicitudRest.solicitud.direccion.calle = ""
+                solicitudRest.solicitud.direccion.numeroExterior = ""
+                solicitudRest.solicitud.direccion.numeroInterior = ""
+                solicitudRest.solicitud.direccion.codigoPostal = ""
+                solicitudRest.solicitud.direccion.colonia = ""
+                solicitudRest.solicitud.direccion.municipio = ""
+                solicitudRest.solicitud.direccion.ciudad = ""
+                solicitudRest.solicitud.direccion.estado = ""
+            
+                solicitudRest.solicitud.vivienda.tipoDeVivienda = ""
+                solicitudRest.solicitud.vivienda.montoDeRenta = 0
+                solicitudRest.solicitud.vivienda.mesInicioVivienda = ""
+                solicitudRest.solicitud.vivienda.anioInicioVivienda = ""
+                solicitudRest.solicitud.vivienda.mesInicioResidencia = ""
+                solicitudRest.solicitud.vivienda.anioInicioResidencia = ""
+            
+                solicitudRest.solicitud.empleo.profesion = ""
+                solicitudRest.solicitud.empleo.ocupacion = ""
+                solicitudRest.solicitud.empleo.empresa = ""
+                solicitudRest.solicitud.empleo.mesInicioEmpleo = ""
+                solicitudRest.solicitud.empleo.anioInicioEmpleo = ""
+                solicitudRest.solicitud.empleo.ingresosFijos = 0
+                solicitudRest.solicitud.empleo.ingresosVariables = 0
+                solicitudRest.solicitud.empleo.ingresosTotales = 0
+                solicitudRest.solicitud.empleo.gastosMensuales = 0
+            
+                respuesta << solicitudRest.solicitud
+            }
+        } else {
+            println "Query 2 es null"
+        }
+        
         respuesta
     }
     
@@ -1104,12 +1318,12 @@ class SolicitudService {
         def empleo = EmpleoCliente.get(identificadores.idEmpleo)
         def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
         datos.solicitudId = solicitud.id
-        datos.riesgoGeografico = solicitud.sucursal?.riesgoGeografico?.nombre?.toUpperCase()
+        datos.riesgoGeografico = solicitud.sucursal?.riesgoGeografico?.nombre?.replaceAll("\\s+", "")?.toUpperCase()
         datos.plazo = productoSolicitud.plazos
         datos.periodicidad = productoSolicitud.periodicidad.nombre.toUpperCase()
-        datos.riesgoOcupacion = empleo.ocupacion.riesgoDeOcupacion?.nombre?.toUpperCase()
+        datos.riesgoOcupacion = empleo.ocupacion.riesgoDeOcupacion?.nombre?.replaceAll("\\s+", "")?.toUpperCase()
         datos.edad = calcularTiempoTranscurrido(solicitud.cliente.fechaDeNacimiento)
-        datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.toUpperCase()
+        datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.replaceAll("\\s+", "").toUpperCase()
         datos.productoServicio = productoSolicitud.producto.claveDeProducto
         datos.antiguedadVivienda = calcularTiempoTranscurrido(new Date().parse("dd/MM/yyyy", ("01/" + direccion.tiempoDeVivienda)))
         datos.ingresosFijosMensuales = new Double(empleo.ingresosFijos)
@@ -1119,6 +1333,7 @@ class SolicitudService {
         datos.gastoRenta = new Double(direccion.montoDeLaRenta)
         datos.cuotaMensualCredito = new Double(productoSolicitud.montoDelPago)
         datos.tipoDeVivienda = direccion.tipoDeVivienda.id.intValue()
+        datos.asalariado = (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ? true : false)
         if(bitacoraDeBuro){
             datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
         } else {
@@ -1358,5 +1573,144 @@ class SolicitudService {
         respuesta.cargarImagen = solicitud.cargarImagen
         respuesta.ultimoPaso = 1
         return respuesta
+    }
+    
+    def verificarExistenciaDeFolio(def folio, def entidadFinanciera, def tipoDeSolicitud){
+        boolean existe = false
+        def cantidad = 0
+        def c
+        c = SolicitudTemporal.createCriteria()
+        cantidad += c.get {
+            eq("folio", folio)
+            and {
+                eq("entidadFinanciera", entidadFinanciera)
+            }
+            projections {
+                countDistinct "id"
+            }
+        }
+        c = SolicitudDeCredito.createCriteria()
+        cantidad += c.get {
+            eq("folio", folio)
+            and {
+                eq("entidadFinanciera", entidadFinanciera)
+            }
+            projections {
+                countDistinct "id"
+            }
+        }
+        if(cantidad > 0){
+            println "El folio " + folio + " ya está registrado en otra solicitud"
+            existe = true
+        }
+        return existe
+    }
+    
+    def verificarSolicitudExistente(def telefono, def nombreCompleto, def email) {
+        def respuesta = [:]
+        def listaDeClientes = []
+        def cliente = TelefonoCliente.executeQuery("Select tc.cliente From TelefonoCliente tc Where replace(tc.numeroTelefonico,'-','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono044 OR replace(tc.numeroTelefonico,' ','') = :telefono045", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
+        if(cliente) {
+            respuesta = buscarSolicitudFormalExisten(cliente, telefono, nombreCompleto, email)
+        } else {
+            respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
+        }
+        return respuesta
+    }
+    
+    def buscarSolicitudFormalExisten(def cliente, def telefono, def nombreCompleto, def email) {
+        def respuesta = [:]
+        def listaDeClientes = []
+        println "Cliente(s) encontrado(s): " + cliente
+        if(cliente.size() > 1) {
+            def x = 0
+            respuesta.encontrado = false
+            email = email?.replaceAll("\\s+", " ")?.toLowerCase()
+            def emailRegistrado = EmailCliente.executeQuery("Select ec.cliente from EmailCliente ec Where lower(ec.direccionDeCorreo) = :mail", [mail: email])
+            while(respuesta.encontrado == false && x < cliente.size()) {
+                if( (valorCoincide(normalizarCadena(cliente[x].toString()), normalizarCadena(nombreCompleto))) || (emailRegistrado && emailRegistrado?.contains(cliente[x])) ){
+                    def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 Order by sc.fechaDeSolicitud",[idCliente: cliente[x].id])
+                    if(solicitudFormalExistente) {
+                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                        respuesta.encontrado = true
+                    }
+                }
+                x++
+            }
+            if(!respuesta.encontrado) {
+                respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
+            }
+            if(listaDeClientes.size() > 0 && !respuesta.shortUrl){
+                respuesta.multiplesClientes = true   
+            }     
+        } else {
+            def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 Order by sc.fechaDeSolicitud",[idCliente: cliente[0].id])
+            if(solicitudFormalExistente) {
+                respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                respuesta.encontrado = true
+            } else {
+                respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
+            }
+        }
+        println ("Regresando: " + respuesta)
+        respuesta
+    }
+    
+    def buscarSolicitudInformalExistente(def telefono, def nombreCompleto, def email){
+        def respuesta = [:]
+        def listaDeClientes = []
+        def cliente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045 Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
+        if(cliente) {
+            println "Solicitudes Temporales encontradas: " + cliente
+            if(cliente.size() > 1) {
+                def x = 0
+                respuesta.encontrado = false
+                while(respuesta.encontrado == false && x < cliente.size()) {
+                    if(valorCoincide(normalizarCadena(cliente[x].nombreDelCliente),normalizarCadena(nombreCompleto))){
+                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + cliente[x].token //cliente[x].shortUrl
+                        respuesta.encontrado = true
+                    } else if(cliente[x].emailCliente.toLowerCase() == email?.toLowerCase()){
+                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + cliente[x].token //cliente[x].shortUrl
+                        respuesta.encontrado = true
+                    } else {
+                        listaDeClientes << cliente[x]
+                    }
+                    x++
+                }
+                if(listaDeClientes.size() > 0 && !respuesta.shortUrl){
+                    respuesta.multiplesClientes = true   
+                }
+            } else {
+                respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + cliente[0].token //cliente[0].shortUrl
+                respuesta.encontrado = true
+            }
+        } else {
+            respuesta.encontrado = false
+        }
+        println ("Regresando: " + respuesta)
+        respuesta
+    }
+    
+    def normalizarCadena(def cadena) {
+        def original = "áàäéèëíìïóòöúùuñÁÀÄÉÈËÍÌÏÓÒÖÚÙÜÑçÇ";
+        def ascii = "aaaeeeiiiooouuunAAAEEEIIIOOOUUUNcC";
+        def cadenaNormalizada = cadena;
+        for (int i=0; i<original.length(); i++) {
+            cadenaNormalizada = cadenaNormalizada.replace(original.charAt(i), ascii.charAt(i));
+        }
+        cadenaNormalizada = cadenaNormalizada?.replaceAll("\\s+", " ")
+        cadenaNormalizada = cadenaNormalizada?.toUpperCase()
+        return cadenaNormalizada;
+    }
+    
+    def valorCoincide(def nombreGuardado, def nombreEnviado){
+        def diferencia = StringUtils.getLevenshteinDistance(nombreGuardado, nombreEnviado)
+        def proporcion = (1 -(diferencia/nombreGuardado.length())) as float
+        println (nombreGuardado + " vs " + nombreEnviado + " - Coincidencia del " + (proporcion * 100) + " %")
+        if(proporcion >= 0.9) {
+            return true
+        } else {
+            return false
+        }
     }
 }

@@ -189,7 +189,7 @@
                         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
                             <g:if test="${solicitud.folio && solicitud.folio != "-"}">
                                 <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                                    <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id});">ver detalle</button>
+                                    <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id},${solicitud.temporal});">ver detalle</button>
                                 </td>
                             </g:if>
                             <g:else>

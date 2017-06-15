@@ -17,6 +17,7 @@ class SolicitudDeCredito implements Serializable{
     int ultimoPaso = 1
     MedioDeContacto medioDeContacto
     long opcionMedioDeContacto = 0
+    Usuario registradaPor
     
     def static PASO_FINAL = 6
     
@@ -33,6 +34,7 @@ class SolicitudDeCredito implements Serializable{
         shortUrl (nullable: true)
         sucursal (nullable: true)
         medioDeContacto (nullable: true)
+        registradaPor (nullable: true)
     }
     
     static mapping = {

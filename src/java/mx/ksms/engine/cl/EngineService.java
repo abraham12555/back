@@ -38,6 +38,7 @@ public interface EngineService {
      * @param edad
      * @param ingresosVariablesMensuales
      * @param riesgogeografico
+     * @param asalariado
      * @param agEstadocivil
      * @param agServicio
      * @param agPeriodicidad
@@ -82,7 +83,93 @@ public interface EngineService {
         Double cuotaCredito,
         @WebParam(name = "tipo_de_vivienda", targetNamespace = "")
         Integer tipoDeVivienda,
+        @WebParam(name = "asalariado", targetNamespace = "")
+        boolean asalariado,
         @WebParam(name = "cadena_bc", targetNamespace = "")
         String cadenaBc);
+
+    /**
+     * 
+     * @param solicitudId
+     * @param cadenaBc
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod(operationName = "save_cadena_bc")
+    @WebResult(name = "String", targetNamespace = "")
+    @RequestWrapper(localName = "save_cadena_bc", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.SaveCadenaBc")
+    @ResponseWrapper(localName = "save_cadena_bcResponse", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.SaveCadenaBcResponse")
+    public String saveCadenaBc(
+        @WebParam(name = "solicitudId", targetNamespace = "")
+        String solicitudId,
+        @WebParam(name = "cadena_bc", targetNamespace = "")
+        String cadenaBc);
+
+    /**
+     * 
+     * @param servicios
+     * @param solicitudId
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(name = "String", targetNamespace = "")
+    @RequestWrapper(localName = "calculateDictamenDePoliticas", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateDictamenDePoliticas")
+    @ResponseWrapper(localName = "calculateDictamenDePoliticasResponse", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateDictamenDePoliticasResponse")
+    public String calculateDictamenDePoliticas(
+        @WebParam(name = "solicitudId", targetNamespace = "")
+        String solicitudId,
+        @WebParam(name = "servicios", targetNamespace = "")
+        String servicios);
+
+    /**
+     * 
+     * @param agRiesgoocupacion
+     * @param cuotaCredito
+     * @param solicitudId
+     * @param ingresosFijosMensuales
+     * @param otrosIngresos
+     * @param agPlazo
+     * @param edad
+     * @param ingresosVariablesMensuales
+     * @param riesgogeografico
+     * @param agEstadocivil
+     * @param agServicio
+     * @param agPeriodicidad
+     * @param antigvivienda
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(name = "String", targetNamespace = "")
+    @RequestWrapper(localName = "calculateDictamenDePerfil", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateDictamenDePerfil")
+    @ResponseWrapper(localName = "calculateDictamenDePerfilResponse", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateDictamenDePerfilResponse")
+    public String calculateDictamenDePerfil(
+        @WebParam(name = "solicitudId", targetNamespace = "")
+        String solicitudId,
+        @WebParam(name = "riesgogeografico", targetNamespace = "")
+        String riesgogeografico,
+        @WebParam(name = "ag_plazo", targetNamespace = "")
+        Integer agPlazo,
+        @WebParam(name = "ag_periodicidad", targetNamespace = "")
+        String agPeriodicidad,
+        @WebParam(name = "ag_riesgoocupacion", targetNamespace = "")
+        String agRiesgoocupacion,
+        @WebParam(name = "EDAD", targetNamespace = "")
+        Integer edad,
+        @WebParam(name = "ag_estadocivil", targetNamespace = "")
+        String agEstadocivil,
+        @WebParam(name = "ag_servicio", targetNamespace = "")
+        String agServicio,
+        @WebParam(name = "ANTIGVIVIENDA", targetNamespace = "")
+        Integer antigvivienda,
+        @WebParam(name = "ingresos_fijos_mensuales", targetNamespace = "")
+        Double ingresosFijosMensuales,
+        @WebParam(name = "ingresos_variables_mensuales", targetNamespace = "")
+        Double ingresosVariablesMensuales,
+        @WebParam(name = "otros_ingresos", targetNamespace = "")
+        Double otrosIngresos,
+        @WebParam(name = "cuota_credito", targetNamespace = "")
+        Double cuotaCredito);
 
 }

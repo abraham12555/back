@@ -23,6 +23,8 @@ class User {
     def apellidoMaterno
     def enabled
     def accountLocked
+    def sucursal
+    def noEmpleado
     
     User(){
         
@@ -38,6 +40,8 @@ class User {
         this.apellidoMaterno = usuario.apellidoMaterno
         this.enabled = usuario.enabled
         this.accountLocked = usuario.accountLocked
+        this.sucursal = usuario.sucursal
+        this.noEmpleado = usuario.numeroDeEmpleado
     }
 }
 

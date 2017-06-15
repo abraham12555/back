@@ -7,6 +7,8 @@ import java.nio.file.Files;
 @Transactional
 class CotizadorService {
 
+    def solicitudService
+    
     def cargarCatalogos(def params) {
         def productos
         def tiposDeProducto
@@ -65,4 +67,11 @@ class CotizadorService {
         }
         return respuesta
     }
+    
+    def verificarSolicitudExistente(def telefono, def nombreCompleto, def email) {
+        def respuesta = [:]
+        respuesta = solicitudService.verificarSolicitudExistente(telefono, nombreCompleto, email)
+        respuesta
+    }
+
 }

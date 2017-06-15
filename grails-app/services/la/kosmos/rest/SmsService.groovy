@@ -88,16 +88,16 @@ public class SmsService {
     public boolean sendSMS (String to, String contentMsg, ConfiguracionEntidadFinanciera configuracion) throws Exception {
         try {
             if(configuracion?.usarTwilio) {
-//                Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-//                Message message = Message.creator(
-//                    new PhoneNumber("+52" + to),
-//                    new PhoneNumber(PHONE_NUMBER),
-//                    contentMsg)
-//                .create()
+                Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
+                Message message = Message.creator(
+                    new PhoneNumber("+52" + to),
+                    new PhoneNumber(PHONE_NUMBER),
+                    contentMsg)
+                .create()
                 return Boolean.TRUE
             } else {
-//                SMSGateway smsGateway = new SMSGateway();
-                int idEnvio = 3 //smsGateway.sendMessageOL(to, (contentMsg));
+                SMSGateway smsGateway = new SMSGateway();
+                int idEnvio = smsGateway.sendMessageOL(to, (contentMsg));
                 
                 if(idEnvio == StatusResponseCalixta.ENVIADO.value) {
                     return Boolean.TRUE

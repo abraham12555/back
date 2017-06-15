@@ -172,7 +172,9 @@ function submitPhone() {
             $.ajax({
                 type: 'POST',
                 data: {
-                    telefonoCelular: $('#phone').val()
+                    telefonoCelular: $('#phone').val(),
+                    email: $('#email').val(),
+                    nombreCompleto: $('#first_name').val()
                 },
                 url: "/cotizador/solicitarCodigo",
                 success: function (data, textStatus) {
@@ -204,6 +206,22 @@ function submitPhone() {
                                 }, 600);
                             });
                         }, 20000);
+                    } else if (respuesta.encontrado === true && respuesta.shortUrl) {
+                        $('#resumirSolicitud').html("");
+                        $('#resumirSolicitud').hide();
+                        $('.register').addClass('bounceOut');
+                        setTimeout(function () {
+                            $('.register').removeClass(' bounceOut');
+                            $('.register').addClass('fadeIn');
+                            $('#phone_form').addClass('hide');
+                            $('#resume_form').removeClass('hide');
+                            $('.register').removeClass('fadeIn');
+                        }, 600);
+                        $('#resumirSolicitud').html("<span class='resumenBtn'>Continuar Solicitud</span>");
+                        $('#resumirSolicitud').fadeIn();
+                        $('#resumirSolicitud').click(function () {
+                            window.location.href = respuesta.shortUrl;
+                        });
                     } else {
                         $('#leyendaTel').html("<small style='color: red;'>Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.</small>");
                     }

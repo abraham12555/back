@@ -15,6 +15,8 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import org.apache.commons.codec.binary.Base64
 
 import javax.crypto.Mac;
@@ -42,6 +44,7 @@ import java.nio.file.Files;
 import la.kosmos.app.ConfiguracionKosmos
 import la.kosmos.app.CodigoPostal
 import la.kosmos.app.SolicitudDeCredito
+import la.kosmos.app.SolicitudTemporal
 import java.security.MessageDigest
 import org.awaitility.groovy.AwaitilityTrait
 import org.awaitility.core.ConditionTimeoutException
@@ -82,8 +85,8 @@ class DocumentSenderService implements AwaitilityTrait{
         jsonRequest.TotalNumberOfParts = 1
         jsonRequest.CrossReferenceData = "null"
         jsonRequest.ImageData =  generarBase64(archivoDelDocumento)
-        //jsonRequest.IncludeImagesInCallback = "true"
-        //jsonRequest.IncludeAdditionalImagesInCallback = ["Signature"]
+        jsonRequest.IncludeImagesInCallback = "true"
+        jsonRequest.IncludeAdditionalImagesInCallback = ["Signature"]
         jsonRequest.StrongIDBasic = "true" 
         jsonRequest.StrongIDExpert = "false"
         jsonRequest.StrongIDPlusAuto = "false"
@@ -190,7 +193,7 @@ class DocumentSenderService implements AwaitilityTrait{
         return result;
     }
     
-    def verificarRespuestaMitek(def referencia, def solicitud, def dossierId){
+    def verificarRespuestaMitek(def referencia, def solicitud, def solicitudTemporal, def dossierId){
         def datosRecibidos = false
         def datosDocto = false
         def validacionesDocto = false
@@ -218,7 +221,7 @@ class DocumentSenderService implements AwaitilityTrait{
                 mapa.cliente.genero = (classificationResult.gender == "Male" ? 1 : 2)
                 mapa.direccionCliente = [:]
                 mapa.direccionCliente.calle = classificationResult.address
-                //mapa.direccionCliente.numeroExterior = mapa.direccionCliente.calle?.replaceAll("[^\\d.]", "")
+                mapa.direccionCliente.numeroExterior = obtenerNumeroExterior(mapa.direccionCliente.calle)
                 def direccion = (classificationResult.address1)?.replaceAll("\\.", "")
                 direccion = (direccion)?.replaceAll("-", " ")
                 direccion = direccion?.trim()
@@ -275,6 +278,11 @@ class DocumentSenderService implements AwaitilityTrait{
                 }
                 if(solicitud) {
                     classificationResult.solicitud = SolicitudDeCredito.get(solicitud as long)
+                    classificationResult.folioSolicitud = classificationResult.solicitud?.folio
+                    classificationResult.save(flush: true)
+                } else if (solicitudTemporal) {
+                    def temporalSolicitud = SolicitudTemporal.get(solicitudTemporal as long)
+                    classificationResult.folioSolicitud = temporalSolicitud?.folio
                     classificationResult.save(flush: true)
                 }
                 datosDocto = true
@@ -284,8 +292,9 @@ class DocumentSenderService implements AwaitilityTrait{
                 if(dossierSummary.status == "Rejected") {
                     def motivos = DossierRejectIssue.findAllWhere(dossierSummary: dossierSummary)
                     mapa.motivosRechazo = (motivos*.dossierRejectReason)*.descripcion
-                } else if (dossierSummary.status != "Rejected" && datosDocto == false){
-                    println "[OCR Warning] El análisis tiene respuesta satisfactoria, pero no viene el classificationResult"
+                } else if (dossierSummary.status != "Rejected" && datosDocto == false) {
+                    println "[OCR Warning] El análisis tiene respuesta, pero no viene el classificationResult"
+                    mapa.motivosRechazo = ["La imagen proporcionada no corresponde a una identificación válida o la calidad de la misma es demasiado baja."]
                 }
                 if(solicitud) {
                     dossierSummary.solicitud = SolicitudDeCredito.get(solicitud as long)
@@ -319,6 +328,52 @@ class DocumentSenderService implements AwaitilityTrait{
         } else {
             println ("++++++++++++++++++ AUN NO HAY RESPUESTA ++++++++++++++++++")
             return false
+        }
+    }
+    
+    def obtenerNumeroExterior(def direccion) {
+        StringBuffer numeroExterior = new StringBuffer();
+        def ban=0
+        def contador=0
+        if(direccion) {
+            String[] numerosComoArray = direccion.split("\\s+");
+            def tamano=numerosComoArray.length
+            Pattern pat2 = Pattern.compile("[A-Z]*")
+            Matcher mat2 = pat2.matcher(numerosComoArray[tamano-1]);
+            Pattern pat3 = Pattern.compile("\\d*")
+            Matcher mat3 = pat3.matcher(numerosComoArray[tamano-2]);
+            Pattern pat4 = Pattern.compile("\\d*|(\\d*.[A-Z]*)")
+            Matcher mat4 = pat4.matcher(numerosComoArray[tamano-1]);
+        
+            for (int i = 0; i < numerosComoArray.length; i++) {
+                Pattern pat = Pattern.compile("(LT)|(INT)|(S/N)")
+                Matcher mat = pat.matcher(numerosComoArray[i]);
+                if(mat.matches()) {
+                    ban=1
+                    contador++
+                    break;
+                } else {
+                    ban=0
+                    contador++
+                }
+            }
+        
+            if(ban==1) {
+                for (int y = contador-1; y < numerosComoArray.length; y++) {
+                    numeroExterior = numeroExterior.append(numerosComoArray[y]+" "); 
+                }
+            } else {
+                if(mat2.matches()) {
+                    if(mat3.matches()) {
+                        numeroExterior = numeroExterior.append(numerosComoArray[numerosComoArray.length-2]+" "+numerosComoArray[numerosComoArray.length-1]);
+                    }
+                } else if(mat4.matches()) {
+                    numeroExterior = numeroExterior.append(numerosComoArray[numerosComoArray.length-1])
+                }
+            }
+            return numeroExterior?.toString()
+        } else {
+            return null
         }
     }
 }

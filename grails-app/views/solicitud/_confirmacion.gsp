@@ -25,7 +25,7 @@
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <div class="paddingAside10">
-                            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">Tu folio es: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
+                            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <div class="paddingAside10">
-                            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">Tu folio es: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
+                            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
                 </div>
@@ -162,7 +162,7 @@
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <div class="paddingAside10">
-                            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">Tu folio es: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
+                            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
                 </div>

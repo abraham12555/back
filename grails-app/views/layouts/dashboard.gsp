@@ -83,6 +83,13 @@
               </sec:ifAnyGranted>
           </li>
           <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                  <a href="${createLink(controller:'dashboard', action:'perfilarCliente')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'perfilador.png')}" alt="perfilador" title="perfilador"> PERFILADOR
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+          <li>
               <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
                   <a href="${createLink(controller:'dashboard', action:'analiticas')}">
                       <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"> ANALITICAS
@@ -97,7 +104,7 @@
               </sec:ifAnyGranted>
           </li>
           <li>
-              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_DISENO'>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO'>
                   <a href="${createLink(controller:'dashboard', action:'configuracion')}">
                       <img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"> CONFIGURACIÓN
                   </a>
@@ -127,9 +134,17 @@
                         </a>
                     </li>
                 </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                    <li class="floatLeft">
+                        <a id="principalOpc3" href="${createLink(controller:'dashboard', action:'perfilarCliente')}" class="elementoMenuPrincipal font12 ">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'perfilador.png')}" alt="perfilador" title="perfilador"></span>
+                            <span>PERFILADOR</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
                     <li class="floatLeft">
-                        <a id="principalOpc3" href="${createLink(controller:'dashboard', action:'analiticas')}" class="elementoMenuPrincipal font12">
+                        <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'analiticas')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"></span>
                             <span>ANALITICAS</span>
                         </a>
@@ -137,15 +152,15 @@
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR'>
                     <li class="floatLeft">
-                        <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'verificaciones')}" class="elementoMenuPrincipal font12">
+                        <a id="principalOpc5" href="${createLink(controller:'dashboard', action:'verificaciones')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'verification.png')}" alt="verificacion" title="verificaciones"></span>
                             <span>VERIFICACIONES</span>
                         </a>
                     </li>
                 </sec:ifAnyGranted>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_DISENO'>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO'>
                     <li class="floatLeft">
-                        <a id="principalOpc5" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
+                        <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"></span>
                             <span>CONFIGURACIÓN</span>
                         </a>
@@ -153,7 +168,7 @@
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
                     <li class="floatLeft">
-                        <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'administracion')}" class="elementoMenuPrincipal font12">
+                        <a id="principalOpc7" href="${createLink(controller:'dashboard', action:'administracion')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administracion"></span>
                             <span>ADMINISTRACIÓN</span>
                         </a>

@@ -26,6 +26,12 @@
                     <div class="paddingTop20">
                         <p class="gray font14 fontWeight500 latterspacing1 center">E-mail</p>
                     </div>
+                    <div class="paddingTop25">
+                        <p class="gray font14 fontWeight500 latterspacing1 center">Sucursal</p>
+                    </div>
+                    <div class="paddingTop20">
+                        <p class="gray font14 fontWeight500 latterspacing1 center">Número empleado</p>
+                    </div>
                     <div class="paddingTop20">
                         <p class="gray font14 fontWeight500 latterspacing1 center">Rol</p>
                     </div>
@@ -42,32 +48,42 @@
                             <input class="block cameraBox col11 height30" type="text" name="nombre" id="name">
                         </div>
                     </div>
-                    <div class="paddingTop8">
+                    <div class="paddingTop10">
                         <div class="control">
                             <input class="block cameraBox col11 height30" type="text" name="apellidoPaterno" id="apPaterno">
                         </div>
                     </div>
-                    <div class="paddingTop8">
+                    <div class="paddingTop10">
                         <div class="control">
                             <input class="block cameraBox col11 height30" type="text" name="apellidoMaterno" id="apMaterno">
                         </div>
                     </div>
-                    <div class="paddingTop8">
+                    <div class="paddingTop10">
                         <div class="control">
                             <input class="block cameraBox col11 height30" type="text" name="username" id="userName">
                         </div>
                     </div>
-                    <div class="paddingTop8" id="password-field">
+                    <div class="paddingTop10" id="password-field">
                         <div class="control">
                             <input class="block cameraBox col11 height30" type="password" name="password" id="password">
                         </div>
                     </div>
-                    <div class="paddingTop8">
+                    <div class="paddingTop10">
                         <div class="control">
                             <input class="block cameraBox col11 height30" type="text" name="email" id="email">
                         </div>
                     </div>
-                    <div class="paddingTop8">
+                    <div class="paddingTop10">
+                        <div class="control">
+                            <g:select id="sucursal" name="sucursal.id" class="cameraBox col11 block height30" from="${listaSucursales}" optionKey="id" optionValue="nombre" noSelection="['':'Seleccione una sucursal']" value="" />
+                        </div>
+                    </div>
+                    <div class="paddingTop10">
+                        <div class="control">
+                            <input class="block cameraBox col11 height30" type="text" name="numeroDeEmpleado" id="noEmpleado">
+                        </div>
+                    </div>
+                    <div class="paddingTop10">
                         <div class="control">
                             <g:select id="rol" name="roles" class="cameraBox col11 block height30" from="${listaDeRoles}" optionKey="id" optionValue="authority" noSelection="['':'Seleccione un rol']" value="" />
                         </div>

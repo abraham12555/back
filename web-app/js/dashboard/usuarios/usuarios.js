@@ -7,6 +7,7 @@ $.getUsers = "/dashboard/getUsers";
 $.getUserDetails = "/dashboard/getUserDetails";
 $.validUsername = "/dashboard/validUsername";
 $.validEmail = "/dashboard/validEmail";
+$.validNoEmpleado = "/dashboard/validNoEmpleado";
 $.userAuthentication = false;
 $.currentValue;
 
@@ -183,26 +184,44 @@ function validateUserInfoForm() {
         errorMessage($('#email'), "Tu dirección de correo es incorrecta, verifica la estructura. Ej. ejemplo@mail.com");
     }
 
+    if ($('#sucursal').val().length === 0) {
+        errors++;
+        errorMessage($('#sucursal'), "El campo es obligatorio");
+    }
+    
+    if ($("#noEmpleado").val().trim() === "") {
+        errors++;
+        errorMessage($('#noEmpleado'), "El campo es obligatorio");
+    }
+    
     if ($('#rol').val().length === 0) {
         errors++;
         errorMessage($('#rol'), "El campo es obligatorio");
     }
-
+    
 
     if (errors === 0) {
         validUsername(function (response) {
             if (response.estatus === false) {
                 errorMessage($('#userName'), "El nombre de usuario ya ha sido registrado");
             } else if (response.estatus === "ERROR") {
-                errorMessage($('#userName'), "Ocurrió un error al validar el nombre de usuario. Inténtalo más tarde");
+                errorMessage($('#userName'), "Ocurrió un error al validar el nombre de usuario");
             } else {
                 validEmail(function (response) {
                     if (response.estatus === false) {
                         errorMessage($('#email'), "La cuenta de correo electrónico ya ha sido registrada");
                     } else if (response.estatus === "ERROR") {
-                        errorMessage($('#email'), "Ocurrió un error al validar la cuenta de correo electrónico. Inténtalo más tarde");
+                        errorMessage($('#email'), "Ocurrió un error al validar la cuenta de correo electrónico");
                     } else {
-                        submitUserForm();
+                        validNoEmpleado(function (response) {
+                            if (response.estatus === false) {
+                                errorMessage($('#noEmpleado'), "El número de empleado ya ha sido registrado");
+                            } else if (response.estatus === "ERROR") {
+                                errorMessage($('#noEmpleado'), "Ocurrió un error al validar el número de empleado");
+                            } else {
+                                submitUserForm();
+                            }
+                        });
                     }
                 });
             }
@@ -244,6 +263,8 @@ function viewUserDetails(idUser) {
             $("#password-field").css("display", "none");
             $("#email").val(response.email);
             $("#rol").val(data).change();
+            $("#sucursal").val(response.sucursal.id).change();
+            $("#noEmpleado").val(response.noEmpleado);
             $("input[name='accountLocked'][value=" + response.accountLocked + "]").prop('checked', true);
             $("input[name='enabled'][value=" + response.enabled + "]").prop('checked', true);
 
@@ -294,6 +315,28 @@ function validEmail(callback) {
         type: "POST",
         dataType: "json",
         url: $.validEmail,
+        data: JSON.stringify(usuario),
+        contentType: "application/json",
+        cache: false,
+        success: function (response) {
+            callback(response);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            var response = {estatus: "ERROR"};
+            callback(response);
+        }
+    });
+}
+
+function validNoEmpleado(callback) {
+    var usuario = new Object();
+    usuario.id = $("#userId").val().trim();
+    usuario.noEmpleado = $("#noEmpleado").val().trim();
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.validNoEmpleado,
         data: JSON.stringify(usuario),
         contentType: "application/json",
         cache: false,
