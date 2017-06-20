@@ -17,6 +17,7 @@ class Constants {
     static final String CURRENT_USER = "usuario"
     static final Integer TOTAL_ROWS = 15
     static final Long ENTIDAD_FINANCIERA_ROOT = 1
+    static final Integer STATUS_SOLICITUD_NOTIFICACION = 5
 
     enum TipoTelefono {
         FIJO(1), CELULAR(2), OFICINA(3)
@@ -34,6 +35,10 @@ class Constants {
 
     enum CronConfig {
         MINUTO, HORA, DIA, SEMANA, MES
+    }
+
+    enum TipoPlantilla {
+        SMS, EMAIL
     }
 
     enum DaysWeek {
@@ -70,6 +75,20 @@ class Constants {
 	}
 
         int getValue() {
+            value
+	}
+    }
+
+    enum TipoEmail {
+        PERSONAL(1), LABORAL(2)
+
+        private final long value
+
+        TipoEmail(long value) {
+            this.value = value
+	}
+
+        long getValue() {
             value
 	}
     }

@@ -2,7 +2,7 @@
     <div class="overlay"></div>
     <div class="whiteContainer lightboxPos notificacionesWidth50 darkBluetitle font14 fontWeight400 letterspacing1 justify">
         <form id="formAddCron" action="/notificaciones/saveCron" method="POST" class="loginForm gray font14">
-            <input type="hidden" name="idNotificacionCron" id="idNotificacionCron"/>
+            <input type="hidden" name="idCron" id="idCron"/>
             <div class="clearFix width990 autoMargin">
                 <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10">ENVÍO DE MENSAJES</h1></center>
             </div>
@@ -10,10 +10,10 @@
                 <div class="col12 floatLeft">
                     <div class="register">
                         <div class="floatLeft clearFix marginTop25 marginBottom25 paddingBottom20 marginRight20 marginLeft25">
-                            <span class="marginRight25">Enviar mensajes cada</span>
-                            <g:radioGroup name="cronOptions" values="${listCronOptions}" labels="${listCronOptions}" id="cronOptions">
-                                ${it.radio} <span class="marginRight20">${it.label}</span>
-                            </g:radioGroup>
+                            <p style="margin-top: 10px;" id="leyendaCron"></p>
+                            <div id="cronOptions-div">
+                                <span class="marginRight25">Enviar mensajes cada</span>
+                            </div>
                             <div id="eachHour" class="paddingTop10 hide">
                                 <label>A las </label>
                                 <input type="text" id="hours-cron" name="hour" class="inputs lightGray letterspacing1 font14 only-number" maxlength="2"> horas
@@ -24,9 +24,9 @@
                             </div>
                             <div id="eachWeek" class="paddingTop10 hide">
                                 <label>El día </label>
-                                <g:select from="${listweekDayOptions.entrySet()}" name="weekDay" optionKey="key" optionValue="value" id="daysWeek"></g:select>
-                                    <label> a las </label>
-                                    <input type="text" class="day-cron inputs lightGray letterspacing1 font14" id="weekTime" name="weekTime" /> horas
+                                <select name="weekDay" id="daysWeek"></select>
+                                <label> a las </label>
+                                <input type="text" class="day-cron inputs lightGray letterspacing1 font14" id="weekTime" name="weekTime" /> horas
                             </div>
                             <div id="eachMonth" class="paddingTop10 hide">
                                 <label>El día </label>
@@ -35,7 +35,6 @@
                                 <label> a las </label>
                                 <input type="text" class="day-cron inputs lightGray letterspacing1 font14" id="monthTime" name="monthTime"/> horas
                             </div>
-                            <p style="margin-top: 10px;" id="leyendaCron"></p>
                         </div>
                     </div>
                 </div>

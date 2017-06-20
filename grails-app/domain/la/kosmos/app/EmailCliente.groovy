@@ -17,6 +17,8 @@ class EmailCliente implements Serializable{
         id generator: 'sequence', column: 'id_email', params:[sequence:'email_id_seq']
     }
     
+    static belongsTo = [cliente: Cliente]
+    
     String toString(){
         "${direccionDeCorreo}"
     }

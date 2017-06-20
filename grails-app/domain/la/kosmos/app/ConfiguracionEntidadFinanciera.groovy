@@ -36,6 +36,11 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String mensajeEnvioShortUrl
     int registroSesiones
     int expirarPasswords
+    String emailHost
+    String emailFrom
+    String emailPort
+    String emailUsername
+    String emailPassword
     
     static constraints = {
         nombreComercial (blank:false)
@@ -61,6 +66,11 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         configuracionBuroCredito (nullable: true)
         mensajeConfirmacionCelular (nullable: true)
         mensajeEnvioShortUrl (nullable: true)
+        emailHost (nullable: true)
+        emailFrom (nullable: true)
+        emailPort (nullable: true)
+        emailUsername (nullable: true)
+        emailPassword (nullable: true)
     }
 
     static mapping = {

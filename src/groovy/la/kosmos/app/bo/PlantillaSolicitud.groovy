@@ -18,8 +18,7 @@ class PlantillaSolicitud {
     def nombreCliente
     def fechaSolicitud
     def entidadFinanciera
-    //El campo folio está listo para ser utilizado. Eliminar comentarios cuando se libere su uso
-    //        def folio
+    def folio
 
     PlantillaSolicitud () {}
 
@@ -27,7 +26,7 @@ class PlantillaSolicitud {
         this.nombreCliente = formatName((solicitudTemporal.nombreDelCliente).trim())
         this.fechaSolicitud = solicitudTemporal.fechaDeSolicitud
         this.entidadFinanciera = solicitudTemporal.entidadFinanciera.nombre
-        //        folio = solicitudTemporal.folio
+        this.folio = solicitudTemporal.folio
     }
 
     PlantillaSolicitud(SolicitudDeCredito solicitudCredito){
@@ -36,7 +35,7 @@ class PlantillaSolicitud {
             + " " + (solicitudCredito.cliente.apellidoMaterno).trim())
         this.fechaSolicitud = solicitudCredito.fechaDeSolicitud
         this.entidadFinanciera = solicitudCredito.entidadFinanciera.nombre
-        //        folio = solicitudCredito.folio
+        this.folio = solicitudCredito.folio
     }
 
     private String formatName(def source) {

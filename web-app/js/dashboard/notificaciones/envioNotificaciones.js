@@ -1,5 +1,8 @@
+$.getCronList = "/notificaciones/getCronList";
+$.loadCronInformation = "/notificaciones/loadCronInformation";
 $.loadDataCron = "/notificaciones/loadDataCron";
 $.deleteCron = "/notificaciones/deleteCron";
+$.validCronConfig = "/notificaciones/validCronConfig";
 
 $(document).ready(function () {
     $("#hours-cron").timepicker({
@@ -23,7 +26,7 @@ $(document).ready(function () {
 
     $('#newCronConfiguration-btn').on('click', function (event) {
         event.preventDefault();
-        loadDataCron();
+        loadDataCron(0);
     });
 
     $("#datepickerCron").datepicker({
@@ -52,29 +55,76 @@ $(document).ready(function () {
         validateForm();
     });
 
-    $('#editCron-btn').on('click', function (event) {
+    $('#cron-tb').on('click', 'button.cronDetails', function (event) {
         event.preventDefault();
-        loadDataCron();
+        var idCron = this.getAttribute('data-id');
+        loadDataCron(idCron);
     });
 
-    $('#deleteCron-btn').on('click', function (event) {
+    $('#cron-tb').on('click', 'button.deleteCron', function (event) {
         event.preventDefault();
-        deleteCron();
+        var idCron = this.getAttribute('data-id');
+        deleteCron(idCron);
     });
 
     $('.only-number').keypress(function (event) {
         return validarNumero(event);
     });
+
+    getCronList();
+    confugurationCron();
 });
 
-function loadDataCron() {
-    var notificacion = $("#idConfiguracionNotificacion").val();
+function getCronList() {
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.getCronList,
+        contentType: "application/json",
+        success: function (response) {
+            $("#cron-tb tbody").empty();
+            if (response.cronList.length > 0) {
+                $.each(response.cronList, function (index) {
+                    var row = "";
+                    if (index === 0) {
+                        row += "<tr></tr>";
+                    }
+                    row += '<tr>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
+                    row += '<span class="font14 tableDescriptionColor">' + this.cronExpression + '</span>';
+                    row += '</td>';
+                    row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<button class="greenBox colorWhite width100 cronDetails" data-id="' + this.id + '" type="button">editar</button>';
+                    row += '</td>';
+                    row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<button class="greenBox colorWhite width100 deleteCron" data-id="' + this.id + '" type="button">eliminar</button>';
+                    row += '</td>';
+                    row += '</tr>';
+                    $("#cron-tb tbody:last").append(row);
+                });
+            } else {
+                var row = "";
+                row += '<tr></tr>';
+                row += '<tr>';
+                row += '<td colspan="3" class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                row += '<span class="font14 tableDescriptionColor">No hay envíos registrados</span>';
+                row += '</td>';
+                row += '</tr>';
+                $("#cron-tb tbody:last").append(row);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
 
+function loadDataCron(idCron) {
     $.ajax({
         type: "POST",
         dataType: "json",
         url: $.loadDataCron,
-        data: "notification=" + notificacion,
+        data: "idCron=" + idCron,
         cache: false,
         beforeSend: function (XMLHttpRequest, settings) {
             $('#leyendaCron').html("");
@@ -82,15 +132,15 @@ function loadDataCron() {
         success: function (response) {
             $('#formAddCron')[0].reset();
 
-            $("#idNotificacionCron").val(notificacion);
-            $("[name=cronOptions]").val([response.notificacionEnvio.frequency]);
+            $("#idCron").val(idCron);
+            $("[name=cronOptions]").val([response.notificacionEnvio.cronOptions]);
             $("#hours-cron").val(response.notificacionEnvio.hour);
             $("#dayTime").val(response.notificacionEnvio.dayTime);
             $("#daysWeek").val(response.notificacionEnvio.weekDay);
             $("#weekTime").val(response.notificacionEnvio.weekTime);
-            
+
             $("#monthTime").val(response.notificacionEnvio.monthTime);
-            
+
             var date = new Date(2017, 0, response.notificacionEnvio.dayMonth);
             $("#datepickerCron").datepicker("setDate", date);
             var day = $("#datepickerCron").datepicker('getDate').getDate();
@@ -101,7 +151,6 @@ function loadDataCron() {
                 if ($(this).is(':checked')) {
                     selectFrequency($(this).val());
                 }
-                $('#leyendaCron').html("");
             });
 
             $("#daysWeek").selectmenu();
@@ -170,12 +219,7 @@ function saveCron() {
         contentType: false,
         processData: false,
         success: function (response) {
-            $("#cronMessage").html(response.content);
-            $("#newCron").css("display", "none");
-            $("#cronContent").css("display", "block");
-            $("#editCron-div").css("display", "block");
-            $("#deleteCron-div").css("display", "block");
-
+            getCronList();
             cerrarModal('modalEnvio');
 
             sweetAlert({html: false, title: "¡Excelente!", text: "La configuración se ha guardado correctamente.", type: "success"});
@@ -186,7 +230,7 @@ function saveCron() {
     });
 }
 
-function deleteCron() {
+function deleteCron(idCron) {
     swal({
         title: "¡Importante!",
         text: "¿Está seguro que desea cancelar el envío de mensajes definitivamente?",
@@ -202,13 +246,12 @@ function deleteCron() {
                 type: "POST",
                 dataType: "json",
                 url: $.deleteCron,
-                data: "idNotificacion=" + $("#idConfiguracionNotificacion").val(),
+                data: "idCron=" + idCron,
                 success: function (response) {
-                    if (response.confirm === true) {
-                        $("#newCron").css("display", "block");
-                        $("#cronContent").css("display", "none");
-                        $("#editCron-div").css("display", "none");
-                        $("#deleteCron-div").css("display", "none");
+                    if (response.error === true) {
+                        sweetAlert("Oops...", response.mensaje, "error");
+                    } else {
+                        getCronList();
                         sweetAlert({html: false, title: "¡Excelente!", text: "El envío de mansajes se ha eliminado correctamente.", type: "success"});
                     }
                 },
@@ -264,7 +307,15 @@ function validateForm() {
         }
 
         if (errorMessage === "") {
-            saveCron();
+            validCronConfig(function (response) {
+                if (response.estatus === false) {
+                    $('#leyendaCron').html("<small style='color: red;'>La configuración de envío de mensajes ya ha sido registrada</small>");
+                } else if (response.estatus === "ERROR") {
+                    $('#leyendaCron').html("<small style='color: red;'>Ocurrió un error al validar la configuración</small>");
+                } else {
+                    saveCron();
+                }
+            });
         } else {
             $('#leyendaCron').html("<small style='color: red;'>" + errorMessage + "</small>");
         }
@@ -304,4 +355,55 @@ function validarNumero(e) {
     }
 
     return patron.test(te);
+}
+
+function confugurationCron() {
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.loadCronInformation,
+        cache: false,
+        success: function (response) {
+            $.each(response.listCronOptions, function () {
+                var radioBtn = $('<input name="cronOptions" value="' + this + '" type="radio"> <span class="marginRight20">' + this + '</span>');
+                radioBtn.appendTo('#cronOptions-div');
+            });
+
+            $("#daysWeek").find('option').remove();
+            $.each(response.listweekDayOptions, function (k, v) {
+                $("#daysWeek").append($("<option />").val(k).text(v.name));
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+
+function validCronConfig(callback) {
+    var envio = new Object();
+    envio.idNotificacionCron = $("#idCron").val();
+    envio.cronOptions = $('input:radio[name="cronOptions"]:checked').val();
+    envio.hour = $("#hours-cron").val().trim();
+    envio.dayTime = $("#dayTime").val().trim();
+    envio.weekDay = $("#daysWeek").val();
+    envio.weekTime = $("#weekTime").val().trim();
+    envio.dayMonth = $("#datepickerCron").val().trim();
+    envio.monthTime = $("#monthTime").val().trim();
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.validCronConfig,
+        data: JSON.stringify(envio),
+        contentType: "application/json",
+        cache: false,
+        success: function (response) {
+            callback(response);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            var response = {estatus: "ERROR"};
+            callback(response);
+        }
+    });
 }

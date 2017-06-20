@@ -1,42 +1,42 @@
-$.getSmsTemplates = "/notificaciones/getSmsTemplates";
-$.loadDataSmsTemplate = "/notificaciones/loadDataSmsTemplate";
-$.viewSmsTemplateDetails = "/notificaciones/viewTemplateDetails";
-$.deleteSmsTemplate = "/notificaciones/deleteSmsTemplate";
+$.getEmailTemplates = "/notificaciones/getEmailTemplates";
+$.loadDataEmailTemplate = "/notificaciones/loadDataEmailTemplate";
+$.viewEmailTemplateDetails = "/notificaciones/viewTemplateDetails";
+$.deleteEmailTemplate = "/notificaciones/deleteEmailTemplate";
 
 $(document).ready(function () {
-    $('#newSmsTemplate-btn').on('click', function (event) {
+    $('#newEmailTemplate-btn').on('click', function (event) {
         event.preventDefault();
-        loadDataSmsTemplate();
+        loadDataEmailTemplate();
     });
 
-    $('#saveSmsTemplate-btn').on('click', function (event) {
+    $('#saveEmailTemplate-btn').on('click', function (event) {
         event.preventDefault();
-        validateTemplate();
+        validateEmailTemplate();
     });
 
-    $('#plantillasSms-tb').on('click', 'button.smsTemplateDetails', function (event) {
+    $('#plantillasEmail-tb').on('click', 'button.emailTemplateDetails', function (event) {
         event.preventDefault();
-        var idTemplate = this.getAttribute('data-id');
-        viewSmsTemplateDetails(idTemplate);
+        var idEmailTemplate = this.getAttribute('data-id');
+        viewEmailTemplateDetails(idEmailTemplate);
     });
 
-    $('#plantillasSms-tb').on('click', 'button.deleteSmsTemplate', function (event) {
+    $('#plantillasEmail-tb').on('click', 'button.deleteEmailTemplate', function (event) {
         event.preventDefault();
-        var idTemplate = this.getAttribute('data-id');
-        deleteSmsTemplate(idTemplate);
+        var idEmailTemplate = this.getAttribute('data-id');
+        deleteEmailTemplate(idEmailTemplate);
     });
 
-    getSmsTemplates();
+    getEmailTemplates();
 });
 
-function getSmsTemplates() {
+function getEmailTemplates() {
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: $.getSmsTemplates,
+        url: $.getEmailTemplates,
         contentType: "application/json",
         success: function (response) {
-            $("#plantillasSms-tb tbody").empty();
+            $("#plantillasEmail-tb tbody").empty();
             if (response.templates.length > 0) {
                 $.each(response.templates, function (index) {
                     var row = "";
@@ -44,22 +44,26 @@ function getSmsTemplates() {
                         row += "<tr></tr>";
                     }
                     row += '<tr>';
-                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
-                    row += '<span class="textUpper">plantilla </span><br/>';
-                    row += '<span class="font14 tableDescriptionColor">' + this.plantilla + '</span>';
-                    row += '</td>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
                     row += '<span class="textUpper">estatus </span><br/>';
                     row += '<span class="font14 tableDescriptionColor textUpper">' + this.status + '</span>';
                     row += '</td>';
-                    row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                    row += '<button class="greenBox colorWhite width100 smsTemplateDetails" data-id="' + this.id + '" type="button">editar</button>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
+                    row += '<span class="textUpper">asunto </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor">' + this.asunto + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
+                    row += '<span class="textUpper">plantilla </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor">' + this.plantilla + '</span>';
                     row += '</td>';
                     row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                    row += '<button class="greenBox colorWhite width100 deleteSmsTemplate" data-id="' + this.id + '" type="button">eliminar</button>';
+                    row += '<button class="greenBox colorWhite width100 emailTemplateDetails" data-id="' + this.id + '" type="button">editar</button>';
+                    row += '</td>';
+                    row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<button class="greenBox colorWhite width100 deleteEmailTemplate" data-id="' + this.id + '" type="button">eliminar</button>';
                     row += '</td>';
                     row += '</tr>';
-                    $("#plantillasSms-tb tbody:last").append(row);
+                    $("#plantillasEmail-tb tbody:last").append(row);
                 });
             } else {
                 var row = "";
@@ -69,7 +73,7 @@ function getSmsTemplates() {
                 row += '<span class="font14 tableDescriptionColor">No hay plantillas registradas</span>';
                 row += '</td>';
                 row += '</tr>';
-                $("#plantillasSms-tb tbody:last").append(row);
+                $("#plantillasEmail-tb tbody:last").append(row);
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -78,48 +82,32 @@ function getSmsTemplates() {
     });
 }
 
-function initDroppable($elements) {
-    $elements.droppable({
-        accept: ":not(.ui-sortable-helper)",
-        drop: function (event, ui) {
-            var tempid = ui.draggable.text();
-            var dropText;
-            dropText = " ${" + tempid + "} ";
-            var range1 = $elements[0].selectionStart;
-            var val = $elements.val();
-            var str1 = val.substring(0, range1);
-            var str3 = val.substring(range1, val.length);
-            $elements.val(str1 + dropText + str3);
-        }
-    });
-}
-
-function loadDataSmsTemplate() {
+function loadDataEmailTemplate() {
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: $.loadDataSmsTemplate,
+        url: $.loadDataEmailTemplate,
         beforeSend: function (XMLHttpRequest, settings) {
             $('span[class*="help-block"]').each(function () {
                 $(this).remove();
             });
 
-            $("#status-div").empty();
+            $("#statusEmail-div").empty();
         },
         success: function (response) {
-            $("#formAddTemplate")[0].reset();
-            $("#idTemplate").val("0");
+            $("#formAddEmailTemplate")[0].reset();
+            $("#idEmailTemplate").val("0");
 
-            $("#statusConfig-div").css("display", "block");
+            $("#statusEmailConfig-div").css("display", "block");
             loadAvailableFields(response.fields);
 
             $.each(response.status, function () {
-                var radioBtn = $('<input name="status" value="' + this + '" type="radio"> <span class="marginRight20">' + this + '</span>');
-                radioBtn.appendTo('#status-div');
+                var radioBtn = $('<input name="statusEmail" value="' + this + '" type="radio"> <span class="marginRight20">' + this + '</span>');
+                radioBtn.appendTo('#statusEmail-div');
             });
 
-            initDroppable($("#contenidoSms"));
-            openModal('modalPlantillaSms');
+            initDroppable($("#contenidoEmail"));
+            openModal('modalPlantillaEmail');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -127,8 +115,8 @@ function loadDataSmsTemplate() {
     });
 }
 
-function saveSmsTemplate() {
-    var form = $("#formAddTemplate");
+function saveEmailTemplate() {
+    var form = $("#formAddEmailTemplate");
     var postData = new FormData($(form)[0]);
     var formURL = $(form).attr('action');
 
@@ -143,12 +131,12 @@ function saveSmsTemplate() {
             if (response.error === true) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
-                if ($("#idTemplate").val() === "0" && !response.statusOption) {
-                    $("#newSmsTemplate-btn").css("display", "none");
+                if ($("#idEmailTemplate").val() === "0" && !response.statusOption) {
+                    $("#newEmailTemplate-btn").css("display", "none");
                 }
 
-                getSmsTemplates();
-                cerrarModal('modalPlantillaSms');
+                getEmailTemplates();
+                cerrarModal('modalPlantillaEmail');
                 sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha guardado correctamente.", type: "success"});
             }
         },
@@ -158,21 +146,27 @@ function saveSmsTemplate() {
     });
 }
 
-function viewSmsTemplateDetails(idTemplate) {
+function viewEmailTemplateDetails(idEmailTemplate) {
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: $.viewSmsTemplateDetails,
-        data: "idTemplate=" + idTemplate,
+        url: $.viewEmailTemplateDetails,
+        data: "idTemplate=" + idEmailTemplate,
+        beforeSend: function (XMLHttpRequest, settings) {
+            $('span[class*="help-block"]').each(function () {
+                $(this).remove();
+            });
+        },
         success: function (response) {
-            $("#statusConfig-div").css("display", "none");
+            $("#statusEmailConfig-div").css("display", "none");
             loadAvailableFields(response.fields);
 
-            $("#idTemplate").val(response.template.id);
-            $("#contenidoSms").val(response.template.plantilla);
-            initDroppable($("#contenidoSms"));
+            $("#idEmailTemplate").val(response.template.id);
+            $("#contenidoEmail").val(response.template.plantilla);
+            $("#emailAsunto").val(response.template.asunto);
+            initDroppable($("#contenidoEmail"));
 
-            openModal('modalPlantillaSms');
+            openModal('modalPlantillaEmail');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -180,24 +174,7 @@ function viewSmsTemplateDetails(idTemplate) {
     });
 }
 
-function loadAvailableFields(fields) {
-    $(".availableFields li").remove();
-    $.each(fields, function () {
-        var content = '<li class="gray font14 fontWeight500 latterspacing1 paddingTop12" style="cursor:move">';
-        content += this;
-        content += '</li>';
-        $(".availableFields").append(content);
-    });
-
-    $(".availableFields li").draggable({
-        appendTo: "body",
-        helper: "clone",
-        cursor: "move",
-        revert: "invalid"
-    });
-}
-
-function deleteSmsTemplate(idTemplate) {
+function deleteEmailTemplate(idEmailTemplate) {
     swal({
         title: "¡Importante!",
         text: "¿Está seguro que desea eliminar la plantilla definitivamente?",
@@ -212,16 +189,16 @@ function deleteSmsTemplate(idTemplate) {
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: $.deleteSmsTemplate,
-                data: "idTemplate=" + idTemplate,
+                url: $.deleteEmailTemplate,
+                data: "idTemplate=" + idEmailTemplate,
                 success: function (response) {
                     if (response.error === true) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
                         if (response.statusOption) {
-                            $("#newSmsTemplate-btn").css("display", "block");
+                            $("#newEmailTemplate-btn").css("display", "block");
                         }
-                        getSmsTemplates();
+                        getEmailTemplates();
                         sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha eliminado correctamente.", type: "success"});
                     }
                 },
@@ -233,31 +210,35 @@ function deleteSmsTemplate(idTemplate) {
     });
 }
 
-function validateTemplate() {
+function validateEmailTemplate() {
     var errors = 0;
 
     $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });
 
-    if ($("#contenidoSms").val().trim() === "") {
+    if ($("#contenidoEmail").val().trim() === "") {
         errors++;
-        errorMessageTemplate('contenidoSms', "El campo es obligatorio");
-    } else if ($('#contenidoSms').val().trim().length > 300) {
+        errorMessageTemplate('contenidoEmail', "El campo es obligatorio");
+    } else if ($('#contenidoEmail').val().trim().length > 300) {
         errors++;
-        errorMessageTemplate('contenidoSms', "El texto no puede contener más de 300 caracteres");
+        errorMessageTemplate('contenidoEmail', "El texto no puede contener más de 300 caracteres");
+    }
+    
+    if ($("#emailAsunto").val().trim() === "") {
+        errors++;
+        errorMessageTemplate('emailAsunto', "El campo es obligatorio");
+    } else if ($('#emailAsunto').val().trim().length > 100) {
+        errors++;
+        errorMessageTemplate('emailAsunto', "El texto no puede contener más de 100 caracteres");
     }
 
-    if ($("#idTemplate").val() === "0" && $('input[name=status]:checked').length <= 0) {
+    if ($("#idEmailTemplate").val() === "0" && $('input[name=statusEmail]:checked').length <= 0) {
         errors++;
-        errorMessageTemplate('status', "El campo es obligatorio");
+        errorMessageTemplate('statusEmail', "El campo es obligatorio");
     }
 
     if (errors === 0) {
-        saveSmsTemplate();
+        saveEmailTemplate();
     }
-}
-
-function errorMessageTemplate(element, message) {
-    $("#" + element + "-control").html("<span class='help-block marginRight25'><small style='color: red;'>" + message + "</small></span>");
 }

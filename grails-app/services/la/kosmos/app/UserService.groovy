@@ -90,6 +90,7 @@ class UserService {
         def list = criteria.list {
             createAlias('entidadFinanciera', 'ef')
             eq ('ef.activa', Boolean.TRUE)
+            isNotNull("expirarPasswords")
 
             projections {
                 property('entidadFinanciera', 'entidadFinanciera')

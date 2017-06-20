@@ -8,9 +8,6 @@ class NotificacionesJob {
 
     def execute(context) {
         def id = context.getTrigger().getKey().getName()
-        def idEntidadFinanciera = context.mergedJobDataMap.get("idEntidadFinanciera")
-        def template = context.mergedJobDataMap.get("smsTemplate")
-
-        this.notificacionesService.buildNotification(idEntidadFinanciera, template)
+        this.notificacionesService.buildNotification(id)
     }
 }

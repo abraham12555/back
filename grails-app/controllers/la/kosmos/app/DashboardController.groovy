@@ -120,17 +120,6 @@ class DashboardController {
 
         def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(entidadFinanciera).configuracionBuroCredito
 
-        def notificacion
-        def cronConfigurationMessage
-        def listCronOptions
-        def listweekDayOptions
-        if (springSecurityService.currentUser.authorities.any { it.id == Rol.ROLE_ADMIN }) {
-            notificacion = notificacionesService.loadSMSTemplate(entidadFinanciera)
-            cronConfigurationMessage = notificacionesService.loadCronContent(notificacion)
-            listCronOptions = notificacionesService.loadCronInformation()
-            listweekDayOptions = notificacionesService.loadDaysInformation()
-        }
-
         println tipoDeIngresos
         [   listaDeTiposDeIngresos:tipoDeIngresos,
             listaDeRoles: roles, 
@@ -139,11 +128,8 @@ class DashboardController {
             configuracionBuroCredito:configuracionBuroCredito,
             tipoDeDocumento:tipoDeDocumento,tipoDeIngresos:tipoDeIngresos,
             listaTipoDeAsentamiento:listaTipoDeAsentamiento,
-            listaTipoDeVivienda:listaTipoDeVivienda,listaTipoDeTasaDeInteres:listaTipoDeTasaDeInteres,
-            notificacion: notificacion,
-            cronConfigurationMessage: cronConfigurationMessage,
-            listCronOptions: listCronOptions,
-            listweekDayOptions: listweekDayOptions]
+            listaTipoDeVivienda:listaTipoDeVivienda,listaTipoDeTasaDeInteres:listaTipoDeTasaDeInteres
+        ]
     }
 
     def administracion(){

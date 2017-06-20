@@ -3,6 +3,7 @@ package la.kosmos.app
 class Cliente implements Serializable{
 
     transient TelefonoCliente telefonoCliente
+    transient EmailCliente emailCliente
     
     String nombre
     String apellidoPaterno
@@ -56,9 +57,9 @@ class Cliente implements Serializable{
         id generator: 'sequence', column: 'id_cliente', params:[sequence:'cliente_id_seq']
     }
 
-    static hasMany = [telefonosCliente: TelefonoCliente]
+    static hasMany = [telefonosCliente: TelefonoCliente, emailsCliente: EmailCliente]
 
-    static transients = [ "telefonoCliente" ]
+    static transients = [ "telefonoCliente", "emailCliente" ]
 
     String toString(){
         "${nombre} ${apellidoPaterno} ${apellidoMaterno}"

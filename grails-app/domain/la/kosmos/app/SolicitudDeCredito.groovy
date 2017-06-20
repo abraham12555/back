@@ -19,8 +19,6 @@ class SolicitudDeCredito implements Serializable{
     long opcionMedioDeContacto = 0
     Usuario registradaPor
     
-    def static PASO_FINAL = 6
-    
     static constraints = {
         fechaDeSolicitud (nullable: false)
         cliente (nullable: false)

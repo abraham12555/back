@@ -11,12 +11,29 @@ package la.kosmos.app.bo
  * @author elizabeth
  */
 class EnvioNotificaciones {
-    def frequency
+    def cronOptions
     def hour
     def dayTime
     def weekDay
     def weekTime
     def dayMonth
     def monthTime
+    def idNotificacionCron
+
+    EnvioNotificaciones(){
+
+    }
+
+    EnvioNotificaciones(params){
+        this.cronOptions = params.cronOptions
+        this.hour = params.hour
+        this.dayTime = params.dayTime
+        this.weekDay = params.weekDay
+        this.weekTime = params.weekTime
+        this.dayMonth = params.dayMonth
+        this.monthTime= params.monthTime
+        this.idNotificacionCron = params.idNotificacionCron
+    }
+
 }
 
