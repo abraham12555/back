@@ -65,6 +65,10 @@ $(document).ready(function () {
         $('#rol').css("display", "block");
         cerrarModal('loginUsuario');
     });
+    
+    $('#userName').keyup(function(){
+        this.value = this.value.toLowerCase();
+    });
 
     getUsers(1);
 });
@@ -193,8 +197,8 @@ function validateUserInfoForm() {
         errors++;
         errorMessage($('#noEmpleado'), "El campo es obligatorio");
     }
-    
-    if ($('#rol').val().length === 0) {
+
+    if ($("#rol").val() === null || $('#rol').val().length === 0) {
         errors++;
         errorMessage($('#rol'), "El campo es obligatorio");
     }

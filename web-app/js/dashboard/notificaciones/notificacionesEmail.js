@@ -64,6 +64,12 @@ function getEmailTemplates() {
                     row += '</td>';
                     row += '</tr>';
                     $("#plantillasEmail-tb tbody:last").append(row);
+
+                    if (response.statusOption) {
+                        $("#newEmailTemplate-btn").css("display", "block");
+                    } else {
+                        $("#newEmailTemplate-btn").css("display", "none");
+                    }
                 });
             } else {
                 var row = "";
@@ -131,10 +137,6 @@ function saveEmailTemplate() {
             if (response.error === true) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
-                if ($("#idEmailTemplate").val() === "0" && !response.statusOption) {
-                    $("#newEmailTemplate-btn").css("display", "none");
-                }
-
                 getEmailTemplates();
                 cerrarModal('modalPlantillaEmail');
                 sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha guardado correctamente.", type: "success"});
@@ -195,11 +197,9 @@ function deleteEmailTemplate(idEmailTemplate) {
                     if (response.error === true) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
-                        if (response.statusOption) {
-                            $("#newEmailTemplate-btn").css("display", "block");
-                        }
                         getEmailTemplates();
                         sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha eliminado correctamente.", type: "success"});
+                        getCronList();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -220,11 +220,11 @@ function validateEmailTemplate() {
     if ($("#contenidoEmail").val().trim() === "") {
         errors++;
         errorMessageTemplate('contenidoEmail', "El campo es obligatorio");
-    } else if ($('#contenidoEmail').val().trim().length > 300) {
+    } else if ($('#contenidoEmail').val().trim().length > 500) {
         errors++;
-        errorMessageTemplate('contenidoEmail', "El texto no puede contener más de 300 caracteres");
+        errorMessageTemplate('contenidoEmail', "El texto no puede contener más de 500 caracteres");
     }
-    
+
     if ($("#emailAsunto").val().trim() === "") {
         errors++;
         errorMessageTemplate('emailAsunto', "El campo es obligatorio");

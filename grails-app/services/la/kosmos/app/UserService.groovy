@@ -313,6 +313,7 @@ class UserService {
         def list = criteria.list {
             createAlias('entidadFinanciera', 'ef')
             eq ('ef.activa', Boolean.TRUE)
+            isNotNull("registroSesiones")
 
             projections {
                 property('entidadFinanciera', 'entidadFinanciera')

@@ -18,11 +18,13 @@ class Cron {
     def configCron
     def cron
     def cronExpression
+    def templates
 
     Cron(NotificacionesCron notificacionCron){
         this.id = notificacionCron.id
         this.configCron = notificacionCron.configCron
         this.cron = notificacionCron.cron
+        this.templates = notificacionCron.templates
     }
 }
 

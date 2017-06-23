@@ -2,7 +2,6 @@ $.getCronList = "/notificaciones/getCronList";
 $.loadCronInformation = "/notificaciones/loadCronInformation";
 $.loadDataCron = "/notificaciones/loadDataCron";
 $.deleteCron = "/notificaciones/deleteCron";
-$.validCronConfig = "/notificaciones/validCronConfig";
 
 $(document).ready(function () {
     $("#hours-cron").timepicker({
@@ -91,7 +90,24 @@ function getCronList() {
                     }
                     row += '<tr>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
+                    row += '<span class="textUpper">Configuración</span><br/>';
                     row += '<span class="font14 tableDescriptionColor">' + this.cronExpression + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += 'Plantilla SMS <br/>';
+                    $.each(this.templates, function () {
+                        if (this.tipoPlantilla.name === "SMS") {
+                            row += '<span class="font14 textUpper tableDescriptionColor">' + this.status + '</span><br/>';
+                        }
+                    });
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += 'Plantilla email <br/>';
+                    $.each(this.templates, function () {
+                        if (this.tipoPlantilla.name === "EMAIL") {
+                            row += '<span class="font14 textUpper tableDescriptionColor">' + this.status + '</span><br/>';
+                        }
+                    });
                     row += '</td>';
                     row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
                     row += '<button class="greenBox colorWhite width100 cronDetails" data-id="' + this.id + '" type="button">editar</button>';
@@ -127,37 +143,48 @@ function loadDataCron(idCron) {
         data: "idCron=" + idCron,
         cache: false,
         beforeSend: function (XMLHttpRequest, settings) {
-            $('#leyendaCron').html("");
+            $('span[class*="help-block"]').each(function () {
+                $(this).remove();
+            });
+
+            $("#smsOptions-div").empty();
+            $("#emailOptions-div").empty();
         },
         success: function (response) {
             $('#formAddCron')[0].reset();
 
-            $("#idCron").val(idCron);
-            $("[name=cronOptions]").val([response.notificacionEnvio.cronOptions]);
-            $("#hours-cron").val(response.notificacionEnvio.hour);
-            $("#dayTime").val(response.notificacionEnvio.dayTime);
-            $("#daysWeek").val(response.notificacionEnvio.weekDay);
-            $("#weekTime").val(response.notificacionEnvio.weekTime);
+            if (response.templatesSms.length > 0 || response.templatesEmail.length > 0) {
+                $("#idCron").val(idCron);
+                $("[name=cronOptions]").val([response.notificacionEnvio.cronOptions]);
+                $("#hours-cron").val(response.notificacionEnvio.hour);
+                $("#dayTime").val(response.notificacionEnvio.dayTime);
+                $("#daysWeek").val(response.notificacionEnvio.weekDay);
+                $("#weekTime").val(response.notificacionEnvio.weekTime);
 
-            $("#monthTime").val(response.notificacionEnvio.monthTime);
+                $("#monthTime").val(response.notificacionEnvio.monthTime);
 
-            var date = new Date(2017, 0, response.notificacionEnvio.dayMonth);
-            $("#datepickerCron").datepicker("setDate", date);
-            var day = $("#datepickerCron").datepicker('getDate').getDate();
-            $("#datepickerCron").val(day);
-            $("#datepickerAux").datepicker("setDate", date);
+                var date = new Date(2017, 0, response.notificacionEnvio.dayMonth);
+                $("#datepickerCron").datepicker("setDate", date);
+                var day = $("#datepickerCron").datepicker('getDate').getDate();
+                $("#datepickerCron").val(day);
+                $("#datepickerAux").datepicker("setDate", date);
 
-            $('input:radio[name="cronOptions"]').change(function () {
-                if ($(this).is(':checked')) {
-                    selectFrequency($(this).val());
-                }
-            });
+                $('input:radio[name="cronOptions"]').change(function () {
+                    if ($(this).is(':checked')) {
+                        selectFrequency($(this).val());
+                    }
+                });
 
-            $("#daysWeek").selectmenu();
+                $("#daysWeek").selectmenu();
 
-            selectFrequency($('input:radio[name="cronOptions"]:checked').val());
+                selectFrequency($('input:radio[name="cronOptions"]:checked').val());
 
-            openModal('modalEnvio');
+                fillTemplates(response);
+
+                openModal('modalEnvio');
+            } else {
+                sweetAlert({html: false, title: "¡Atención!", text: "Para configurar el envío de mensajes, primero debe registrar plantillas al sistema.", type: "warning"});
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -264,61 +291,70 @@ function deleteCron(idCron) {
 }
 
 function validateForm() {
-    if ($('input[name=cronOptions]:checked').length <= 0) {
-        $('#leyendaCron').html("<small style='color: red;'>Debe seleccionar la frecuencia del envío de mensajes</small>");
-    } else {
-        var errorMessage = "";
-        $('#leyendaCron').html("");
+    var errors = 0;
 
+    $('span[class*="help-block"]').each(function () {
+        $(this).remove();
+    });
+
+    if ($('input[name=cronOptions]:checked').length <= 0) {
+        errors++;
+        cronErrorMessage('frequency', "El campo es obligatorio");
+    } else {
         if ($('input[name=cronOptions]:checked').val() === "HORA") {
             if ($("#hours-cron").val() === "") {
-                errorMessage = "Debe seleccionar la hora del envío de mensajes";
+                errors++;
+                cronErrorMessage('time', "El campo es obligatorio");
             } else if (!validateHour($("#hours-cron").val())) {
-                errorMessage = "La hora del envío contiene un formato inválido";
+                errors++;
+                cronErrorMessage('time', "La hora del envío contiene un formato inválido");
             }
         }
 
         if ($('input[name=cronOptions]:checked').val() === "DIA") {
             if ($("#dayTime").val() === "") {
-                errorMessage = "Debe seleccionar la hora del envío de mensajes";
+                errors++;
+                cronErrorMessage('time', "Debe seleccionar la hora del envío de mensajes");
             } else if (!validateHourTime($("#dayTime").val())) {
-                errorMessage = "La hora del envío contiene un formato inválido";
+                errors++;
+                cronErrorMessage('time', "La hora del envío contiene un formato inválido");
             }
         }
 
         if ($('input[name=cronOptions]:checked').val() === "SEMANA") {
             if ($("#weekTime").val() === "") {
-                errorMessage = "Debe seleccionar la hora del envío de mensajes";
+                errors++;
+                cronErrorMessage('time', "Debe seleccionar la hora del envío de mensajes");
             } else if (!validateHourTime($("#weekTime").val())) {
-                errorMessage = "La hora del envío contiene un formato inválido";
+                errors++;
+                cronErrorMessage('time', "La hora del envío contiene un formato inválido");
             }
         }
 
         if ($('input[name=cronOptions]:checked').val() === "MES") {
             if ($("#datepickerCron").val() === "") {
-                errorMessage = "Debe seleccionar el día del envío de mensajes";
+                errors++;
+                cronErrorMessage('time', "Debe seleccionar el día del envío de mensajes");
             } else if (!validateDay($("#datepickerCron").val())) {
-                errorMessage = "El día del envío contiene un formato inválido";
+                errors++;
+                cronErrorMessage('time', "El día del envío contiene un formato inválido");
             } else if ($("#monthTime").val() === "") {
-                errorMessage = "Debe seleccionar la hora del envío de mensajes";
+                errors++;
+                cronErrorMessage('time', "Debe seleccionar la hora del envío de mensajes");
             } else if (!validateHourTime($("#monthTime").val())) {
-                errorMessage = "La hora del envío contiene un formato inválido";
+                errors++;
+                cronErrorMessage('time', "La hora del envío contiene un formato inválido");
             }
         }
+    }
 
-        if (errorMessage === "") {
-            validCronConfig(function (response) {
-                if (response.estatus === false) {
-                    $('#leyendaCron').html("<small style='color: red;'>La configuración de envío de mensajes ya ha sido registrada</small>");
-                } else if (response.estatus === "ERROR") {
-                    $('#leyendaCron').html("<small style='color: red;'>Ocurrió un error al validar la configuración</small>");
-                } else {
-                    saveCron();
-                }
-            });
-        } else {
-            $('#leyendaCron').html("<small style='color: red;'>" + errorMessage + "</small>");
-        }
+    if ($('input[name=templateOptions]').length > 0 && $('input[name=templateOptions]:checked').length <= 0) {
+        errors++;
+        cronErrorMessage('template', "Debe seleccionar una plantilla");
+    }
+
+    if (errors === 0) {
+        saveCron();
     }
 }
 
@@ -365,7 +401,7 @@ function confugurationCron() {
         cache: false,
         success: function (response) {
             $.each(response.listCronOptions, function () {
-                var radioBtn = $('<input name="cronOptions" value="' + this + '" type="radio"> <span class="marginRight20">' + this + '</span>');
+                var radioBtn = $('<input name="cronOptions" value="' + this + '" type="radio"> <span class="marginRight10">' + this + '</span>');
                 radioBtn.appendTo('#cronOptions-div');
             });
 
@@ -380,30 +416,32 @@ function confugurationCron() {
     });
 }
 
-function validCronConfig(callback) {
-    var envio = new Object();
-    envio.idNotificacionCron = $("#idCron").val();
-    envio.cronOptions = $('input:radio[name="cronOptions"]:checked').val();
-    envio.hour = $("#hours-cron").val().trim();
-    envio.dayTime = $("#dayTime").val().trim();
-    envio.weekDay = $("#daysWeek").val();
-    envio.weekTime = $("#weekTime").val().trim();
-    envio.dayMonth = $("#datepickerCron").val().trim();
-    envio.monthTime = $("#monthTime").val().trim();
+function cronErrorMessage(element, message) {
+    $("#" + element + "-control").html("<span class='help-block marginRight25'><small style='color: red;'>" + message + "</small></span>");
+}
 
-    $.ajax({
-        type: "POST",
-        dataType: "json",
-        url: $.validCronConfig,
-        data: JSON.stringify(envio),
-        contentType: "application/json",
-        cache: false,
-        success: function (response) {
-            callback(response);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            var response = {estatus: "ERROR"};
-            callback(response);
-        }
+function fillTemplates(response) {
+    if (response.templatesSms.length > 0) {
+        $.each(response.templatesSms, function () {
+            var checkBtn = $('<input name="templateOptions" value="' + this.id + '" type="checkbox"> <span class="marginRight10"> ' + this.status + '</span>');
+            checkBtn.appendTo('#smsOptions-div');
+        });
+        $("#smsTemplateConfig-div").css("display", "block");
+    } else {
+        $("#smsTemplateConfig-div").css("display", "none");
+    }
+
+    if (response.templatesEmail.length > 0) {
+        $.each(response.templatesEmail, function () {
+            var checkBtn = $('<input name="templateOptions" value="' + this.id + '" type="checkbox"> <span class="marginRight10"> ' + this.status + '</span>');
+            checkBtn.appendTo('#emailOptions-div');
+        });
+        $("#emailTemplateConfig-div").css("display", "block");
+    } else {
+        $("#emailTemplateConfig-div").css("display", "none");
+    }
+
+    $.each(response.notificacionEnvio.templateOptions, function () {
+        $("input[name=templateOptions][value='" + this + "']").prop('checked', true);
     });
 }

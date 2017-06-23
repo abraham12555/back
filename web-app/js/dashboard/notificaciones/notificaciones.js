@@ -44,13 +44,13 @@ function getSmsTemplates() {
                         row += "<tr></tr>";
                     }
                     row += '<tr>';
-                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
-                    row += '<span class="textUpper">plantilla </span><br/>';
-                    row += '<span class="font14 tableDescriptionColor">' + this.plantilla + '</span>';
-                    row += '</td>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
                     row += '<span class="textUpper">estatus </span><br/>';
                     row += '<span class="font14 tableDescriptionColor textUpper">' + this.status + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
+                    row += '<span class="textUpper">plantilla </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor">' + this.plantilla + '</span>';
                     row += '</td>';
                     row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
                     row += '<button class="greenBox colorWhite width100 smsTemplateDetails" data-id="' + this.id + '" type="button">editar</button>';
@@ -61,6 +61,12 @@ function getSmsTemplates() {
                     row += '</tr>';
                     $("#plantillasSms-tb tbody:last").append(row);
                 });
+
+                if (response.statusOption) {
+                    $("#newSmsTemplate-btn").css("display", "block");
+                } else {
+                    $("#newSmsTemplate-btn").css("display", "none");
+                }
             } else {
                 var row = "";
                 row += '<tr></tr>';
@@ -84,7 +90,7 @@ function initDroppable($elements) {
         drop: function (event, ui) {
             var tempid = ui.draggable.text();
             var dropText;
-            dropText = " ${" + tempid + "} ";
+            dropText = "{" + tempid + "}";
             var range1 = $elements[0].selectionStart;
             var val = $elements.val();
             var str1 = val.substring(0, range1);
@@ -143,10 +149,6 @@ function saveSmsTemplate() {
             if (response.error === true) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
-                if ($("#idTemplate").val() === "0" && !response.statusOption) {
-                    $("#newSmsTemplate-btn").css("display", "none");
-                }
-
                 getSmsTemplates();
                 cerrarModal('modalPlantillaSms');
                 sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha guardado correctamente.", type: "success"});
@@ -218,11 +220,9 @@ function deleteSmsTemplate(idTemplate) {
                     if (response.error === true) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
-                        if (response.statusOption) {
-                            $("#newSmsTemplate-btn").css("display", "block");
-                        }
                         getSmsTemplates();
                         sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha eliminado correctamente.", type: "success"});
+                        getCronList();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {

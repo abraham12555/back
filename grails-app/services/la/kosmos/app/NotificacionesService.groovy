@@ -10,12 +10,11 @@ import java.util.concurrent.Future
 import la.kosmos.app.EmailConfiguration
 import la.kosmos.app.bo.Cron
 import la.kosmos.app.bo.CronExpression
-import la.kosmos.app.bo.EmTest
 import la.kosmos.app.bo.EnvioNotificaciones
 import la.kosmos.app.bo.PlantillaSolicitud
 import la.kosmos.app.vo.Constants
 import org.apache.commons.lang.text.StrSubstitutor
-import org.apache.commons.logging.LogFactory
+import org.hibernate.criterion.CriteriaSpecification
 import org.hibernate.transform.Transformers
 
 
@@ -26,59 +25,65 @@ class NotificacionesService {
     def executorService
 
     def buildNotification(id) {
-        NotificacionesPlantilla notificacion = NotificacionesConfiguracion.get(id).notificacionesPlantilla
+        NotificacionesCron notificacionCron = NotificacionesCron.get(id)
         //Envia notificaciones de solicitudes temporales
-        this.notificacionesSolicitudTemporal(notificacion)
+        this.notificacionesSolicitudTemporal(notificacionCron)
 
         //Envia notificaciones de solicitudes de credito
-        switch(notificacion.tipoPlantilla){
-        case Constants.TipoPlantilla.SMS:
-            this.notificacionesSmsSolicitudCredito(notificacion)
-            break;
-        case Constants.TipoPlantilla.EMAIL:
-            this.notificacionesEmailSolicitudCredito(notificacion)
-            break;
-        }
+        this.notificacionesSmsSolicitudCredito(notificacionCron)
+
+        this.notificacionesEmailSolicitudCredito(notificacionCron)
     }
 
-    private void notificacionesSolicitudTemporal(NotificacionesPlantilla notificacion){
-        def configuracion = notificacion.configuracionEntidadFinanciera
+    private void notificacionesSolicitudTemporal(NotificacionesCron notificacionCron){
+        def configuracion = notificacionCron.configuracionEntidadFinanciera
         EntidadFinanciera entidadFinanciera = configuracion.entidadFinanciera
 
-        def criteria = SolicitudTemporal.createCriteria()
-        def solicitudesTemporales = criteria.list{
-            eq ('ultimoPaso', notificacion.status)
-            eq ('entidadFinanciera', entidadFinanciera)
-        }
+        notificacionCron.templates.each {
+            def notificacion = it
 
-        if (solicitudesTemporales != null && !solicitudesTemporales?.empty) {
-            def map = [:]
-            def smsExitosos = 0
-            def smsErroneos = 0
-            def smsPendientes = 0
-            def emailExitosos = 0
-            def emailErroneos = 0
-            def emailPendientes = 0
+            if(notificacion.tipoPlantilla == Constants.TipoPlantilla.EMAIL &&
+                (configuracion.emailHost == null || configuracion.emailHost == "" ||
+                    configuracion.emailFrom == null || configuracion.emailFrom == "" ||
+                    configuracion.emailPort == null || configuracion.emailPort == "" ||
+                    configuracion.emailUsername == null || configuracion.emailUsername == "" ||
+                    configuracion.emailPassword == null || configuracion.emailPassword == "")) {
+                throw new Exception("Error al enviar las solicitudes temporales. No se ha configurado el remitente de correo electronico")
+            }
 
-            for(SolicitudTemporal solicitudTemporal : solicitudesTemporales){
-                def origen = new PlantillaSolicitud(solicitudTemporal)
-                String message = this.buildMessage(origen, map, notificacion.plantilla)
+            def criteria = SolicitudTemporal.createCriteria()
+            def solicitudesTemporales = criteria.list{
+                eq ('ultimoPaso', notificacion.status)
+                eq ('entidadFinanciera', entidadFinanciera)
+            }
 
-                switch(notificacion.tipoPlantilla){
-                case Constants.TipoPlantilla.SMS:
-                    if(message != null) {
-                        def phoneNumber = solicitudTemporal.telefonoCliente
-                        try {
-                            (this.sendMessage(phoneNumber, message, configuracion)) ? smsExitosos ++ : smsErroneos ++
-                        } catch (Exception ex){
-                            smsErroneos ++
-                            log.error("Ocurrio un error durante el envio de notificaciones de solicitudes temporales", ex)
-                            break
+            if (solicitudesTemporales != null && !solicitudesTemporales?.empty) {
+                def map = [:]
+                def smsExitosos = 0
+                def smsErroneos = 0
+                def smsPendientes = 0
+                def emailExitosos = 0
+                def emailErroneos = 0
+                def emailPendientes = 0
+
+                for(SolicitudTemporal solicitudTemporal : solicitudesTemporales){
+                    def origen = new PlantillaSolicitud(solicitudTemporal)
+                    String message = this.buildMessage(origen, map, notificacion.plantilla)
+
+                    switch(notificacion.tipoPlantilla){
+                    case Constants.TipoPlantilla.SMS:
+                        if(message != null) {
+                            def phoneNumber = solicitudTemporal.telefonoCliente
+                            try {
+                                (this.sendMessage(phoneNumber, message, configuracion)) ? smsExitosos ++ : smsErroneos ++
+                            } catch (Exception ex){
+                                smsErroneos ++
+                                log.error("Ocurrio un error durante el envio de notificaciones de solicitudes temporales", ex)
+                                break
+                            }
                         }
-                    }
-                    break;
-                case Constants.TipoPlantilla.EMAIL:
-                    if(configuracion.emailHost != null && configuracion.emailFrom != null && configuracion.emailPort != null & configuracion.emailUsername != null && configuracion.emailPassword != null) {
+                        break;
+                    case Constants.TipoPlantilla.EMAIL:
                         if(message != null) {
                             String email = solicitudTemporal.emailCliente
 
@@ -90,149 +95,200 @@ class NotificacionesService {
                                 break
                             }
                         }
+                        break;
                     }
+                }
+
+                def total = solicitudesTemporales.size()
+
+                switch(notificacion.tipoPlantilla){
+                case Constants.TipoPlantilla.SMS:
+                    if(total != smsExitosos){
+                        smsPendientes = total - smsExitosos - smsErroneos
+                        log.error ("Envio de notificaciones SMS de solicitudes temporales. Entidad Financiera: " + entidadFinanciera.id + ". Estatus: "+ notificacion.status + ". Exitosos: " + smsExitosos + ". Erroneos: " + smsErroneos + ". Pendientes: " + smsPendientes)
+                    }
+                    break;
+                case Constants.TipoPlantilla.EMAIL:
+                    if(total != emailExitosos){
+                        emailPendientes = total - emailExitosos - emailErroneos
+                        log.error ("Envio de notificaciones de solicitudes temporales por correo electronico. Entidad Financiera: " + entidadFinanciera.id + " Estatus: "+notificacion.status + ". Exitosos: " + emailExitosos + ". Erroneos: " + emailErroneos + ". Pendientes: " + emailPendientes)
+                    }
+
                     break;
                 }
             }
-
-            def total = solicitudesTemporales.size()
-
-            switch(notificacion.tipoPlantilla){
-            case Constants.TipoPlantilla.SMS:
-                if(total != smsExitosos){
-                    smsPendientes = total - smsExitosos - smsErroneos
-                    log.error ("Envio de notificaciones SMS de solicitudes temporales. Entidad Financiera: " + entidadFinanciera.id + " Estatus: "+notificacion.status + ". Exitosos: " + smsExitosos + ". Erroneos " + smsErroneos + ". Pendientes: " + smsPendientes)
-                }
-                break;
-            case Constants.TipoPlantilla.EMAIL:
-                
-                if(configuracion.emailHost != null && configuracion.emailFrom != null && configuracion.emailPort != null & configuracion.emailUsername != null && configuracion.emailPassword != null) {
-                    if(total != emailExitosos){
-                        emailPendientes = total - emailExitosos - emailErroneos
-                        log.error ("Envio de notificaciones por correo de solicitudes temporales. Entidad Financiera: " + entidadFinanciera.id + " Estatus: "+notificacion.status + ". Exitosos: " + emailExitosos + ". Erroneos " + emailErroneos + ". Pendientes: " + emailPendientes)
-                    }
-                }
-                
-                break;
-            }
         }
     }
 
-    private void notificacionesSmsSolicitudCredito(NotificacionesPlantilla notificacion){
-        EntidadFinanciera entidadFinanciera = notificacion.configuracionEntidadFinanciera.entidadFinanciera
+    private void notificacionesSmsSolicitudCredito(NotificacionesCron notificacionCron){
+        def configuracion = notificacionCron.configuracionEntidadFinanciera
+        EntidadFinanciera entidadFinanciera = configuracion.entidadFinanciera
 
-        def criteria = SolicitudDeCredito.createCriteria()
-        def solicitudesCredito = criteria.list{
-            createAlias('entidadFinanciera', 'e')
-            createAlias('cliente', 'c')
-            createAlias('c.telefonosCliente', 'tc')
-            createAlias('tc.tipoDeTelefono', 't')
+        notificacionCron.templates.each {
+            if(it.tipoPlantilla == Constants.TipoPlantilla.SMS){
+                def notificacion = it
 
-            eq ('ultimoPaso', notificacion.status)
-            eq ('entidadFinanciera', entidadFinanciera)
-            eq ('tc.vigente', Boolean.TRUE)
-            eq ('t.id', Constants.TipoTelefono.CELULAR.value)
+                def criteria = SolicitudDeCredito.createCriteria()
+                def solicitudesCredito = criteria.list{
+                    createAlias('entidadFinanciera', 'e')
+                    createAlias('cliente', 'c')
+                    createAlias('c.telefonosCliente', 'tc')
+                    createAlias('tc.tipoDeTelefono', 't')
+                    createAlias('sucursal', 'suc', CriteriaSpecification.LEFT_JOIN)
 
-            projections {
-                property('fechaDeSolicitud', 'fechaDeSolicitud')
-                property('c.nombre', 'cliente.nombre')
-                property('c.apellidoPaterno', 'cliente.apellidoPaterno')
-                property('c.apellidoMaterno', 'cliente.apellidoMaterno')
-                property('e.nombre', 'entidadFinanciera.nombre')
-                property('tc.numeroTelefonico', 'cliente.telefonoCliente.numeroTelefonico')
-            }
+                    eq ('ultimoPaso', notificacion.status)
+                    eq ('entidadFinanciera', entidadFinanciera)
+                    eq ('tc.vigente', Boolean.TRUE)
+                    eq ('t.id', Constants.TipoTelefono.CELULAR.value)
 
-            resultTransformer(new AliasToBeanNestedMultiLevelResultTransformer(SolicitudDeCredito.class))
-        }
-
-        if (solicitudesCredito != null && !solicitudesCredito?.empty) {
-            def map = [:]
-            def exitosos = 0
-            def erroneos = 0
-            def pendientes = 0
-
-            for (SolicitudDeCredito solicitudDeCredito : solicitudesCredito ) {
-                def origen = new PlantillaSolicitud(solicitudDeCredito)
-
-                def message = this.buildMessage(origen, map, notificacion.plantilla)
-                if(message != null) {
-                    def phoneNumber = solicitudDeCredito.cliente.telefonoCliente.numeroTelefonico
-
-                    try {
-                        (this.sendMessage(phoneNumber, message, notificacion.configuracionEntidadFinanciera)) ? exitosos ++ : erroneos ++
-                    } catch (Exception ex){
-                        erroneos ++
-                        log.error("Ocurrio un error durante el envio de notificaciones de solicitudes temporales", ex)
-                        break
+                    projections {
+                        property('id', 'id')
+                        property('fechaDeSolicitud', 'fechaDeSolicitud')
+                        property('c.nombre', 'cliente.nombre')
+                        property('c.apellidoPaterno', 'cliente.apellidoPaterno')
+                        property('c.apellidoMaterno', 'cliente.apellidoMaterno')
+                        property('e.nombre', 'entidadFinanciera.nombre')
+                        property('tc.numeroTelefonico', 'cliente.telefonoCliente.numeroTelefonico')
+                        property('suc.nombre', 'sucursal.nombre')
                     }
-                }
-            }
 
-            def total = solicitudesCredito.size()
-            if(total != exitosos){
-                pendientes = total - exitosos - erroneos
-                log.error ("Envio de notificaciones SMS de solicitudes formales. Entidad Financiera: " + entidadFinanciera.id + " Estatus: "+notificacion.status + ". Exitosos: " + exitosos + ". Erroneos " + erroneos + ". Pendientes: " + pendientes)
-            }
-        }
-    }
-
-    private void notificacionesEmailSolicitudCredito(NotificacionesPlantilla notificacion){
-        def configuracion = notificacion.configuracionEntidadFinanciera
-        
-        if(configuracion.emailHost != null && configuracion.emailFrom != null && configuracion.emailPort != null & configuracion.emailUsername != null && configuracion.emailPassword != null) {
-            EntidadFinanciera entidadFinanciera = configuracion.entidadFinanciera
-            def criteria = SolicitudDeCredito.createCriteria()
-            def solicitudesCredito = criteria.list{
-                createAlias('entidadFinanciera', 'e')
-                createAlias('cliente', 'c')
-                createAlias('c.emailsCliente', 'ec')
-                createAlias('ec.tipoDeEmail', 't')
-
-                eq ('ultimoPaso', notificacion.status)
-                eq ('entidadFinanciera', entidadFinanciera)
-                eq ('ec.vigente', Boolean.TRUE)
-                eq ('t.id', Constants.TipoEmail.PERSONAL.value)
-                eq ('t.activo', Boolean.TRUE)
-
-                projections {
-                    property('fechaDeSolicitud', 'fechaDeSolicitud')
-                    property('c.nombre', 'cliente.nombre')
-                    property('c.apellidoPaterno', 'cliente.apellidoPaterno')
-                    property('c.apellidoMaterno', 'cliente.apellidoMaterno')
-                    property('e.nombre', 'entidadFinanciera.nombre')
-                    property('ec.direccionDeCorreo', 'cliente.emailCliente.direccionDeCorreo')
+                    resultTransformer(new AliasToBeanNestedMultiLevelResultTransformer(SolicitudDeCredito.class))
                 }
 
-                resultTransformer(new AliasToBeanNestedMultiLevelResultTransformer(SolicitudDeCredito.class))
-            }
+                if (solicitudesCredito != null && !solicitudesCredito?.empty) {
+                    def map = [:]
+                    def exitosos = 0
+                    def erroneos = 0
+                    def pendientes = 0
 
-            if (solicitudesCredito != null && !solicitudesCredito?.empty) {
-                def map = [:]
-                def exitosos = 0
-                def erroneos = 0
-                def pendientes = 0
+                    for (SolicitudDeCredito solicitudDeCredito : solicitudesCredito ) {
+                        criteria = ProductoSolicitud.createCriteria()
+                        def list = criteria.listDistinct {
+                            createAlias('solicitud', 's')
+                            createAlias('producto', 'p')
+                            eq ('solicitud.id', solicitudDeCredito.id)
+                        }
 
-                for (SolicitudDeCredito solicitudDeCredito : solicitudesCredito ) {
-                    def origen = new PlantillaSolicitud(solicitudDeCredito)
+                        ProductoSolicitud productoSolicitud = list[0]
+                        def origen
 
-                    String message = this.buildMessage(origen, map, notificacion.plantilla)
-                    if(message != null) {
-                        String email = solicitudDeCredito.cliente.emailCliente.direccionDeCorreo
+                        if(productoSolicitud != null){
+                            origen = new PlantillaSolicitud(productoSolicitud)
+                        } else {
+                            origen = new PlantillaSolicitud(solicitudDeCredito)
+                        }
 
-                        try {
-                            (this.sendEmailMessage(notificacion.asunto, email, message, configuracion)) ? exitosos ++ : erroneos ++
-                        } catch (Exception ex){
-                            erroneos ++
-                            log.error("Ocurrio un error durante el envio de notificaciones de solicitudes temporales", ex)
-                            break
+                        def message = this.buildMessage(origen, map, notificacion.plantilla)
+                        if(message != null) {
+                            def phoneNumber = solicitudDeCredito.cliente.telefonoCliente.numeroTelefonico
+
+                            try {
+                                (this.sendMessage(phoneNumber, message, notificacion.configuracionEntidadFinanciera)) ? exitosos ++ : erroneos ++
+                            } catch (Exception ex){
+                                erroneos ++
+                                log.error("Ocurrio un error durante el envio de notificaciones de solicitudes temporales", ex)
+                                break
+                            }
                         }
                     }
+
+                    def total = solicitudesCredito.size()
+                    if(total != exitosos){
+                        pendientes = total - exitosos - erroneos
+                        log.error ("Envio de notificaciones SMS de solicitudes formales. Entidad Financiera: " + entidadFinanciera.id + ". Estatus: "+ notificacion.status + ". Exitosos: " + exitosos + ". Erroneos: " + erroneos + ". Pendientes: " + pendientes)
+                    }
+                }
+            }
+        }
+    }
+
+    private void notificacionesEmailSolicitudCredito(NotificacionesCron notificacionCron){
+        def configuracion = notificacionCron.configuracionEntidadFinanciera
+        EntidadFinanciera entidadFinanciera = configuracion.entidadFinanciera
+
+        notificacionCron.templates.each {
+            if(it.tipoPlantilla == Constants.TipoPlantilla.EMAIL){
+                def notificacion = it
+
+                if(notificacion.tipoPlantilla == Constants.TipoPlantilla.EMAIL &&
+                    (configuracion.emailHost == null || configuracion.emailHost == "" ||
+                        configuracion.emailFrom == null || configuracion.emailFrom == "" ||
+                        configuracion.emailPort == null || configuracion.emailPort == "" ||
+                        configuracion.emailUsername == null || configuracion.emailUsername == "" ||
+                        configuracion.emailPassword == null || configuracion.emailPassword == "")) {
+                    throw new Exception("Error al enviar las solicitudes formales. No se ha configurado el remitente de correo electronico")
                 }
 
-                def total = solicitudesCredito.size()
-                if(total != exitosos){
-                    pendientes = total - exitosos - erroneos
-                    log.error ("Envio de notificaciones por correo de solicitudes formales. Entidad Financiera: " + entidadFinanciera.id + " Estatus: "+notificacion.status + ". Exitosos: " + exitosos + ". Erroneos " + erroneos + ". Pendientes: " + pendientes)
+                def criteria = SolicitudDeCredito.createCriteria()
+                def solicitudesCredito = criteria.list{
+                    createAlias('entidadFinanciera', 'e')
+                    createAlias('cliente', 'c')
+                    createAlias('c.emailsCliente', 'ec')
+                    createAlias('ec.tipoDeEmail', 't')
+                    createAlias('sucursal', 'suc', CriteriaSpecification.LEFT_JOIN)
+
+                    eq ('ultimoPaso', notificacion.status)
+                    eq ('entidadFinanciera', entidadFinanciera)
+                    eq ('ec.vigente', Boolean.TRUE)
+                    eq ('t.id', Constants.TipoEmail.PERSONAL.value)
+                    eq ('t.activo', Boolean.TRUE)
+
+                    projections {
+                        property('id', 'id')
+                        property('fechaDeSolicitud', 'fechaDeSolicitud')
+                        property('c.nombre', 'cliente.nombre')
+                        property('c.apellidoPaterno', 'cliente.apellidoPaterno')
+                        property('c.apellidoMaterno', 'cliente.apellidoMaterno')
+                        property('e.nombre', 'entidadFinanciera.nombre')
+                        property('ec.direccionDeCorreo', 'cliente.emailCliente.direccionDeCorreo')
+                        property('suc.nombre', 'sucursal.nombre')
+                    }
+
+                    resultTransformer(new AliasToBeanNestedMultiLevelResultTransformer(SolicitudDeCredito.class))
+                }
+
+                if (solicitudesCredito != null && !solicitudesCredito?.empty) {
+                    def map = [:]
+                    def exitosos = 0
+                    def erroneos = 0
+                    def pendientes = 0
+
+                    for (SolicitudDeCredito solicitudDeCredito : solicitudesCredito ) {
+                        criteria = ProductoSolicitud.createCriteria()
+                        def list = criteria.listDistinct {
+                            createAlias('solicitud', 's')
+                            createAlias('producto', 'p')
+                            eq ('solicitud.id', solicitudDeCredito.id)
+                        }
+
+                        ProductoSolicitud productoSolicitud = list[0]
+                        def origen
+
+                        if(productoSolicitud != null){
+                            origen = new PlantillaSolicitud(productoSolicitud)
+                        } else {
+                            origen = new PlantillaSolicitud(solicitudDeCredito)
+                        }
+
+                        String message = this.buildMessage(origen, map, notificacion.plantilla)
+                        if(message != null) {
+                            String email = solicitudDeCredito.cliente.emailCliente.direccionDeCorreo
+
+                            try {
+                                (this.sendEmailMessage(notificacion.asunto, email, message, configuracion)) ? exitosos ++ : erroneos ++
+                            } catch (Exception ex){
+                                erroneos ++
+                                log.error("Ocurrio un error durante el envio de notificaciones de solicitudes temporales", ex)
+                                break
+                            }
+                        }
+                    }
+
+                    def total = solicitudesCredito.size()
+                    if(total != exitosos){
+                        pendientes = total - exitosos - erroneos
+                        log.error ("Envio de notificaciones de solicitudes formales por correo electronico. Entidad Financiera: " + entidadFinanciera.id + ". Estatus: "+notificacion.status + ". Exitosos: " + exitosos + ". Erroneos: " + erroneos + ". Pendientes: " + pendientes)
+                    }
                 }
             }
         }
@@ -256,14 +312,15 @@ class NotificacionesService {
                         map.put(field.getName(), value.toString());
                     }
                 } else {
-                    map.put(field.getName(), "");
+                    map.put(field.getName(), "-");
                 }
             }
 
-            StrSubstitutor sub = new StrSubstitutor(map);
+            char esc = '{'
+            StrSubstitutor sub = new StrSubstitutor(map, "{", "}", esc);
             return sub.replace(template);
         } catch(Exception e){
-            log.error("Ocurrio un error al construir el mensaje sms", e)
+            log.error("Ocurrio un error al construir la plantilla", e)
             return null
         }
     }
@@ -309,7 +366,7 @@ class NotificacionesService {
     }
 
     def loadAvailableOptionsTemplate(){
-        return PlantillaSolicitud.metaClass.properties*.name.findAll{ it != 'class'}
+        return PlantillaSolicitud.metaClass.properties*.name.sort().findAll{ it != 'class'}
     }
 
     def loadAvailableSmsStatus(EntidadFinanciera entidadFinanciera){
@@ -352,7 +409,7 @@ class NotificacionesService {
         return this.saveTemplate(params, entidadFinanciera, Constants.TipoPlantilla.SMS, status, null)
     }
 
-    def saveTemplate(params, EntidadFinanciera entidadFinanciera, Constants.TipoPlantilla tipo, Integer status, String asunto){
+    private Map saveTemplate(params, EntidadFinanciera entidadFinanciera, Constants.TipoPlantilla tipo, Integer status, String asunto){
         def respuesta = [:]
         def idTemplate = Long.parseLong(params.idTemplate)
         def template = (params.contenido).trim()
@@ -360,21 +417,14 @@ class NotificacionesService {
 
         if(idTemplate == 0) {
             ConfiguracionEntidadFinanciera configuracion = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(entidadFinanciera)
-            plantilla = new NotificacionesPlantilla(configuracion, template, tipo, status, asunto)
+            plantilla = new NotificacionesPlantilla()
+            plantilla.configuracionEntidadFinanciera = configuracion
+            plantilla.plantilla = template
+            plantilla.tipoPlantilla = tipo
+            plantilla.status = status
+            plantilla.asunto = asunto
 
             plantilla.save(insert: Boolean.TRUE, validate: Boolean.FALSE, flush: Boolean.FALSE)
-
-            //scheduling job
-            configuracionNotificacionesService.addJob(plantilla)
-
-            switch(tipo){
-            case Constants.TipoPlantilla.SMS:
-                respuesta.statusOption = (this.loadAvailableSmsStatus(entidadFinanciera)).size() > 0
-                break;
-            case Constants.TipoPlantilla.EMAIL:
-                respuesta.statusOption = (this.loadAvailableEmailStatus(entidadFinanciera)).size() > 0
-                break;
-            }
 
         } else if(idTemplate > 0) {
             plantilla = NotificacionesPlantilla.get(idTemplate)
@@ -389,9 +439,6 @@ class NotificacionesService {
             plantilla.asunto = asunto
 
             plantilla.save(validate: Boolean.FALSE, flush: Boolean.FALSE)
-
-            //updating job
-            configuracionNotificacionesService.updateJob(plantilla)
         }
 
         return respuesta
@@ -417,19 +464,10 @@ class NotificacionesService {
             return respuesta
         }
 
-        //delete scheduled job
-        configuracionNotificacionesService.stopScheduler(plantilla)
+        NotificacionesConfiguracion.removeAll(plantilla)
 
         plantilla.delete()
 
-        switch(tipo){
-        case Constants.TipoPlantilla.SMS:
-            respuesta.statusOption = (this.loadAvailableSmsStatus(entidadFinanciera)).size() > 0
-            break;
-        case Constants.TipoPlantilla.EMAIL:
-            respuesta.statusOption = (this.loadAvailableEmailStatus(entidadFinanciera)).size() > 0
-            break;
-        }
         return respuesta
     }
 
@@ -468,7 +506,7 @@ class NotificacionesService {
         return daysweek
     }
 
-    def scheduleExecution(EntidadFinanciera entidadFinanciera, params){
+    def saveCron(EntidadFinanciera entidadFinanciera, params){
         def respuesta = [:]
         def idCron = Long.parseLong(params.idCron)
         NotificacionesCron notificacionCron
@@ -476,14 +514,20 @@ class NotificacionesService {
         EnvioNotificaciones envio = new EnvioNotificaciones(params)
 
         if(idCron == 0) {
-            ConfiguracionEntidadFinanciera configuracion = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(entidadFinanciera)
-
             notificacionCron = new NotificacionesCron()
-            notificacionCron.configuracionEntidadFinanciera = configuracion
+            notificacionCron.configuracionEntidadFinanciera = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(entidadFinanciera)
             notificacionCron.cron = this.buildCronExpression(envio)
             notificacionCron.configCron = this.buildCronConfiguration(params)
 
-            notificacionCron.save(insert: Boolean.TRUE, validate: Boolean.FALSE, flush: Boolean.FALSE)
+            if(notificacionCron.save(insert: Boolean.TRUE, validate: Boolean.FALSE, flush: Boolean.FALSE)){
+                envio.templateOptions.each {
+                    NotificacionesPlantilla np = NotificacionesPlantilla.get(it)
+                    def data = NotificacionesConfiguracion.create(notificacionCron, np)
+                    if(data.notificacionesPlantilla == null) {
+                        throw new Exception("Ocurrió un error al guardar las plantillas")
+                    }
+                }
+            }
 
             //scheduling job
             configuracionNotificacionesService.addJob(notificacionCron)
@@ -493,17 +537,26 @@ class NotificacionesService {
 
             if (notificacionCron.configuracionEntidadFinanciera.entidadFinanciera.id != entidadFinanciera.id){
                 respuesta.error = Boolean.TRUE
-                respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información del usuario"
+                respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información"
                 return respuesta
             }
 
             notificacionCron.cron = this.buildCronExpression(envio)
             notificacionCron.configCron = this.buildCronConfiguration(params)
 
+            NotificacionesConfiguracion.removeAll(notificacionCron)
+            envio.templateOptions.each {
+                NotificacionesPlantilla np = NotificacionesPlantilla.get(it)
+                def data = NotificacionesConfiguracion.create(notificacionCron, np)
+                if(data.notificacionesPlantilla == null) {
+                    throw new Exception("Ocurrió un error al actualizar las plantillas")
+                }
+            }
+
             notificacionCron.save(validate: Boolean.FALSE, flush: Boolean.FALSE)
 
             //updating job
-            configuracionNotificacionesService.updateJob(notificacionCron)
+            configuracionNotificacionesService.rescheduleJob(notificacionCron)
         }
         return respuesta
     }
@@ -657,6 +710,11 @@ class NotificacionesService {
             break;
         }
 
+        envioNotificaciones.templateOptions = []
+        notificacion.templates.each {
+            envioNotificaciones.templateOptions << it.id
+        }
+
         return envioNotificaciones
     }
 
@@ -673,9 +731,11 @@ class NotificacionesService {
 
         if (notificacionCron.configuracionEntidadFinanciera.entidadFinanciera.id != entidadFinanciera.id){
             respuesta.error = Boolean.TRUE
-            respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información del usuario"
+            respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información"
             return respuesta
         }
+
+        NotificacionesConfiguracion.removeAll(notificacionCron)
 
         //delete scheduled job
         configuracionNotificacionesService.stopScheduler(notificacionCron)
@@ -683,28 +743,6 @@ class NotificacionesService {
         notificacionCron.delete()
 
         return respuesta
-    }
-
-    def validCronConfig(EnvioNotificaciones envio, EntidadFinanciera entidadFinanciera){
-        String cronExpression = this.buildCronExpression(envio)
-
-        def criteria = NotificacionesCron.createCriteria()
-        def notificacionCron = criteria.get {
-            createAlias('configuracionEntidadFinanciera', 'cef')
-            eq ('cef.entidadFinanciera', entidadFinanciera)
-            eq ('cron', cronExpression)
-        }
-
-        if(notificacionCron == null) {
-            return Boolean.TRUE
-        } else {
-            def id = (envio.idNotificacionCron).toBigInteger()
-            if (BigInteger.valueOf(notificacionCron.id).compareTo(id) == 0) {
-                return Boolean.TRUE
-            } else {
-                return Boolean.FALSE
-            }
-        }
     }
 
     def getEmailTemplates(EntidadFinanciera entidadFinanciera){
@@ -726,5 +764,13 @@ class NotificacionesService {
 
     def deleteEmailTemplate(EntidadFinanciera entidadFinanciera, params){
         return deleteTemplate(entidadFinanciera, params, Constants.TipoPlantilla.EMAIL)
+    }
+
+    def enableSmsTemplate(EntidadFinanciera entidadFinanciera){
+        return (this.loadAvailableStatusByType(entidadFinanciera, Constants.TipoPlantilla.SMS)).size() > 0
+    }
+
+    def enableEmailTemplate(EntidadFinanciera entidadFinanciera){
+        return (this.loadAvailableStatusByType(entidadFinanciera, Constants.TipoPlantilla.EMAIL)).size() > 0
     }
 }

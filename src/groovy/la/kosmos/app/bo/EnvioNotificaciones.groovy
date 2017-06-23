@@ -18,7 +18,7 @@ class EnvioNotificaciones {
     def weekTime
     def dayMonth
     def monthTime
-    def idNotificacionCron
+    def templateOptions
 
     EnvioNotificaciones(){
 
@@ -32,8 +32,16 @@ class EnvioNotificaciones {
         this.weekTime = params.weekTime
         this.dayMonth = params.dayMonth
         this.monthTime= params.monthTime
-        this.idNotificacionCron = params.idNotificacionCron
+        setTemplateOptions(params?.templateOptions)
     }
 
+    def setTemplateOptions(templateOptions){
+        if(!(templateOptions.class.isArray())){
+            def valueList = []
+            this.templateOptions = valueList + templateOptions
+        } else {
+            this.templateOptions = templateOptions
+        }
+    }
 }
 

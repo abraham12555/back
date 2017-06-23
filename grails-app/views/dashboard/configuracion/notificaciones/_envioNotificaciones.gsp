@@ -4,7 +4,7 @@
     </div>
     <table class="applicationContainers solicitudes_table dashboard" id="cron-tb">
         <thead>
-        <th colspan="4" class="left navyBg">
+        <th colspan="5" class="left navyBg">
             <h1 class="graphHeading colorWhite letterspacing2 textUpper">Envío de notificaciones</h1>
         </th>
         </thead>

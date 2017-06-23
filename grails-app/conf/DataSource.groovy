@@ -2,11 +2,11 @@ dataSource {
     pooled = true
     jmxExport = true
     driverClassName = "org.postgresql.Driver"
-    username = "kuser"
+//    username = "kuser"
     //password = "kpasswd"
-    password = "5as50n3J2017"
-    //username = "seisan"
-    //password = "K0suMo5u!"
+//    password = "5as50n3J2017"
+    username = "seisan"
+    password = "seisan4"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -23,6 +23,7 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
             url = "jdbc:postgresql://localhost:5432/kosmos"
+//            logSql = true
         }
     }
     test {

@@ -8,10 +8,10 @@ class NotificacionesController {
 
     def getSmsTemplates() {
         def entidadFinanciera = session.usuario.entidadFinanciera
-        def templates = notificacionesService.getSmsTemplates(entidadFinanciera)
 
         def response = [:]
-        response.templates = templates
+        response.templates = notificacionesService.getSmsTemplates(entidadFinanciera)
+        response.statusOption = notificacionesService.enableSmsTemplate(entidadFinanciera)
         render response as JSON
     }
 
@@ -63,8 +63,12 @@ class NotificacionesController {
     }
 
     def loadDataCron(){
+        def entidadFinanciera = session.usuario.entidadFinanciera
+
         def response = [:]
         response.notificacionEnvio = notificacionesService.loadCronConfiguration(params)
+        response.templatesSms = notificacionesService.getSmsTemplates(entidadFinanciera)
+        response.templatesEmail = notificacionesService.getEmailTemplates(entidadFinanciera)
         render response as JSON
     }
 
@@ -72,7 +76,7 @@ class NotificacionesController {
         def response = [:]
         def entidadFinanciera = session.usuario.entidadFinanciera
 
-        response.content = notificacionesService.scheduleExecution(entidadFinanciera, params)
+        response.content = notificacionesService.saveCron(entidadFinanciera, params)
         render response as JSON
     }
 
@@ -84,21 +88,12 @@ class NotificacionesController {
         render response as JSON
     }
 
-    def validCronConfig(){
-        EnvioNotificaciones envio = new EnvioNotificaciones(request.JSON)
-        def entidadFinanciera = session.usuario.entidadFinanciera
-
-        def response = [:]
-        response.estatus = notificacionesService.validCronConfig(envio, entidadFinanciera)
-        render response as JSON
-    }
-
     def getEmailTemplates() {
         def entidadFinanciera = session.usuario.entidadFinanciera
-        def templates = notificacionesService.getEmailTemplates(entidadFinanciera)
 
         def response = [:]
-        response.templates = templates
+        response.templates = notificacionesService.getEmailTemplates(entidadFinanciera)
+        response.statusOption = notificacionesService.enableEmailTemplate(entidadFinanciera)
         render response as JSON
     }
 
