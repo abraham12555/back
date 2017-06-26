@@ -1393,9 +1393,14 @@ function avanzarPaso(paso) {
                     operacionesBuro();
                     verificacionSubPaso5();
                 } else if (tipoDePaso === "resumen") {
+                    habilitarBotonesAvance();
                     operacionesResumen();
                 } else if (tipoDePaso === "confirmacion") {
+                    habilitarBotonesAvance();
                     operacionesConfirmacion();
+                } else if (tipoDePaso === "ofertas") {
+                    mostrarOfertas();
+                    habilitarBotonesAvance();
                 }
                 actualizarProgreso(paso);
             }
@@ -2479,3 +2484,304 @@ jQuery(function ($) {
         });
     }
 });
+
+// ***************************** Inicio de Funciones Perfilador
+
+function mostrarOfertas() {
+    var respuesta = JSON.parse($('#ofertasJSON').val());
+    var html = "";
+    var productos = [];
+    ofertasCalculadas = respuesta;
+    if (respuesta.length > 0) {
+        for (var i = 0; i < respuesta.length; i++) {
+            html += "<div id=\"bu" + (i + 1) + "\">";
+            html += "<div class=\"promo\">";
+            html += "<h4>" + respuesta[i].producto.claveDeProducto + "</h4><h4>" + respuesta[i].producto.tituloEnCotizador + "</h4>";
+            html += "<ul class=\"features\">";
+            html += "<li class=\"brief\"><i class=\"fa fa-male\"></i></li>";
+            html += "<li class=\"price\"> <span id=\"monto_" + respuesta[i].producto.id + "\">" + formatCurrency(respuesta[i].listaDeOpciones[0].montoMaximo, "$") + "</span> ";
+            html += "<div class=\"flat-slider\" id=\"flat-slider-" + respuesta[i].producto.id + "\"></div>";
+            html += "<p class=\"floatLeft marginLeft12 font14 fontWeight500 gray opacity05 paddingTop5\">MIN</p>";
+            html += "<p class=\"floatRight marginRight12 font14 fontWeight500 gray opacity05 paddingTop5\">MAX</p>";
+            html += "</li>";
+            html += "<li>";
+            html += "<h6>PLAZO</h6> <span id=\"plazo_" + respuesta[i].producto.id + "\">";
+            html += "<select class=\"browser-default\" style=\"border-bottom: 0px;\" onchange= \"cambiarPlazo(" + i + ", this.value)\">";
+            html += "<option value=\"0\" selected>" + respuesta[i].listaDePlazos[0].plazos + " " + respuesta[i].listaDePlazos[0].periodicidad.toUpperCase() + "</option>";
+            for (var j = 1; j < respuesta[i].listaDePlazos.length; j++) {
+                html += "<option value=\"" + j + "\">" + respuesta[i].listaDePlazos[j].plazos + " " + respuesta[i].listaDePlazos[j].periodicidad.toUpperCase() + "</option>";
+            }
+            html += "</select></span></li>";
+            html += "<li id=\"pago_" + respuesta[i].producto.id + "\">";
+            html += "<h6>PAGO " + respuesta[i].listaDeOpciones[0].periodicidad.nombre.toUpperCase() + "</h6> " + formatCurrency(respuesta[i].listaDeOpciones[0].cuota, "$") + " </li>";
+            //inicio-temporal
+            html += "<li id=\"temporal_" + respuesta[i].producto.id + "\"><h6>CÁLCULOS (Fines de Prueba)</h6>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>CAPACIDAD DE PAGO:</strong> " + respuesta[i].listaDeOpciones[0].maximaCapacidadDePago + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>MONTO A PAGAR BC:</strong> " + respuesta[i].listaDeOpciones[0].montoAPagar + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>BALANCE DE CAJA:</strong> " + respuesta[i].listaDeOpciones[0].balanceDeCaja + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>RATIO:</strong> " + respuesta[i].listaDeOpciones[0].ratio + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>PROBABILIDAD DE MORA:</strong> " + respuesta[i].listaDeOpciones[0].probabilidadDeMora + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta[i].listaDeOpciones[0].tasaDeInteres * 100), 2) + " %</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoSeguro, "$") + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoAsistencia, "$") + "</p>";
+            html += "</li>";
+            //fin-temporal
+            html += "<li><h6>REQUISITOS</h6></li>";
+            html += "<li class=\"requisitos\">1. IDENTIFICACIÓN OFICIAL</li>";
+            html += "<li class=\"requisitos\">2. COMPROBANTE DE DOMICILIO</li>";
+            html += "<li class=\"requisitos\">3. COMPROBANTE DE INGRESOS</li>";
+            html += "<li id=\"requisitos_" + respuesta[i].producto.id + "\" class=\"requisitos\">4. GARANTIAS <ul>";
+            for (var k = 0; k < respuesta[i].listaDeOpciones[0].garantias.length; k++) {
+                html += "<li class=\"requisitos\">" + respuesta[i].listaDeOpciones[0].garantias[k].descripcion + "</li>";
+            }
+            html += "</ul></li>";
+            html += "<input type=\"hidden\" id=\"plazoSeleccionado_" + respuesta[i].producto.id + "\">";
+            html += "<input type=\"hidden\" id=\"periodicidadSeleccionada_" + respuesta[i].producto.id + "\">";
+            html += "<input type=\"hidden\" id=\"montoSeleccionado_" + respuesta[i].producto.id + "\">";
+            html += "<input type=\"hidden\" id=\"pagoSeleccionado_" + respuesta[i].producto.id + "\">";
+            html += "<li class=\"buy\"><button onclick=\"confirmarSeleccion(" + (i) + ",'" + respuesta[i].producto.id + "');\">APLICAR</button></li>";
+            html += "</ul></div></div>";
+            productos.push(respuesta[i].producto.id);
+        }
+    } else {
+        html += "<div>No se encontraron ofertas que se ajusten al perfil del cliente.</div>";
+    }
+    $('#listaDeOfertasDiv').html(html);
+    for (var i = 0; i < respuesta.length; i++) {
+        $(('#plazoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].plazos);
+        $(('#periodicidadSeleccionada_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].periodicidad.id);
+        $(('#pagoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].cuota);
+        inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 1000);
+    }
+
+    var Conclave = (function () {
+        var buArr = [], arlen;
+        var numPromos = $('.promo').length;
+        return {
+            init: function () {
+                this.addCN();
+                this.clickReg();
+            },
+            addCN: function () {
+                var buarr = ["holder_bu_center", "holder_bu_awayR1", "holder_bu_awayL1", "holder_bu_awayR2", "holder_bu_awayL2"];
+                for (var i = 1; i <= buarr.length; ++i) {
+                    $("#bu" + i).removeClass().addClass(buarr[i - 1] + " holder_bu");
+                }
+                if (buarr.length < numPromos) {
+                    var dif = numPromos - buarr.length;
+                    var firstIndexBeforeArrLength = buarr.length + 1;
+                    while (dif > 0) {
+                        $("#bu" + firstIndexBeforeArrLength).removeClass().addClass("holder_bu_no_display holder_bu");
+                        dif--;
+                        firstIndexBeforeArrLength++;
+                    }
+                }
+            },
+            clickReg: function () {
+                $(".holder_bu").each(function () {
+                    buArr.push($(this).attr('class'));
+                });
+                arlen = buArr.length;
+                for (var i = 0; i < arlen; ++i) {
+                    buArr[i] = buArr[i].replace(" holder_bu", "");
+                }
+                ;
+                $(".holder_bu").click(function (buid) {
+                    var me = this, id = this.id || buid, joId = $("#" + id), joCN = joId.attr("class").replace(" holder_bu", "");
+                    var cpos = buArr.indexOf(joCN), mpos = buArr.indexOf("holder_bu_center");
+                    if (cpos !== mpos) {
+                        tomove = cpos > mpos ? arlen - cpos + mpos : mpos - cpos;
+                        while (tomove) {
+                            var t = buArr.shift();
+                            buArr.push(t);
+                            for (var i = 1; i <= arlen; ++i) {
+                                $("#bu" + i).removeClass().addClass(buArr[i - 1] + " holder_bu");
+                            }
+                            --tomove;
+                        }
+                    }
+                });
+            },
+            auto: function () {
+                for (i = 1; i <= 1; ++i) {
+                    $(".holder_bu").delay(4000).trigger('click', "bu" + i).delay(4000);
+                    console.log("called");
+                }
+            }
+        };
+    })();
+
+    window['conclave'] = Conclave;
+    Conclave.init();
+}
+
+function inicializarSlider(elemento, producto, montoInicial, montoMinimo, montoMaximo, incremento) {
+    console.log("Inicializando slider: " + elemento + " del producto " + producto);
+    console.log("Parametros de inicializacion: " + montoInicial + ", " + montoMinimo + ", " + montoMaximo + ", " + incremento);
+    $("#" + elemento).slider({
+        orientation: 'horizontal',
+        range: false,
+        value: montoInicial,
+        min: montoMinimo,
+        max: montoMaximo,
+        step: incremento,
+        create: function (event, ui) {
+            console.log("Entra al create");
+            var montoElegido = montoInicial;
+            $(('#montoSeleccionado_' + producto)).val(montoElegido);
+            $(('#monto_' + producto)).html(formatCurrency(montoElegido, "$"));
+        },
+        slide: function (event, ui) {
+            var valorElegido;
+            valorElegido = (ui.value);
+            console.log("Entra al slide");
+            $(('#montoSeleccionado_' + producto)).val(valorElegido);
+            $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
+            $(('#pago_' + producto)).html("<h6> RECALCULANDO PAGO </h6> </li>");
+        },
+        stop: function (event, ui) {
+            var valorElegido;
+            valorElegido = (ui.value);
+            console.log("Entra al stop");
+            $(('#montoSeleccionado_' + producto)).val(valorElegido);
+            $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
+            calcularOferta(producto, valorElegido);
+        }
+    });
+}
+
+function reiniciarSlider(elemento, producto, montoInicial, montoMinimo, montoMaximo, incremento) {
+    console.log("Reinicializando slider: " + elemento + " del producto " + producto);
+    console.log("Parametros de reinicializacion: " + montoInicial + ", " + montoMinimo + ", " + montoMaximo + ", " + incremento);
+    var valorElegido = montoInicial;
+    $("#" + elemento).slider("option", "value", montoInicial);
+    $("#" + elemento).slider("option", "min", montoMinimo);
+    $("#" + elemento).slider("option", "max", montoMaximo);
+    $("#" + elemento).slider("option", "step", incremento);
+    $(('#montoSeleccionado_' + producto)).val(valorElegido);
+    $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
+}
+
+
+function cambiarPlazo(producto, plazo) {
+    $(('#montoSeleccionado_' + ofertasCalculadas[producto].producto.id)).val(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo);
+    $(('#plazoSeleccionado_' + ofertasCalculadas[producto].producto.id)).val(ofertasCalculadas[producto].listaDeOpciones[plazo].plazos);
+    $(('#periodicidadSeleccionada_' + ofertasCalculadas[producto].producto.id)).val(ofertasCalculadas[producto].listaDeOpciones[plazo].periodicidad.id);
+    $(('#pagoSeleccionado_' + ofertasCalculadas[producto].producto.id)).val(ofertasCalculadas[producto].listaDeOpciones[plazo].cuota);
+    $(('#monto_' + ofertasCalculadas[producto].producto.id)).html(formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo, "$"));
+    $(('#pago_' + ofertasCalculadas[producto].producto.id)).html("<h6>PAGO " + ofertasCalculadas[producto].listaDeOpciones[plazo].periodicidad.nombre.toUpperCase() + "</h6> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].cuota, "$") + " </li>");
+    reiniciarSlider(("flat-slider-" + ofertasCalculadas[producto].producto.id), ofertasCalculadas[producto].producto.id, (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMinimo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), 1000);
+    //inicio-temporal
+    var html = "<h6>CÁLCULOS (Fines de Prueba)</h6>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>CAPACIDAD DE PAGO:</strong> " + ofertasCalculadas[producto].listaDeOpciones[plazo].maximaCapacidadDePago + "</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>BALANCE DE CAJA:</strong> " + ofertasCalculadas[producto].listaDeOpciones[plazo].balanceDeCaja + "</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>MONTO A PAGAR BC:</strong> " + ofertasCalculadas[producto].listaDeOpciones[plazo].montoAPagar + "</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>RATIO:</strong> " + ofertasCalculadas[producto].listaDeOpciones[plazo].ratio + "</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>PROBABILIDAD DE MORA:</strong> " + ofertasCalculadas[producto].listaDeOpciones[plazo].probabilidadDeMora + "</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].tasaDeInteres * 100), 2) + " %</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoSeguro, "$") + "</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoAsistencia, "$") + "</p>";
+    $('#temporal_' + ofertasCalculadas[producto].producto.id).html(html);
+    //fin-temporal
+    var html2 = "4. GARANTIAS <ul>";
+    for (var k = 0; k < ofertasCalculadas[producto].listaDeOpciones[plazo].garantias.length; k++) {
+        html2 += "<li class=\"requisitos\">" + ofertasCalculadas[producto].listaDeOpciones[plazo].garantias[k].descripcion + "</li>";
+    }
+    html2 += "</ul>";
+    $('#requisitos_' + ofertasCalculadas[producto].producto.id).html(html2);
+}
+
+function calcularOferta(producto, montoDeCredito) {
+    console.log("Aca se mandaria llamar el recalculo de la oferta");
+    $("body").mLoading({
+        text: "Recalculando Oferta, espere por favor...",
+        icon: "/images/spinner.gif",
+        mask: true
+    });
+    $.ajax({
+        type: 'POST',
+        data: {
+            productoId: producto,
+            montoDeCredito: montoDeCredito,
+            plazo: $(('#plazoSeleccionado_' + producto)).val(),
+            periodicidadId: $(('#periodicidadSeleccionada_' + producto)).val()
+        },
+        url: "/solicitud/recalcularOferta",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            $(('#pago_' + producto)).html("<h6>PAGO " + respuesta.periodicidad + "</h6> " + formatCurrency(respuesta.cuota.cuota, "$") + " </li>");
+            $(('#pagoSeleccionado_' + producto)).val(respuesta.cuota.cuota);
+            //inicio-temporal
+            var html = "<h6>CÁLCULOS (Fines de Prueba)</h6>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta.tasaDeInteres * 100), 2) + " %</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta.cuota.montoSeguro, "$") + "</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta.cuota.montoAsistencia, "$") + "</p>";
+            $('#temporal_' + producto).html(html);
+            //fin-temporal
+            var html2 = "4. GARANTIAS <ul>";
+            for (var k = 0; k < respuesta.garantias.length; k++) {
+                html2 += "<li class=\"requisitos\">" + respuesta.garantias[k].descripcion + "</li>";
+            }
+            html2 += "</ul>";
+            $('#requisitos_' + producto).html(html2);
+            $("body").mLoading('hide');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            $("body").mLoading('hide');
+        }
+    });
+}
+
+function confirmarSeleccion(posicion, producto) {
+    swal({
+        title: "¡Importante!",
+        text: "¿La oferta elegida es correcta?",
+        type: "warning",
+        showCancelButton: true,
+        cancelButtonText: "No",
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Si",
+        closeOnConfirm: true
+    }, function (isConfirm) {
+        if (isConfirm) {
+            seleccionarOferta(posicion, producto);
+        }
+        return false;
+    });
+}
+
+function seleccionarOferta(posicion, producto) {
+    $('#modalSalvado').fadeIn();
+    $.ajax({
+        type: 'POST',
+        data: {
+            posicion: posicion,
+            productoId: producto,
+            montoDeCredito: $(('#montoSeleccionado_' + producto)).val(),
+            montoPago: $(('#pagoSeleccionado_' + producto)).val(),
+            plazo: $(('#plazoSeleccionado_' + producto)).val(),
+            periodicidadId: $(('#periodicidadSeleccionada_' + producto)).val()
+        },
+        url: "/solicitud/seleccionarOferta",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.error) {
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            } else {
+                avanzarPaso($('#siguientePaso').val());
+            }
+            $('#modalSalvado').fadeOut();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            $('#modalSalvado').fadeOut();
+        }
+    });
+}
+
+function round(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}
+
+// ***************************** Fin de Funciones Perfilador

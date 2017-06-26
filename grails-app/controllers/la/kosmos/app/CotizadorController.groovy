@@ -20,6 +20,8 @@ class CotizadorController {
         session.yaUsoLogin = null
         session.pasosDelCliente = null
         session.archivoTemporal = null
+        session.ofertas = null
+        session.perfil = null
         session["pasoFormulario"] = null
         session["consultaBancos"] = null
         session["consultaBuro"] = null
@@ -186,6 +188,7 @@ class CotizadorController {
             def i = (tasaConI/periodicidad.periodosAnuales)
             println "i: " + i
             def renta =  (c / ((1-((1+i)**(-n)))/i))
+            respuesta.montoAsistencia = montoAsistencia
             respuesta.montoSeguro = montoSeguro
             respuesta.nombrePeriodo = periodicidad.nombre
             respuesta.renta =  renta.round(2)
@@ -205,6 +208,7 @@ class CotizadorController {
                 session.cotizador.documento = (params.txtDocumento ? (params.txtDocumento as long) : 0 )
                 session.cotizador.montoCredito = (params.txtMontoCredito ? (params.txtMontoCredito as float) : 0)
                 session.cotizador.montoSeguro = (params.txtMontoSeguro ? (params.txtMontoSeguro as float) : 0)
+                session.cotizador.montoAsistencia = (params.txtMontoAsistencia ? (params.txtMontoAsistencia as float) : 0)
                 session.cotizador.pagos = (params.txtPago ? (params.txtPago as float) : 0)
                 session.cotizador.periodo = (params.txtPeriodo ? (params.txtPeriodo as long) : 0)
                 session.cotizador.plazo = (params.txtPlazo ? (params.txtPlazo as int) : 0)

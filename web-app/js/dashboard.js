@@ -81,6 +81,11 @@ $(document).ready(function () {
             scrollTop: $("html, body").get(0).scrollHeight
         }, 1500);
     });
+
+    $('.crosCircle').click(function () {
+        $(this).parent().fadeOut();
+    });
+
 });
 
 window.onclick = function (event) {

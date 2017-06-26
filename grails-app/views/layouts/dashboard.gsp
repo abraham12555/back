@@ -117,6 +117,13 @@
                   </a>
               </sec:ifAnyGranted>
           </li>
+          <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_SUCURSAL'>
+                  <a href="${createLink(controller:'dashboard', action:'reportes')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
         </ul>
     <nav id="dashboardMenu" class="container menuBox marginBottom28">
             <ul class="clearFix">
@@ -174,6 +181,14 @@
                         </a>
                     </li>
                 </sec:ifAnyGranted>  
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                    <li class="floatLeft">
+                        <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'reportes')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"></span>
+                            <span>REPORTES</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
             </ul>
         </nav>
 

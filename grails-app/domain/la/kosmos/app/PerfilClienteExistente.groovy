@@ -6,8 +6,8 @@ class PerfilClienteExistente {
     String fechaNacimiento
     String experienciaCrediticia
     int numCredLiqdExp
-    long claveProductoAnterior
-    long claveProductoNuevo
+    String claveProductoAnterior
+    String claveProductoNuevo
     String fecAntigCliCred
     char reactivacion
     char renovacion

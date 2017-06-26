@@ -725,6 +725,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
                 frecTotalPagos = plazo;
                 montoSeguro = respuesta.montoSeguro;
                 $('#txtMontoSeguro').val(montoSeguro);
+                $('#txtMontoAsistencia').val(respuesta.montoAsistencia);
                 $('#pagoCalculado').html("Pago " + respuesta.nombrePeriodo + ": " + formatCurrency(respuesta.renta, "$"));
 
             } else {

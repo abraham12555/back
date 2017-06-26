@@ -68,6 +68,15 @@ body {
     /*For IE7-8-9*/
 }
 
+.otherGreenButton {
+    background-image: -webkit-linear-gradient(0deg, #259b55, #33c56e) !important;
+    background-image: linear-gradient(90deg, #259b55, #33c56e) !important;
+    background: -ms-linear-gradient(90deg, #259b55, #33c56e);
+    box-shadow: 0 0 7px 0 #166ac1 !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#259b55', endColorstr='#33c56e');
+    /*For IE7-8-9*/
+}
+
 .meter>span {
     background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, #2d91f6), color-stop(1, #59c4fb));
     background-image: -moz-linear-gradient( center bottom, rgb(43, 194, 83) 37%, rgb(84, 240, 84) 69%);
@@ -628,6 +637,44 @@ and also iPads specifically.
     td:nth-of-type(9):before { content: "GPA"; }
     td:nth-of-type(10):before { content: "Arbitrary Data"; }*/
     
+    
+    /* Force table to not be like tables anymore */
+    .notificaciones_table thead, .notificaciones_table tbody, .notificaciones_table th, .notificaciones_table td, .notificaciones_table tr {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+
+    .notificaciones_table tbody tr:first-child {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .notificaciones_table td {
+        /* Behave  like a "row" */
+        border: none;
+        position: relative;
+    }
+
+    .notificaciones_table td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+    }
 }
 
 @media only screen and (max-width: 1024px) {
@@ -672,6 +719,10 @@ and also iPads specifically.
 
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
     .solicitudes_table td .font14 {
+        font-size: 14px;
+    }
+    
+    .notificaciones_table td .font14 {
         font-size: 14px;
     }
 }

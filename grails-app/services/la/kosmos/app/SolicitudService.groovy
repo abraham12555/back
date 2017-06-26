@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils
 import org.apache.commons.lang.StringUtils
+import java.time.*
 
 @Transactional
 class SolicitudService {
@@ -626,6 +627,7 @@ class SolicitudService {
                 productoSolicitud.documentoElegido = TipoDeDocumento.get(datosCotizador.documento as long);
                 productoSolicitud.montoDelCredito = datosCotizador.montoCredito as float
                 productoSolicitud.montoDelSeguroDeDeuda = datosCotizador.montoSeguro as float
+                productoSolicitud.montoDeServicioDeAsistencia = (datosCotizador.montoAsistencia as float)
                 productoSolicitud.montoDelPago = datosCotizador.pagos as float
                 productoSolicitud.haTenidoAtrasos = datosCotizador.atrasos
                 productoSolicitud.seguroFinanciado = true
@@ -643,6 +645,7 @@ class SolicitudService {
             productoSolicitud.enganche = datosCotizador.enganche as float
             productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
             productoSolicitud.plazos = datosCotizador.plazo as int
+            productoSolicitud.tasaDeInteres = productoSolicitud.producto.tasaDeInteres
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
                 println("El producto se ha registrado correctamente")
@@ -1344,12 +1347,19 @@ class SolicitudService {
     }
     
     def calcularTiempoTranscurrido(def fechaAComparar){
+        println "Fecha a Comparar " + fechaAComparar
         def aniosTranscurridos = 0
-        use(groovy.time.TimeCategory) {
-            def duration = (new Date()) - fechaAComparar
-            println("Han transcurrido ${duration.years}...")
-            aniosTranscurridos = duration.years
+        /*use(groovy.time.TimeCategory) {
+        def duration = (new Date()) - fechaAComparar
+        println "Duration : " + duration
+        println("Han transcurrido ${duration.years}...")
+        aniosTranscurridos = duration.years
+        }*/
+        Period diff = LocalDate.now().with { now ->
+            Period.between(new java.sql.Date(fechaAComparar.getTime()).toLocalDate(), now)
         }
+        println "Han transcurrido " + diff.getYears() + " años"
+        aniosTranscurridos = diff.getYears()
         aniosTranscurridos
     }
     
@@ -1420,6 +1430,8 @@ class SolicitudService {
         datosSolicitud.cotizador.enganche = productoSolicitud.enganche
         datosSolicitud.cotizador.periodo = (productoSolicitud.periodicidad ? productoSolicitud.periodicidad.id : null)
         datosSolicitud.cotizador.plazo = productoSolicitud.plazos
+        
+        datosSolicitud.pasoFormulario.cliente.tipoDeDocumento = datosSolicitud.cotizador.documento
         
         if(cliente.fechaDeNacimientoDelConyugue){
             datosSolicitud.pasoFormulario.cliente.fechaDeNacimientoDelConyugue = [:]

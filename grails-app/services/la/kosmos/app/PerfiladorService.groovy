@@ -376,7 +376,7 @@ class PerfiladorService {
         def entidadFinanciera
         if(datosSolicitud) {
             entidadFinanciera = EntidadFinanciera.get(datosSolicitud.entidadFinancieraId as long)
-            if(origen == "cotizador") {
+            /*if(origen == "cotizador") {
                 oferta = calcularOferta(datosSolicitud)
                 println "RATIO = " + oferta.ratio 
                 if(oferta.ratio > 1 ){
@@ -386,8 +386,8 @@ class PerfiladorService {
                 }
                 println "NUEVA OFERTA p/solicitudid " + datosSolicitud.idSolicitud 
                 ofertas << oferta
-            }
-            def tipoDeDocumento = TipoDeDocumento.get(idTipoDeDocumento as long) //Falta tomar en cuenta clienteExistente
+            }*/
+            def tipoDeDocumento = (datosSolicitud.documento ?: TipoDeDocumento.get(idTipoDeDocumento as long)) //Falta tomar en cuenta clienteExistente
             //Primer Filtro
             def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
             //Segundo Filtro
@@ -446,7 +446,7 @@ class PerfiladorService {
                     datosSolicitud.periodicidad = plazosPosibles.periodicidad
                     datosSolicitud.producto = producto
                     datosSolicitud.documento = tipoDeDocumento
-                    datosSolicitud.tasaDeInteres = (producto.tasaDeInteres * 12) //* 1.16
+                    datosSolicitud.tasaDeInteres = (producto.tasaDeInteresAnual) //* 1.16
                     datosSolicitud.montoMaximo = producto.montoMaximo
                     oferta = calcularOferta(datosSolicitud)
                     if(oferta.ratio > 1){
@@ -461,7 +461,7 @@ class PerfiladorService {
                         if(respuestaDictamenDePerfil) {
                             def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
                             if(tasaAplicable) {
-                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaMensual*12)
+                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
                                 oferta = calcularOferta(datosSolicitud)
                             }
                             oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
@@ -511,7 +511,7 @@ class PerfiladorService {
                 datosSolicitud.producto = productoSolicitud.producto
                 datosSolicitud.montoDelPago = productoSolicitud.montoDelPago
                 datosSolicitud.documento = productoSolicitud.documentoElegido
-                datosSolicitud.tasaDeInteres = (productoSolicitud.producto.tasaDeInteres*12)
+                datosSolicitud.tasaDeInteres = (productoSolicitud.producto.tasaDeInteresAnual)
                 datosSolicitud.montoMaximo = productoSolicitud.producto.montoMaximo
             }
             println datosSolicitud
@@ -697,6 +697,7 @@ class PerfiladorService {
         println "Oferta encontrada: " + oferta
         if(oferta && identificadores.idSolicitud) {
             def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
+            ProductoSolicitud.executeUpdate("delete ProductoSolicitud ps where ps.solicitud.id = :idSolicitud",[idSolicitud: solicitud.id])
             def productoSolicitud =  new ProductoSolicitud()
             productoSolicitud.producto = Producto.get(params.productoId as long)
             productoSolicitud.documentoElegido = TipoDeDocumento.get(datosSolicitud.cliente.tipoDeDocumento as long);
@@ -708,6 +709,8 @@ class PerfiladorService {
             productoSolicitud.enganche = 0 as float
             productoSolicitud.periodicidad = oferta.periodicidad
             productoSolicitud.plazos = params.plazo as int
+            productoSolicitud.tasaDeInteres = oferta.tasaDeInteres
+            productoSolicitud.montoDeServicioDeAsistencia = oferta.montoAsistencia
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
                 println("El producto se ha registrado correctamente")

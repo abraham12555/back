@@ -22,6 +22,7 @@ class DashboardController {
     def smsService
     def notificacionesService
     def userService
+    def reporteService
     
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
@@ -436,9 +437,10 @@ class DashboardController {
         println params
         def respuesta = [:]
         def ultimoPaso = [:]
+        def entidadFinanciera = session.usuario.entidadFinanciera
         ultimoPaso.tipoDePaso = [:]
         ultimoPaso.tipoDePaso.nombre = "pasoFormulario"
-        session["pasoFormulario"] = solicitudService.construirDatosTemporales(session["pasoFormulario"], params, ultimoPaso, session.identificadores, springSecurityService.currentUser.entidadFinanciera, null, null, springSecurityService.currentUser)
+        session["pasoFormulario"] = solicitudService.construirDatosTemporales(session["pasoFormulario"], params, ultimoPaso, session.identificadores, entidadFinanciera, null, null, springSecurityService.currentUser)
         if(session["pasoFormulario"]?.cliente?.clienteGuardado){
             if(!session.identificadores){
                 session.identificadores = [:]
@@ -550,5 +552,49 @@ class DashboardController {
         def response = [:]
         response.estatus = userService.validNoEmpleado(usuario)
         render response as JSON
+    }
+
+    def reportes () {
+        def reporteSolicitudes = reporteService.obtenerReporte(null,null,null,null)
+        def reporteMitek = reporteService.obtenerReporte(null,null,null,null)
+        def contactoClientes = reporteService.obtenerReporte(null,null,null,null) 
+        [reporteSolicitudes: reporteSolicitudes, reporteMitek: reporteMitek, contactoClientes: contactoClientes]
+    } 
+    
+    def descargarContactos(){
+        def reporte  = reporteService.obtenerReporte("clientes",session.usuario.entidadFinanciera,null,null)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Contacto_Clientes" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
+    }
+    
+    def  descargarReporteMitek(){
+        def reporte  = reporteService.obtenerReporte("mitek",session.usuario.entidadFinanciera,null,null)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Consultas_Mitek" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
+    }
+    
+    def  descargarReporteSolicitudes(){
+        def reporte  = reporteService.obtenerReporte("solicitudes",session.usuario.entidadFinanciera,params.from,params.to)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Solicitudes_Generadas" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
     }
 }

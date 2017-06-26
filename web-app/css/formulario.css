@@ -1449,6 +1449,46 @@ body{
     display: block;
 }
 
+.notificaciones_table{
+    width:100%;
+    border-collapse: collapse;
+}
+
+.notificaciones_table td{
+    margin:0;
+    padding: 5px 10px;
+    font-weight:300;
+}
+
+.notificaciones_table.dashboard td{
+    border:solid 2px #e5e5e5;
+    box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);
+}
+
+.notificaciones_table .lightGrayBG td{
+    border-bottom:none;
+    padding: 10px;
+}
+
+.notificaciones_table td:first-of-type{
+    border-left:none;
+}
+
+.notificaciones_table td:last-of-type{
+    border-right:none;
+}
+
+.notificaciones_table tr:nth-of-type(2) td{
+    border-top:none;
+}
+.notificaciones_table.dashboard tr:first-of-type td{
+    border-top:none;
+}
+
+.notificaciones_table td .greenBox{
+    text-transform: uppercase;
+    cursor:pointer;
+}
 /***********************************************************************************************************************************
                                                           CLEAR FORM 8
 ************************************************************************************************************************************/

@@ -28,7 +28,7 @@ class BootStrap {
         new Producto(nombreDelProducto: "Sentra", marca: marca, entidadFinanciera: entidadFinanciera, tipoDeProducto: tipoDeProducto, activo: true, rutaImagenDefault: "/").save(flush: true);
         new Producto(nombreDelProducto: "March", marca: marca, entidadFinanciera: entidadFinanciera, tipoDeProducto: tipoDeProducto, activo: true, rutaImagenDefault: "/").save(flush: true);
         new Producto(nombreDelProducto: "X-Trail", marca: marca, entidadFinanciera: entidadFinanciera, tipoDeProducto: tipoDeProducto, activo: true, rutaImagenDefault: "/").save(flush: true);
-         */
+        */
     }
     def destroy = {
 

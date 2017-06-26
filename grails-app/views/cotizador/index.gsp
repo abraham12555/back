@@ -44,6 +44,7 @@
                             <g:hiddenField id="txtEnganche" name="txtEnganche" value=""/>
                             <g:hiddenField id="txtMontoCredito" name="txtMontoCredito" value=""/>
                             <g:hiddenField id="txtMontoSeguro" name="txtMontoSeguro" value=""/>
+                            <g:hiddenField id="txtMontoAsistencia" name="txtMontoAsistencia" value=""/>
                             <g:hiddenField id="txtDocumento" name="txtDocumento" value=""/>
                             <g:hiddenField id="txtTieneAtrasos" name="txtTieneAtrasos" value=""/>
                             <g:hiddenField id="txtPlazo" name="txtPlazo" value=""/>
