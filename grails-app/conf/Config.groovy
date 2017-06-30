@@ -117,20 +117,23 @@ log4j.main = {
            'net.sf.ehcache.hibernate'
 }
 
-grails {
-    mail {    
-        host = "smtp.zoho.com"
-        port = 465
-        username = "confirmaciones@micreditolibertad.com"
-        password = "Confirmaciones4321"  
-        props = ["mail.smtp.auth":"true",
-        "mail.smtp.socketFactory.port":"465",
-        "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
-        "mail.smtp.socketFactory.fallback":"false"]
+grails{
+    mail{
+        host= "smtp.zoho.com"
+        port= 465
+        username= "servicio@kosmos.la"
+        password= "servicio"
+        props = [
+            "mail.smtp.auth": "true",
+            "mail.smtp.socketFactory.port": "465",
+            "mail.smtp.socketFactory.class": "javax.net.ssl.SSLSocketFactory",
+            "mail.smtp.socketFactory.fallback": "false",
+            "mail.smtp.startssl.enable": "true"
+        ]
     }
 }
 //grails.mail.disabled=true
-// secondary emailaddress 
+// secondary emailaddress
 // grails.mail.overrideAddress="correo-secundario"
 
 // Added by the Spring Security Core plugin:
@@ -164,8 +167,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
         '/monitoring/**': ['ROLE_ADMIN']
 ]
 
+//Keep username reference from login
 grails.plugin.springsecurity.apf.storeLastUsername=true
+
+//E-mail config
 grails.plugin.springsecurity.ui.forgotPassword.emailSubject = 'Restablecimiento de contraseña'
+grails.plugin.springsecurity.ui.forgotPassword.emailFrom = 'servicio@kosmos.la'
+
+//Enable listeners
 grails.plugin.springsecurity.useSecurityEventListener = true
 
 //Failed login attempts
@@ -177,4 +186,4 @@ bruteforcedefender {
 }
 
 //Password recovery. Minutes
-password.recovery = 30 
+password.recovery = 30

@@ -1,3 +1,7 @@
+$.login = "/login/auth";
+$.validEmail = "/register/validEmail";
+$.passwordRecovery = "/register/forgotPassword";
+
 $(document).ready(function () {
     $('#updatePassword-btn').on('click', function (event) {
         event.preventDefault();
@@ -16,7 +20,6 @@ $(document).ready(function () {
 
     $('#cancelPasswordRecovery-btn').on('click', function (event) {
         event.preventDefault();
-        $.login = "/login/auth";
         window.location.href = $.login;
     });
 });
@@ -61,7 +64,7 @@ function validateForm() {
                 errorMessage($('#email'), "La dirección de correo electrónico no ha sido registrada");
             } else if (response.estatus === "ERROR") {
                 errorMessage($('#email'), "Ocurrió un error al validar la cuenta de correo electrónico. Inténtalo más tarde");
-            } else if (response.estatus === true){
+            } else if (response.estatus === true) {
                 sendRequest();
             }
         });
@@ -73,8 +76,6 @@ function errorMessage(element, message) {
 }
 
 function validEmail(callback) {
-    $.validEmail = "/register/validEmail";
-
     $.ajax({
         type: "POST",
         dataType: "json",
@@ -92,23 +93,42 @@ function validEmail(callback) {
 }
 
 function sendRequest() {
-    $.passwordRecovery = "/register/forgotPassword";
-
     $.ajax({
         type: "POST",
         dataType: "json",
         url: $.passwordRecovery,
         data: "email=" + $("#email").val().trim(),
+        beforeSend: function (XMLHttpRequest, settings) {
+            $("body").mLoading({
+                text: "Enviando solicitud, espere por favor...",
+                icon: "/images/spinner.gif",
+                mask: true
+            });
+        },
         success: function (response) {
-            $("#recoverPassword")[0].reset();
-            $("#successMessage-div").html(response.message);
-            $("#successMessage-div").removeClass("hidden");
+            cargaCompletada();
+
+            if (response.error === true) {
+                $("#errorMessage-div").html(response.message);
+                $("#errorMessage-div").removeClass("hidden");
+            } else {
+                $("#recoverPassword")[0].reset();
+                $("#successMessage-div").html(response.message);
+                $("#successMessage-div").removeClass("hidden");
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
+            cargaCompletada();
+
             $("#errorMessage-div").html("Algo salió mal, intenta nuevamente en unos minutos.");
             $("#errorMessage-div").removeClass("hidden");
         }
     });
 }
 
+function cargaCompletada() {
+    setTimeout(function () {
+        $("body").mLoading('hide');
+    }, 1000);
+}
 

@@ -11,19 +11,19 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="statusEmail-control"></div>
                         </div>
                     </div>
                     <div class="col4 col4-mob floatLeft">
                         <div class="paddingTop5"></div>
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <span class="font14 latterspacing1 center">Estatus de la solicitud</span>
                         </div>
                     </div>
                     <div class="col8 col8-mob floatLeft">
                         <div class="paddingTop5">
-                            <div id="statusEmail-div" style="margin-left: 20px">
+                            <div id="statusEmail-div" class="marginLeft20">
 
                             </div>
                         </div>
@@ -33,18 +33,18 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="emailAsunto-control"></div>
                         </div>
                     </div>
                     <div class="col4 col4-mob floatLeft">
                         <div class="paddingTop5"></div>
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <span class="font14 latterspacing1 center">Asunto</span>
                         </div>
                     </div>
                     <div class="col8 col8-mob floatLeft">
-                        <div class="paddingTop5" style="margin-left: 20px">
+                        <div class="paddingTop5 marginLeft20">
                             <input type="text" id="emailAsunto" name="asunto" class="inputs letterspacing1 font14 width300"placeholder="Asunto"/>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="contenidoEmail-control"></div>
                         </div>
                     </div>

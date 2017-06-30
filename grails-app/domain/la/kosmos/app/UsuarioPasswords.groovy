@@ -9,9 +9,9 @@ class UsuarioPasswords implements Serializable {
 
     }
 
-    UsuarioPasswords(Usuario usuario, String password, Date fecha){
+    UsuarioPasswords(Usuario usuario, Date fecha){
         this.usuario = usuario
-        this.password = password
+        this.password = usuario.password
         this.fecha = fecha
     }
 

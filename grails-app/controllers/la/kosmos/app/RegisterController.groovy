@@ -40,23 +40,29 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
         }
 
         String email = user.email
+        def response = [:]
 
-        //TODO: catch exceptions and show an error message
-        RegistrationCode registrationCode = uiRegistrationCodeStrategy.sendForgotPasswordMail(
-            user.username, email) { String registrationCodeToken ->
+        try {
+            RegistrationCode registrationCode = uiRegistrationCodeStrategy.sendForgotPasswordMail(
+                user.username, email) { String registrationCodeToken ->
 
-            String url = generateLink('resetPassword', [t: registrationCodeToken])
-            String body = userService.passwordRecoveryMessage()
+                String url = generateLink('resetPassword', [t: registrationCodeToken])
+                String body = userService.passwordRecoveryMessage()
 
-            if (body.contains('$')) {
-                body = evaluate(body, [user: user, url: url])
+                if (body.contains('$')) {
+                    body = evaluate(body, [user: user, url: url])
+                }
+
+                body
             }
 
-            body
+            response.message = "Se ha enviado un mensaje a su cuenta de correo electrónico con las instrucciones que debe seguir para continuar con el proceso de restablecimiento de contraseña."
+        } catch (Exception e){
+            log.error ("Ocurrio un error al enviar el correo electronico", e)
+            response.error = Boolean.TRUE
+            response.message = "Ha ocurrido un error al enviar el correo electrónico. Por favor inténtalo más tarde."
         }
 
-        def response = [:]
-        response.message = "Se ha enviado un mensaje a su cuenta de correo electrónico con las instrucciones que debe seguir para continuar con el proceso de restablecimiento de contraseña."
         render response as JSON
     }
 

@@ -15,6 +15,7 @@ class Constants {
     def static final DAY_MONTH = "1"
     static final String URL_CHANGE_PASSWORD = "/login/changePassword"
     static final String CURRENT_USER = "usuario"
+    static final String CONFIRMATION_TEMPLATE = "/templates/correoConfirmacion.vm"
     static final Integer TOTAL_ROWS = 15
     static final Long ENTIDAD_FINANCIERA_ROOT = 1
     static final Integer STATUS_SOLICITUD_NOTIFICACION = 5

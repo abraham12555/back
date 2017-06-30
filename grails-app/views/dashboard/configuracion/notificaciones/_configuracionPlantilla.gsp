@@ -11,19 +11,19 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="status-control"></div>
                         </div>
                     </div>
                     <div class="col4 col4-mob floatLeft">
                         <div class="paddingTop5"></div>
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <span class="font14 latterspacing1 center">Estatus de la solicitud</span>
                         </div>
                     </div>
                     <div class="col8 col8-mob floatLeft">
                         <div class="paddingTop5">
-                            <div id="status-div" style="margin-left: 20px">
+                            <div id="status-div" class="marginLeft20">
 
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="contenidoSms-control"></div>
                         </div>
                     </div>

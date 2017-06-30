@@ -22,12 +22,12 @@ class DashboardController {
     def smsService
     def notificacionesService
     def userService
-    
+
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
         def temporales = dashboardService.listaDeSolicitudesTemporales()
         def entidadFinanciera = session.usuario.entidadFinanciera
-        
+
         def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
         //linea agregada para obtener el usuario
         session.usuarioNombre= springSecurityService.currentUser.nombre
@@ -122,7 +122,7 @@ class DashboardController {
 
         println tipoDeIngresos
         [   listaDeTiposDeIngresos:tipoDeIngresos,
-            listaDeRoles: roles, 
+            listaDeRoles: roles,
             listaSucursales: sucursales,
             listaDeProductos: productos,
             configuracionBuroCredito:configuracionBuroCredito,
@@ -398,7 +398,7 @@ class DashboardController {
         def hoy = new Date()
         [razonSocial:session.configuracion?.razonSocial, fechaActual: (hoy[DATE] + " de " + hoy.format("MMMM") + " de " + hoy[YEAR])]
     }
-    
+
     def solicitarCodigo() {
         println params
         def respuesta = [:]
@@ -431,7 +431,7 @@ class DashboardController {
         }
         render respuesta as JSON
     }
-    
+
     def estructurarSolicitud(){
         println params
         def respuesta = [:]
@@ -453,7 +453,7 @@ class DashboardController {
         println session.identificadores
         render respuesta as JSON
     }
-    
+
     def obtenerOfertas(){
         println params
         def respuesta
@@ -464,14 +464,14 @@ class DashboardController {
         render respuesta as JSON
         //render(template: "perfilador/ofertas", model: [ofertas: respuesta])
     }
-    
+
     def recalcularOferta() {
         println params
         def respuesta = [:]
         respuesta = perfiladorService.recalcularOferta(session.ofertas, params)
         render respuesta as JSON
     }
-    
+
     def seleccionarOferta() {
         println params
         def respuesta
@@ -482,7 +482,7 @@ class DashboardController {
         session.perfil = null
         render(template: "perfilador/confirmacion", model: [ofertaSeleccionada: respuesta])
     }
-    
+
     def buscarPerfilExistente(){
         println params
         def respuesta
@@ -492,7 +492,7 @@ class DashboardController {
         }
         render respuesta as JSON
     }
-    
+
     def getUsers() {
         Pager pager = new Pager(request.JSON)
         def entidadFinanciera = session.usuario.entidadFinanciera
@@ -506,7 +506,7 @@ class DashboardController {
     }
 
     def getUserDetails(){
-        def response = userService.getUserDetails(params)
+        def response = userService.getUserDetails(params.idUser)
         render response as JSON
     }
 
@@ -525,10 +525,10 @@ class DashboardController {
         response.estatus = userService.validEmail(usuario)
         render response as JSON
     }
-    
+
     def autenticarUsuario(){
         def response = [:]
-        
+
         Usuario usuario = springSecurityService.currentUser
         if (usuario == null){
             response.estatus = Boolean.FALSE
@@ -540,15 +540,36 @@ class DashboardController {
                 response.message = "La contraseña es incorrecta"
             }
         }
-        
+
         render response as JSON
     }
-    
+
     def validNoEmpleado(){
         User usuario = new User(request.JSON)
+        def entidadFinanciera = session.usuario.entidadFinanciera
 
         def response = [:]
-        response.estatus = userService.validNoEmpleado(usuario)
+        response.estatus = userService.validNoEmpleado(usuario, entidadFinanciera)
+        render response as JSON
+    }
+
+    def getProfile(){
+        Usuario usuario = springSecurityService.currentUser
+        def response = userService.getUserDetails(usuario.id)
+        render response as JSON
+    }
+
+    def saveProfile(){
+        Usuario usuario = springSecurityService.currentUser
+
+        def response = userService.saveProfile(usuario, params)
+        render response as JSON
+    }
+
+    def updatePassword(){
+        Usuario usuario = springSecurityService.currentUser
+
+        def response = userService.updateProfilePassword(usuario, params)
         render response as JSON
     }
 }

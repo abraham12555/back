@@ -11,19 +11,19 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="frequency-control"></div>
                         </div>
                     </div>
                     <div class="col4 col4-mob floatLeft">
                         <div class="paddingTop5"></div>
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <span class="font14 latterspacing1 center">Enviar mensajes cada</span>
                         </div>
                     </div>
                     <div class="col8 col8-mob floatLeft">
                         <div class="paddingTop5">
-                            <div id="cronOptions-div" style="margin-left: 20px">
+                            <div id="cronOptions-div" class="marginLeft20">
 
                             </div>
                         </div>
@@ -31,12 +31,12 @@
                 </div>
                 <div class="col12 col12-mob floatLeft">
                     <div class="col12 col12-mob floatLeft paddingTop5">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="time-control"></div>
                         </div>
                     </div>
                     <div class="col12 col12-mob floatLeft">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="eachHour" class="paddingTop10 hide">
                                 <label>A las </label>
                                 <input type="text" id="hours-cron" name="hour" class="inputs lightGray letterspacing1 font14 only-number" maxlength="2"> horas
@@ -65,7 +65,7 @@
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
                     <div class="col8 col8-mob floatLeft paddingTop15">
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <div id="template-control"></div>
                         </div>
                     </div>
@@ -73,13 +73,13 @@
                 <div class="col12 col12-mob floatLeft hide" id="smsTemplateConfig-div">
                     <div class="col4 col4-mob floatLeft">
                         <div class="paddingTop5"></div>
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <span class="font14 latterspacing1 center">Plantilla SMS</span>
                         </div>
                     </div>
                     <div class="col8 col8-mob floatLeft">
                         <div class="paddingTop5">
-                            <div id="smsOptions-div" style="margin-left: 20px">
+                            <div id="smsOptions-div" class="marginLeft20">
 
                             </div>
                         </div>
@@ -88,13 +88,13 @@
                 <div class="col12 col12-mob floatLeft hide" id="emailTemplateConfig-div">
                     <div class="col4 col4-mob floatLeft">
                         <div class="paddingTop20"></div>
-                        <div style="margin-left: 20px">
+                        <div class="marginLeft20">
                             <span class="font14 latterspacing1 center">Plantillas email</span>
                         </div>
                     </div>
                     <div class="col8 col8-mob floatLeft">
                         <div class="paddingTop20">
-                            <div id="emailOptions-div" style="margin-left: 20px">
+                            <div id="emailOptions-div" class="marginLeft20">
 
                             </div>
                         </div>

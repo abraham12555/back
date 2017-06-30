@@ -1,6 +1,9 @@
 var solicitudes;
 var kosmosDropzone;
 var pasoActual = 1;
+$.validUsername = "/dashboard/validUsername";
+$.validEmail = "/dashboard/validEmail";
+
 function w3_open() {
     document.getElementById("mySidenav").style.display = "block";
 }
@@ -666,5 +669,49 @@ function buildPagination(i, page) {
         });
 
         return li;
+    });
+}
+
+function validUsername(callback) {
+    var usuario = new Object();
+    usuario.id = $("#userId").val().trim();
+    usuario.username = $("#username").val().trim();
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.validUsername,
+        data: JSON.stringify(usuario),
+        contentType: "application/json",
+        cache: false,
+        success: function (response) {
+            callback(response);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            var response = {estatus: "ERROR"};
+            callback(response);
+        }
+    });
+}
+
+function validEmail(callback) {
+    var usuario = new Object();
+    usuario.id = $("#userId").val().trim();
+    usuario.email = $("#email").val().trim();
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.validEmail,
+        data: JSON.stringify(usuario),
+        contentType: "application/json",
+        cache: false,
+        success: function (response) {
+            callback(response);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            var response = {estatus: "ERROR"};
+            callback(response);
+        }
     });
 }

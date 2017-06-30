@@ -13,8 +13,7 @@
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        <g:external dir="js" file="register/register.min.js" />
-        <g:external dir="js" file="validaciones.js" />
+        <g:external dir="js" file="validaciones.min.js" />
     </head>
     <body class="loginBody">
         <div class="loginContainer" style="width: 750px;">

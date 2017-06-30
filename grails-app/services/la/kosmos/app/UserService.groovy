@@ -2,6 +2,8 @@ package la.kosmos.app
 
 import grails.gorm.DetachedCriteria
 import grails.plugin.springsecurity.ui.RegistrationCode
+import grails.plugin.springsecurity.ui.SpringSecurityUiService
+import grails.plugin.springsecurity.ui.strategy.MailStrategy
 import grails.transaction.Transactional
 import java.util.Calendar
 import java.util.HashSet
@@ -25,6 +27,9 @@ class UserService {
     def postAuthenticationChecks
     def passwordEncoder
     def grailsApplication
+    def springSecurityUiService
+    def uiMailStrategy
+    def uiRegistrationCodeStrategy
 
     def changePassword(String username, String password){
         if(username == null){
@@ -42,20 +47,10 @@ class UserService {
 
     private Authentication updatePassword(Usuario user, String password){
         //Validating new password
-        if(passwordEncoder.isPasswordValid(user.password, password, null)){
-            throw new BusinessException("Operación inválida. La contraseña ya ha sido usada con anterioridad")
-        } else {
-            if(!user.userPasswords?.empty){
-                user.userPasswords.each {
-                    if(passwordEncoder.isPasswordValid(it.password, password, null)){
-                        throw new BusinessException("Operación inválida. La contraseña ya ha sido usada con anterioridad")
-                    }
-                }
-            }
-        }
+        checkPasswordRecord(user, password)
 
         //Saving current password
-        UsuarioPasswords userPassword = new UsuarioPasswords(user, user.password, Calendar.getInstance().getTime());
+        UsuarioPasswords userPassword = new UsuarioPasswords(user, Calendar.getInstance().getTime());
 
         //Updating password
         user.password = password
@@ -72,8 +67,8 @@ class UserService {
 
         //Adding PreAuthenticationChecks functionality
         preAuthenticationChecks.check(userDetails)
-        
-        try {      
+
+        try {
             //Adding PostAuthenticationChecks functionality
             postAuthenticationChecks.check(userDetails)
 
@@ -82,6 +77,21 @@ class UserService {
             return SecurityContextHolder.context.authentication
         }   catch(MultipleSelectionException e){
             return null
+        }
+    }
+
+    private void checkPasswordRecord(Usuario user, String password){
+        //Validating new password
+        if(passwordEncoder.isPasswordValid(user.password, password, null)){
+            throw new BusinessException("Operación inválida. La contraseña ya ha sido usada con anterioridad")
+        } else {
+            if(!user.userPasswords?.empty){
+                user.userPasswords.each {
+                    if(passwordEncoder.isPasswordValid(it.password, password, null)){
+                        throw new BusinessException("Operación inválida. La contraseña ya ha sido usada con anterioridad")
+                    }
+                }
+            }
         }
     }
 
@@ -145,8 +155,8 @@ class UserService {
         return userList
     }
 
-    def getUserDetails(params){
-        Usuario user = Usuario.get(params.idUser)
+    def getUserDetails(id){
+        Usuario user = Usuario.get(id)
         return new User(user)
     }
 
@@ -195,7 +205,7 @@ class UserService {
     def deleteRegistrationCode(String token){
         def registrationCode = RegistrationCode.findByToken(token)
         if (registrationCode != null){
-            registrationCode.delete();
+            uiRegistrationCodeStrategy.deleteRegistrationCode(registrationCode)
         }
     }
 
@@ -342,9 +352,9 @@ class UserService {
             criteria.deleteAll()
         }
     }
-    
-    def validNoEmpleado(User usuario){
-        Usuario user = Usuario.findByNumeroDeEmpleado(usuario.noEmpleado)
+
+    def validNoEmpleado(User usuario, EntidadFinanciera entidadFinanciera){
+        Usuario user = Usuario.where{numeroDeEmpleado == usuario.noEmpleado && entidadFinanciera == entidadFinanciera}.get()
         if(user == null) {
             return Boolean.TRUE
         } else {
@@ -354,6 +364,65 @@ class UserService {
             } else {
                 return Boolean.FALSE
             }
+        }
+    }
+
+    RegistrationCode sendForgotPasswordMail(String username, String emailAddress, Closure emailBodyGenerator) {
+
+        RegistrationCode registrationCode = springSecurityUiService.save(username: username, RegistrationCode, 'sendForgotPasswordMail', transactionStatus)
+        if (!registrationCode.hasErrors()) {
+            String body = emailBodyGenerator(registrationCode.token)
+
+            uiMailStrategy.sendForgotPasswordMail(to: emailAddress, from: springSecurityUiService.forgotPasswordEmailFrom,
+                subject: springSecurityUiService.forgotPasswordEmailSubject, html: body)
+        }
+
+        registrationCode
+    }
+
+    def saveProfile(Usuario usuario, params){
+        def respuesta = [:]
+
+        Usuario u = Usuario.get(usuario.id)
+        u.username = params.username
+        u.nombre = params.nombre
+        u.apellidoPaterno = params.apellidoPaterno
+        u.apellidoMaterno = params.apellidoMaterno
+        u.email = params.email
+
+        if(!u.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
+            respuesta.error = Boolean.TRUE
+            respuesta.mensaje = "Ocurrió un error al actualizar la información. Intente nuevamente más tarde."
+            return respuesta
+        }
+
+        return respuesta
+    }
+
+    def updateProfilePassword(Usuario usuario, params){
+        def respuesta = [:]
+        String password = params.password
+
+        Usuario user = Usuario.get(usuario.id)
+
+        try {
+            checkPasswordRecord(user, password)
+        } catch (BusinessException ex){
+            respuesta.error = Boolean.TRUE
+            respuesta.mensaje = ex.getMessage()
+            return respuesta
+        }
+
+        //Saving current password
+        UsuarioPasswords userPassword = new UsuarioPasswords(user, Calendar.getInstance().getTime());
+
+        //Updating password
+        user.password = password
+        user.fechaPassword = Calendar.getInstance().getTime()
+        user.addToUserPasswords(userPassword);
+
+        if(!user.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
+            throw new BusinessException("Ocurrió un error. Inténtalo más tarde")
         }
     }
 }

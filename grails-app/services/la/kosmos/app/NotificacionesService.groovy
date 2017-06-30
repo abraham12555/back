@@ -23,6 +23,7 @@ class NotificacionesService {
     def configuracionNotificacionesService
     def smsService
     def executorService
+    def emailService
 
     def buildNotification(id) {
         NotificacionesCron notificacionCron = NotificacionesCron.get(id)
@@ -339,9 +340,7 @@ class NotificacionesService {
 
     private boolean sendEmailMessage(String asunto, String email, String message, ConfiguracionEntidadFinanciera configuracion) throws Exception {
         Future future = executorService.submit([call: {
-                    boolean value
-                    def emailTestService = new EmailConfiguration(configuracion.emailHost, configuracion.emailFrom, configuracion.emailPort, configuracion.emailUsername, configuracion.emailPassword);
-                    value = emailTestService.sendEmail(asunto, email, message)
+                    boolean value = emailService.sendPlainText(configuracion, asunto, email, message)
                     return value
                 }] as Callable)
         boolean response = future.get()

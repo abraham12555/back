@@ -1,6 +1,8 @@
 // Place your Spring DSL code here
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+import la.kosmos.app.MailStrategyService
+import la.kosmos.app.RegistrationCodeStrategyService
 import la.kosmos.app.security.AuthenticationFailureListener
 import la.kosmos.app.security.AuthenticationSuccessEventListener
 import la.kosmos.app.security.UserLoginDetailsService
@@ -23,11 +25,11 @@ beans = {
     }
 
     userDetailsService(UserLoginDetailsService)
-    
+
     preAuthenticationChecks(CustomPreAuthenticationChecks)
-    
-    postAuthenticationChecks(CustomPostAuthenticationChecks)   
-    
+
+    postAuthenticationChecks(CustomPostAuthenticationChecks)
+
     authenticationFailureListener(AuthenticationFailureListener) {
         loginAttemptCacheService = ref('loginAttemptCacheService')
     }
@@ -36,4 +38,12 @@ beans = {
         loginAttemptCacheService = ref('loginAttemptCacheService')
     }
 
+    uiRegistrationCodeStrategy(RegistrationCodeStrategyService) {
+        springSecurityUiService = ref('springSecurityUiService')
+        userService = ref('userService')
+    }
+
+    uiMailStrategy(MailStrategyService){
+        mailService = ref('mailService')
+    }
 }

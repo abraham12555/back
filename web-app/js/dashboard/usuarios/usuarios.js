@@ -5,8 +5,6 @@
  */
 $.getUsers = "/dashboard/getUsers";
 $.getUserDetails = "/dashboard/getUserDetails";
-$.validUsername = "/dashboard/validUsername";
-$.validEmail = "/dashboard/validEmail";
 $.validNoEmpleado = "/dashboard/validNoEmpleado";
 $.userAuthentication = false;
 $.currentValue;
@@ -22,11 +20,8 @@ $(document).ready(function () {
         resetUserForm();
         $("#userId").val("0");
         $("#password-div").css("display", "block");
-        $("#password-field").css("display", "block");
         $("#lock-div").css("display", "none");
-        $("#lock-field").css("display", "none");
         $("#enabled-div").css("display", "none");
-        $("#enabled-field").css("display", "none");
         $("#operation-title").html("registro de usuario");
         openModal('modalAltaDeUsuario');
     });
@@ -45,7 +40,7 @@ $(document).ready(function () {
 
     $('#rol').focus(function () {
         if (!$.userAuthentication && $("#userId").val() !== "0") {
-            $('p[class*="help-block"]').each(function () {
+            $('span[class*="help-block"]').each(function () {
                 $(this).remove();
             });
             $("#formUserAuthentication")[0].reset();
@@ -65,17 +60,20 @@ $(document).ready(function () {
         $('#rol').css("display", "block");
         cerrarModal('loginUsuario');
     });
-    
-    $('#userName').keyup(function(){
+
+    $('#username').keyup(function () {
         this.value = this.value.toLowerCase();
     });
+
+    $("#rol").selectmenu().selectmenu("menuWidget").addClass("overflow-select");
+    $("#sucursal").selectmenu().selectmenu("menuWidget").addClass("overflow-select");
 
     getUsers(1);
 });
 
 function getUsers(page) {
     $("#currentPage").val(page);
-    
+
     var filter = new Object();
     filter.page = page;
 
@@ -99,7 +97,7 @@ function getUsers(page) {
                     }
                     row += '<tr>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                    row += 'username <br/>';
+                    row += 'Nombre de usuario <br/>';
                     row += '<span class="font14 textlower tableDescriptionColor">' + this.username + '</span>';
                     row += '</td>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
@@ -145,83 +143,83 @@ function getUsers(page) {
 function validateUserInfoForm() {
     var errors = 0;
 
-    $('p[class*="help-block"]').each(function () {
+    $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });
 
     if ($("#name").val().trim() === "") {
         errors++;
-        errorMessage($('#name'), "El campo es obligatorio");
+        errorMessage("name", "El campo es obligatorio");
     }
 
     if ($("#apPaterno").val().trim() === "") {
         errors++;
-        errorMessage($('#apPaterno'), "El campo es obligatorio");
+        errorMessage('apPaterno', "El campo es obligatorio");
     }
 
     if ($("#apMaterno").val().trim() === "") {
         errors++;
-        errorMessage($('#apMaterno'), "El campo es obligatorio");
+        errorMessage('apMaterno', "El campo es obligatorio");
     }
 
-    if ($("#userName").val().trim() === "") {
+    if ($("#username").val().trim() === "") {
         errors++;
-        errorMessage($('#userName'), "El campo es obligatorio");
-    } else if ($("#userName").val().length < 6 || $("#userName").val().length > 12) {
+        errorMessage('username', "El campo es obligatorio");
+    } else if ($("#username").val().length < 6 || $("#username").val().length > 12) {
         errors++;
-        errorMessage($('#userName'), "El nombre de usuario debe contener mínimo 6 y máximo 12 caracteres");
+        errorMessage('username', "El nombre de usuario debe contener mínimo 6 y máximo 12 caracteres");
     }
 
     if ($("#userId").val() === "0" && $("#password").val().trim() === "") {
         errors++;
-        errorMessage($('#password'), "El campo es obligatorio");
+        errorMessage('password', "El campo es obligatorio");
     } else if ($("#userId").val() === "0" && !validatePassword($("#password").val().trim())) {
         errors++;
-        errorMessage($('#password'), "La contraseña debe contener mínimo 8 y máximo 12 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial");
+        errorMessage('password', "La contraseña debe contener mínimo 8 y máximo 12 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial");
     }
 
     if ($('#email').val().trim() === "") {
         errors++;
-        errorMessage($('#email'), "El campo es obligatorio");
+        errorMessage('email', "El campo es obligatorio");
     } else if (!validateEmail($('#email').val())) {
         errors++;
-        errorMessage($('#email'), "Tu dirección de correo es incorrecta, verifica la estructura. Ej. ejemplo@mail.com");
+        errorMessage('email', "Tu dirección de correo es incorrecta, verifica la estructura. Ej. ejemplo@mail.com");
     }
 
     if ($('#sucursal').val().length === 0) {
         errors++;
-        errorMessage($('#sucursal'), "El campo es obligatorio");
+        errorMessage('sucursal', "El campo es obligatorio");
     }
-    
+
     if ($("#noEmpleado").val().trim() === "") {
         errors++;
-        errorMessage($('#noEmpleado'), "El campo es obligatorio");
+        errorMessage('noEmpleado', "El campo es obligatorio");
     }
 
     if ($("#rol").val() === null || $('#rol').val().length === 0) {
         errors++;
-        errorMessage($('#rol'), "El campo es obligatorio");
+        errorMessage('rol', "El campo es obligatorio");
     }
-    
+
 
     if (errors === 0) {
         validUsername(function (response) {
             if (response.estatus === false) {
-                errorMessage($('#userName'), "El nombre de usuario ya ha sido registrado");
+                errorMessage('username', "El nombre de usuario ya ha sido registrado");
             } else if (response.estatus === "ERROR") {
-                errorMessage($('#userName'), "Ocurrió un error al validar el nombre de usuario");
+                errorMessage('username', "Ocurrió un error al validar el nombre de usuario");
             } else {
                 validEmail(function (response) {
                     if (response.estatus === false) {
-                        errorMessage($('#email'), "La cuenta de correo electrónico ya ha sido registrada");
+                        errorMessage('email', "La cuenta de correo electrónico ya ha sido registrada");
                     } else if (response.estatus === "ERROR") {
-                        errorMessage($('#email'), "Ocurrió un error al validar la cuenta de correo electrónico");
+                        errorMessage('email', "Ocurrió un error al validar la cuenta de correo electrónico");
                     } else {
                         validNoEmpleado(function (response) {
                             if (response.estatus === false) {
-                                errorMessage($('#noEmpleado'), "El número de empleado ya ha sido registrado");
+                                errorMessage('noEmpleado', "El número de empleado ya ha sido registrado");
                             } else if (response.estatus === "ERROR") {
-                                errorMessage($('#noEmpleado'), "Ocurrió un error al validar el número de empleado");
+                                errorMessage('noEmpleado', "Ocurrió un error al validar el número de empleado");
                             } else {
                                 submitUserForm();
                             }
@@ -234,11 +232,11 @@ function validateUserInfoForm() {
 }
 
 function errorMessage(element, message) {
-    element.closest('.control').before("<p class='help-block marginRight25'><small style='color: red;'>" + message + "</small></p>");
+    $("#" + element + "-control").html("<span class='help-block marginRight25'><small style='color: red;'>" + message + "</small></span>");
 }
 
 function resetUserForm() {
-    $('p[class*="help-block"]').each(function () {
+    $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });
     $("#formAltaUsuario")[0].reset();
@@ -262,9 +260,8 @@ function viewUserDetails(idUser) {
             $("#name").val(response.nombre);
             $("#apPaterno").val(response.apellidoPaterno);
             $("#apMaterno").val(response.apellidoMaterno);
-            $("#userName").val(response.username);
+            $("#username").val(response.username);
             $("#password-div").css("display", "none");
-            $("#password-field").css("display", "none");
             $("#email").val(response.email);
             $("#rol").val(data).change();
             $("#sucursal").val(response.sucursal.id).change();
@@ -273,9 +270,7 @@ function viewUserDetails(idUser) {
             $("input[name='enabled'][value=" + response.enabled + "]").prop('checked', true);
 
             $("#lock-div").css("display", "block");
-            $("#lock-field").css("display", "block");
             $("#enabled-div").css("display", "block");
-            $("#enabled-field").css("display", "block");
             $("#operation-title").html("datos del usuario");
 
             $.userAuthentication = false;
@@ -284,50 +279,6 @@ function viewUserDetails(idUser) {
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-        }
-    });
-}
-
-function validUsername(callback) {
-    var usuario = new Object();
-    usuario.id = $("#userId").val().trim();
-    usuario.username = $("#userName").val().trim();
-
-    $.ajax({
-        type: "POST",
-        dataType: "json",
-        url: $.validUsername,
-        data: JSON.stringify(usuario),
-        contentType: "application/json",
-        cache: false,
-        success: function (response) {
-            callback(response);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            var response = {estatus: "ERROR"};
-            callback(response);
-        }
-    });
-}
-
-function validEmail(callback) {
-    var usuario = new Object();
-    usuario.id = $("#userId").val().trim();
-    usuario.email = $("#email").val().trim();
-
-    $.ajax({
-        type: "POST",
-        dataType: "json",
-        url: $.validEmail,
-        data: JSON.stringify(usuario),
-        contentType: "application/json",
-        cache: false,
-        success: function (response) {
-            callback(response);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            var response = {estatus: "ERROR"};
-            callback(response);
         }
     });
 }
@@ -370,7 +321,7 @@ function submitUserForm() {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
                 cerrarModal('modalAltaDeUsuario');
-                
+
                 getUsers(parseInt($("#currentPage").val()));
                 sweetAlert({html: false, title: "¡Excelente!", text: "Los datos del usuario se han guardado correctamente.", type: "success"});
             }
@@ -382,7 +333,7 @@ function submitUserForm() {
 }
 
 function userAuthentication() {
-    $('p[class*="help-block"]').each(function () {
+    $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });
 
