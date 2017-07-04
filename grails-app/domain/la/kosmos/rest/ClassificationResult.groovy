@@ -28,7 +28,8 @@ class ClassificationResult implements Serializable{
     String reference
     String respuestaOriginal
     String folioSolicitud
-   
+    String fechaDeRespuesta = new Date()
+    
     static constraints = {
         solicitud nullable: true
         givenname nullable: false
@@ -51,6 +52,7 @@ class ClassificationResult implements Serializable{
         dossierId nullable: true
         respuestaOriginal nullable: true
         folioSolicitud nullable: true
+        fechaDeRespuesta nullable: true
     }
     
     static mapping = {

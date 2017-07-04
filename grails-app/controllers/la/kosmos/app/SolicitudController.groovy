@@ -33,6 +33,7 @@ class SolicitudController {
     def urlShortenerService
     def smsService
     def emailSenderService
+    def perfiladorService
 	
     int timeWait = 500
     def maximumAttempts = 100
@@ -598,6 +599,7 @@ class SolicitudController {
                 def parrafos
                 def pasoActual
                 def entidadFinanciera = session.ef
+                def aplicaPasoOpcional = false
                 def configuracion = session.configuracion
                 session.noChecarCamposLlenos = null
                 if(session.pasosDelCliente){
@@ -614,55 +616,58 @@ class SolicitudController {
                     }
                 }
                 println("Paso a avanzar: " + pasoActual);
-                session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl, null)
-                if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
-                    if(!session.identificadores){
-                        session.identificadores = [:]
-                    }
-                    if(!session.estadoRecuperacion){
-                        session.estadoRecuperacion = [:]
-                    }
-                    if(pasoAnterior == 1){
-                        if(!session.identificadores.idCliente) {
-                            session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
+                if(pasoAnterior > 0) {
+                    session[ultimoPaso.tipoDePaso.nombre] = solicitudService.construirDatosTemporales(session[ultimoPaso.tipoDePaso.nombre], params, ultimoPaso, session.identificadores, session.ef, session.token, session.shortUrl, null)
+                    if(session["pasoFormulario"]?.cliente?.clienteGuardado || session.identificadores?.idSolicitud){
+                        if(!session.identificadores){
+                            session.identificadores = [:]
                         }
-                        if(!session.identificadores.idSolicitud) {
-                            session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
+                        if(!session.estadoRecuperacion){
+                            session.estadoRecuperacion = [:]
                         }
-                        if(!session.identificadores.idProductoSolicitud) {
-                            session.identificadores.idProductoSolicitud = solicitudService.registrarProducto(session.cotizador, session.identificadores)
-                        }
-                        session.identificadores.idSolicitudTemporal = null
-                        if(session.archivoTemporal){
-                            def archivoMovido = solicitudService.moverDocumento(session.archivoTemporal, session.identificadores.idSolicitud)
-                            if(archivoMovido){
-                                session.archivoTemporal = null
+                        if(pasoAnterior == 1){
+                            if(!session.identificadores.idCliente) {
+                                session.identificadores.idCliente = session["pasoFormulario"]?.cliente?.idCliente
                             }
-                        }
-                        if(session.identificadores.idProductoSolicitud){
-                            session.estadoRecuperacion.paso1 = true
-                        }
-                    } else if(pasoAnterior == 2){
-                        if(!session.identificadores.idDireccion) {
-                            session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
-                        }
-                        if(session.identificadores.idDireccion){
-                            session.estadoRecuperacion.paso2 = true
-                        }
-                    } else if(pasoAnterior == 3){
-                        if(!session.identificadores.idEmpleo) {
-                            session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
-                        }
-                        session.identificadores.idReferencia1 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia1
-                        session.identificadores.idReferencia2 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia2
-                        session.identificadores.idReferencia3 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia3
-                        if(session.identificadores.idEmpleo) {
-                            session.estadoRecuperacion.paso3 = true
-                        }
-                    } else if (pasoAnterior == 4) {
-                        if(!session.identificadores.idParametroConsultaBuro) {
-                            println session["consultaBuro"]
-                            session.identificadores.idParametroConsultaBuro = session["consultaBuro"]?.idParametroConsultaBuro
+                            if(!session.identificadores.idSolicitud) {
+                                session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
+                            }
+                            if(!session.identificadores.idProductoSolicitud) {
+                                session.identificadores.idProductoSolicitud = solicitudService.registrarProducto(session.cotizador, session.identificadores)
+                                session["pasoFormulario"].cliente.tipoDeDocumento = session.cotizador.documento
+                            }
+                            session.identificadores.idSolicitudTemporal = null
+                            if(session.archivoTemporal){
+                                def archivoMovido = solicitudService.moverDocumento(session.archivoTemporal, session.identificadores.idSolicitud)
+                                if(archivoMovido){
+                                    session.archivoTemporal = null
+                                }
+                            }
+                            if(session.identificadores.idProductoSolicitud){
+                                session.estadoRecuperacion.paso1 = true
+                            }
+                        } else if(pasoAnterior == 2){
+                            if(!session.identificadores.idDireccion) {
+                                session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
+                            }
+                            if(session.identificadores.idDireccion){
+                                session.estadoRecuperacion.paso2 = true
+                            }
+                        } else if(pasoAnterior == 3){
+                            if(!session.identificadores.idEmpleo) {
+                                session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
+                            }
+                            session.identificadores.idReferencia1 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia1
+                            session.identificadores.idReferencia2 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia2
+                            session.identificadores.idReferencia3 = session["pasoFormulario"]?.referenciaPersonalCliente?.idReferencia3
+                            if(session.identificadores.idEmpleo) {
+                                session.estadoRecuperacion.paso3 = true
+                            }
+                        } else if (pasoAnterior == 4) {
+                            if(!session.identificadores.idParametroConsultaBuro) {
+                                println session["consultaBuro"]
+                                session.identificadores.idParametroConsultaBuro = session["consultaBuro"]?.idParametroConsultaBuro
+                            }
                         }
                     }
                 }
@@ -670,8 +675,9 @@ class SolicitudController {
                     session.invalidate()
                     render modelo as JSON
                 } else {
-                    if(session[ultimoPaso.tipoDePaso.nombre].guardadoCorrecto) {
+                    if(params.opcional == "true" || session[ultimoPaso.tipoDePaso.nombre].guardadoCorrecto) {
                         def respuestaMotor
+                        def pasoOpcional = PasoOpcionalEntidadFinanciera.findWhere(activo: true, entidadFinanciera: entidadFinanciera, pasoAnterior: pasoAnterior)
                         if(configuracion.ejecutarMotorEnPaso == pasoAnterior){
                             if(session.identificadores){
                                 def solicitudAntesMotor = SolicitudDeCredito.get(session.identificadores.idSolicitud)
@@ -698,6 +704,12 @@ class SolicitudController {
                                                 }
                                             }
                                         }
+                                        if(pasoOpcional.dependeDelMotor) {
+                                            if(resultadoMotorDeDecision.dictamenFinal != "A") {
+                                                pasoActual = pasoOpcional
+                                                aplicaPasoOpcional = true
+                                            }
+                                        }
                                     } else {
                                         println("No se recibio respuesta del Motor de Decisión....")
                                     }
@@ -707,12 +719,12 @@ class SolicitudController {
                                 }
                             }
                         }
-                        def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
                         def statusDeSolicitud
-                        camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
-                        parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
                         if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
                             def catalogos = [:]
+                            def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
+                            camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
+                            parrafos = camposDelPaso.groupBy({ campo -> campo.parrafo })
                             if(session["pasoFormulario"]?.direccionCliente?.colonia){
                                 def cp = session["pasoFormulario"]?.direccionCliente?.codigoPostal?.replaceFirst('^0+(?!$)', '')
                                 def codigo = CodigoPostal.findAllWhere(codigo: cp)
@@ -763,6 +775,27 @@ class SolicitudController {
                                 razonSocial:configuracion.razonSocial,
                                 reporteBuroCredito:solicitud?.reporteBuroCredito?.id,
                                 errorConsulta:solicitud?.reporteBuroCredito?.errorConsulta]
+                        } else if (pasoActual.tipoDePaso.nombre == "ofertas") {
+                            println "Si entraaaaa a evaluar la vista del perfilador!!!!!"
+                            def respuesta
+                            def propuestas
+                            def clienteExistente = "NO"
+                            session.ofertas = null
+                            session.perfil = null
+                            respuesta = perfiladorService.buscarPerfilExistente(session["pasoFormulario"]?.cliente?.rfc)
+                            if(respuesta.encontrado){
+                                session.perfil = respuesta.perfil
+                                clienteExistente = "SI"
+                            }
+                            propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil) 
+                            println "Propuestas Obtenidas: " + propuestas*.producto
+                            session.ofertas = propuestas
+                            modelo = [configuracion: configuracion,
+                                logueado: session.yaUsoLogin,
+                                pasosDeSolicitud: pasosDeSolicitud,
+                                pasoActual:pasoActual,
+                                nombreTemplate: (pasoActual.rutaTemplate + pasoActual.tipoDePaso.nombre),
+                                ofertas: propuestas]
                         } else if(pasoActual.tipoDePaso.nombre == "resumen"){
                             statusDeSolicitud = StatusDeSolicitud.get(2)
                             def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
@@ -805,7 +838,7 @@ class SolicitudController {
                             solicitud.statusDeSolicitud = statusDeSolicitud
                             solicitud.save(flush: true)
                         }
-                        render(template: pasoActual.tipoDePaso.nombre, model: modelo)
+                        render(template: ( aplicaPasoOpcional ? "pasoOpcional" : pasoActual.tipoDePaso.nombre), model: modelo)
                     } else {
                         def respuesta = [:]
                         respuesta.error = true
@@ -1334,6 +1367,21 @@ class SolicitudController {
         } else {
             respuesta.mensajeEnviado = false
         }
+        render respuesta as JSON
+    }
+    
+    def recalcularOferta() {
+        println params
+        def respuesta = [:]
+        respuesta = perfiladorService.recalcularOferta(session.ofertas, params)
+        render respuesta as JSON
+    }
+    
+    def seleccionarOferta() {
+        println params
+        def respuesta
+        println session.pasoFormulario
+        respuesta = perfiladorService.guardarOferta(session.ofertas, session.pasoFormulario, session.identificadores , params)
         render respuesta as JSON
     }
 }

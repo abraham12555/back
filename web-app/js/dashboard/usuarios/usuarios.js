@@ -65,9 +65,6 @@ $(document).ready(function () {
         this.value = this.value.toLowerCase();
     });
 
-    $("#rol").selectmenu().selectmenu("menuWidget").addClass("overflow-select");
-    $("#sucursal").selectmenu().selectmenu("menuWidget").addClass("overflow-select");
-
     getUsers(1);
 });
 
@@ -165,9 +162,9 @@ function validateUserInfoForm() {
     if ($("#username").val().trim() === "") {
         errors++;
         errorMessage('username', "El campo es obligatorio");
-    } else if ($("#username").val().length < 6 || $("#username").val().length > 12) {
+    } else if ($("#username").val().length < 6 || $("#username").val().length > 15) {
         errors++;
-        errorMessage('username', "El nombre de usuario debe contener mínimo 6 y máximo 12 caracteres");
+        errorMessage('username', "El nombre de usuario debe contener mínimo 6 y máximo 15 caracteres");
     }
 
     if ($("#userId").val() === "0" && $("#password").val().trim() === "") {
@@ -317,7 +314,7 @@ function submitUserForm() {
         contentType: false,
         processData: false,
         success: function (response) {
-            if (response.error === true) {
+            if (response.error) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
                 cerrarModal('modalAltaDeUsuario');
@@ -351,7 +348,7 @@ function userAuthentication() {
             contentType: false,
             processData: false,
             success: function (response) {
-                if (response.estatus === true) {
+                if (response.estatus) {
                     $.userAuthentication = true;
                     $('#rol').css("display", "block");
                     cerrarModal('loginUsuario');

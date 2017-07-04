@@ -6,6 +6,7 @@ class TasaDinamicaProducto implements Serializable {
     float probabilidadDeIncumplimientoMinima
     float probabilidadDeIncumplimientoMaxima
     float tasaOrdinariaMensual
+    float tasaOrdinariaAnual//Agregada
     
     static constraints = {
         producto (nullable: false)

@@ -275,7 +275,7 @@ function deleteCron(idCron) {
                 url: $.deleteCron,
                 data: "idCron=" + idCron,
                 success: function (response) {
-                    if (response.error === true) {
+                    if (response.error) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
                         getCronList();

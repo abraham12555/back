@@ -7,7 +7,7 @@ import static java.util.Calendar.*
 import java.text.SimpleDateFormat
 import la.kosmos.app.bo.Pager
 import la.kosmos.app.bo.User
-
+import org.springframework.web.multipart.MultipartHttpServletRequest
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 
 class DashboardController {
@@ -22,6 +22,7 @@ class DashboardController {
     def smsService
     def notificacionesService
     def userService
+    def reporteService
 
     def index() {
         def solicitudes = dashboardService.listaGeneralDeSolicitudes()
@@ -137,7 +138,9 @@ class DashboardController {
     }
 
     def editarPerfil(){
-
+        def allowedSize = userService.getProfilePictureSize()
+        def allowedContentTypes = userService.getProfilePictureContentTypes()
+        [allowedContentTypes : allowedContentTypes, allowedSize: allowedSize]
     }
 
     def subirImagen(){
@@ -436,9 +439,10 @@ class DashboardController {
         println params
         def respuesta = [:]
         def ultimoPaso = [:]
+        def entidadFinanciera = session.usuario.entidadFinanciera
         ultimoPaso.tipoDePaso = [:]
         ultimoPaso.tipoDePaso.nombre = "pasoFormulario"
-        session["pasoFormulario"] = solicitudService.construirDatosTemporales(session["pasoFormulario"], params, ultimoPaso, session.identificadores, springSecurityService.currentUser.entidadFinanciera, null, null, springSecurityService.currentUser)
+        session["pasoFormulario"] = solicitudService.construirDatosTemporales(session["pasoFormulario"], params, ultimoPaso, session.identificadores, entidadFinanciera, null, null, springSecurityService.currentUser)
         if(session["pasoFormulario"]?.cliente?.clienteGuardado){
             if(!session.identificadores){
                 session.identificadores = [:]
@@ -570,6 +574,86 @@ class DashboardController {
         Usuario usuario = springSecurityService.currentUser
 
         def response = userService.updateProfilePassword(usuario, params)
+        render response as JSON
+    }
+
+    def reportes () {
+        def reporteSolicitudes = reporteService.obtenerReporte(null,null,null,null)
+        def reporteMitek = reporteService.obtenerReporte(null,null,null,null)
+        def contactoClientes = reporteService.obtenerReporte(null,null,null,null)
+        [reporteSolicitudes: reporteSolicitudes, reporteMitek: reporteMitek, contactoClientes: contactoClientes]
+    }
+
+    def descargarContactos(){
+        def reporte  = reporteService.obtenerReporte("clientes",session.usuario.entidadFinanciera,null,null)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Contacto_Clientes" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
+    }
+
+    def  descargarReporteMitek(){
+        def reporte  = reporteService.obtenerReporte("mitek",session.usuario.entidadFinanciera,null,null)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Consultas_Mitek" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
+    }
+
+    def  descargarReporteSolicitudes(){
+        def reporte  = reporteService.obtenerReporte("solicitudes",session.usuario.entidadFinanciera,params.from,params.to)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Solicitudes_Generadas" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
+    }
+
+    def downloadUserList(){
+        def entidadFinanciera = session.usuario.entidadFinanciera
+        def file = userService.exportUserList(entidadFinanciera)
+        
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response.setHeader("Content-disposition", "attachment; filename=lista_usuarios.xlsx")
+        response.outputStream << file
+    }
+    
+    def saveProfilePicture(){
+        def response = [:]
+        
+        if (!request instanceof MultipartHttpServletRequest){
+            response.error = Boolean.TRUE
+            response.message = "Error, la operación es inválida"
+            response as JSON
+        }
+        
+        Usuario usuario = springSecurityService.currentUser
+        
+        response = userService.saveProfilePicture(usuario, params)
+        render response as JSON
+    }
+    
+    def profilePicture() {
+        Usuario usuario = springSecurityService.currentUser
+        def response = userService.getProfilePicture(usuario)
+        render response as JSON
+    }
+    
+    def deleteProfilePicture(){
+        Usuario usuario = springSecurityService.currentUser
+        def response = userService.deleteProfilePicture(usuario)
         render response as JSON
     }
 }

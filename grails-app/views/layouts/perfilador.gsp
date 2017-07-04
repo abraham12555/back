@@ -149,7 +149,7 @@
                 </a>
             </li>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
             <li class="floatLeft">
                 <a id="principalOpc3" href="${createLink(controller:'dashboard', action:'perfilarCliente')}" class="elementoMenuPrincipal font12 ">
                     <span><img class="menuIcon" src="${resource(dir:'images', file:'perfilador.png')}" alt="perfilador" title="perfilador"></span>

@@ -12,6 +12,7 @@ class Producto implements Serializable {
     float montoMinimo = 0
     float montoMaximo = 0
     float tasaDeInteres  = 0
+    float tasaDeInteresAnual = 0
     TipoDeTasaDeInteres tipoDeTasa
     String claveDeProducto
     Esquema esquema

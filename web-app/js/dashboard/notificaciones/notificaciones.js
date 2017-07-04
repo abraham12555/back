@@ -146,7 +146,7 @@ function saveSmsTemplate() {
         contentType: false,
         processData: false,
         success: function (response) {
-            if (response.error === true) {
+            if (response.error) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
                 getSmsTemplates();
@@ -217,7 +217,7 @@ function deleteSmsTemplate(idTemplate) {
                 url: $.deleteSmsTemplate,
                 data: "idTemplate=" + idTemplate,
                 success: function (response) {
-                    if (response.error === true) {
+                    if (response.error) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
                         getSmsTemplates();

@@ -187,3 +187,9 @@ bruteforcedefender {
 
 //Password recovery. Minutes
 password.recovery = 30
+
+profilePicture {
+    //1 MB
+    size = "1048576"
+    contentTypes = "image/jpg,image/jpeg,image/png"
+}

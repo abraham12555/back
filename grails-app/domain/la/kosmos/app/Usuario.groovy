@@ -65,6 +65,7 @@ class Usuario implements Serializable {
         numeroDeEmpleado nullable: true
         fechaPassword nullable: false
         sesionUsuario nullable: true
+        fotoPerfilUsuario nullable: true
     }
 
     static mapping = {
@@ -72,7 +73,7 @@ class Usuario implements Serializable {
         sesionUsuario cascade: 'all-delete-orphan'
     }
     
-    static hasOne = [sesionUsuario:SesionUsuario]
+    static hasOne = [sesionUsuario:SesionUsuario, fotoPerfilUsuario:FotoPerfilUsuario]
     
     static hasMany = [userPasswords: UsuarioPasswords]
         

@@ -1,4 +1,5 @@
 $.getProfile = "/dashboard/getProfile";
+$.deleteProfilePicture = "/dashboard/deleteProfilePicture";
 
 $(document).ready(function () {
 
@@ -38,6 +39,26 @@ $(document).ready(function () {
     $('#cancelUpdatePassword-btn').on('click', function (event) {
         event.preventDefault();
         cerrarModal('updatePassword');
+    });
+
+    $("#editProfilePicture-btn").on("click", function (event) {
+        event.preventDefault();
+        openModal('updateProfilePicture');
+    });
+
+    $('#cancelChangePicture-btn').on('click', function (event) {
+        event.preventDefault();
+        resetProfilePictureForm();
+    });
+
+    $('#cancelChangePicture-btn').on('click', function (event) {
+        event.preventDefault();
+        resetProfilePictureForm();
+    });
+
+    $("#deleteProfilePicture-btn").on("click", function (event) {
+        event.preventDefault();
+        deleteProfilePicture();
     });
 
     getProfile();
@@ -104,9 +125,9 @@ function validateProfileForm() {
     if ($("#username").val().trim() === "") {
         errors++;
         errorProfileMessage($('#username'), "El campo es obligatorio");
-    } else if ($("#username").val().length < 6 || $("#username").val().length > 12) {
+    } else if ($("#username").val().length < 6 || $("#username").val().length > 15) {
         errors++;
-        errorProfileMessage($('#username'), "El nombre de usuario debe contener mínimo 6 y máximo 12 caracteres");
+        errorProfileMessage($('#username'), "El nombre de usuario debe contener mínimo 6 y máximo 15 caracteres");
     }
 
     if ($('#email').val().trim() === "") {
@@ -150,7 +171,7 @@ function submitProfileForm() {
         contentType: false,
         processData: false,
         success: function (response) {
-            if (response.error === true) {
+            if (response.error) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
                 getProfile();
@@ -201,7 +222,7 @@ function updatePassword() {
         contentType: false,
         processData: false,
         success: function (response) {
-            if (response.error === true) {
+            if (response.error) {
                 errorProfileMessage($('#password'), response.mensaje);
             } else {
                 sweetAlert({html: false, title: "¡Excelente!", text: "La contraseña se ha guardado correctamente.", type: "success"});

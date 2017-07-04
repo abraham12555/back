@@ -18,6 +18,8 @@ class ProductoSolicitud implements Serializable{
     float montoDelPago
     int plazos
     boolean haTenidoAtrasos
+    float tasaDeInteres
+    float montoDeServicioDeAsistencia = 0
     
     static constraints = {
         colorModelo (nullable: true)

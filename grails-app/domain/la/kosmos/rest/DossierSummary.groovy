@@ -16,6 +16,7 @@ class DossierSummary implements Serializable{
     String reference
     String respuestaOriginal
     String folioSolicitud
+    String fechaDeRespuesta =  new Date()
     
     static constraints = {
         solicitud nullable: true
@@ -28,6 +29,7 @@ class DossierSummary implements Serializable{
         reference nullable: true
         respuestaOriginal nullable: false
         folioSolicitud nullable: true
+        fechaDeRespuesta nullable: true
     }
     
     static mapping = {

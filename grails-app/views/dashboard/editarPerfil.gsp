@@ -13,6 +13,13 @@
         <title>Sample title</title>
         <g:external dir="js" file="validaciones.min.js" />
         <g:external dir="js" file="dashboard/perfil/perfil.min.js" />
+        <g:external dir="js" file="jquery-2.0.0.min.js" />
+        <g:external dir="js" file="jquery.cropit.js" />
+        <script type="text/javascript">
+            $.allowedContentTypes = "${allowedContentTypes}";
+            $.allowedSize = "${allowedSize}";
+        </script>
+        <g:external dir="js" file="dashboard/perfil/profilePicture.min.js" />
     </head>
     <body>
         <section class="container clearFix">
@@ -33,18 +40,21 @@
                 </div>
             </div>
         </section>
-        <section class="container marginTop100 marginBottom50">
+        <section class="container marginTop50 marginBottom50">
             <form id="formProfile" action="/dashboard/saveProfile" method="POST" class="form gray font14">
                 <input type="hidden" id="userId" name="id"/>
                 <div class="width400 autoMargin">
                     <div class="clearFix">
-                        <p class="floatRight font14 fontWeight500 letterspacing1 lightGray pointer paddingBottom10">CAMBIAR FOTO</p>
+                        <a title="Cambiar foto" class="floatRight font14 fontWeight500 letterspacing1 lightGray pointer paddingBottom10" id="editProfilePicture-btn">CAMBIAR FOTO</a>
                     </div>
-                    <div class="profileBox positionR padding30">
+                    <div class="clearFix">
+                        <a title="Eliminar foto" class="floatRight font14 fontWeight500 letterspacing1 lightGray pointer paddingBottom10 hide" id="deleteProfilePicture-btn">ELIMINAR FOTO</a>
+                    </div>
+                    <div class="profileBox positionR padding20">
                         <div>
-                            <img class="profileImage" src="${resource(dir:'images', file:'profile.png')}"/>
+                            <img class="profileImage" src="${resource(dir:'images', file:'profile.png')}" id="profilePicture"/>
                         </div>
-                        <div class="paddingTop50 paddingAside20">
+                        <div class="paddingTop50 paddingAside30">
                             <div class="control marginBottom20">
                                 <p class="font14 gray fontWeight500 paddingTop14 letterspacing1">NOMBRE DE USUARIO</p>
                                 <div class="paddingTop5 fullInputs">
@@ -86,5 +96,6 @@
             </form>
         </section>
         <g:render template="updatePassword"/>
+        <g:render template="updateProfilePicture"/>
     </body>
 </html>

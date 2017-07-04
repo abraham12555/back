@@ -1,35 +1,34 @@
+<g:external dir="css" file="perfilador.css" title="text/css" rel="stylesheet" />
+<br />
 <h2>Ofertas disponibles</h2>
-<div class="promos">
+<g:if test="${ofertas.size() > 1}">
+    <div class="promos" style="height: 1100px;">
+</g:if>
+<g:else>
+    <div class="promos" style="height: 500px;">
+    </g:else>
     <div id="wrapper_bu">
-        <g:each status="i" in="${ofertas}" var="oferta">
-            <div id="bu${i+1}">
-                <div class="promo">
-                    <h4>${oferta.producto}</h4>
-                    <ul class="features">
-                        <li class="brief"><i class="fa fa-male"></i></li>
-                        <li id="monto_${oferta.producto.id}" class="price"><g:formatNumber number="${oferta.listaDeOpciones[0].montoMaximo}" format="\044###,###,###.##"/>
-                            <div class="flat-slider" id="flat-slider-${oferta.producto.id}"></div>
-                            <p class="floatLeft marginLeft12 font14 fontWeight500 gray opacity05 paddingTop5">MIN</p>
-                            <p class="floatRight marginRight12 font14 fontWeight500 gray opacity05 paddingTop5">MAX</p>
-                        </li>
-                        <li id="plazo_${oferta.producto.id}">
-                            <h6>PLAZO</h6> ${oferta.listaDeOpciones[0].plazos} ${oferta.listaDeOpciones[0].periodicidad.nomenclatura.toUpperCase()}</li>
-                        <li id="pago_${oferta.producto.id}">
-                            <h6>PAGO ${oferta.listaDeOpciones[0].periodicidad.nombre.toUpperCase()}</h6> <g:formatNumber number="${oferta.listaDeOpciones[0].cuota}" format="\044###,###,###.##"/></li>
-                        <li>
-                            <h6>REQUISITOS</h6></li>
-                        <li class="requisitos">1. IDENTIFICACIÓN OFICIAL</li>
-                        <li class="requisitos">2. COMPROBANTE DE DOMICILIO</li>
-                        <li class="requisitos">3. COMPROBANTE DE INGRESOS</li>
-                        <li class="requisitos">4. AVAL: 1</li>
-                        <input type="hidden" id="plazoSeleccionado_${oferta.producto.id}">
-                        <input type="hidden" id="periodicidadSeleccionada_${oferta.producto.id}">
-                        <input type="hidden" id="montoSeleccionado_${oferta.producto.id}">
-                        <input type="hidden" id="pagoSeleccionado_${oferta.producto.id}">
-                        <li class="buy"><button onclick="confirmarSeleccion(${i},'${oferta.producto.id}');">APLICAR</button></li>
-                    </ul>
-                </div>
-            </div>
-        </g:each>
+        <div id="listaDeOfertasDiv"></div>
     </div>
 </div>
+<input type="hidden" id="ofertasJSON" value="${ofertas as grails.converters.JSON}">
+<g:if test="${ofertas.size() < 1}">
+    <footer class="footerContainer">
+        <g:render template="stepBarTest" />
+        <div class="mobile">
+            <g:if test="${pasoActual.mostrarEnBarra}">
+                <g:if test="${pasoActual?.ultimoPaso}">
+                    <div class="paddingAside15 clearFix">
+                        <div class="<g:if test="${documentosSubidos?.comprobanteDeDomicilio && documentosSubidos?.identificacion}"> blueButton colorWhite pointer </g:if> grayrectangle floatLeft solicitud_modal"> ENVIAR MI SOLICITUD </div>
+                        </div>
+                </g:if>
+                <g:else>
+                    <div class="paddingAside15 clearFix">
+                        <div class="grayrectangle floatLeft marginRight10">Atras</div>
+                        <div data-numero-de-paso="${pasoActual.numeroDePaso + 1}" id="circuloPaso${pasoActual.numeroDePaso + 1}" class="botonCambioDePaso grayrectangle floatLeft nextBtn">Ir al paso ${pasoActual?.numeroDePaso + 1}</div>
+                    </div>
+                </g:else>
+            </g:if>
+        </div>
+    </footer>
+</g:if>

@@ -5,13 +5,21 @@ import grails.plugin.springsecurity.ui.RegistrationCode
 import grails.plugin.springsecurity.ui.SpringSecurityUiService
 import grails.plugin.springsecurity.ui.strategy.MailStrategy
 import grails.transaction.Transactional
+import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.util.Calendar
 import java.util.HashSet
+import javax.xml.bind.DatatypeConverter
 import la.kosmos.app.bo.Pager
+import la.kosmos.app.bo.ProfilePicture
 import la.kosmos.app.bo.User
 import la.kosmos.app.exception.BusinessException
 import la.kosmos.app.exception.MultipleSelectionException
 import la.kosmos.app.vo.Constants
+import maxmoto1702.excel.ExcelBuilder
+import org.apache.commons.codec.binary.Base64
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.hibernate.transform.Transformers
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetails
@@ -424,5 +432,172 @@ class UserService {
         if(!user.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
             throw new BusinessException("Ocurrió un error. Inténtalo más tarde")
         }
+    }
+
+    def exportUserList(EntidadFinanciera entidadFinanciera){
+        def criteria = Usuario.createCriteria()
+        def usuarios = criteria.list {
+            eq ('entidadFinanciera', entidadFinanciera)
+            order("nombre", "asc")
+        }
+
+        def workbook
+        def builder = new ExcelBuilder()
+        builder.config {
+            font('negrita') { font ->
+                font.bold = true
+            }
+            style('titulo') { cellStyle ->
+                cellStyle.font = font('negrita')
+                cellStyle.alignment = CellStyle.ALIGN_LEFT
+                cellStyle.verticalAlignment = CellStyle.VERTICAL_CENTER
+            }
+            style('contenido') { cellStyle ->
+                cellStyle.alignment = CellStyle.ALIGN_LEFT
+                cellStyle.verticalAlignment = CellStyle.VERTICAL_CENTER
+            }
+        }
+        workbook = builder.build {
+            sheet(name: "Usuarios", widthColumns: [20, 20, 20, 20, 20, 20, 20]) {
+                row (style: 'titulo') {
+                    cell { "Nombre" }
+                    cell { "Apellido Paterno" }
+                    cell { "Apellido Materno" }
+                    cell { "Nombre de usuario" }
+                    cell { "Correo electrónico" }
+                    cell { "Sucursal" }
+                    cell { "Número de empleado" }
+                }
+                usuarios.each { fila ->
+                    row (style: 'contenido') {
+                        cell { fila.nombre }
+                        cell { fila.apellidoPaterno }
+                        cell { fila.apellidoMaterno }
+                        cell { fila.username }
+                        cell { fila.email }
+                        cell { fila.sucursal?.nombre ?: "" }
+                        cell { fila.numeroDeEmpleado ?: ""}
+                    }
+                }
+            }
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream()
+        workbook.write(bos)
+        bos.close()
+        byte[] bytes = bos.toByteArray()
+
+        builder = null
+        workbook.dispose()
+        workbook = null
+        return bytes
+    }
+
+    @Transactional(rollbackFor=[IOException.class, NoSuchFileException.class])
+    def saveProfilePicture(Usuario usuario, params){
+        def respuesta = [:]
+
+        Usuario u = Usuario.get(usuario.id)
+        ConfiguracionEntidadFinanciera ce = ConfiguracionEntidadFinanciera.where{entidadFinanciera.id == u.entidadFinanciera.id}.get()
+        if(ce.rutaFotoPerfilUsuario == null) {
+            respuesta.error = Boolean.TRUE
+            respuesta.message = "Error. No se ha configurado el almacenamiento de fotos de perfil de usuarios"
+            return respuesta
+        }
+
+        String data = params.base64
+        def parts = data.tokenize(",")
+        def typeParts = (params.type).tokenize("/")
+        def imageString = parts[1]
+        byte[] imageByte = DatatypeConverter.parseBase64Binary(imageString)
+        def name = params.name
+        def configPath = ce.rutaFotoPerfilUsuario
+        def directory = configPath + u.id
+        def relativePath = u.id + "/"
+        def path = configPath + relativePath + name
+
+        if(usuario.fotoPerfilUsuario == null){
+            FotoPerfilUsuario fotoPerfil = new FotoPerfilUsuario()
+            fotoPerfil.nombre = name
+            fotoPerfil.tipo = "." + typeParts[1]
+            fotoPerfil.path = relativePath
+            fotoPerfil.usuario = u
+
+            u.fotoPerfilUsuario = fotoPerfil
+
+            if(!u.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
+                respuesta.error = Boolean.TRUE
+                respuesta.mensaje = "Ocurrió un error al guardar la foto de perfil. Intente nuevamente más tarde."
+                return respuesta
+            } else {
+                if(FileUtils.makeDirectory(directory)){
+                    FileUtils.saveFile(path, imageByte)
+                }
+            }
+        } else {
+            String formerFile = configPath + relativePath + u.fotoPerfilUsuario.nombre
+
+            FotoPerfilUsuario fotoPerfil = u.fotoPerfilUsuario
+            fotoPerfil.nombre = name
+            fotoPerfil.tipo = "." + typeParts[1]
+            fotoPerfil.path = relativePath
+            fotoPerfil.usuario = u
+
+            if(!u.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
+                respuesta.error = Boolean.TRUE
+                respuesta.mensaje = "Ocurrió un error al actualizar la foto de perfil. Intente nuevamente más tarde."
+                return respuesta
+            } else {
+                FileUtils.deleteFile(formerFile)
+                FileUtils.saveFile(path, imageByte)
+            }
+        }
+
+        return respuesta
+    }
+
+    def getProfilePicture(Usuario usuario) {
+        Usuario u = Usuario.get(usuario.id)
+        ConfiguracionEntidadFinanciera ce = ConfiguracionEntidadFinanciera.where{entidadFinanciera.id == u.entidadFinanciera.id}.get()
+        if(ce.rutaFotoPerfilUsuario == null || u.fotoPerfilUsuario == null){
+            def response = [:]
+            response.empty = Boolean.TRUE
+            return response
+        }
+
+        def configPath = ce.rutaFotoPerfilUsuario
+        def relativePath = u.fotoPerfilUsuario.path
+        def name = u.fotoPerfilUsuario.nombre
+        def path = configPath + relativePath + name
+
+        byte[] array = Files.readAllBytes(new File(path).toPath())
+        def base64 = Base64.encodeBase64String(array)
+        def type = u.fotoPerfilUsuario.tipo
+        def typeParts = (type).tokenize(".")
+
+        return new ProfilePicture(base64, typeParts)
+    }
+
+    @Transactional(rollbackFor=[IOException.class, NoSuchFileException.class])
+    def deleteProfilePicture(Usuario usuario){
+        Usuario u = Usuario.get(usuario.id)
+        ConfiguracionEntidadFinanciera ce = ConfiguracionEntidadFinanciera.where{entidadFinanciera.id == u.entidadFinanciera.id}.get()
+        def configPath = ce.rutaFotoPerfilUsuario
+        def relativePath = u.fotoPerfilUsuario.path
+        def name = u.fotoPerfilUsuario.nombre
+        def path = configPath + relativePath
+
+        u.fotoPerfilUsuario.delete(failOnError : Boolean.TRUE)
+        u.fotoPerfilUsuario = null
+
+        FileUtils.deleteDirectory(path)
+    }
+
+    def getProfilePictureSize(){
+        return grailsApplication.config.profilePicture.size
+    }
+
+    def getProfilePictureContentTypes(){
+        return grailsApplication.config.profilePicture.contentTypes
     }
 }

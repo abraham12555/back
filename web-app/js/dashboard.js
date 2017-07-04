@@ -3,6 +3,7 @@ var kosmosDropzone;
 var pasoActual = 1;
 $.validUsername = "/dashboard/validUsername";
 $.validEmail = "/dashboard/validEmail";
+$.getProfilePicture = "/dashboard/profilePicture";
 
 function w3_open() {
     document.getElementById("mySidenav").style.display = "block";
@@ -84,6 +85,12 @@ $(document).ready(function () {
             scrollTop: $("html, body").get(0).scrollHeight
         }, 1500);
     });
+
+    $('.crosCircle').click(function () {
+        $(this).parent().fadeOut();
+    });
+
+    getProfilePicture();
 });
 
 window.onclick = function (event) {
@@ -712,6 +719,24 @@ function validEmail(callback) {
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             var response = {estatus: "ERROR"};
             callback(response);
+        }
+    });
+}
+
+function getProfilePicture() {
+    $.ajax({
+        type: "POST",
+        url: $.getProfilePicture,
+        contentType: "application/json",
+        success: function (response) {
+            if(!response.empty) {
+                $("#bannerProfilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
+                $("#profilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
+                $("#deleteProfilePicture-btn").css("display", "block");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal con tu foto de perfil, intenta nuevamente en unos minutos.", "error");
         }
     });
 }

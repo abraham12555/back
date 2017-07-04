@@ -49,7 +49,6 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
         // runtime 'mysql:mysql-connector-java:5.1.29'
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
-        runtime 'org.postgresql:postgresql:9.4.1211'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
         compile 'org.apache.httpcomponents:httpclient:4.5'
         compile 'com.google.code.gson:gson:2.3.1'
@@ -59,6 +58,7 @@ grails.project.dependency.resolution = {
         compile "com.twilio.sdk:twilio:7.4.0"
         compile "commons-lang:commons-lang:2.6"
         runtime "com.sun.xml.ws:jaxws-rt:2.1.7"
+        compile 'org.apache.poi:ooxml-schemas:1.1' //add+
         compile "org.apache.velocity:velocity:1.7"
     }
 
@@ -78,7 +78,7 @@ grails.project.dependency.resolution = {
         compile ':sequence-generator:1.2'
         compile "org.grails.plugins:spring-security-core:2.0.0"
         compile "org.grails.plugins:spring-security-ui:1.0-RC3"
-        compile "org.grails.plugins:grails-melody:1.59.0"
+        //compile "org.grails.plugins:grails-melody:1.59.0"
         compile ":mail:1.0.7"
         //runtime ":jquery:1.11.1"
 

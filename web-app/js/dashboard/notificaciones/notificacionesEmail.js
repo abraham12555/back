@@ -134,7 +134,7 @@ function saveEmailTemplate() {
         contentType: false,
         processData: false,
         success: function (response) {
-            if (response.error === true) {
+            if (response.error) {
                 sweetAlert("Oops...", response.mensaje, "error");
             } else {
                 getEmailTemplates();
@@ -194,7 +194,7 @@ function deleteEmailTemplate(idEmailTemplate) {
                 url: $.deleteEmailTemplate,
                 data: "idTemplate=" + idEmailTemplate,
                 success: function (response) {
-                    if (response.error === true) {
+                    if (response.error) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
                         getEmailTemplates();
