@@ -580,7 +580,7 @@ class DashboardController {
     def reportes () {
         def reporteSolicitudes = reporteService.obtenerReporte(null,null,null,null)
         def reporteMitek = reporteService.obtenerReporte(null,null,null,null)
-        def contactoClientes = reporteService.obtenerReporte(null,null,null,null)
+        def contactoClientes = reporteService.obtenerReporte(null,null,null,null) 
         [reporteSolicitudes: reporteSolicitudes, reporteMitek: reporteMitek, contactoClientes: contactoClientes]
     }
 
@@ -655,5 +655,5 @@ class DashboardController {
         Usuario usuario = springSecurityService.currentUser
         def response = userService.deleteProfilePicture(usuario)
         render response as JSON
-    }
+    }    
 }
