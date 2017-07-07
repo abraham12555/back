@@ -636,7 +636,45 @@ and also iPads specifically.
     td:nth-of-type(8):before { content: "Dream Vacation City"; }
     td:nth-of-type(9):before { content: "GPA"; }
     td:nth-of-type(10):before { content: "Arbitrary Data"; }*/
+    
+    
+    /* Force table to not be like tables anymore */
+    .notificaciones_table thead, .notificaciones_table tbody, .notificaciones_table th, .notificaciones_table td, .notificaciones_table tr {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    }
 
+    /* Hide table headers (but not display: none;, for accessibility) */
+
+    .notificaciones_table tbody tr:first-child {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .notificaciones_table td {
+        /* Behave  like a "row" */
+        border: none;
+        position: relative;
+    }
+
+    .notificaciones_table td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+    }
 }
 
 @media only screen and (max-width: 1024px) {
@@ -681,6 +719,10 @@ and also iPads specifically.
 
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
     .solicitudes_table td .font14 {
+        font-size: 14px;
+    }
+    
+    .notificaciones_table td .font14 {
         font-size: 14px;
     }
 }

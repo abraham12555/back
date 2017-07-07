@@ -4,11 +4,13 @@ class TipoDeCampo implements Serializable{
 
     String elementoDeEntrada
     String expresionRegular
+    String nombreComun
     boolean requiereValidacion = true
     
     static constraints = {
         elementoDeEntrada (blank: false)
         expresionRegular (blank:false)
+        nombreComun (blank:false)
     }
     
     static mapping = {

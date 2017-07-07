@@ -132,11 +132,11 @@
             </div>
         </section>
         <section class="container paddingBottom38">
-            <table class="applicationContainers solicitudes_table dashboard">
+            <table id='listaDeSolicitudes' class="applicationContainers solicitudes_table dashboard">
                 <thead>
                 <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
                     <th colspan="8" class="left navyBg">
-                        <h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes</h1>
+                        <h1 class="graphHeading colorWhite letterspacing2 textUpper">Solicitudes</h1>
                     </th>
                     <th class="darkGray">
                         <a href="${createLink(controller:'dashboard', action:'solicitudes')}">
@@ -146,7 +146,7 @@
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles='ROLE_ADMINISTRADOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
                     <th colspan="9" class="left navyBg">
-                        <h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes</h1>
+                        <h1 class="graphHeading colorWhite letterspacing2 textUpper">Solicitudes </h1>
                     </th>
                 </sec:ifAnyGranted>
                 </thead>
@@ -156,40 +156,40 @@
                             <tr>
                                 <td  class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     folio <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.folio}</span>
+                                    <span class="font14 textlower tableDescriptionColor">${solicitud?.folio}</span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     cliente <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.nombreCliente}</span>
+                                    <span class="font14 textlower tableDescriptionColor">${solicitud?.nombreCliente}</span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     ESTATUS <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.statusDeSolicitud}</span>
+                                    <span class="font14 textlower tableDescriptionColor">${solicitud?.statusDeSolicitud}</span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     PDV <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.puntoDeVenta}</span>
+                                    <span class="font14 textlower tableDescriptionColor">${solicitud?.puntoDeVenta}</span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     FUENTE <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.autenticadoMediante}</span>
+                                    <span class="font14 textlower tableDescriptionColor">${solicitud?.autenticadoMediante}</span>
                                 </td>
                                 <td class="left font12 tableTitleColor paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     PRODUCTO <br>
-                                    <span class="font14 textlower tableDescriptionColor">${solicitud.producto}</span>
+                                    <span class="font14 textlower tableDescriptionColor">${solicitud?.producto}</span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     FECHA <br>
-                                    <span class="font14 textlower tableDescriptionColor"><g:formatDate format="dd/MM/yyyy" date="${solicitud.fechaDeSolicitud}"/></span>
+                                    <span class="font14 textlower tableDescriptionColor"><g:formatDate format="dd/MM/yyyy" date="${solicitud?.fechaDeSolicitud}"/></span>
                                 </td>
                                 <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                                     MONTO <br>
-                                    <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud.montoCredito}" format="\044###,###,###.##"/></span>
+                                    <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud?.montoCredito}" format="\044###,###,###.##"/></span>
                                 </td>
                         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
-                            <g:if test="${solicitud.folio && solicitud.folio != "-"}">
+                            <g:if test="${solicitud?.folio && solicitud?.folio != "-"}">
                                 <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                                    <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id},${solicitud.temporal});">ver detalle</button>
+                                    <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud?.id},${solicitud?.temporal});">ver detalle</button>
                                 </td>
                             </g:if>
                             <g:else>
@@ -211,7 +211,15 @@
                 </tbody>
             </table>
         </section>
-
-
-    </body>
+        <input type ="hidden" id="pagina" value ="index" />
+        <section class="container">
+            <div class="width480 autoMargin solicitudBox marginBottom84">
+             <div class="autoMargin">
+                <input type="hidden" id="currentPageSolicitudes"/>
+                <ul class="clearFix" id="paginationSolicitudes">
+                </ul>
+            </div>
+           </div>
+        </section>
+</body>
 </html>

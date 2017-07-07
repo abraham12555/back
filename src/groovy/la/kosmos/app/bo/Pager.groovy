@@ -8,7 +8,7 @@ package la.kosmos.app.bo
 
 /**
  *
- * @author elizabeth
+ * @author Becario04
  */
 class Pager {
 
@@ -27,6 +27,8 @@ class Pager {
         if (totalRows == 0) {
             totalPages = 0
         }
+                println "totalPages: " + totalPages
+
         return totalPages
     }
 
@@ -34,7 +36,7 @@ class Pager {
         int first
         first = this.page - 1
         first = first * this.rowsPerPage
+        println "first: " + first
         return first
     }
 }
-

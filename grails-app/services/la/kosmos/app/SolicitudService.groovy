@@ -826,6 +826,7 @@ class SolicitudService {
             solicitudRest.solicitud.direccion = [:]
             solicitudRest.solicitud.vivienda = [:]
             solicitudRest.solicitud.empleo = [:]
+            solicitudRest.solicitud.resultadoDelScore = [:]
             solicitudRest.solicitud.documentos = []
             solicitudRest.solicitud.buroDeCredito = ""
         
@@ -835,20 +836,22 @@ class SolicitudService {
             solicitudRest.solicitud.datosSolicitud.folio = ("" + solicitud.folio).padLeft(6, '0')
             solicitudRest.solicitud.datosSolicitud.puntoDeVenta = (solicitud.sucursal ? solicitud.sucursal.nombre : "")
             solicitudRest.solicitud.datosSolicitud.puntajeScore = (datosBuroDeCredito.score ? (datosBuroDeCredito.score as int) : 0)
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore = "" //[:]
-            /*if(datosSolicitud.resultadoMotorDeDecision) {
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenDePoliticas = (datosSolicitud.resultadoMotorDeDecision.dictamenDePoliticas ?: "")
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
-            }*/
+            solicitudRest.solicitud.datosSolicitud.errorConsulta = (datosBuroDeCredito.tipoErrorBuroCredito ?: "")
+            solicitudRest.solicitud.datosSolicitud.consultaBuroEjecutada = ((datosBuroDeCredito.reporte) ? 'SI' : "NO")            
+            if(datosSolicitud.resultadoMotorDeDecision) {
+            solicitudRest.solicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
+            solicitudRest.solicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
+            solicitudRest.solicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
+            solicitudRest.solicitud.resultadoDelScore.dictamenDePoliticas = (datosSolicitud.resultadoMotorDeDecision.dictamenDePoliticas ?: "")
+            solicitudRest.solicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
+            solicitudRest.solicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
+            solicitudRest.solicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
+            }
             solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ?"Autorizado" : "")
             solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? "Usuario Dictaminador" : "")
             solicitudRest.solicitud.datosSolicitud.fechaDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? (new Date()).format('dd/MM/yyyy HH:mm') : "")
-        
+            solicitudRest.solicitud.datosSolicitud.ultimoPaso = (solicitud.ultimoPaso ?:"")
+
             solicitudRest.solicitud.productoSeleccionado.producto = datosSolicitud.productoSolicitud?.producto?.claveDeProducto
             solicitudRest.solicitud.productoSeleccionado.modelo = ((datosSolicitud.productoSolicitud?.modelo) ? datosSolicitud.productoSolicitud?.modelo.nombre : "")
             solicitudRest.solicitud.productoSeleccionado.color = ((datosSolicitud.productoSolicitud?.colorModelo) ? datosSolicitud.productoSolicitud.colorModelo?.nombre : "")
@@ -859,7 +862,8 @@ class SolicitudService {
             solicitudRest.solicitud.productoSeleccionado.seguro = datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda
             solicitudRest.solicitud.productoSeleccionado.tasaDeInteres =  datosSolicitud.productoSolicitud?.producto?.tasaDeInteres
             solicitudRest.solicitud.productoSeleccionado.montoDelCredito = datosSolicitud.productoSolicitud?.montoDelCredito
-            
+            solicitudRest.solicitud.productoSeleccionado.liberasistencia = datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia
+
             def primerNombre
             def segundoNombre
             def nombreCompleto = solicitud.cliente.nombre?.split()

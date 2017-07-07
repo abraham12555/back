@@ -17,6 +17,18 @@ body{
 .lato{
     font-family:'Lato', sans-serif;
 }
+.span{
+    border: solid 1px #c4c7d8;
+}
+.azulBox {
+    width: 133px;
+    height: 43px;
+    border-radius: 4px;
+    background-color: #1573d4;
+    box-shadow: 0 0 4px 0 #1573d4);
+    padding-left: 15px;
+    padding-right: 15px;
+}
 
 .clearFloat{
     clear: both;
@@ -61,6 +73,9 @@ body{
 
 .blue-shadow{
     box-shadow: 0 6px 15px 0 #298df5;
+}
+.red-shadow{
+    box-shadow: 0 6px 15px 0 #ff0000;
 }
 
 .bold{
@@ -1234,14 +1249,31 @@ body{
 }
 
 .visitaContainer {
-    width: 50%;
+    width: 80%;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
     -webkit-transform: translate(-50%,-50%);
     margin:30px auto;
+    max-height:100%;
+    overflow-y: auto;
 }
+.elementosFormularioRender{
+    overflow-y: auto; 
+}
+.visitaContainerSmall {
+    width: 75%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    margin:30px auto;
+    max-height:100%;
+    overflow-y: auto;
+}
+
 
 .loginlogoBox{
     width: 100%;
@@ -1812,6 +1844,29 @@ body{
     height: 37px;
 }
 
+.paginateButtons {
+    background: #fff url(../images/skin/shadow.jpg) bottom repeat-x;
+    border: 1px solid #ccc;
+    border-top: 0;
+    color: #666;
+    font-size: 10px;
+    overflow: hidden;
+    padding: 10px 3px;
+}
+.paginateButtons a {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-color: #ccc #aaa #aaa #ccc;
+    color: #666;
+    margin: 0 3px;
+    padding: 2px 6px;
+}
+.paginateButtons span {
+    padding: 2px 3px;
+    border-radius: 2px;
+    background-color: #33c56e;
+}
+
 /****************************************************************************************************
                                 Borders
 ****************************************************************************************************/
@@ -2072,6 +2127,11 @@ body{
 
 .brandingBox:hover, .correctaBox:hover, .checkVerificacion:hover, .correctaBox:hover .lightGray, .brandingBox.active_green, .correctaBox.active_green .lightGray, .correctaBox.active_green{
     background-color: #33c56e;
+    color:#ffffff;
+    cursor:pointer;
+}
+.checkVerificacion:hover{
+    background-color: #005398;
     color:#ffffff;
     cursor:pointer;
 }
@@ -2473,6 +2533,12 @@ body{
     background-repeat: no-repeat;
     background-size: 95%;
     height: 350px;
+}
+.rubro-bg{
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 95%;
+    height: 100px;
 }
 
 .cotizadorStep{

@@ -1,90 +1,66 @@
-<g:if test="listaDeProductos">
-    <g:each var="producto" in="${listaDeProductos}">
-        <section class="container marginBottom20">
-            <div class="width990 solicitudBox autoMargin radius2">
-                <div class="clearFix">
-                    <div class="col1fifth col2-tab col12-mob floatLeft">
-                        <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
-                            <p class="font12 gray2 marginBottom5"><strong>CLAVE DEL PRODUCTO</strong></p>
-                            <p class="font14 gray2" style='text-align: center;margin-left: -30px;'>${producto.claveDeProducto}</p>
-                        </div>
-                    </div>
-                    <div class="col1fifth col3-tab col12-mob floatLeft">
-                        <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
-                            <p class="font12 gray2 marginBottom5"><strong>NOMBRE</strong></p>
-                            <p class="font14 gray2">${producto.nombreDelProducto}</p>
-                        </div>
-                    </div>
-                    <div class="col1fifth col3-tab col12-mob floatLeft">
-                        <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
-                            <p class="font12 gray2 marginBottom5"><strong>MARCA</strong></p>
-                            <p class="font14 gray2">${producto.marca}</p>
-                        </div>
-                    </div>
-                    <div class="col1fifth col6-tab col12-mob floatLeft">
-                        <div class="marginLeft30 paddingTop15 paddingBottom10">
-                            <p class="font12 gray2 marginBottom5"><strong>DESCRIPCION</strong></p>
-                            <p class="font14 gray2">${producto.descripcion}</p>
-                        </div>
-                    </div>
-                    <div class="col1fifth col12-tab col12-mob floatLeft">
-                        <div class="marginTop10 marginBottom10 clearFix paddingAside10">
-                            <a title="Ver Detalle" onclick="mostrarDetalleProducto(${producto.id});" class="tabNoFloat floatRight marginLeft20 block width115 blueButton center radius4 paddingTop10 paddingBottom10 pointer">VER DETALLE</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </g:each>
+<div id="listaDeProductos"> </div>
     <section class="container">
         <div class="width480 autoMargin solicitudBox marginBottom84">
             <div class="autoMargin">
-                <ul class="clearFix">
-                    <li class="floatLeft">
-                        <a href="#" title="Previous Page" class="font14 fontWeight600 displayInline pageMarker">
-                            <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="Page 1" class="font14 fontWeight400 displayInline pageMarker pageSelected">1</a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="Page 2" class="font14 fontWeight400 displayInline pageMarker">2</a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="Page 3" class="font14 fontWeight400 displayInline pageMarker">3</a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="Page 4" class="font14 fontWeight400 displayInline pageMarker">4</a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="..." class="font14 fontWeight400 displayInline pageMarker">...</a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="Page 12" class="font14 fontWeight400 displayInline pageMarker">12</a>
-                    </li>
-                    <li class="floatLeft">
-                        <a href="#" title="Next Page" class="font14 fontWeight600 displayInline pageMarker">
-                            <i class="fa fa-angle-right" aria-hidden="true"></i>
-                        </a>
-                    </li>
+                <input type="hidden" id="currentPageProductos"/>
+                <ul class="clearFix" id="paginationProductos">
                 </ul>
             </div>
         </div>
     </section>
-</g:if>
-<g:else>
-    <section class="container marginBottom20">
-        <div class="width990 solicitudBox autoMargin radius2">
-            <div class="clearFix">
-                <div class="col1fifth col6-tab col12-mob floatLeft">
-                    <div class="borderGrayRight removeMobile marginLeft30 paddingTop15 paddingBottom10">
-                        <p class="font12 gray2 marginBottom5">NO HAY PRODUCTOS REGISTRADOS</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</g:else>
 <g:render template="configuracion/producto/altaProducto"/>
 <div id="detalleProducto"></div>
+
+<script>
+$.getProductos = "/dashboard/getProductos";
+ 
+$(document).ready(function () {
+    var idPaginacion = "paginationProductos";
+    
+	$('#'+idPaginacion).on('click', 'a.page', function (event) {
+		event.preventDefault();
+		var page = $(this).data('page');
+		getProductos(page,idPaginacion);
+	    });
+	getProductos(1,idPaginacion);
+    console.log(idPaginacion);
+});
+
+function getProductos(page,idPaginacion) {
+    $("#currentPageProductos").val(page);
+    var filter = new Object();
+    filter.page = page;
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.getProductos,
+        data: JSON.stringify(filter),
+        contentType: "application/json",
+        success: function (response) {
+            var page = response.page;
+            var totalPages = response.totalPages;
+            $('#'+idPaginacion).empty();
+            if (response.productos.length > 0) {
+            pagination(totalPages, page,idPaginacion);
+            mostrarProductosPaginados(response.productos);
+            } else {
+                var row = "";
+                row += '<tr></tr>';
+                row += '<tr>';
+                row += '<td colspan="5" class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                row += '<span class="font14 tableDescriptionColor">No hay usuarios registrados</span>';
+                row += '</td>';
+                row += '</tr>';
+                $("#usuarios-tb tbody:last").append(row);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            
+        }
+    });
+}
+
+
+
+
+</script>

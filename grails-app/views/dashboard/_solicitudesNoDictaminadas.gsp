@@ -1,6 +1,5 @@
 <section class="container marginBottom50 ">
-
-    <table class="applicationContainers solicitudes_table width990 autoMargin">
+    <table id="listaDeSolicitudesNoDictaminadas" class="applicationContainers solicitudes_table width990 autoMargin">
         <thead>
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
             <th colspan="9" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes por dictaminar</h1></th>
@@ -22,91 +21,85 @@
             <td class="gray"></td>
         </sec:ifAnyGranted>
         </tr>
-        <g:if test="${solicitudesNoDictaminadas}">
-            <g:each var='solicitud' in='${solicitudesNoDictaminadas}'>
-                <tr>
-                    <td  class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        folio <br>
-                        <span class="font14 textlower tableDescriptionColor">${solicitud.folio}</span>
-                    </td>
-                    <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        cliente <br>
-                        <span class="font14 textlower tableDescriptionColor">${solicitud.nombreCliente}</span>
-                    </td>
-                    <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        ESTATUS <br>
-                        <span class="font14 textlower tableDescriptionColor">${solicitud.statusDeSolicitud}</span>
-                    </td>
-                    <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        PDV <br>
-                        <span class="font14 textlower tableDescriptionColor">${solicitud.puntoDeVenta}</span>
-                    </td>
-                    <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        FUENTE <br>
-                        <span class="font14 textlower tableDescriptionColor">${solicitud.autenticadoMediante}</span>
-                    </td>
-                    <td class="left font12 tableTitleColor paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        PRODUCTO <br>
-                        <span class="font14 textlower tableDescriptionColor">${solicitud.producto}</span>
-                    </td>
-                    <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        FECHA <br>
-                        <span class="font14 textlower tableDescriptionColor"><g:formatDate format="dd/MM/yyyy" date="${solicitud.fechaDeSolicitud}"/></span>
-                    </td>
-                    <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        MONTO <br>
-                        <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud.montoCredito}" format="\044###,###,###.##"/></span>
-                    </td>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
-                    <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                        <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud.id});">ver detalle</button>
-                    </td>
-                </sec:ifAnyGranted>
-                </tr>
-            </g:each>
-        </g:if>
-        <g:else>
-            <tr>
-                <td colspan="9"  class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                    <span class="font14 textlower tableDescriptionColor">No hay solicitudes por dictaminar</span>
-                </td>
-            </tr>
-        </g:else>
     </table>
 </section>
-<section class="container marginBottom50 marginTop50">
-    <div class="width480 autoMargin solicitudBox">
+<section class="container">
+    <div class="width480 autoMargin solicitudBox marginBottom84">
         <div class="autoMargin">
-            <ul class="clearFix">
-                <li class="floatLeft">
-                    <a href="#" title="Previous Page" class="font14 fontWeight600 displayInline pageMarker">
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                    </a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="Page 1" class="font14 fontWeight400 displayInline pageMarker pageSelected">1</a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="Page 2" class="font14 fontWeight400 displayInline pageMarker">2</a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="Page 3" class="font14 fontWeight400 displayInline pageMarker">3</a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="Page 4" class="font14 fontWeight400 displayInline pageMarker">4</a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="..." class="font14 fontWeight400 displayInline pageMarker">...</a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="Page 12" class="font14 fontWeight400 displayInline pageMarker">12</a>
-                </li>
-                <li class="floatLeft">
-                    <a href="#" title="Next Page" class="font14 fontWeight600 displayInline pageMarker">
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-                </li>
+            <input type="hidden" id="fechaInicio" value=""/>
+            <input type="hidden" id="fechaFinal" value="" />
+            <input type="hidden" id="template" value="noDictaminadas"/>
+            <input type="hidden" id="temporalidadSolicitudesNoDictaminadas" value =1 />
+            <input type="hidden" id="currentPageSolicitudesNoDictaminadas"/>
+            <ul class="clearFix" id="paginationSolicitudesNoDictaminadas">
             </ul>
         </div>
     </div>
 </section>
+<script>
+    $.getSolicitudesBusqueda = "/dashboard/getSolicitudesBusqueda";
+    $(document).ready(function () {
+    var fechaInicio = $("#fechaInicio").val();
+    var fechaFinal = $("#fechaFinal").val();
+
+    var idPaginacion = "paginationSolicitudesNoDictaminadas";
+    $('#'+idPaginacion).on('click', 'a.page', function (event) {
+    var fechaInicio = $("#fechaInicio").val();
+    var fechaFinal = $("#fechaFinal").val();
+    var temporalidad = $("#temporalidadSolicitudesNoDictaminadas").val();
+    var template = $("#template").val();
+    event.preventDefault();
+    var page = $(this).data('page');
+    if (fechaInicio && fechaFinal ){
+    console.log("preparandome para buscar");
+    consultarSolicitudesPorTiempo(temporalidad,"noDictaminadas",fechaInicio,fechaFinal,"listaDeSolicitudesNoDictaminadas",idPaginacion,"temporalidadSolicitudesNoDictaminadas",page);
+    }else{
+    getSolicitudesBusqueda(page,idPaginacion,temporalidad,template,"listaDeSolicitudesNoDictaminadas",null,null);
+    }
+    });
+    
+     getSolicitudesBusqueda(1,idPaginacion,1,"noDictaminadas","listaDeSolicitudesNoDictaminadas",null,null);
+    
+    });
+
+    function getSolicitudesBusqueda(page,idPaginacion,temporalidad,template,idTabla,fechaInicio,fechaFinal) {
+    $("#currentPageSolicitudesNoDictaminadas").val(page);
+    $("#temporalidadSolicitudesNoDictaminadas").val(temporalidad);
+    var filter = new Object();
+    filter.page = page;
+    filter.temporalidad = temporalidad;
+    filter.template = template;
+    filter.fechaInicio = fechaInicio;
+    filter.fechaFinal = fechaFinal;
+    console.log("adentro");
+    console.log(page);
+    $.ajax({
+    type: "POST",
+    dataType: "json",
+    url: $.getSolicitudesBusqueda,
+    data: JSON.stringify(filter),
+    contentType: "application/json",
+    success: function (response) {
+    var page = response.page;
+    var totalPages = response.totalPages;
+    $('#'+idPaginacion).empty();
+    $("#listaDeSolicitudesNoDictaminadas").empty();
+    if (response.solicitudes.length > 0) {
+    pagination(totalPages, page,idPaginacion);
+    mostrarSolicitudesFechas(response.solicitudes,idTabla);
+    } else {
+    var row = "";
+              row += "<tr>";
+                row += "<td colspan='9'  class='left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
+                row += "<span class='font14 textlower tableDescriptionColor'>No hay solicitudes registradas</span>";
+                row += "</td>";
+                row += "</tr>";
+    $("#"+idTabla+'tbody').html(row);
+    }
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+    }
+    });
+    }
+</script>

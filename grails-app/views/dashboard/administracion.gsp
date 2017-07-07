@@ -36,7 +36,7 @@
                     <div id="entidadesSubMenu" class="administracionSubMenu lightGrayBG">
                         <ul class="clearFix paddingLeft30">
                             <li class="floatLeft">
-                                <a title="Nueva Entidad Financiera" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" onclick="mostrarModal('nuevaEntidad');">NUEVA ENTIDAD FINANCIERA</a>
+                                <a title="Nueva Entidad Financiera" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" onclick="mostrarModal('modalNuevaEntidadFinanciera');">NUEVA ENTIDAD FINANCIERA</a>
                             </li>
                         </ul>
                     </div>
