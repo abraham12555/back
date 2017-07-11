@@ -498,8 +498,9 @@ class UserService {
         def respuesta = [:]
 
         Usuario u = Usuario.get(usuario.id)
-        ConfiguracionEntidadFinanciera ce = ConfiguracionEntidadFinanciera.where{entidadFinanciera.id == u.entidadFinanciera.id}.get()
-        if(ce.rutaFotoPerfilUsuario == null) {
+        String rutaFotoPerfilUsuario = this.rutaFotoPerfilUsuario(u.entidadFinanciera)
+        
+        if(rutaFotoPerfilUsuario == null) {
             respuesta.error = Boolean.TRUE
             respuesta.message = "Error. No se ha configurado el almacenamiento de fotos de perfil de usuarios"
             return respuesta
@@ -511,10 +512,9 @@ class UserService {
         def imageString = parts[1]
         byte[] imageByte = DatatypeConverter.parseBase64Binary(imageString)
         def name = params.name
-        def configPath = ce.rutaFotoPerfilUsuario
-        def directory = configPath + u.id
+        def directory = rutaFotoPerfilUsuario + u.id
         def relativePath = u.id + "/"
-        def path = configPath + relativePath + name
+        def path = rutaFotoPerfilUsuario + relativePath + name
 
         if(usuario.fotoPerfilUsuario == null){
             FotoPerfilUsuario fotoPerfil = new FotoPerfilUsuario()
@@ -535,7 +535,7 @@ class UserService {
                 }
             }
         } else {
-            String formerFile = configPath + relativePath + u.fotoPerfilUsuario.nombre
+            String formerFile = rutaFotoPerfilUsuario + relativePath + u.fotoPerfilUsuario.nombre
 
             FotoPerfilUsuario fotoPerfil = u.fotoPerfilUsuario
             fotoPerfil.nombre = name
@@ -557,35 +557,41 @@ class UserService {
     }
 
     def getProfilePicture(Usuario usuario) {
-        Usuario u = Usuario.get(usuario.id)
-        ConfiguracionEntidadFinanciera ce = ConfiguracionEntidadFinanciera.where{entidadFinanciera.id == u.entidadFinanciera.id}.get()
-        if(ce.rutaFotoPerfilUsuario == null || u.fotoPerfilUsuario == null){
-            def response = [:]
+        def response = [:]
+        try {
+            Usuario u = Usuario.get(usuario.id)
+            String rutaFotoPerfilUsuario = this.rutaFotoPerfilUsuario(u.entidadFinanciera)
+
+            if(rutaFotoPerfilUsuario == null || u.fotoPerfilUsuario == null){
+                response.empty = Boolean.TRUE
+                return response
+            }
+
+            def relativePath = u.fotoPerfilUsuario.path
+            def name = u.fotoPerfilUsuario.nombre
+            def path = rutaFotoPerfilUsuario + relativePath + name
+
+            byte[] array = Files.readAllBytes(new File(path).toPath())
+            def base64 = Base64.encodeBase64String(array)
+            def type = u.fotoPerfilUsuario.tipo
+            def typeParts = (type).tokenize(".")
+
+            return new ProfilePicture(base64, typeParts)
+        } catch (Exception ex){
+            log.error("Ocurrio un error al cargar la foto de perfil del usuario " + usuario.id , ex)
             response.empty = Boolean.TRUE
             return response
         }
-
-        def configPath = ce.rutaFotoPerfilUsuario
-        def relativePath = u.fotoPerfilUsuario.path
-        def name = u.fotoPerfilUsuario.nombre
-        def path = configPath + relativePath + name
-
-        byte[] array = Files.readAllBytes(new File(path).toPath())
-        def base64 = Base64.encodeBase64String(array)
-        def type = u.fotoPerfilUsuario.tipo
-        def typeParts = (type).tokenize(".")
-
-        return new ProfilePicture(base64, typeParts)
     }
 
     @Transactional(rollbackFor=[IOException.class, NoSuchFileException.class])
     def deleteProfilePicture(Usuario usuario){
         Usuario u = Usuario.get(usuario.id)
-        ConfiguracionEntidadFinanciera ce = ConfiguracionEntidadFinanciera.where{entidadFinanciera.id == u.entidadFinanciera.id}.get()
-        def configPath = ce.rutaFotoPerfilUsuario
+        String rutaFotoPerfilUsuario = this.rutaFotoPerfilUsuario(u.entidadFinanciera)
+        
         def relativePath = u.fotoPerfilUsuario.path
         def name = u.fotoPerfilUsuario.nombre
-        def path = configPath + relativePath
+        def path = rutaFotoPerfilUsuario + relativePath
 
         u.fotoPerfilUsuario.delete(failOnError : Boolean.TRUE)
         u.fotoPerfilUsuario = null
@@ -593,6 +599,22 @@ class UserService {
         FileUtils.deleteDirectory(path)
     }
 
+    private String rutaFotoPerfilUsuario (EntidadFinanciera entidadFinanciera){
+        def criteria = ConfiguracionEntidadFinanciera.createCriteria()
+        ConfiguracionEntidadFinanciera ce = criteria.get {
+            createAlias('entidadFinanciera', 'ef')
+            eq ('ef.id', entidadFinanciera.id)
+
+            projections {
+                property('rutaFotoPerfilUsuario', 'rutaFotoPerfilUsuario')
+            }
+
+            resultTransformer(Transformers.aliasToBean(ConfiguracionEntidadFinanciera.class))
+        }
+        
+        return ce.rutaFotoPerfilUsuario
+    }
+    
     def getProfilePictureSize(){
         return grailsApplication.config.profilePicture.size
     }

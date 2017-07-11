@@ -61,6 +61,8 @@ function inicializarFormulario() {
     } else if (tipoDePaso === "confirmacion") {
         operacionesConfirmacion();
     }
+    
+    sendRequestForm();
 
     habilitarBotonesAvance();
 
@@ -1381,6 +1383,7 @@ function avanzarPaso(paso) {
                 $('#pasoActual').hide();
                 $('#pasoActual').html(data);
                 $('#pasoActual').fadeIn();
+                $("#currentStep").val(paso);
                 var tipoDePaso = $('#tipoDePaso').val();
                 if (tipoDePaso === "pasoFormulario") {
                     inicializarFormulario();
@@ -1403,6 +1406,10 @@ function avanzarPaso(paso) {
                     habilitarBotonesAvance();
                 }
                 actualizarProgreso(paso);
+                
+                if (tipoDePaso !== "pasoFormulario") {
+                    sendRequestForm();
+                }
             }
             $('#modalSalvado').fadeOut();
         },
@@ -2412,6 +2419,13 @@ function inicializarDropzone(elemento, boton) {
         this.removeAllFiles();
     });
 }
+
+function sendRequestForm(){
+    var step = $("#currentStep").val();
+    ga('set', 'page', '/solicitud/formulario/paso' + step);
+    ga('send', 'pageview');
+}
+
 // ***************************** Fin de Funciones Auxiliares
 
 // ***************************** Inicio de Validaciones

@@ -8,6 +8,7 @@
     <body>
         <input type="hidden" id="tipoDeDocumento">
         <input type="hidden" id="pasoInicial" value="${pasoActual?.numeroDePaso}">
+        <input type="hidden" id="currentStep" value="${pasoActual?.numeroDePaso}">
         <div id="pasoActual">
             <g:render template="${pasoActual?.tipoDePaso?.nombre}"/>
         </div>

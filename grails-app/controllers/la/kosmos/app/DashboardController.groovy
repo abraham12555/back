@@ -206,7 +206,8 @@ class DashboardController {
         session.tipoDeIngresos = [:]
         session.campoFormulario = []
         def usuarios = Usuario.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
-        def roles = Rol.list()
+        def roles = dashboardService.getRoles()
+        def sucursales = dashboardService.getSucursalesByEntidadFinanciera(session.usuario.entidadFinanciera)
         def productos = Producto.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
         def tipoDeIngresos = TipoDeIngresos.getAll()
         def tipoDeDocumento = TipoDeDocumento.findAll();
@@ -229,7 +230,9 @@ class DashboardController {
         listaRubroDeAplicacionDeCredito = listaRubroDeAplicacionDeCredito.sort{it.posicion}
         listaPasosSolicitud = listaPasosSolicitud.sort { it.numeroDePaso }
         [listaPasosSolicitud:listaPasosSolicitud,listaPasoCotizador:listaPasoCotizador,listaDeUsuarios: usuarios,listaDeTiposDeIngresos:tipoDeIngresos, 
-            listaDeRoles: roles, listaDeProductos: productos, 
+            listaDeRoles: roles, 
+            listaSucursales: sucursales,
+            listaDeProductos: productos, 
             configuracionBuroCredito:configuracionBuroCredito,campoFormulario:campoFormulario,
             tipoDeDocumento:tipoDeDocumento,tipoDeIngresos:tipoDeIngresos,
             listaTipoDeAsentamiento:listaTipoDeAsentamiento,
