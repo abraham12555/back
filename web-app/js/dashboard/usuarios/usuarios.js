@@ -86,7 +86,7 @@ function getUsers(page) {
             $('#pagination').empty();
             $("#usuarios-tb tbody").empty();
             if (response.usuarios.length > 0) {
-                pagination(totalPages, page);
+                pagination(totalPages, page, 'pagination');
                 $.each(response.usuarios, function (index) {
                     var row = "";
                     if (index === 0) {
@@ -335,7 +335,7 @@ function userAuthentication() {
     });
 
     if ($("#authPassword").val().trim() === "") {
-        errorMessage($('#authPassword'), "El campo es obligatorio");
+        errorMessage('authPassword', "El campo es obligatorio");
     } else {
         var form = $("#formUserAuthentication");
         var postData = new FormData($(form)[0]);
@@ -353,7 +353,7 @@ function userAuthentication() {
                     $('#rol').css("display", "block");
                     cerrarModal('loginUsuario');
                 } else {
-                    errorMessage($('#authPassword'), response.message);
+                    errorMessage('authPassword', response.message);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

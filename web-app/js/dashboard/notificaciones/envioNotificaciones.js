@@ -175,8 +175,6 @@ function loadDataCron(idCron) {
                     }
                 });
 
-                $("#daysWeek").selectmenu();
-
                 selectFrequency($('input:radio[name="cronOptions"]:checked').val());
 
                 fillTemplates(response);
