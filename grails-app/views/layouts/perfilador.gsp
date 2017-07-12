@@ -14,9 +14,11 @@
         <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="select2.min.css" title="text/css" rel="stylesheet" />
-        <!--<g:external dir="css" file="slick.css" title="text/css" rel="stylesheet" />
-        <g:external dir="css" file="slick-theme.css" title="text/css" rel="stylesheet" />-->
+        <g:external dir="css" file="slick.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="slick-theme.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="spectrum.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="bootstrap-tour-standalone.min.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="jquery.webui-popover.css" title="text/css" rel="stylesheet" />
         <g:if test="${session.configuracion?.rutaCss}">
             <link rel="stylesheet" href="${session.configuracion?.rutaCss}">
         </g:if>
@@ -24,6 +26,9 @@
         <g:external dir="css" file="default.date.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery.mloading.css" title="text/css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+                    <!-- Include Editor style. -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/css/froala_style.min.css" rel="stylesheet" type="text/css" />
         <g:external dir="css" file="perfilador.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="vanilla-notify.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
@@ -36,7 +41,9 @@
         <g:external dir="js" file="curp.js" />
         <g:external dir="js" file="rfc.js" />
         <g:external dir="js" file="select2.min.js" />
-        <!--<g:external dir="js" file="slick.js" />-->
+        <g:external dir="js" file="slick.js" />
+        <g:external dir="js" file="bootstrap-tour-standalone.min.js" />
+        <g:external dir="js" file="jquery.webui-popover.min.js" />
 
         <g:external dir="css" file="jquery-ui-kosmos.css" />
         <g:external dir="js" file="jquery-ui-kosmos.js" />
@@ -49,6 +56,8 @@
         <g:external dir="js" file="autoNumeric.min.js" />
         <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
         <script src="http://harvesthq.github.io/chosen/chosen.jquery.js"></script>
+            <!-- Include Editor JS files. -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/js/froala_editor.pkgd.min.js"></script>
         <g:layoutHead/>
     </head>
     <body>
