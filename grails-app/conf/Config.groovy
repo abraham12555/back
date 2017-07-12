@@ -121,8 +121,8 @@ grails{
     mail{
         host= "smtp.zoho.com"
         port= 465
-        username= "servicio@kosmos.la"
-        password= "servicio"
+        username= "soporte@kosmos.la"
+        password= "S0p0rt3!k5m"
         props = [
             "mail.smtp.auth": "true",
             "mail.smtp.socketFactory.port": "465",
@@ -190,7 +190,7 @@ grails.plugin.springsecurity.apf.storeLastUsername=true
 
 //E-mail config
 grails.plugin.springsecurity.ui.forgotPassword.emailSubject = 'Restablecimiento de contraseña'
-grails.plugin.springsecurity.ui.forgotPassword.emailFrom = 'servicio@kosmos.la'
+grails.plugin.springsecurity.ui.forgotPassword.emailFrom = 'soporte@kosmos.la'
 
 //Enable listeners
 grails.plugin.springsecurity.useSecurityEventListener = true
