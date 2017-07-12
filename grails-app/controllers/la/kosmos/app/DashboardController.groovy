@@ -2420,4 +2420,35 @@ class DashboardController {
         }
         render informes as JSON
     }
+        def printReport(){
+        def configuracion = session.configuracion
+        def productoSolicitud = ProductoSolicitud.get(params.idProductoSolicitud as long)
+        def resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: productoSolicitud.solicitud)
+        def mapa = []
+        def respuesta = [:]
+        respuesta.folio = ("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')
+        respuesta.montoDelCredito = productoSolicitud.montoDelCredito
+        respuesta.plazos = productoSolicitud.plazos
+        respuesta.nomenclatura = productoSolicitud.periodicidad.nomenclatura
+        respuesta.montoDelSeguroDeDeuda = productoSolicitud.montoDelSeguroDeDeuda
+        respuesta.nombreDelProducto = productoSolicitud.producto?.nombreDelProducto
+        respuesta.cat =  (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 
+        respuesta.sucursal = productoSolicitud?.solicitud?.sucursal
+        respuesta.ubicacion = productoSolicitud?.solicitud?.sucursal.ubicacion
+        respuesta.documentoElegidoCantidad = productoSolicitud?.documentoElegido?.cantidadSolicitada
+        respuesta.documentoElegido = productoSolicitud?.documentoElegido?.nombre
+        respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
+        if(resultadoMotorDeDecision){
+            respuesta.dictamenFinal = resultadoMotorDeDecision?.dictamenFinal
+        }else{
+            respuesta.dictamenFinal = false
+        }
+        respuesta.tasaDeInteres =  (productoSolicitud?.tasaDeInteres) ? ((productoSolicitud?.tasaDeInteres * 100).round(2)) : 0 
+        respuesta.liberasistencia = productoSolicitud?.montoDeServicioDeAsistencia
+        respuesta.perfilador = true
+        respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
+        respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
+        mapa << respuesta
+        chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
+    }
 }

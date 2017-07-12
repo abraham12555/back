@@ -13,7 +13,13 @@
     <p class="felicidadesP1">LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE</p>
     <br/>
 </div>
-
+<div class="container">
+    <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
+            <a style="color:white;text-decoration:none;" href="/dashboard/printReport?_format=PDF&_name=Mi_Solicitud_PERFILADOR&_file=reporte10&idProductoSolicitud=${ofertaSeleccionada?.productoSolicitud?.id}">
+                IMPRIMIR SOLICITUD <i class="fa fa-print"></i>
+            </a></strong>
+    </div>
+</div>
 <div class="container containerBox">
     <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
         <div class="titles8">

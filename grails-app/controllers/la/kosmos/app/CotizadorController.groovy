@@ -248,21 +248,21 @@ class CotizadorController {
         render respuesta as JSON
     }
     
-    def solicitarCodigo() {
+    
+ def solicitarCodigo() {
         println params
         def respuesta = [:]
         if(params.telefonoCelular){
-            def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
-            //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
-            //if(!respuesta.encontrado) {
-                String sid = smsService.sendSMS(toPhone, session.configuracion)
-                if(sid){
-                    session.sid = sid
-                    respuesta.mensajeEnviado = true
-                } else {
-                    respuesta.mensajeEnviado = false
-                }
-            //}
+                        def configuracion = ConfiguracionEntidadFinanciera.get(6)
+
+            def toPhone = params.telefonoCelular.replaceAll('-', '') 
+            String sid = smsService.sendSMS(toPhone,configuracion)
+            if(sid){
+                session.sid = sid
+                respuesta.mensajeEnviado = true
+            } else {
+                respuesta.mensajeEnviado = false
+            }
         } else {
             respuesta.mensajeEnviado = false
         }
@@ -270,6 +270,7 @@ class CotizadorController {
     }
 
     def resultadoVerificacion() {
+        println params
         def respuesta = [:]
         if(params.codigoConfirmacion){
             String sid = session.sid

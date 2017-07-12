@@ -81,7 +81,7 @@ grails.project.dependency.resolution = {
         //compile "org.grails.plugins:grails-melody:1.59.0"
         compile ":mail:1.0.7"
         //runtime ":jquery:1.11.1"
-
+        compile ":jasper:1.11.0"
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"
         //compile ":less-asset-pipeline:1.10.0"

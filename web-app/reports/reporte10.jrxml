@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c04e1347-252e-447b-9570-cfdae918e0ab">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="385"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#FEFEFE"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#FEFEFE"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#FEFEFE"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#FEFEFE"/>
+		</box>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="8ecd33c0-5f43-40dd-a20f-27410462b11b"/>
+	<field name="folio" class="java.lang.String"/>
+	<field name="montoDelCredito" class="java.lang.Float"/>
+	<field name="plazos" class="java.lang.String"/>
+	<field name="nomenclatura" class="java.lang.String"/>
+	<field name="montoDelSeguroDeDeuda" class="java.lang.Float"/>
+	<field name="nombreDelProducto" class="java.lang.String"/>
+	<field name="cat" class="java.lang.Float"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<field name="ubicacion" class="java.lang.String"/>
+	<field name="documentoElegido" class="java.lang.String"/>
+	<field name="documentoElegidoCantidad" class="java.lang.String"/>
+	<field name="nombreComercial" class="java.lang.String"/>
+	<field name="dia" class="java.lang.String"/>
+	<field name="dictamenFinal" class="java.lang.String"/>
+	<field name="perfilador" class="java.lang.String"/>
+	<field name="origen" class="java.lang.String"/>
+	<field name="nombreCliente" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="42" splitType="Stretch">
+			<image>
+				<reportElement x="2" y="0" width="237" height="42" uuid="cc68346e-dae5-4735-8161-dd5b01fc8249"/>
+				<imageExpression><![CDATA["/var/uploads/kosmos/config/CajaLibertad/imagenCorporativa/logo.png"]]></imageExpression>
+			</image>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="237" y="0" width="316" height="42" forecolor="#013F7F" uuid="653e26d9-3576-44cb-ad17-be8b3aff0939"/>
+				<textFieldExpression><![CDATA[$F{nombreCliente}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="70">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="48" y="12" width="493" height="20" forecolor="#013F7F" uuid="d28e72ac-5cb5-4c6e-a42c-c70fadffc463"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nombreComercial}+" AGRADECE TU PREFERENCIA"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="46" y="30" width="493" height="40" forecolor="#007DFF" uuid="d0af4ad6-458b-4b58-80da-91ff03778d5f">
+					<printWhenExpression><![CDATA[($F{dictamenFinal}.equals("false") ||  $F{dictamenFinal}.equals( "D" )) &&$F{origen}.equals( "solicitud" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[POR EL MOMENTO NO ES POSIBLE OTORGAR UNA PRE-CALIFICACIÓN ACERTADA POR ESTE MEDIO. TE INVITAMOS A ACUDIR A TU PARA CONTINUAR CON EL TRÁMITE Y BRINDARTE MAYOR INFORMACIÓN DE NUESTROS PRODUCTOS DE CRÉDITO, AHORRO E INVERSIÓN.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="46" y="29" width="491" height="41" forecolor="#013F7F" uuid="04c10efe-b16a-44de-ae77-f2f44e9d44be">
+					<printWhenExpression><![CDATA[$F{dictamenFinal}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[¡FELICIDADES!
+
+TU CRÉDITO HA SIDO PRE-AUTORIZADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="48" y="29" width="491" height="41" forecolor="#013F7F" uuid="98a19455-4c7c-4f0b-9352-9a58c51551ba">
+					<printWhenExpression><![CDATA[$F{perfilador}.equals("true")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[¡EXCELENTE!
+LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="175" splitType="Stretch">
+			<line direction="BottomUp">
+				<reportElement x="354" y="0" width="1" height="168" uuid="f7e22720-b8af-43bd-bdcc-c560b62f2f40"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#71758D"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="374" y="46" width="148" height="20" forecolor="#FEFEFE" backcolor="#21B447" uuid="2d0f62ef-cb4c-4ab1-adb5-809aa9adb910"/>
+				<textElement verticalAlignment="Top"/>
+				<text><![CDATA[TU FOLIO ES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="16" width="165" height="20" forecolor="#007DFF" uuid="de0c72cf-535c-4df2-ae35-5ab236064def"/>
+				<textElement verticalAlignment="Top">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DATOS DE TU CRÉDITO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="46" width="46" height="20" forecolor="#007DFF" uuid="03b13cf6-6830-4784-a154-cab021cb9541"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[MONTO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="66" width="46" height="20" forecolor="#007DFF" uuid="8235f54b-dfbd-49c9-b69e-6c59e5e84d4c"/>
+				<text><![CDATA[PLAZO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="86" width="136" height="20" forecolor="#007DFF" uuid="1cd9f8ab-4400-4b2b-8007-3ca69b908e91"/>
+				<text><![CDATA[SEGURO CON LIBERTAD:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="126" width="354" height="42" forecolor="#007DFF" uuid="972bf2da-602c-4dcc-ad86-940821f0cf71"/>
+				<text><![CDATA[CAT:              Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="106" width="68" height="20" forecolor="#007DFF" uuid="da971dec-07ec-483e-93ca-b48bba08d5d1"/>
+				<text><![CDATA[PRODUCTO:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="168" width="555" height="1" uuid="0a7d28f2-a132-4e0d-9be1-871881d0baae"/>
+				<graphicElement>
+					<pen lineColor="#71758D"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="450" y="46" width="105" height="20" forecolor="#FEFEFE" backcolor="#21B447" uuid="bb69582d-379b-4ab5-8e79-8f54551dc0ab"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{folio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0" isBlankWhenNull="true">
+				<reportElement x="48" y="46" width="189" height="20" forecolor="#013F7F" uuid="74630aba-149f-42d6-9cca-9a98f303cf59"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoDelCredito}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="48" y="66" width="22" height="20" forecolor="#013F7F" uuid="88f249d6-3b92-41b3-8d65-1484363d705d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{plazos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="137" y="86" width="196" height="20" forecolor="#013F7F" uuid="b0163b7b-2aea-4350-9049-5ca062078e5d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoDelSeguroDeDeuda}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="70" y="106" width="231" height="20" forecolor="#013F7F" uuid="f89cdcb8-19eb-4a36-adaf-52f905cedc2c"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreDelProducto}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="25" y="126" width="45" height="20" forecolor="#013F7F" uuid="cb565b4b-15c7-49ad-930a-bfde48ce7419"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cat}+"%"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="70" y="66" width="208" height="20" forecolor="#013F7F" uuid="742f17ed-aeea-4768-b15c-29533c73e72d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nomenclatura}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="413" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="545" height="20" forecolor="#007DFF" uuid="05d8b911-ea8c-4dfc-a792-d43a2bdd1bf9"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SIGUIENTE PASO: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="183" width="551" height="229" forecolor="#007DFF" uuid="35797af2-0c6b-4440-b71c-57a0f6bbd319">
+					<printWhenExpression><![CDATA[$F{origen}.equals("solicitud" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None">
+					<font isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[¿AUN TIENES DUDAS? CONTÁCTANOS
+
+LIBERTAD@LIBERTAD.COM.MX
+TEL. 01800 714 02 74
+NUESTRO HORARIO DE ATENCIÓN ES
+DE LUNES A VIERNES DE 9:00 A 19:00 HORAS
+Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.
+
+El otorgamiento del crédito y la solicitud de avales y garantías, estará sujeta a las políticas vigentes y a los procesos de investigación de Libertad Servicios Financieros. Si ya eres nuestro cliente, se validará tu experiencia crediticia previa para la Autorización Del Mismo.
+
+Los datos proporcionados por nuestros clientes y usuarios son estrictamente confidenciales. Para mayores informes ponemos el aviso de privacidad a su disposición en
+www.libertad.com.mx .
+
+Recuerde que Libertad Servicios Financieros nunca le solicitará que proporcione ningún tipo de información confidencial mediante un electrónico o mediante una liga que lo lleve a nuestra página de Internet.
+]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="182" width="553" height="1" uuid="d605c08c-67d4-4c8b-bb9e-127328c90a6f"/>
+				<graphicElement>
+					<pen lineColor="#71758D"/>
+				</graphicElement>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="2" y="19" width="541" height="163" forecolor="#013F7F" uuid="d8e8e9e0-fa87-4f23-98fb-3d50af4f0ef7">
+					<printWhenExpression><![CDATA[$F{origen}.equals("solicitud")]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PRESENTATE EN LA SUCURSAL "+$F{sucursal}.toUpperCase()+
+" UBICADA EN "+$F{ubicacion}.toUpperCase()+
+"\n\nCON ORIGINAL Y COPIA DE TU DOCUMENTACION:"+
+"\n\nIDENTIFICACION OFICIAL"+
+"\n\nCOMPROBANTE DE DOMICILIO\n\n"+
+$F{documentoElegidoCantidad}+" "+$F{documentoElegido}.toUpperCase()+
+"\n\nPara agilizar el trámite asegúrate de llevar los mismos documentos que digitalizaste en la plataforma "+
+"al momento de cotizar tu crédito."]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="2" y="20" width="539" height="162" forecolor="#013F7F" uuid="acf0a95f-18a7-484d-90a6-5ce3ccbb226c">
+					<printWhenExpression><![CDATA[$F{perfilador}.equals("true")]]></printWhenExpression>
+				</reportElement>
+				<textFieldExpression><![CDATA["RECUERDA QUE EL CLIENTE DEBE CUMPLIR CON LOS SIGUIENTES REQUISITOS:"+
+"\n\nIDENTIFICACION OFICIAL"+
+"\n\nCOMPROBANTE DE DOMICILIO\n\n"+
+$F{documentoElegidoCantidad}+" "+$F{documentoElegido}.toUpperCase()+" DEL ÚLTIMO MES"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="184" width="555" height="229" forecolor="#007DFF" uuid="64d2332c-ae36-4933-8628-6c8fa9c36c4b">
+					<printWhenExpression><![CDATA[$F{perfilador}.equals( "true" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["La autorización esta condicionada al análisis de la capacidad de pago y otros factores, por lo que la"+"pre-autorización"+
+" no es vinculante para ninguna de las partes con fines específicos de promoción y evaluación del crédito.\n\n"+
+
+"El otorgamiento del crédito y la solicitud de avales y garantías, estará sujeta a las políticas vigentes y a los\n"+
+"procesos de investigación de Libertad Servicios Financieros. Si ya eres nuestro cliente, se validará tu experiencia\n"+
+"crediticia previa para la Autorización Del Mismo.\n\n"+
+
+"Los datos proporcionados por nuestros clientes y usuarios son estrictamente confidenciales.\n"+
+"Para mayores informes ponemos el aviso de privacidad a su disposición en www.libertad.com.mx.\n"+
+"Recuerde que Libertad Servicios Financieros nunca le solicitará que proporcione ningún tipo de información confidencial mediante un "+
+"correo electrónico o mediante una liga que lo lleve a nuestra página de Internet.\n\n"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="27" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="551" height="27" forecolor="#007DFF" uuid="f06d819c-bfff-4bc7-982b-ba12f1877616">
+					<printWhenExpression><![CDATA[$F{dictamenFinal}.equals( "A" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["*Nota: El presente resultado ha sido enviado a la dirección de correo"+ $F{email}+", en caso de no visualizar el correo en la Bandeja de Entrada,verificar la carpeta de"+"Correo no deseado"+"(SPAM)."]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

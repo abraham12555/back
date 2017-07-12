@@ -2799,3 +2799,278 @@ function round(value, decimals) {
 }
 
 // ***************************** Fin de Funciones Perfilador
+
+
+
+// ***************************** Inicio de Funciones Short Url
+function medioDeVerificacion(idDiv){
+            $('#seleccionMedioDeVerificacion').fadeOut();
+            $('#'+idDiv).fadeIn();
+            if (idDiv==="fechaDeNacimiento"){
+                 habilitarDatepicker();
+
+            }
+
+}
+function habilitarDatepicker() {
+    $(function () {
+        $.datepicker.setDefaults($.datepicker.regional["es"]);
+        var dateFormat = "dd/mm/yy",
+                from = $("#fechaNac")
+                .datepicker({
+                   changeMonth: true,
+                changeYear: true,
+                yearRange: '1900:+0',
+                
+                })
+                .on("change", function () {
+                    to.datepicker("option", "minDate", getDate(this));
+                }),
+                to = $("#to").datepicker({
+               changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:2013',
+                })
+                .on("change", function () {
+                    from.datepicker("option", "maxDate", getDate(this));
+                });
+
+        function getDate(element) {
+            var date;
+            try {
+                date = $.datepicker.parseDate(dateFormat, element.value);
+            } catch (error) {
+                date = null;
+            }
+
+            return date;
+        }
+    });
+}
+
+$('.antPaso').on('click', function () {
+                $('#seleccionMedioDeVerificacion').fadeIn();
+                $('#fechaDeNacimiento').fadeOut();
+                $('#correoElectronico').fadeOut();
+                $('#telefonoCelular').fadeOut();
+                $('#codigoConfirmacion').fadeOut();
+    });
+   
+function verificarCodigo() {
+    $.ajax({
+        type: 'POST',
+        data: {
+            codigoConfirmacion: $('#codigoVerificacion').val()
+        },
+        url: "/cotizador/resultadoVerificacion",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.resultado === true) {
+                $('#codigoSiguiente').fadeOut();
+                $('.antPaso').fadeOut();
+                $('#exito').fadeIn();
+                $('#leyendaCodigoVerificacion').html("<small style='color: green;'>Felicidades el código es correcto, da click en continuar.</small>");
+
+            } else {
+                $('#phoneVerificacion').val('');
+                $('#leyendaCodigoVerificacion').html("<small style='color: red;'>El código indicado no es correcto, Verificalo e intenta nuevamente por favor.</small>");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+
+}
+
+function operacionesShortUrl() {
+    $(".mat-input").focus(function () {
+        $(this).parent().addClass("is-active is-completed");
+    });
+
+    $(".mat-input").focusout(function () {
+        if ($(this).val() === "")
+            $(this).parent().removeClass("is-completed");
+        $(this).parent().removeClass("is-active");
+    });
+
+    
+    $('#cliente_si').on('click', function () {
+        console.log("Si entraaaaaa");
+        $(this).parent().children('.correctaBox').removeClass('active_green');
+        $(this).addClass('active_green');
+        $('#clienteExistente').val('SI');
+        $('#clienteExistente').addClass('notEmpty');
+        $('#inputNoCliente').removeClass('hide');
+    });
+
+    $('#cliente_no').on('click', function () {
+        console.log("Si entraaaaaa");
+        $(this).parent().children('.correctaBox').removeClass('active_green');
+        $(this).addClass('active_green');
+        $('#clienteExistente').val('NO');
+        $('#clienteExistente').addClass('notEmpty');
+        $('#inputNoCliente').addClass('hide');
+        $('#inputNoCliente').val('');
+    });
+
+    $('.datoShortUrl').change(function (index) {
+        console.log("--->" + $(this).attr('id') + " = " + $(this).val());
+        if ($(this).val() !== '') {
+            if ($(this).hasClass('validarEmail')) {
+                if (validateEmail($(this).val())) {
+                    var respuesta = validateEmail($(this).val());
+                    if(respuesta === true){
+                        //habilitarBoton();
+                       $('.email').attr('disabled', false);
+
+                    }
+                    if (validateDefaultAddress($(this).val())) {
+                        $(this).removeClass('mat-input-error');
+                        $(this).addClass('mat-input');
+                        $(this).addClass('notEmpty');
+                        $(this).addClass('headingColor');
+                    } else {
+                        $(this).removeClass('mat-input');
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                        $(this).addClass('mat-input-error');
+                        sweetAlert("Oops...", "Ha introducido un correo de LIbertad SF, solo se aceptará capturar el correo genérico 1234@libertad.com.mx", "error");
+                    }
+                } else {
+                    $(this).removeClass('mat-input');
+                    $(this).removeClass('notEmpty');
+                    $(this).removeClass('headingColor');
+                    $(this).addClass('mat-input-error');
+                    sweetAlert("Oops...", "La dirección de correo es incorrecta, verifica la estructura. Ej. ejemplo@mail.com.", "error");
+                }
+            } else {
+                $(this).addClass('notEmpty');
+                $(this).addClass('headingColor');
+            }
+            if ($(this).attr('id') === 'phoneVerificacion') {
+                
+                verificarSolicitudSms($('#phoneVerificacion').val(),$('#token').val());
+            }
+             if ($(this).attr('id') === 'codigoVerificacion') {
+                
+                resultadoVerificacion($('#codigoVerificacion').val());
+            }
+        
+        } else {
+            $(this).removeClass('notEmpty');
+            $(this).removeClass('headingColor');
+        }
+    });
+
+    
+}
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+function validateDefaultAddress(email) {
+    var regex = /.+@libertad.com.mx$/;
+    if (regex.test(email)) {
+        if (email !== "1234@libertad.com.mx") {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return true;
+    }
+}
+
+
+function verificarSolicitudSms(telefonoCelular,token) {
+    $("body").mLoading({
+        text: "Verificando Solicitud, espere por favor...",
+        icon: "/images/spinner.gif",
+        mask: true
+    });
+    $.ajax({
+        type: 'POST',
+        data: {
+            telefonoCelular: telefonoCelular,token:token
+        },
+        url: "/solicitud/verificarSolicitudSms",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.ok === true) {
+                sweetAlert("SMS Enviado", "Espera por favor entre 15 y 30 segundos para recibir tu código.", "success");
+                $('#telefonoCelular').fadeOut();
+                $('#codigoConfirmacion').fadeIn();
+                $('#phoneVerificacion').val(telefonoCelular);
+                $('#solicitudId').val(respuesta.solicitud);
+                $('#tipo').val(respuesta.tipo);
+
+                enviarSms(telefonoCelular);
+            } else {
+                sweetAlert("Oops...", respuesta.mensaje, "error");
+            }
+            $("body").mLoading('hide');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            $("body").mLoading('hide');
+        }
+    });
+}
+
+
+function enviarSms(telefonoCelular) {
+    $.ajax({
+        type: 'POST',
+        data: {
+            telefonoCelular: telefonoCelular
+        },
+        url: "/cotizador/solicitarCodigo",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.mensajeEnviado === true) {
+                //sweetAlert("SMS Enviado", "Espera por favor entre 15 y 30 segundos para recibir tu código.", "success");
+                //$('#telefonoCelular').fadeOut();
+                //$('#codigoConfirmacion').fadeIn();
+                $('#phoneVerificacion').val(telefonoCelular);
+            } else {
+                sweetAlert("Oops...", "Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.", "error");
+            }
+            $("body").mLoading('hide');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            $("body").mLoading('hide');
+        }
+    });
+}
+
+
+function resultadoVerificacion(codigoConfirmacion) {
+    $.ajax({
+        type: 'POST',
+        data: {
+            codigoConfirmacion: codigoConfirmacion
+        },
+        url: "/cotizador/resultadoVerificacion",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.resultado === true) {
+                $('#exito').fadeIn();
+                $('#leyendaCodigoVerificacion').html("<small style='color: green;'>Felicidades el código es correcto, da click en continuar.</small>");
+                $('#exito').attr('disabled', false);
+            } else {
+                sweetAlert("Oops...", "El código indicado no es correcto, Verificalo e intenta nuevamente por favor.", "warning");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+
+
+
+
+// ***************************** Fin de Funciones Short Url

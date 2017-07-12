@@ -1263,13 +1263,77 @@ class SolicitudController {
             redirect action: "index"
         }
     }
+    def verificarSolicitudSms(){
+        println params
+        def cliente
+        def solicitud
+        def temporal
+        def respuesta = [:]
+        if (params.telefonoCelular){
+            cliente = TelefonoCliente.findAllWhere(numeroTelefonico : params.telefonoCelular,tipoDeTelefono: TipoDeTelefono.get(2),vigente : true)
+                def solicitudTemp
+                cliente.each{
+                    solicitud = SolicitudDeCredito.findWhere(cliente : it.cliente,token: params.token)
+                    if (solicitud){
+                        respuesta.ok = true
+                        respuesta.tipo = "credito"
+                        respuesta.solicitud = solicitud.id
+                    }                   
+                }
+            if(!respuesta.ok){
+                temporal = SolicitudTemporal.findWhere(token: params.token,telefonoCliente:params.telefonoCelular )
+                if(temporal){
+                    respuesta.ok = true
+                    respuesta.tipo = "temporal"
+                    respuesta.solicitud = temporal.id
+                }else{
+                    respuesta.error = true
+                    respuesta.mensaje = "No existe solicitud relacionada al telefono proporcionado"
+                }
+            }
+        } 
+        else{
+            respuesta.error = true
+            respuesta.mensaje = "Por favor Ingrese un Número Valido"
+        }
+        render respuesta as JSON
+        
+    }
     
+    def verificacion (){
+        if(params.token){
+           [token:params.token]        
+        }else{
+               def entidadFinanciera = EntidadFinanciera.get(6)
+                    def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+                    [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+        }
+    }
     def resume(){
         println params
+        def cliente
+        def emailCliente
+        def telefonoCliente
         if(params.token){
-            def solicitud = SolicitudDeCredito.findWhere(token: params.token)
+            def solicitud
+            if(params.fechaDeNacimiento){
+                Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
+                cliente = Cliente.findWhere(fechaDeNacimiento:fechaDeNacimiento)
+                if(cliente){
+                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente,token: params.token)
+                }
+            }else if (params.correoElectronico){
+                cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
+                if(cliente){
+                   solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token)
+                }
+            }
+            else if ((params.telefonoCelular && params.solicitudId) && params.tipo=="credito"){
+                        solicitud = SolicitudDeCredito.findWhere(id:params.solicitudId as long,token:params.token)
+            }
             if(solicitud){
                 def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
+                println datosRecuperados
                 def ultimoPaso = datosRecuperados.ultimoPaso
                 session.yaUsoLogin = true
                 session.ef = datosRecuperados.entidadFinanciera
@@ -1285,7 +1349,12 @@ class SolicitudController {
                 params.keySet().asList().each { params.remove(it) }
                 forward action:'formulario', params: [paso: ultimoPaso]
             } else {
-                def temporal = SolicitudTemporal.findWhere(token: params.token)
+                def temporal
+                if((params.telefonoCelular && params.solicitudId) && params.tipo=="temporal"){
+                   temporal = SolicitudTemporal.findWhere(token: params.token,id:params.solicitudId as long )
+                }else if (params.correoElectronico){
+                    temporal = SolicitudTemporal.findWhere(token: params.token,emailCliente:params.correoElectronico )
+                }
                 if(temporal){
                     def datosRecuperados = solicitudService.armarDatosTemporales(temporal)
                     println datosRecuperados
@@ -1306,10 +1375,6 @@ class SolicitudController {
                     [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
                 }
             }
-        } else {
-            def entidadFinanciera = EntidadFinanciera.get(6)
-            def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
-            [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
         }
     }
     
@@ -1383,5 +1448,37 @@ class SolicitudController {
         println session.pasoFormulario
         respuesta = perfiladorService.guardarOferta(session.ofertas, session.pasoFormulario, session.identificadores , params)
         render respuesta as JSON
+    }
+    
+    def printReport(){
+        def mapa = []
+        def respuesta = [:]
+        def configuracion = session.configuracion
+        def productoSolicitud = ProductoSolicitud.get(params.idProductoSolicitud as long)
+        def resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: productoSolicitud.solicitud)
+        respuesta.folio = ("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')
+        respuesta.montoDelCredito = productoSolicitud.montoDelCredito
+        respuesta.plazos = productoSolicitud.plazos
+        respuesta.nomenclatura = productoSolicitud.periodicidad.nomenclatura
+        respuesta.montoDelSeguroDeDeuda = productoSolicitud.montoDelSeguroDeDeuda
+        respuesta.nombreDelProducto = productoSolicitud.producto?.nombreDelProducto
+        respuesta.cat =  (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 
+        respuesta.sucursal = productoSolicitud?.solicitud?.sucursal
+        respuesta.ubicacion = productoSolicitud?.solicitud?.sucursal.ubicacion
+        respuesta.documentoElegidoCantidad = productoSolicitud?.documentoElegido?.cantidadSolicitada
+        respuesta.documentoElegido = productoSolicitud?.documentoElegido?.nombre
+        respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
+        if(resultadoMotorDeDecision){
+            respuesta.dictamenFinal = resultadoMotorDeDecision?.dictamenFinal
+        }else{
+            respuesta.dictamenFinal = false
+        }
+        respuesta.perfilador = false
+        respuesta.origen= "solicitud"
+        respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
+        respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
+        respuesta.email = session.cotizador.emailCliente
+        mapa << respuesta
+        chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
 }

@@ -7,6 +7,13 @@
             <p class="felicidadesP1">TU CRÉDITO HA SIDO PRE-AUTORIZADO</p>
             <br/>
         </div>
+         <div class="container">
+            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
+                    <a style="color:white;text-decoration:none;" href="/solicitud/printReport?_format=PDF&_name=Mi_Solicitud_${configuracion?.nombreComercial?.toUpperCase()}&_file=reporte10&idProductoSolicitud=${productoSolicitud?.id}">
+                        IMPRIME TU SOLICITUD <i class="fa fa-print"></i>
+                    </a></strong>
+            </div>
+        </div>
 
         <div class="container containerBox">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
@@ -73,6 +80,13 @@
             <p class="colorblue">POR EL MOMENTO NO ES POSIBLE OTORGAR UNA PRE-CALIFICACIÓN ACERTADA POR ESTE MEDIO. TE INVITAMOS A ACUDIR A TU  
                 <span class="formTitleColor">${productoSolicitud?.solicitud?.sucursal?.toString()?.toUpperCase()}</span> 
                 PARA CONTINUAR CON EL TRÁMITE Y BRINDARTE MAYOR INFORMACIÓN DE NUESTROS PRODUCTOS DE CRÉDITO, AHORRO E INVERSIÓN.</p>
+        </div>
+         <div class="container">
+            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
+                    <a style="color:white;text-decoration:none;" href="/solicitud/printReport?_format=PDF&_name=Mi_Solicitud_${configuracion?.nombreComercial?.toUpperCase()}&_file=reporte10&idProductoSolicitud=${productoSolicitud?.id}">
+                        IMPRIME TU SOLICITUD <i class="fa fa-print"></i>
+                    </a></strong>
+            </div>
         </div>
         <div class="container containerBox marginTop25">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
@@ -145,6 +159,13 @@
                 <span class="formTitleColor">${productoSolicitud?.solicitud?.sucursal?.toString()?.toUpperCase()}</span> 
                 PARA CONTINUAR CON EL TRÁMITE Y BRINDARTE MAYOR INFORMACIÓN DE NUESTROS PRODUCTOS DE CRÉDITO, AHORRO E INVERSIÓN.</p>
         </div>
+        <div class="container">
+            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
+                    <a style="color:white;text-decoration:none;" href="/solicitud/printReport?_format=PDF&_name=Mi_Solicitud_${configuracion?.nombreComercial?.toUpperCase()}&_file=reporte10&idProductoSolicitud=${productoSolicitud?.id}">
+                        IMPRIME TU SOLICITUD <i class="fa fa-print"></i>
+                    </a></strong>
+            </div>
+        </div>
         <div class="container containerBox marginTop25">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
                 <div class="titles8">
@@ -207,6 +228,19 @@
     </div>
 </section>
 </g:else>
+<div class="solicitudLightbox " id="encuesta">
+    <div class="overlay"></div>
+    <div class="resumenSolicitud lightboxPos">
+        <div onclick="closeModal('encuesta');">
+            <span class="floatRight borderGray radius100 " style="margin-right: 5%;">
+                <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><i class="fa fa-times " aria-hidden="true"></i></p>
+            </span>
+        </div>
+        <div class="padding20">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true" width="100%" height="500" frameborder="0" marginheight="-100" marginwidth="0">Cargando...</iframe> 
+        </div>
+    </div>
+</div>
 <g:render template="modalMapa"/>
 <script>
     $(document).ready(function() {

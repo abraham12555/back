@@ -75,7 +75,7 @@
                     </div>
                     <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
                         <div class="searchBox autoMargin clearFix">
-                            <a href="#" style="width:100%;" class="show-pop-large btn  center-block" data-placement="vertical">Buscar 
+                            <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
                             <i class="fa fa-search" aria-hidden="true"></i>
                             </a>
                         </div>
@@ -220,22 +220,7 @@
         </nav>
 
         <g:layoutBody/>
-<div id="largeContent" style="display:none;">
-    <section class="container clearFix">
-        <form action='/dashboard/buscar' method='POST' class="form-horizontal" id='busquedaForm'>
-            <div class="width990 autoMargin solicitudWhiteBox clearFix paddingBottom20">
-                <div class="formContainer">
-                    <label class = "darkBluetitle">FOLIO</label><input class="inputs marginBottom10 lightGray letterspacing1 font14" name="folio" id="folioBusqueda" type="text"  placeholder="Folio" />
-                    <label class = "darkBluetitle" >NOMBRE</label><input class="inputs marginBottom10 lightGray letterspacing1 font14" name="nombre" id="nombreBusqueda" type="text"  placeholder="Nombre" />
-                    <label class = "darkBluetitle" >APELLIDOS</label><input class="inputs marginBottom10 lightGray letterspacing1 font14" name="apellidoPaterno" id="nombreBusqueda" type="text"  placeholder="Apellido Paterno" />
-                    <input class="inputs marginBottom10 lightGray letterspacing1 font14" name="apellidoMaterno" id="nombreBusqueda" type="text"  placeholder="Apellido Materno" />
-                    <label class = "darkBluetitle" >RFC</label><input class="inputs marginBottom10 lightGray letterspacing1 font14" name="rfc" id="rfcBusqueda" type="text"  placeholder="RFC" />
-                    <button  class="azulBox colorWhite" type="submit">BUSCAR</button>
-                </div>
-            </div>
-        </form>
-    </section>
-</div>	
+
 	<script>
 			(function(){
 
@@ -381,20 +366,28 @@
 
 
 					var
-					 	asyncSettings = {	width:'240',
-					 						height:'200',
+					 	asyncSettings = {	width:'400',
+					 						height:'450',
 					 						closeable:true,
 					 						padding:false,
 					 						cache:false,
-					 						url:'https://api.github.com/',
+					 						url:'/dashboard/',
 					 						type:'async',
 					 						content:function(data){
-					 							var html = '<ul class="list-group">';
-					 							for(var key in data){
-					 								html+='<li class="list-group-item"><a href="'+ data[key] +'" target="_blank">'
-					 								+ '<i class="glyphicon glyphicon-leaf"></i> '+ key+'</a>'+'</li>';	
-					 							}
-												html+='</ul>';
+                                                                                        var html='';
+					 					   
+                                                                                                     html += "<form action='/dashboard/buscar' method='POST' class='form-horizontal' id='busquedaForm'>";
+                                                                                                     html += "<div class='width990 autoMargin solicitudWhiteBox clearFix paddingBottom20'>";
+                                                                 html += "<div class='formContainer'>";
+                html += "<label class = 'darkBluetitle'>FOLIO</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='folio' id='folioBusqueda' type='text'  placeholder='Folio' />";
+                html += "<label class = 'darkBluetitle' >NOMBRE</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='nombre' id='nombreBusqueda' type='text'  placeholder='Nombre' />";
+                 html += "<label class = 'darkBluetitle' >APELLIDOS</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='apellidoPaterno' id='nombreBusqueda' type='text'  placeholder='Apellido Paterno' />";
+                 html += "<input class='inputs marginBottom10 lightGray letterspacing1 font14' name='apellidoMaterno' id='nombreBusqueda' type='text'  placeholder='Apellido Materno' />";
+                 html += "<label class = 'darkBluetitle' >RFC</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='rfc' id='rfcBusqueda' type='text'  placeholder='RFC' />";
+                 html += "<button  class='azulBox colorWhite' type='submit'>BUSCAR</button>";
+                html += "</div>";
+           html += " </div>";
+      html += "  </form>";
 												return html;
 					 						}};
 					$('a.show-pop-async').webuiPopover('destroy').webuiPopover($.extend({},settings,asyncSettings));
