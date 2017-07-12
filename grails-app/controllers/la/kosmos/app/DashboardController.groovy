@@ -89,7 +89,7 @@ class DashboardController {
         session.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
         def informes = []
         if(params.periodoTiempo && params.template) {
-            informes = reporteService.obtenerInformesAnalitica(params.template, (params.temporalidad ? (params.temporalidad as int) : null), params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
+            informes = reporteService.obtenerInformesAnalitica(params.template,  (params.periodoTiempo as int) , params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
         }
         
         if(params.template == "productosDiscriminados"){ //*
