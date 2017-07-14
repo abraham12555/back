@@ -17,6 +17,8 @@
         <g:external dir="css" file="slick.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="slick-theme.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="spectrum.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="bootstrap-tour-standalone.min.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="jquery.webui-popover.css" title="text/css" rel="stylesheet" />
         <g:if test="${session.configuracion?.rutaCss}">
             <link rel="stylesheet" href="${session.configuracion?.rutaCss}">
         </g:if>
