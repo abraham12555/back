@@ -1,4 +1,5 @@
 var ofertasCalculadas;
+var generoConyugue;
 
 function operacionesPerfilador() {
     $(".mat-input").focus(function () {
