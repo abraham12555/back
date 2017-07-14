@@ -3019,6 +3019,7 @@ function verificarSolicitudSms(telefonoCelular,token) {
                 enviarSms(telefonoCelular);
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "error");
+                $('#phoneVerificacion').val(' ');
             }
             $("body").mLoading('hide');
         },
@@ -3046,6 +3047,8 @@ function enviarSms(telefonoCelular) {
                 $('#phoneVerificacion').val(telefonoCelular);
             } else {
                 sweetAlert("Oops...", "Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.", "error");
+                $('#phoneVerificacion').val(' ');
+
             }
             $("body").mLoading('hide');
         },
@@ -3072,6 +3075,8 @@ function resultadoVerificacion(codigoConfirmacion) {
                 $('#exito').attr('disabled', false);
             } else {
                 sweetAlert("Oops...", "El código indicado no es correcto, Verificalo e intenta nuevamente por favor.", "warning");
+                $('#codigoConfirmacion').val(' ');
+
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
