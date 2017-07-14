@@ -414,6 +414,13 @@ function goStep2() {
         $('.step2').addClass('active');
         $('.step2 .step').addClass('active');
         $('#menuPersonales').addClass('active');
+          if ($('#rfcClienteExistente').val() !== null && $('#rfcClienteExistente').val() !== undefined && $('#rfcClienteExistente').val() !== '') {
+            $('#rfcClienteExistente').val('');
+            $('#cliente_rfc').val('');
+            $('#cliente_rfc').prop('readonly', false);
+            $("#cliente_rfc").removeClass('notEmpty');
+            $("#cliente_rfc").removeClass('headingColor');
+        }
         vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
     }
 }
@@ -612,7 +619,7 @@ function generarClaves(persona) {
         if ($('#cliente_genero').val() === '1') {
             generoConyugue = '2';
         } else {
-            conyugue = '1';
+            generoConyugue = '1';
         }
         var rfcParcial = generarRfcParcial({
             nombre: nombres,
