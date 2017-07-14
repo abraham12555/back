@@ -388,6 +388,11 @@ function goStep2() {
                     $('.step2').addClass('active');
                     $('.step2 .step').addClass('active');
                     $('#menuPersonales').addClass('active');
+                    $('#cliente_rfc').focus();
+                    $('#cliente_rfc').val($('#rfcClienteExistente').val());
+                    $('#cliente_rfc').prop('readonly', true);
+                    $("#cliente_rfc").addClass('notEmpty');
+                    $("#cliente_rfc").addClass('headingColor');
                     sweetAlert("¡Excelente!", "El R.F.C indicado ha sido encontrado. Complementa los datos que son solicitados en los siguientes apartados.", "success");
                     vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
                 } else {
@@ -583,6 +588,7 @@ function generarClaves(persona) {
     var nombres;
     var apellidoMaterno;
     if (persona === 'cliente') {
+        console.log("Entonces que trae el rfc del paso 1 ? " + $('#rfcClienteExistente').val());
         var idEstado = Number($('#cliente_lugarDeNacimiento').val());
         if ($('#cliente_segundoNombre').val().trim() !== '') {
             nombres = $('#cliente_nombre').val() + " " + $('#cliente_segundoNombre').val();
