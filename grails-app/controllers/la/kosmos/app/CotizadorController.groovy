@@ -309,33 +309,4 @@ def solicitarCodigoShorUrl() {
         }
         render respuesta as JSON
     }
-    def prueba (){
-        def cliente      
-        def mail
-        def clienteTemp
-        def respuesta = [:]
-        def solicitud
-        def temporal 
-        cliente = TelefonoCliente.findAllWhere(numeroTelefonico :"11-11-11-11-11",tipoDeTelefono: TipoDeTelefono.get(2),vigente : true)
-        if(cliente){
-            cliente.each{        
-                mail = EmailCliente.findWhere(cliente:it.cliente, direccionDeCorreo:'prueba@gmail.com' )
-                if(mail){
-                    respuesta.cliente = mail.cliente
-                }
-            }
-            println "cliente Encontrado" + respuesta
-            solicitud = SolicitudDeCredito.findWhere(cliente:respuesta.cliente)
-            if(!solicitud){
-                temporal = SolicitudTemporal.findWhere(cliente:respuesta.cliente) 
-            }
-        }
-        println "SolicitudDeCredito"+ solicitud
-        println "solicitudTemporal"+temporal
-        
-
-        
-        
-        
-    }
 }
