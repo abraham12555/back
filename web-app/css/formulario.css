@@ -1371,12 +1371,13 @@ body{
     margin-bottom: 31px;
 }
 
-.form button {
-    width: 100%;
-    height: 50px;
-    border-radius: 2px;
+/*.form button {*/
+    /*width: 100%;*/
+    /*height: 50px;*/
+    /*border-radius: 2px;*/
     /*margin-bottom: 31px;*/
-}
+/*}*/
+
 
 .loginShadow{
     width: 90%;
