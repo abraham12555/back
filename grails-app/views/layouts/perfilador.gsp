@@ -26,6 +26,9 @@
         <g:external dir="css" file="default.date.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery.mloading.css" title="text/css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+         <!-- Include Editor style. -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/css/froala_style.min.css" rel="stylesheet" type="text/css" />
         <g:external dir="css" file="perfilador.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="vanilla-notify.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
