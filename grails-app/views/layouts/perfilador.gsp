@@ -14,8 +14,8 @@
         <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
         <g:external dir="css" file="sweetalert.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="select2.min.css" title="text/css" rel="stylesheet" />
-        <!--<g:external dir="css" file="slick.css" title="text/css" rel="stylesheet" />
-        <g:external dir="css" file="slick-theme.css" title="text/css" rel="stylesheet" />-->
+        <g:external dir="css" file="slick.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="slick-theme.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="spectrum.css" title="text/css" rel="stylesheet" />
         <g:if test="${session.configuracion?.rutaCss}">
             <link rel="stylesheet" href="${session.configuracion?.rutaCss}">
