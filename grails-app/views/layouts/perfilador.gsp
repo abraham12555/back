@@ -41,7 +41,9 @@
         <g:external dir="js" file="curp.js" />
         <g:external dir="js" file="rfc.js" />
         <g:external dir="js" file="select2.min.js" />
-        <!--<g:external dir="js" file="slick.js" />-->
+        <g:external dir="js" file="slick.js" />
+        <g:external dir="js" file="bootstrap-tour-standalone.min.js" />
+        <g:external dir="js" file="jquery.webui-popover.min.js" />
 
         <g:external dir="css" file="jquery-ui-kosmos.css" />
         <g:external dir="js" file="jquery-ui-kosmos.js" />
@@ -54,6 +56,8 @@
         <g:external dir="js" file="autoNumeric.min.js" />
         <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
         <script src="http://harvesthq.github.io/chosen/chosen.jquery.js"></script>
+           <!-- Include Editor JS files. -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/js/froala_editor.pkgd.min.js"></script>
         <g:layoutHead/>
     </head>
     <body>
