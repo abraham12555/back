@@ -13,7 +13,7 @@
             <div class="step1 formStep" style="padding: 0px 15px;">
                 <div class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
                     <span class="showOnFill">
-                        La solicitud especificada no está registrada. Verifique la URL que le fue proporcionada e intente nuevamente por favor.
+                        La solicitud especificada no está registrada,o la solicitud ya no está Vigente. Verifique la URL que le fue proporcionada e intente nuevamente por favor.
                     </span>
                 </div>
             </div>

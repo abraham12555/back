@@ -843,6 +843,7 @@ class SolicitudController {
                         def respuesta = [:]
                         respuesta.error = true
                         respuesta.mensaje = "No se han registrado los datos enviados, verifica que se han llenado los campos requeridos."
+                        respuesta.mensajeError= session[ultimoPaso.tipoDePaso.nombre].mensaje
                         render respuesta as JSON
                     }
                 }
@@ -1273,7 +1274,7 @@ class SolicitudController {
             cliente = TelefonoCliente.findAllWhere(numeroTelefonico : params.telefonoCelular,tipoDeTelefono: TipoDeTelefono.get(2),vigente : true)
                 def solicitudTemp
                 cliente.each{
-                    solicitud = SolicitudDeCredito.findWhere(cliente : it.cliente,token: params.token)
+                    solicitud = SolicitudDeCredito.findWhere(cliente : it.cliente,token: params.token,solicitudVigente:true)
                     if (solicitud){
                         respuesta.ok = true
                         respuesta.tipo = "credito"
@@ -1281,14 +1282,14 @@ class SolicitudController {
                     }                   
                 }
             if(!respuesta.ok){
-                temporal = SolicitudTemporal.findWhere(token: params.token,telefonoCliente:params.telefonoCelular )
+                temporal = SolicitudTemporal.findWhere(token: params.token,telefonoCliente:params.telefonoCelular,solicitudVigente:true)
                 if(temporal){
                     respuesta.ok = true
                     respuesta.tipo = "temporal"
                     respuesta.solicitud = temporal.id
                 }else{
                     respuesta.error = true
-                    respuesta.mensaje = "No existe solicitud relacionada al telefono proporcionado"
+                    respuesta.mensaje = "No existe solicitud relacionada al telefono proporcionado, o la solicitud ya no esta Vigente"
                 }
             }
         } 
@@ -1320,12 +1321,12 @@ class SolicitudController {
                 Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
                 cliente = Cliente.findWhere(fechaDeNacimiento:fechaDeNacimiento)
                 if(cliente){
-                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente,token: params.token)
+                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente,token: params.token,solicitudVigente:true)
                 }
             }else if (params.correoElectronico){
                 cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
                 if(cliente){
-                   solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token)
+                   solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token,solicitudVigente:true)
                 }
             }
             else if ((params.telefonoCelular && params.solicitudId) && params.tipo=="credito"){
@@ -1353,7 +1354,7 @@ class SolicitudController {
                 if((params.telefonoCelular && params.solicitudId) && params.tipo=="temporal"){
                    temporal = SolicitudTemporal.findWhere(token: params.token,id:params.solicitudId as long )
                 }else if (params.correoElectronico){
-                    temporal = SolicitudTemporal.findWhere(token: params.token,emailCliente:params.correoElectronico )
+                    temporal = SolicitudTemporal.findWhere(token: params.token,emailCliente:params.correoElectronico,solicitudVigente:true )
                 }
                 if(temporal){
                     def datosRecuperados = solicitudService.armarDatosTemporales(temporal)

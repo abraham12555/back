@@ -249,25 +249,50 @@ class CotizadorController {
     }
     
     
- def solicitarCodigo() {
+def solicitarCodigo() {
         println params
         def respuesta = [:]
         if(params.telefonoCelular){
-                        def configuracion = ConfiguracionEntidadFinanciera.get(6)
-
-            def toPhone = params.telefonoCelular.replaceAll('-', '') 
-            String sid = smsService.sendSMS(toPhone,configuracion)
-            if(sid){
-                session.sid = sid
-                respuesta.mensajeEnviado = true
-            } else {
-                respuesta.mensajeEnviado = false
+            def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
+            respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
+            if(!respuesta.encontrado) {
+                String sid = smsService.sendSMS(toPhone, session.configuracion)
+                if(sid){
+                    session.sid = sid
+                    respuesta.mensajeEnviado = true
+                } else {
+                    respuesta.mensajeEnviado = false
+                }
             }
         } else {
             respuesta.mensajeEnviado = false
         }
         render respuesta as JSON
     }
+    
+        
+def solicitarCodigoShorUrl() {
+        println params
+        def respuesta = [:]
+        if(params.telefonoCelular){
+            def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
+            //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email,session.configuracion)
+            //if(!respuesta.encontrado) {
+                String sid = smsService.sendSMS(toPhone, session.configuracion)
+                if(sid){
+                    session.sid = sid
+                    respuesta.mensajeEnviado = true
+                } else {
+                    respuesta.mensajeEnviado = false
+                }
+            //}
+        } else {
+            respuesta.mensajeEnviado = false
+        }
+        render respuesta as JSON
+    }
+    
+    
 
     def resultadoVerificacion() {
         println params
@@ -283,5 +308,34 @@ class CotizadorController {
             respuesta.incorrecto = true
         }
         render respuesta as JSON
+    }
+    def prueba (){
+        def cliente      
+        def mail
+        def clienteTemp
+        def respuesta = [:]
+        def solicitud
+        def temporal 
+        cliente = TelefonoCliente.findAllWhere(numeroTelefonico :"11-11-11-11-11",tipoDeTelefono: TipoDeTelefono.get(2),vigente : true)
+        if(cliente){
+            cliente.each{        
+                mail = EmailCliente.findWhere(cliente:it.cliente, direccionDeCorreo:'prueba@gmail.com' )
+                if(mail){
+                    respuesta.cliente = mail.cliente
+                }
+            }
+            println "cliente Encontrado" + respuesta
+            solicitud = SolicitudDeCredito.findWhere(cliente:respuesta.cliente)
+            if(!solicitud){
+                temporal = SolicitudTemporal.findWhere(cliente:respuesta.cliente) 
+            }
+        }
+        println "SolicitudDeCredito"+ solicitud
+        println "solicitudTemporal"+temporal
+        
+
+        
+        
+        
     }
 }

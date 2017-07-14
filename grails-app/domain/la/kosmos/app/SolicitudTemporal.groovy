@@ -27,7 +27,9 @@ class SolicitudTemporal {
     int ultimoPaso = 1
     boolean cargarImagen = false
     String folio
- 
+    boolean solicitudVigente = true
+    float montoDeServicioDeAsistencia = 0
+
     static constraints = {
         colorModelo (nullable: true)
         modelo (nullable: true)

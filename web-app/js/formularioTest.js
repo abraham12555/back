@@ -1362,12 +1362,22 @@ function avanzarPaso(paso) {
             if (respuesta.error) {
                 var html = "<div class='container clearFix relative autoMargin width920'>";
                 html += "<div class='errorBoxRed floatLeft'><div class='infoContainer4c'>";
-                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensaje.toUpperCase() + "</p>";
+                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensaje.toUpperCase() +"  "+ respuesta.mensajeError.toUpperCase()+"</p>";
                 html += "</div></div><div class='buttonOrange line18 floatLeft' style='background-color: #fb5e48;'></div><div class='buttonOrange crosCircle floatLeft' style='background-color: #fb5e48;'>";
                 html += "<p class='center marginTop5 font12 colorWhite'><i class='fa fa-times' aria-hidden='true'></i></p></div></div>";
                 $('#erroBubble').html(html);
                 $('#erroBubble').fadeIn();
-            } else if (respuesta.sesionExpirada) {
+            } else if(respuesta.mensajeError){
+                    var html = "<div class='container clearFix relative autoMargin width920'>";
+                html += "<div class='errorBoxRed floatLeft'><div class='infoContainer4c'>";
+                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensajeError.toUpperCase()+"</p>";
+                html += "</div></div><div class='buttonOrange line18 floatLeft' style='background-color: #fb5e48;'></div><div class='buttonOrange crosCircle floatLeft' style='background-color: #fb5e48;'>";
+                html += "<p class='center marginTop5 font12 colorWhite'><i class='fa fa-times' aria-hidden='true'></i></p></div></div>";
+                $('#erroBubble').html(html);
+                $('#erroBubble').fadeIn();
+                
+            }
+            else if (respuesta.sesionExpirada) {
                 var mensaje = "<p style='text-align: justifiy;'>" + respuesta.mensaje + "</p>";
                 sweetAlert({html: true,
                     title: "¡Atención!",
@@ -3026,7 +3036,7 @@ function enviarSms(telefonoCelular) {
         data: {
             telefonoCelular: telefonoCelular
         },
-        url: "/cotizador/solicitarCodigo",
+        url: "/cotizador/solicitarCodigoShorUrl",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.mensajeEnviado === true) {

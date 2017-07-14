@@ -21,6 +21,7 @@ class SolicitudService {
         def clienteNuevo = false
         def datosPaso = [:]
         def guardadoCorrecto = true
+        def mensaje
         if(datosPreguardados){
             datosPaso = datosPreguardados
         }
@@ -102,52 +103,82 @@ class SolicitudService {
                     datosPaso.cliente.idCliente = cliente.id
                     println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
                     if(clienteNuevo && datosPaso.telefonoCliente){
-                        def telefonoCasa
-                        def telefonoCelular
-                        if(datosPaso.telefonoCliente.telefonoCasa){
-                            telefonoCasa = new TelefonoCliente()
-                            telefonoCasa.cliente = cliente
-                            telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
-                            telefonoCasa.vigente = true
-                            telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
-                            telefonoCasa.save(flush: true)
-                        }
-                        if(datosPaso.telefonoCliente.telefonoCelular){
-                            telefonoCelular = new TelefonoCliente()
-                            telefonoCelular.cliente = cliente
-                            telefonoCelular.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
-                            telefonoCelular.vigente = true
-                            telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
-                            telefonoCelular.save(flush: true)
+                        def telefonoCelCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCelular, vigente: true)
+                        //def telefonoCasaCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCasa, vigente: true)
+                        if (telefonoCelCliente){
+                            guardadoCorrecto = false
+                            mensaje= "EL TELEFONO INGRESADO YA CUENTA CON UNA SOLICITUD VIGENTE"
+                        }else {
+                            def telefonoCasa
+                            def telefonoCelular
+                            if(datosPaso.telefonoCliente.telefonoCasa){
+                                telefonoCasa = new TelefonoCliente()
+                                telefonoCasa.cliente = cliente
+                                telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
+                                telefonoCasa.vigente = true
+                                telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
+                                telefonoCasa.save(flush: true)
+                            }
+                            if(datosPaso.telefonoCliente.telefonoCelular){
+                                telefonoCelular = new TelefonoCliente()
+                                telefonoCelular.cliente = cliente
+                                telefonoCelular.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
+                                telefonoCelular.vigente = true
+                                telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
+                                telefonoCelular.save(flush: true)
+                            }
                         }
                     } else if(!clienteNuevo && datosPaso.telefonoCliente){
                         def telefonoCasa
                         def telefonoCelular
-                        def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
-                        telefonosCliente?.each {
-                            if(it.tipoDeTelefono.id == 1) {
-                                if(datosPaso.telefonoCliente.telefonoCasa && (datosPaso.telefonoCliente.telefonoCasa != it.numeroTelefonico)){
-                                    it.vigente = false
-                                    it.save(flush:true)
-                                    telefonoCasa = new TelefonoCliente()
-                                    telefonoCasa.cliente = cliente
-                                    telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
-                                    telefonoCasa.vigente = true
-                                    telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
-                                    telefonoCasa.save(flush: true)
-                                }
-                            } else if(it.tipoDeTelefono.id == 2) {
-                                if(datosPaso.telefonoCliente.telefonoCelular && (datosPaso.telefonoCliente.telefonoCelular != it.numeroTelefonico)){
-                                    it.vigente = false
-                                    it.save(flush:true)
-                                    telefonoCelular = new TelefonoCliente()
-                                    telefonoCelular.cliente = cliente
-                                    telefonoCelular.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
-                                    telefonoCelular.vigente = true
-                                    telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
-                                    telefonoCelular.save(flush: true)
+                        def telefonoCelCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCelular, vigente: true)
+                        //def telefonoCasaCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCasa, vigente: true)
+                        if (telefonoCelCliente ){
+                            //guardadoCorrecto = false
+                            //mensaje= "EL TELEFONO INGRESADO YA CUENTA CON UNA SOLICITUD VIGENTE"
+                        }else{
+                            def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
+                            if(telefonosCliente){
+                            telefonosCliente?.each {
+                                println it
+                                if(it.tipoDeTelefono.id == 1) {
+                                    if(datosPaso.telefonoCliente.telefonoCasa && (datosPaso.telefonoCliente.telefonoCasa != it.numeroTelefonico)){
+                                        it.vigente = false
+                                        it.save(flush:true)
+                                        println cliente
+                                        telefonoCasa.cliente = cliente
+                                        telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
+                                        telefonoCasa.vigente = true
+                                        telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
+                                        telefonoCasa.save(flush: true)
+                                    }
+                                } else if(it.tipoDeTelefono.id == 2) {
+                                    if(datosPaso.telefonoCliente.telefonoCelular && (datosPaso.telefonoCliente.telefonoCelular != it.numeroTelefonico)){
+                                        it.vigente = false
+                                        it.save(flush:true)
+                                        println cliente
+                                        it.cliente = cliente
+                                        it.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
+                                        it.vigente = true
+                                        it.tipoDeTelefono = TipoDeTelefono.get(2)
+                                        it.save(flush: true)
+                                    }
                                 }
                             }
+                           }else{
+                                        telefonoCasa = new TelefonoCliente()
+                                        telefonoCasa.cliente = cliente
+                                        telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
+                                        telefonoCasa.vigente = true
+                                        telefonoCasa.tipoDeTelefono = TipoDeTelefono.get(1)
+                                        telefonoCasa.save(flush: true)
+                                        telefonoCelular = new TelefonoCliente()
+                                        telefonoCelular.cliente = cliente
+                                        telefonoCelular.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
+                                        telefonoCelular.vigente = true
+                                        telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
+                                        telefonoCelular.save(flush: true)
+                           }
                         }
                     }
                     if(datosPaso.emailCliente) {
@@ -163,8 +194,13 @@ class SolicitudService {
                                 emailPersonal.vigente = true
                                 emailPersonal.save(flush: true)
                             }
+                            if(correoExistente){
+                             println "EL CORREO QUE ESTAS INTENTANDO UTILIZAR YA TIENE UNA SOLICITUD RELACIONADA"
+                            //correoExistente.vigente = false
+                            //correoExistente.save(flush: true)
+                            }
                         } else if (correoExistente) {
-                            correoExistente.vigente = true
+                            correoExistente.vigente = false
                             correoExistente.save(flush: true)
                         }
                     } /*else if(!clienteNuevo && datosPaso.emailCliente) {
@@ -467,6 +503,7 @@ class SolicitudService {
             }
         }
         datosPaso.guardadoCorrecto = guardadoCorrecto
+        datosPaso.mensaje = mensaje
         return datosPaso
     }
     
@@ -627,7 +664,7 @@ class SolicitudService {
                 productoSolicitud.documentoElegido = TipoDeDocumento.get(datosCotizador.documento as long);
                 productoSolicitud.montoDelCredito = datosCotizador.montoCredito as float
                 productoSolicitud.montoDelSeguroDeDeuda = datosCotizador.montoSeguro as float
-                productoSolicitud.montoDeServicioDeAsistencia = (datosCotizador.montoAsistencia as float)
+                productoSolicitud.montoDeServicioDeAsistencia = datosCotizador.montoAsistencia as float
                 productoSolicitud.montoDelPago = datosCotizador.pagos as float
                 productoSolicitud.haTenidoAtrasos = datosCotizador.atrasos
                 productoSolicitud.seguroFinanciado = true
@@ -677,6 +714,7 @@ class SolicitudService {
                 solicitud.montoDelSeguroDeDeuda = datosCotizador.montoSeguro as float
                 solicitud.montoDelPago = datosCotizador.pagos as float
                 solicitud.haTenidoAtrasos = datosCotizador.atrasos
+                solicitud.montoDeServicioDeAsistencia = datosCotizador.montoAsistencia
                 solicitud.seguroFinanciado = true
                 solicitud.nombreDelCliente = datosCotizador.nombreCliente
                 solicitud.emailCliente = datosCotizador.emailCliente
@@ -1581,6 +1619,7 @@ class SolicitudService {
         respuesta.cotizador.enganche = solicitud.enganche
         respuesta.cotizador.periodo = solicitud.periodicidad.id
         respuesta.cotizador.plazo = solicitud.plazos
+        respuesta.cotizador.montoAsistencia = solicitud.montoDeServicioDeAsistencia
         respuesta.identificadores.idSolicitudTemporal = solicitud.id
         respuesta.configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: solicitud.entidadFinanciera)
         respuesta.ef = solicitud.entidadFinanciera
@@ -1645,10 +1684,12 @@ class SolicitudService {
             def emailRegistrado = EmailCliente.executeQuery("Select ec.cliente from EmailCliente ec Where lower(ec.direccionDeCorreo) = :mail", [mail: email])
             while(respuesta.encontrado == false && x < cliente.size()) {
                 if( (valorCoincide(normalizarCadena(cliente[x].toString()), normalizarCadena(nombreCompleto))) || (emailRegistrado && emailRegistrado?.contains(cliente[x])) ){
-                    def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 Order by sc.fechaDeSolicitud",[idCliente: cliente[x].id])
+                    def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 and sc.solicitudVigente=true Order by sc.fechaDeSolicitud",[idCliente: cliente[x].id])
                     if(solicitudFormalExistente) {
-                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                        respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
                         respuesta.encontrado = true
+                    }else {
+                        listaDeClientes << cliente[x]
                     }
                 }
                 x++
@@ -1660,9 +1701,9 @@ class SolicitudService {
                 respuesta.multiplesClientes = true   
             }     
         } else {
-            def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 Order by sc.fechaDeSolicitud",[idCliente: cliente[0].id])
+            def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 and sc.solicitudVigente=true Order by sc.fechaDeSolicitud",[idCliente: cliente[0].id])
             if(solicitudFormalExistente) {
-                respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
                 respuesta.encontrado = true
             } else {
                 respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
@@ -1675,18 +1716,20 @@ class SolicitudService {
     def buscarSolicitudInformalExistente(def telefono, def nombreCompleto, def email){
         def respuesta = [:]
         def listaDeClientes = []
-        def cliente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045 Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
+        def cliente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where (replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045) and st.solicitudVigente= true Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
         if(cliente) {
             println "Solicitudes Temporales encontradas: " + cliente
             if(cliente.size() > 1) {
                 def x = 0
                 respuesta.encontrado = false
                 while(respuesta.encontrado == false && x < cliente.size()) {
+                    println cliente[x].nombreDelCliente
+                    println cliente[x].emailCliente
                     if(valorCoincide(normalizarCadena(cliente[x].nombreDelCliente),normalizarCadena(nombreCompleto))){
-                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + cliente[x].token //cliente[x].shortUrl
+                        respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
                         respuesta.encontrado = true
                     } else if(cliente[x].emailCliente.toLowerCase() == email?.toLowerCase()){
-                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + cliente[x].token //cliente[x].shortUrl
+                        respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
                         respuesta.encontrado = true
                     } else {
                         listaDeClientes << cliente[x]
@@ -1697,8 +1740,11 @@ class SolicitudService {
                     respuesta.multiplesClientes = true   
                 }
             } else {
-                respuesta.shortUrl = "https://micreditolibertad.com/solicitud/resume?token=" + cliente[0].token //cliente[0].shortUrl
-                respuesta.encontrado = true
+                def solicitudInformalExistente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where (replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045) and st.solicitudVigente= true Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
+                if(solicitudInformalExistente) {
+                    respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + solicitudInformalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                    respuesta.encontrado = true
+                }
             }
         } else {
             respuesta.encontrado = false
