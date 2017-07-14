@@ -414,7 +414,7 @@ function goStep2() {
         $('.step2').addClass('active');
         $('.step2 .step').addClass('active');
         $('#menuPersonales').addClass('active');
-          if ($('#rfcClienteExistente').val() !== null && $('#rfcClienteExistente').val() !== undefined && $('#rfcClienteExistente').val() !== '') {
+        if ($('#rfcClienteExistente').val() !== null && $('#rfcClienteExistente').val() !== undefined && $('#rfcClienteExistente').val() !== '') {
             $('#rfcClienteExistente').val('');
             $('#cliente_rfc').val('');
             $('#cliente_rfc').prop('readonly', false);
@@ -621,21 +621,23 @@ function generarClaves(persona) {
         } else {
             generoConyugue = '1';
         }
-        var rfcParcial = generarRfcParcial({
-            nombre: nombres,
-            apellido_paterno: $('#cliente_apellidoPaterno').val(),
-            apellido_materno: apellidoMaterno,
-            fecha_nacimiento: [$('#cliente_fechaDeNacimiento_dia').val(), $('#cliente_fechaDeNacimiento_mes').val(), $('#cliente_fechaDeNacimiento_anio').val()]
-        });
-        var rfc = generarHomoclave((nombres), $('#cliente_apellidoPaterno').val(), apellidoMaterno, rfcParcial);
+        if ($('#rfcClienteExistente').val() === null || $('#rfcClienteExistente').val() === undefined || $('#rfcClienteExistente').val() === '') {
+            var rfcParcial = generarRfcParcial({
+                nombre: nombres,
+                apellido_paterno: $('#cliente_apellidoPaterno').val(),
+                apellido_materno: apellidoMaterno,
+                fecha_nacimiento: [$('#cliente_fechaDeNacimiento_dia').val(), $('#cliente_fechaDeNacimiento_mes').val(), $('#cliente_fechaDeNacimiento_anio').val()]
+            });
+            var rfc = generarHomoclave((nombres), $('#cliente_apellidoPaterno').val(), apellidoMaterno, rfcParcial);
+            $('#cliente_rfc').focus();
+            $('#cliente_rfc').val(rfc);
+            $("#cliente_rfc").addClass('notEmpty');
+            $("#cliente_rfc").addClass('headingColor');
+        }
         $('#cliente_curp').focus();
         $('#cliente_curp').val(curp);
-        $('#cliente_rfc').focus();
-        $('#cliente_rfc').val(rfc);
         $("#cliente_curp").addClass('notEmpty');
         $("#cliente_curp").addClass('headingColor');
-        $("#cliente_rfc").addClass('notEmpty');
-        $("#cliente_rfc").addClass('headingColor');
     } else if (persona === 'conyugue') {
         var idEstado = Number($('#cliente_lugarDeNacimientoDelConyugue').val());
         if ($('#cliente_apellidoMaternoDelConyugue').val() === "NA") {
