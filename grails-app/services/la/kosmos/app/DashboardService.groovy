@@ -480,7 +480,7 @@ class DashboardService {
                 } 
             } 
             
-            else if (usuario.authorities.any { it.authority == "ROLE_EJECUTIVO" || it.authority =="ROLE_DIRECTOR" }){
+            else if (usuario.authorities.any { it.authority == "ROLE_EJECUTIVO" }){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
@@ -518,7 +518,7 @@ class DashboardService {
                     }
                 }
             }
-            else if(usuario.authorities.any { it.authority == "ROLE_EJECUTIVO" || it.authority =="ROLE_DIRECTOR" }){
+            else if(usuario.authorities.any { it.authority == "ROLE_EJECUTIVO"}){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
@@ -554,7 +554,7 @@ class DashboardService {
                     }
                 }
             }
-            else if(usuario.authorities.any { it.authority == "ROLE_EJECUTIVO" || it.authority =="ROLE_DIRECTOR" }){
+            else if(usuario.authorities.any { it.authority == "ROLE_EJECUTIVO"}){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
