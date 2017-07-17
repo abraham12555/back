@@ -255,7 +255,9 @@ def solicitarCodigo() {
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
             respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
-            if(!respuesta.encontrado) {
+            
+            println  "encontrado " + respuesta
+            if(!respuesta.encontrado && !respuesta.multiplesClientes) {
                 String sid = smsService.sendSMS(toPhone, session.configuracion)
                 if(sid){
                     session.sid = sid
@@ -263,6 +265,8 @@ def solicitarCodigo() {
                 } else {
                     respuesta.mensajeEnviado = false
                 }
+            }else if (respuesta.encontrado  == false && respuesta.multiplesClientes == true){
+                respuesta.multiplesClientes == true
             }
         } else {
             respuesta.mensajeEnviado = false

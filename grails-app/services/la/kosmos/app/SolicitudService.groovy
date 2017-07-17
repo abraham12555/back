@@ -104,7 +104,6 @@ class SolicitudService {
                     println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
                     if(clienteNuevo && datosPaso.telefonoCliente){
                         def telefonoCelCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCelular, vigente: true)
-                        //def telefonoCasaCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCasa, vigente: true)
                         if (telefonoCelCliente){
                             guardadoCorrecto = false
                             mensaje= "EL TELEFONO INGRESADO YA CUENTA CON UNA SOLICITUD VIGENTE"

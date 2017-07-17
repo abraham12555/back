@@ -53,6 +53,12 @@
                 <p style="display: inline-block;margin-top: 10px; text-align: center;" id="resumirSolicitud"></p>
             </div>
         </div>
+        <div id="many_form" class="input-field col12 hide">
+            <label for="codigo" class="darkBluetitle">Hemos notado que existen varias solicitudes en proceso con el número que nos proporcionaste</label>
+            <div style="text-align: center;">
+                <p style="display: inline-block;margin-top: 10px; text-align: center;" id="resumirSolicitud"></p>
+            </div>
+        </div>
         <div id="thanks" class="hide">
             <strong>¡Gracias <span id="registeredName" class="darkBluetitle"></span>!</strong>
         </div>

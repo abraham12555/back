@@ -179,6 +179,7 @@ function submitPhone() {
                 url: "/cotizador/solicitarCodigo",
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
+                    console.log(respuesta);
                     if (respuesta.mensajeEnviado === true) {
                         $('#editarTelefono').html("");
                         $('#editarTelefono').hide();
@@ -222,7 +223,21 @@ function submitPhone() {
                         $('#resumirSolicitud').click(function () {
                             window.location.href = respuesta.shortUrl;
                         });
-                    } else {
+                    } else if (respuesta.multiplesClientes === true){
+                           $('#resumirSolicitud').html("");
+                        $('#resumirSolicitud').hide();
+                        $('.register').addClass('bounceOut');
+                        setTimeout(function () {
+                            $('.register').removeClass(' bounceOut');
+                            $('.register').addClass('fadeIn');
+                            $('#phone_form').addClass('hide');
+                            $('#many_form').removeClass('hide');
+                            $('.register').removeClass('fadeIn');
+                        }, 600);
+                        $('#resumirSolicitud').html("<span class='resumenBtn'>Existe más de una solicitud vigente a este número</span>");
+                        $('#resumirSolicitud').fadeIn();
+                        }
+                        else {
                         $('#leyendaTel').html("<small style='color: red;'>Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.</small>");
                     }
                     $('#phone').prop('disabled', false);
