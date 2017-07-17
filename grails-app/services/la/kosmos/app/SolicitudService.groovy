@@ -1684,8 +1684,6 @@ class SolicitudService {
                     if(solicitudFormalExistente) {
                         respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
                         respuesta.encontrado = true
-                    }else {
-                        listaDeClientes << cliente[x]
                     }
                 }
                 x++
