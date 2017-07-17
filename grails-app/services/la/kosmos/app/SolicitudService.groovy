@@ -9,6 +9,12 @@ import org.apache.commons.lang.RandomStringUtils
 import org.apache.commons.lang.StringUtils
 import java.time.*
 
+import grails.gorm.DetachedCriteria
+import java.util.Calendar
+import org.hibernate.transform.Transformers
+import java.util.HashSet
+import javax.xml.bind.DatatypeConverter
+
 @Transactional
 class SolicitudService {
     
@@ -1767,4 +1773,74 @@ class SolicitudService {
             return false
         }
     }
+    
+    def vigenciaSolicitudFormal () {
+        def criteria = ConfiguracionEntidadFinanciera.createCriteria()
+        def list = criteria.list {
+            createAlias('entidadFinanciera', 'ef')
+            eq ('ef.activa', Boolean.TRUE)
+            isNotNull("vigenciaSolicitudFormal")
+            projections {
+                property('entidadFinanciera', 'entidadFinanciera')
+                property('vigenciaSolicitudFormal', 'vigenciaSolicitudFormal')
+            }
+
+            resultTransformer(Transformers.aliasToBean(ConfiguracionEntidadFinanciera.class))
+        }
+         list.each {
+            def entidad = it.entidadFinanciera
+            def days = (it.vigenciaSolicitudFormal) * -1
+
+            Calendar calendar = Calendar.getInstance()
+            calendar.add(Calendar.DAY_OF_MONTH, days)
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            Date fecha = calendar.getTime()
+            criteria = new DetachedCriteria(SolicitudDeCredito).build {
+                eq ('entidadFinanciera', entidad)
+                eq ('solicitudVigente', Boolean.TRUE)
+                lt ('fechaDeSolicitud', fecha)
+               
+            }
+            criteria.updateAll(solicitudVigente:Boolean.FALSE)
+            
+        }
+        
+    }
+     def vigenciaSolicitudTemporal () {
+        def criteria = ConfiguracionEntidadFinanciera.createCriteria()
+        def list = criteria.list {
+            createAlias('entidadFinanciera', 'ef')
+            eq ('ef.activa', Boolean.TRUE)
+            isNotNull("vigenciaSolicitudTemporal")
+            projections {
+                property('entidadFinanciera', 'entidadFinanciera')
+                property('vigenciaSolicitudTemporal', 'vigenciaSolicitudTemporal')
+            }
+
+            resultTransformer(Transformers.aliasToBean(ConfiguracionEntidadFinanciera.class))
+        }
+         list.each {
+            def entidad = it.entidadFinanciera
+            def days = (it.vigenciaSolicitudTemporal) * -1
+
+            Calendar calendar = Calendar.getInstance()
+            calendar.add(Calendar.DAY_OF_MONTH, days)
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            Date fecha = calendar.getTime()
+            criteria = new DetachedCriteria(SolicitudTemporal).build {
+                eq ('entidadFinanciera', entidad)
+                eq ('solicitudVigente', Boolean.TRUE)
+                lt ('fechaDeSolicitud', fecha)
+               
+            }
+            criteria.updateAll(solicitudVigente:Boolean.FALSE)
+            
+        }
+        
+    }
+    
 }

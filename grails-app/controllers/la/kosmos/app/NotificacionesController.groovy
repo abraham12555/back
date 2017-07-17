@@ -8,7 +8,6 @@ class NotificacionesController {
 
     def getSmsTemplates() {
         def entidadFinanciera = session.usuario.entidadFinanciera
-
         def response = [:]
         response.templates = notificacionesService.getSmsTemplates(entidadFinanciera)
         response.statusOption = notificacionesService.enableSmsTemplate(entidadFinanciera)
@@ -49,7 +48,6 @@ class NotificacionesController {
     def getCronList() {
         def entidadFinanciera = session.usuario.entidadFinanciera
         def cronList = notificacionesService.getCronList(entidadFinanciera)
-
         def response = [:]
         response.cronList = cronList
         render response as JSON

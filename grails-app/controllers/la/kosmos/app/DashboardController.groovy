@@ -85,26 +85,25 @@ class DashboardController {
     }
 
     def consultarInformes() {
-        println "68 => " + params
         session.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
         def informes = []
         if(params.periodoTiempo && params.template) {
             informes = reporteService.obtenerInformesAnalitica(params.template,  (params.periodoTiempo as int) , params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
         }
-        
-        if(params.template == "productosDiscriminados"){ //*
+    
+        if(params.template == "productosDiscriminados"){
             render(template: "informes/productosDiscriminados", model: [productosDiscriminados: informes])
-        } else if(params.template == "mPSProducto"){ //*
+        } else if(params.template == "mPSProducto"){ 
             render(template: "informes/mPSProducto", model: [mPSProducto: informes])
-        } else if(params.template == "mPGI"){ //**
+        } else if(params.template == "mPGI"){ 
             render(template: "informes/mPGI", model: [mPGI: informes])
-        } else if(params.template == "iMPEG"){ //*
+        } else if(params.template == "iMPEG"){ 
             render(template: "informes/iMPEG", model: [iMPEG: informes])
         } else if(params.template == "contacto"){
             render(template: "informes/contacto", model: [contacto: informes])  
         }else if(params.template == "dFvsDP"){
             render(template: "informes/dFvsDP", model: [dFvsDP: informes])
-        }else if(params.template == "causaRechazo"){ //*
+        }else if(params.template == "causaRechazo"){ 
             render(template: "informes/causaRechazo", model: [causaRechazo: informes])
         }else if(params.template == "consultasBC"){
             render(template: "informes/consultasBC", model: [consultasBC: informes])
@@ -382,12 +381,12 @@ class DashboardController {
     }
 
     def getSegurosSobreDeuda (){
-        println params
+        //println params
         Pager pager = new Pager(request.JSON)
         def entidadFinanciera = session.usuario.entidadFinanciera
         def segurosSobreDeuda = dashboardService.getSegurosSobreDeuda(entidadFinanciera, pager)
-        println segurosSobreDeuda
-        def response = [:]
+        //println segurosSobreDeuda
+        def response = [:] 
         response.segurosSobreDeuda = segurosSobreDeuda
         response.totalPages = pager.totalPages
         response.page = pager.page
@@ -396,7 +395,7 @@ class DashboardController {
     }
 
     def getServicioDeAsistencia (){
-        println params
+        //println params
         Pager pager = new Pager(request.JSON)
         def entidadFinanciera = session.usuario.entidadFinanciera
         def servicioDeAsistencia = dashboardService.getServicioDeAsistencia(entidadFinanciera, pager)
@@ -2415,6 +2414,7 @@ class DashboardController {
     def getInformes() {
         session.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
         def informes = []
+        
         if(params.temporalidad && params.grafica) {
             informes = reporteService.obtenerInformesAnalitica(params.grafica,  (params.temporalidad as int) , params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
         }

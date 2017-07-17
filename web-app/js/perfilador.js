@@ -1011,7 +1011,34 @@ function mostrarOfertas(data) {
             productos.push(respuesta[i].producto.id);
         }
     } else {
+        
+        var respuestaListado = eval(data);
         html += "<div>No se encontraron ofertas que se ajusten al perfil del cliente.</div>";
+        html += "<div>Por el siguiente motivo: </div> ";
+        if(respuestaListado.productosAplicables != null ){
+            
+            html += "<h2><b><strong> - " + respuestaListado.productosAplicables + " </strong></b></p>";
+        }else {
+            if(respuestaListado.politicas != null ){
+                html += "<h2><b><strong> - " + respuestaListado.politicas + "</strong> </b></p>";
+            }else{
+                if(respuestaListado.dictamenPerfil != null ){
+                    html += "<h2><b><strong> - " + respuestaListado.dictamenPerfil + "</strong> </b></p>";
+                }else  {
+                    if(respuestaListado.bitacoraBuro != null ){
+                        html += "<h2><b><strong> -    " + respuestaListado.bitacoraBuro + "</strong></b></p>";
+                    }else {
+                         if(respuestaListado.ratio != null ){
+                            html += "<h2><b><strong> - " + respuestaListado.ratio + "</strong> </b></p>";
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
     }
     html += "</div></div>";
     $('#ofertas').html(html);
