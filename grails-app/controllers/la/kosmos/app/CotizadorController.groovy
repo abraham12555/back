@@ -296,8 +296,6 @@ def solicitarCodigoShorUrl() {
         render respuesta as JSON
     }
     
-    
-
     def resultadoVerificacion() {
         println params
         def respuesta = [:]

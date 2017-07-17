@@ -139,12 +139,10 @@ class SolicitudService {
                             def telefonosCliente = TelefonoCliente.findAllWhere(cliente: cliente, vigente: true)
                             if(telefonosCliente){
                             telefonosCliente?.each {
-                                println it
                                 if(it.tipoDeTelefono.id == 1) {
                                     if(datosPaso.telefonoCliente.telefonoCasa && (datosPaso.telefonoCliente.telefonoCasa != it.numeroTelefonico)){
                                         it.vigente = false
                                         it.save(flush:true)
-                                        println cliente
                                         telefonoCasa.cliente = cliente
                                         telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
                                         telefonoCasa.vigente = true
@@ -155,7 +153,6 @@ class SolicitudService {
                                     if(datosPaso.telefonoCliente.telefonoCelular && (datosPaso.telefonoCliente.telefonoCelular != it.numeroTelefonico)){
                                         it.vigente = false
                                         it.save(flush:true)
-                                        println cliente
                                         it.cliente = cliente
                                         it.numeroTelefonico = datosPaso.telefonoCliente.telefonoCelular
                                         it.vigente = true
@@ -663,7 +660,7 @@ class SolicitudService {
                 productoSolicitud.documentoElegido = TipoDeDocumento.get(datosCotizador.documento as long);
                 productoSolicitud.montoDelCredito = datosCotizador.montoCredito as float
                 productoSolicitud.montoDelSeguroDeDeuda = datosCotizador.montoSeguro as float
-                productoSolicitud.montoDeServicioDeAsistencia = datosCotizador.montoAsistencia as float
+                productoSolicitud.montoDeServicioDeAsistencia = (datosCotizador.montoAsistencia as float)
                 productoSolicitud.montoDelPago = datosCotizador.pagos as float
                 productoSolicitud.haTenidoAtrasos = datosCotizador.atrasos
                 productoSolicitud.seguroFinanciado = true
@@ -1685,7 +1682,7 @@ class SolicitudService {
                 if( (valorCoincide(normalizarCadena(cliente[x].toString()), normalizarCadena(nombreCompleto))) || (emailRegistrado && emailRegistrado?.contains(cliente[x])) ){
                     def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 and sc.solicitudVigente=true Order by sc.fechaDeSolicitud",[idCliente: cliente[x].id])
                     if(solicitudFormalExistente) {
-                        respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
                         respuesta.encontrado = true
                     }else {
                         listaDeClientes << cliente[x]
@@ -1702,7 +1699,7 @@ class SolicitudService {
         } else {
             def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 and sc.solicitudVigente=true Order by sc.fechaDeSolicitud",[idCliente: cliente[0].id])
             if(solicitudFormalExistente) {
-                respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
                 respuesta.encontrado = true
             } else {
                 respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
@@ -1725,10 +1722,10 @@ class SolicitudService {
                     println cliente[x].nombreDelCliente
                     println cliente[x].emailCliente
                     if(valorCoincide(normalizarCadena(cliente[x].nombreDelCliente),normalizarCadena(nombreCompleto))){
-                        respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
+                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
                         respuesta.encontrado = true
                     } else if(cliente[x].emailCliente.toLowerCase() == email?.toLowerCase()){
-                        respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
+                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
                         respuesta.encontrado = true
                     } else {
                         listaDeClientes << cliente[x]
@@ -1741,7 +1738,7 @@ class SolicitudService {
             } else {
                 def solicitudInformalExistente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where (replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045) and st.solicitudVigente= true Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
                 if(solicitudInformalExistente) {
-                    respuesta.shortUrl = "http://localhost:8080/solicitud/verificacion?token=" + solicitudInformalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                    respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + solicitudInformalExistente[0].token //solicitudFormalExistente[0].shortUrl
                     respuesta.encontrado = true
                 }
             }

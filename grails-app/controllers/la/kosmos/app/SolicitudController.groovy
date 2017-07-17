@@ -1334,7 +1334,6 @@ class SolicitudController {
             }
             if(solicitud){
                 def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
-                println datosRecuperados
                 def ultimoPaso = datosRecuperados.ultimoPaso
                 session.yaUsoLogin = true
                 session.ef = datosRecuperados.entidadFinanciera
