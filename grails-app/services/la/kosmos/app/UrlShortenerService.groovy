@@ -19,7 +19,7 @@ class UrlShortenerService {
         def configuracion = ConfiguracionKosmos.get(1)
         def referencia = generarToken(cadenaSolicitud + generarCadenaAleatoria(32) + "|" + (new Date().toString()))
         println "Referencia del Token: " + referencia
-        def urlLarga = configuracionEntidadFinanciera.urlDominio + "solicitud/verificacion?token=" + referencia
+        def urlLarga = configuracionEntidadFinanciera.urlDominio + "solicitud/resume?token=" + referencia
         def urlGoogleUrlShortener = "https://www.googleapis.com/urlshortener/v1/url?key=${configuracion.googleApiKey}" 
         respuesta.token = referencia
         def jsonRequest = [:]
