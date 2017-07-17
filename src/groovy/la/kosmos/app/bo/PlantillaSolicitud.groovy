@@ -85,7 +85,7 @@ class PlantillaSolicitud {
     }
 
     private String format(monto){
-        NumberFormat formatter = new DecimalFormat("#0.00");
+        NumberFormat formatter = new DecimalFormat("#000");
         return formatter.format(monto)
     }
 }

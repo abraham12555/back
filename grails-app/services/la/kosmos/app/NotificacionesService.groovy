@@ -29,7 +29,6 @@ class NotificacionesService {
         NotificacionesCron notificacionCron = NotificacionesCron.get(id)
         //Envia notificaciones de solicitudes temporales
         this.notificacionesSolicitudTemporal(notificacionCron)
-
         //Envia notificaciones de solicitudes de credito
         this.notificacionesSmsSolicitudCredito(notificacionCron)
 
@@ -124,11 +123,9 @@ class NotificacionesService {
     private void notificacionesSmsSolicitudCredito(NotificacionesCron notificacionCron){
         def configuracion = notificacionCron.configuracionEntidadFinanciera
         EntidadFinanciera entidadFinanciera = configuracion.entidadFinanciera
-
         notificacionCron.templates.each {
             if(it.tipoPlantilla == Constants.TipoPlantilla.SMS){
                 def notificacion = it
-
                 def criteria = SolicitudDeCredito.createCriteria()
                 def solicitudesCredito = criteria.list{
                     createAlias('entidadFinanciera', 'e')
@@ -169,18 +166,17 @@ class NotificacionesService {
                             createAlias('producto', 'p')
                             eq ('solicitud.id', solicitudDeCredito.id)
                         }
-
                         ProductoSolicitud productoSolicitud = list[0]
                         def origen
-
-                        if(productoSolicitud != null){
+                        if(productoSolicitud != null){  //!=
                             origen = new PlantillaSolicitud(productoSolicitud)
                         } else {
                             origen = new PlantillaSolicitud(solicitudDeCredito)
                         }
-
+                         
                         def message = this.buildMessage(origen, map, notificacion.plantilla)
                         if(message != null) {
+                            
                             def phoneNumber = solicitudDeCredito.cliente.telefonoCliente.numeroTelefonico
 
                             try {
@@ -270,12 +266,13 @@ class NotificacionesService {
                         } else {
                             origen = new PlantillaSolicitud(solicitudDeCredito)
                         }
-
                         String message = this.buildMessage(origen, map, notificacion.plantilla)
+                        
                         if(message != null) {
                             String email = solicitudDeCredito.cliente.emailCliente.direccionDeCorreo
 
                             try {
+                               
                                 (this.sendEmailMessage(notificacion.asunto, email, message, configuracion)) ? exitosos ++ : erroneos ++
                             } catch (Exception ex){
                                 erroneos ++
@@ -298,7 +295,7 @@ class NotificacionesService {
     private String buildMessage(Object obj, Map map, String template){
         try {
             Object someObject = obj;
-
+            
             for (Field field : someObject.getClass().getDeclaredFields()) {
                 field.setAccessible(Boolean.TRUE);
                 Object value = field.get(someObject);
@@ -328,9 +325,10 @@ class NotificacionesService {
 
     private boolean sendMessage(String phoneNumber, String message, ConfiguracionEntidadFinanciera configuracion) throws Exception {
         phoneNumber = phoneNumber.replaceAll('-', '')
-
+        
         Future future = executorService.submit([call: {
                     boolean value = this.smsService.sendSMS(phoneNumber, message, configuracion)
+                    
                     return value
                 }] as Callable)
         boolean response = future.get()
@@ -349,6 +347,7 @@ class NotificacionesService {
     }
 
     def getSmsTemplates(EntidadFinanciera entidadFinanciera){
+        
         return this.getTemplatesByType(entidadFinanciera, Constants.TipoPlantilla.SMS)
     }
 

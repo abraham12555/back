@@ -165,7 +165,6 @@ class PerfiladorService {
             proceso.montomax = respuesta.montoMaximo
         }
         proceso.ratio = obtenerRatio(proceso)
-        println "RATIO " + proceso.ratio+" CAP PAGO "+ proceso.capacidaddepago+" BALANCE DE CAJA "+proceso.balancecaja +" CUOTA "+proceso.cuota+" MONTOMAX " + proceso.montomax
         return proceso.ratio
         
     }
@@ -267,9 +266,8 @@ class PerfiladorService {
             respuesta = resp
         }
         def ratio = creaProceso(respuesta)
-        println "RATIO = " + ratio 
         if(ratio > 1 ){
-            println "RATIO APROBADO"
+       
         }else{
             def oxp = ofertaPlazo(respuesta)
             def r = [:]
@@ -277,7 +275,7 @@ class PerfiladorService {
                 r = oxp
             }
             if(r.ratio > 1 ){
-                println "RATIO POR PLAZO " + r.ratio  + " PLAZOS "   + r.plazos 
+               
             }     
             def oxm = ofertaMonto(respuesta.solicitud)
             def rr = [:]
@@ -285,15 +283,13 @@ class PerfiladorService {
                 rr = oxm
             }
             if (rr.ratio > 1 ){
-                println "RATIO " + rr.ratio + " MONTO " + rr.montoDelCredito + " PLAZOS " + rr.plazos
+                
             }
         }
-        println "NUEVA OFERTA p/solicitudid " + respuesta.solicitud
         def res = obtenerDatos(respuesta.solicitud)
         if(res){
             respuesta = res
         }
-        println "PROD ID " + respuesta.productoId +" DOC " + respuesta.documento + "  Tipo ING  " + respuesta.tipoingresos
         def productos = DocumentoProducto.executeQuery("SELECT dp FROM DocumentoProducto dp WHERE dp.tipoDeDocumento.id =" + respuesta.documento)
         def ofertas = []
         productos?.each {
@@ -371,6 +367,8 @@ class PerfiladorService {
     
     def obtenerPropuestas(def origen, def identificadores, def idTipoDeDocumento, def clienteExistente, def perfil){
         def ofertas = []
+        def listado = [:]
+        def ratio_menor = 0
         def oferta
         def datosSolicitud = consultarSolicitud(origen, identificadores.idSolicitud)
         def entidadFinanciera
@@ -390,8 +388,21 @@ class PerfiladorService {
             def tipoDeDocumento = (datosSolicitud.documento ?: TipoDeDocumento.get(idTipoDeDocumento as long)) //Falta tomar en cuenta clienteExistente
             //Primer Filtro
             def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
+            if(productosAplicables.size() > 0){ //listado 1 
+                
+            }else{
+                listado.productosAplicables = " No hay productos que apliquen para este perfil  "
+            }
             //Segundo Filtro
-            def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
+            def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
+            if(bitacoraDeBuro.size() > 0){ //listado 2 
+                //listado.bitacoraBuro = 1
+            }else{
+                def ex = "ERR" + (aleatorio())
+                listado.bitacoraBuro = " No hubo Respuesta por parte del Buro de Credito "
+                log.error(ex + " No hubo respuesta en Bitacora Buro Credito " )
+                
+            }
             def datos = [:]
             datos.solicitudId = identificadores.idSolicitud
             datos.listaDeServicios = (productosAplicables*.claveDeProducto)?.join(',')
@@ -402,8 +413,6 @@ class PerfiladorService {
             }
             def respuestaEnvioCadenaBC
             def respuestaDictameneDePoliticas
-            println "Cliente Existente: " + clienteExistente
-            println "Productos Aplicables (Preliminar): " + productosAplicables
             if(datos.cadenaBuroDeCredito) {
                 if(clienteExistente == "SI") {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuroClienteExistente(entidadFinanciera,datos)
@@ -427,21 +436,30 @@ class PerfiladorService {
                     }
                 }
             }
+            /*BUSCA R */
+            productosAplicables?.each { rechazo ->
+                if(respuestaDictameneDePoliticas) {
+                    def dictamen = respuestaDictameneDePoliticas.find { (it."$rechazo.claveDeProducto" == "R" ) }
+                    if(dictamen) {
+                        def ex = "ERR" + (aleatorio())
+                        listado.politicas = "EL dictamen de Politicas Rechazo tu Solicitud "
+                    }
+                }
+            } /* BUSCA  R*/
             productosAplicables = listaTemporal
             //Revisión de plazos por producto
-            println "Productos Aplicables: " + productosAplicables
             productosAplicables?.each { producto ->
                 def ofertaProducto = [:]
                 ofertaProducto.producto = producto
                 ofertaProducto.listaDeOpciones = []
                 ofertaProducto.listaDePlazos = []
-                println "Perfilando: " + producto
+               // println "Perfilando: " + producto
                 def plazosPosibles = PlazoProducto.findWhere(producto: producto, usarEnPerfilador: true)
                 def plazosPermitidos = ((plazosPosibles.plazosPermitidos ? (plazosPosibles.plazosPermitidos.tokenize(',')) : null))
                 plazosPermitidos = plazosPermitidos?.reverse()
-                println "Plazos Permitidos: " + plazosPermitidos
+                //println "Plazos Permitidos: " + plazosPermitidos
                 plazosPermitidos?.each { plazo ->
-                    println "Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
+                  ///  println "Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
                     datosSolicitud.plazos = plazo
                     datosSolicitud.periodicidad = plazosPosibles.periodicidad
                     datosSolicitud.producto = producto
@@ -454,9 +472,16 @@ class PerfiladorService {
                         if(clienteExistente == "SI") {
                             datos = construirDatosMotorDeDecisionClienteExistente(identificadores, producto, perfil, oferta)
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
+                            if(respuestaDictamenDePerfil.dictamen == 'R') { /*BUSCA R */
+                                listado.dictamenPerfil = ' El Dictamen de Perfil Rechazo tu Solicitud  '
+                            }/* BUSCA  R*/
                         } else {
                             datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, producto, oferta)
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                            if(respuestaDictamenDePerfil.dictamen == 'R') { /*BUSCA R */
+                                def ex = "ERR" + (aleatorio())
+                                listado.dictamenPerfil = ' El Dictamen de Perfil Rechazo tu Solicitud  '
+                            } /* BUSCA  R*/
                         }
                         if(respuestaDictamenDePerfil) {
                             def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
@@ -472,6 +497,8 @@ class PerfiladorService {
                             mapaPlazo.periodicidad = plazosPosibles.periodicidad.nomenclatura
                             ofertaProducto.listaDePlazos << mapaPlazo
                         }
+                    }else{
+                        ratio_menor = 1 
                     }
                 }
                 if(ofertaProducto.listaDeOpciones?.size() > 0) {
@@ -479,7 +506,22 @@ class PerfiladorService {
                 }
             }
         }
-        return ofertas
+        
+        if(ofertas.size() > 0 ){
+            return ofertas
+        }else{
+            if (ratio_menor == 1 && listado.bitacoraBuro == '' ){
+                def ex = "ERR" + (aleatorio())
+                listado.ratio = ' La Cobertura del Ratio fue Menor en Todas las Posibles Ofertas '
+            }
+            
+            return listado
+            
+        }
+    }
+    
+    def aleatorio (){
+        def umeroAleatorio = Math.abs(new Random().nextInt() % 988) + 1
     }
     
     def consultarSolicitud(def origen, def idSolicitud){
@@ -514,7 +556,7 @@ class PerfiladorService {
                 datosSolicitud.tasaDeInteres = (productoSolicitud.producto.tasaDeInteresAnual)
                 datosSolicitud.montoMaximo = productoSolicitud.producto.montoMaximo
             }
-            println datosSolicitud
+            
             return datosSolicitud
         } else {
             return null
@@ -523,17 +565,17 @@ class PerfiladorService {
     
     def calcularCuota(def montoDelCredito, def periodicidad, def plazos, def tasaDeInteres, def entidadFinancieraId) {
         def respuesta = [:]
-        println "Parametros de entrada ->  monto" + montoDelCredito + ", periodicidad: " + periodicidad + ", plazo: " + plazos + ", tasa de interes: " + tasaDeInteres
+        //println "Parametros de entrada ->  monto" + montoDelCredito + ", periodicidad: " + periodicidad + ", plazo: " + plazos + ", tasa de interes: " + tasaDeInteres
         respuesta.montoAsistencia = obtenerSeguroAsistencia(1, periodicidad, plazos, entidadFinancieraId, montoDelCredito)
         respuesta.montoSeguro = obtenerSeguroAsistencia(0, periodicidad, plazos, entidadFinancieraId, (montoDelCredito + respuesta.montoAsistencia))
-        println "Seguro: " + respuesta.montoSeguro + " -  Asistencia: " + respuesta.montoAsistencia
+        //println "Seguro: " + respuesta.montoSeguro + " -  Asistencia: " + respuesta.montoAsistencia
         def tasaConI = tasaDeInteres * 1.16
-        println "tasa con i: " + tasaConI
+        //println "tasa con i: " + tasaConI
         def n = plazos as int
         def c = (montoDelCredito + respuesta.montoSeguro + respuesta.montoAsistencia)
-        println "C: " + c
+        //println "C: " + c
         def i = (tasaConI/periodicidad.periodosAnuales)
-        println "i: " + i
+        //println "i: " + i
         def renta =  (c / ((1-((1+i)**(-n)))/i))
         respuesta.cuota = renta //* vxc Solo se ocupa para mensualizar el pago
         return respuesta
@@ -600,9 +642,9 @@ class PerfiladorService {
     
     def calcularRatio(def cuota, def balanceDeCaja, def periodicidadId){
         def cuotaSSMM = (mensualizarCuota(cuota, periodicidadId))/ssmm
-        println "Cuota: " + cuota
-        println "Balance: " + balanceDeCaja
-        println "cuotaSSMM: " + cuotaSSMM
+        //println "Cuota: " + cuota
+        //println "Balance: " + balanceDeCaja
+        //println "cuotaSSMM: " + cuotaSSMM
         def ratio = (balanceDeCaja/cuotaSSMM).round(3)
         return ratio 
     }
@@ -612,7 +654,7 @@ class PerfiladorService {
         def montoAsistencia = 0 as float 
         def plazoAnual = (((plazos as int)/(periodicidad.periodosAnuales)) as float).round()
         if((((plazos as int)/(periodicidad.periodosAnuales)) as float) > plazoAnual) {
-            println "PAF " + (((plazos as int)/(periodicidad.periodosAnuales)) as float) + " vs PAInt" + plazoAnual
+            //println "PAF " + (((plazos as int)/(periodicidad.periodosAnuales)) as float) + " vs PAInt" + plazoAnual
             plazoAnual++
         }
         if(opcion == 0){
@@ -626,7 +668,7 @@ class PerfiladorService {
                 }
                 montoSeguro = montoSeguro.round(3)
             } 
-            println "Seguro Calculado: " + montoSeguro
+            //println "Seguro Calculado: " + montoSeguro
             return montoSeguro
         }else{
             def asistencia = ServicioDeAsistencia.executeQuery('Select s from ServicioDeAsistencia s Where s.entidadFinanciera.id = :entidadFinancieraId and ((s.montoInicial <= :monto and s.montoFinal >= :monto) or (s.montoInicial <= :monto and s.montoFinal = 0)) and s.plazoAnual = :plazoAnual',[entidadFinancieraId: entidadFinancieraId, monto: montoDelCredito as float, plazoAnual: plazoAnual])
@@ -634,7 +676,7 @@ class PerfiladorService {
                 def asistenciaAplicable = asistencia[0]
                 montoAsistencia = asistenciaAplicable.importeAsistencia
             } 
-            println "Asistencia Calculada: " + montoSeguro
+            ///println "Asistencia Calculada: " + montoSeguro
             return montoAsistencia
         }
     }
@@ -642,11 +684,11 @@ class PerfiladorService {
     def calcularOferta(def datosSolicitud) {
         def oferta = calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud, (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ))
         oferta.montoMaximo = calcularMontoMaximo(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago)
-        println "MONTO MAXIMO CALCULADO: " + oferta.montoMaximo
+        ///println "MONTO MAXIMO CALCULADO: " + oferta.montoMaximo
         oferta.montoAsistencia = obtenerSeguroAsistencia(1, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, oferta.montoMaximo)
         oferta.montoSeguro = obtenerSeguroAsistencia(0, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, (oferta.montoMaximo))
         oferta.montoMaximo = (oferta.montoMaximo - oferta.montoSeguro - oferta.montoAsistencia)
-        println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
+        //println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
         def limites = LimitePlazoProducto.findWhere(producto: datosSolicitud.producto, plazo: (datosSolicitud.plazos as int), periodicidad: datosSolicitud.periodicidad)
         oferta.montoMinimo = limites.limiteMinimo
         if ((limites.limiteMaximo > 0) && (oferta.montoMaximo > limites.limiteMaximo) ){
@@ -657,7 +699,7 @@ class PerfiladorService {
         if(oferta.montoMinimo > oferta.montoMaximo) {
             oferta.montoMinimo = oferta.montoMaximo
         }
-        println "MONTO MAXIMO FINAL: " + oferta.montoMaximo
+        //println "MONTO MAXIMO FINAL: " + oferta.montoMaximo
         def calculoCuota =  calcularCuota(oferta.montoMaximo, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId)
         oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
         oferta.cuota = calculoCuota.cuota
@@ -668,18 +710,18 @@ class PerfiladorService {
         oferta.periodicidad = datosSolicitud.periodicidad
         oferta.tasaDeInteres = datosSolicitud.tasaDeInteres
         oferta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: datosSolicitud.producto.id, monto: (oferta.montoMaximo as float)])
-        println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR: " + oferta.montoAPagar
+        //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR: " + oferta.montoAPagar
         return oferta
     }
     
     def recalcularOferta(def ofertas, def params) {
         def respuesta = [:]
-        println "Buscar producto..."
+        //println "Buscar producto..."
         def producto = ofertas.find { it.producto.id == (params.productoId as long)}
-        println "Producto encontrado: " + producto
-        println "Buscar oferta..."
+        //println "Producto encontrado: " + producto
+//        println "Buscar oferta..."
         def oferta = producto.listaDeOpciones.find { it.plazos == (params.plazo) && it.periodicidad.id == (params.periodicidadId as long) }
-        println "Oferta encontrada: " + oferta
+        //println "Oferta encontrada: " + oferta
         respuesta.cuota =  calcularCuota((params.montoDeCredito as float), oferta.periodicidad, oferta.plazos, oferta.tasaDeInteres, producto.producto.entidadFinanciera.id)
         respuesta.tasaDeInteres = oferta.tasaDeInteres
         respuesta.periodicidad = oferta.periodicidad.nombre.toUpperCase()
@@ -689,12 +731,12 @@ class PerfiladorService {
     
     def guardarOferta(def ofertas, def datosSolicitud, def identificadores, def params) {
         def respuesta = [:]
-        println "Buscar producto..."
+        //println "Buscar producto..."
         def producto = ofertas.find { it.producto.id == (params.productoId as long)}
-        println "Producto encontrado: " + producto
-        println "Buscar oferta..."
+        //println "Producto encontrado: " + producto
+        //println "Buscar oferta..."
         def oferta = producto.listaDeOpciones.find { it.plazos == (params.plazo) && it.periodicidad.id == (params.periodicidadId as long) }
-        println "Oferta encontrada: " + oferta
+        //println "Oferta encontrada: " + oferta
         if(oferta && identificadores.idSolicitud) {
             def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
             ProductoSolicitud.executeUpdate("delete ProductoSolicitud ps where ps.solicitud.id = :idSolicitud",[idSolicitud: solicitud.id])
@@ -713,14 +755,14 @@ class PerfiladorService {
             productoSolicitud.montoDeServicioDeAsistencia = oferta.montoAsistencia
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
-                println("El producto se ha registrado correctamente")
+                ///println("El producto se ha registrado correctamente")
                 respuesta.oferta = oferta
                 respuesta.productoSolicitud = productoSolicitud
             } else {
-                println("[Guardado-ProductoSolicitud] No se guardo nada")
+                //println("[Guardado-ProductoSolicitud] No se guardo nada")
                 if (productoSolicitud.hasErrors()) {
                     productoSolicitud.errors.allErrors.each {
-                        println it
+                        //println it
                     }
                 }
                 respuesta.error = true
@@ -733,7 +775,7 @@ class PerfiladorService {
     
     def construirDatosMotorDeDecisionClienteNuevo(def identificadores, def producto, def oferta){
         def datos = [:]
-        println ("Identificadores: " + identificadores)
+        //println ("Identificadores: " + identificadores)
         def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud)
         def direccion = DireccionCliente.get(identificadores.idDireccion)
         def empleo = EmpleoCliente.get(identificadores.idEmpleo)
@@ -760,14 +802,14 @@ class PerfiladorService {
         } else {
         datos.cadenaBuroDeCredito = ""
         }*/
-        println "Regresando: " + datos
+        //println "Regresando: " + datos
         datos
     }
     
     def construirDatosMotorDeDecisionClienteExistente(def identificadores, def producto, def perfil, def oferta){
         def datos = [:]
-        println "****** Inicio Clientes Existentes *********"
-        println ("Identificadores: " + identificadores)
+        //println "****** Inicio Clientes Existentes *********"
+        //println ("Identificadores: " + identificadores)
         def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud)
         def direccion = DireccionCliente.get(identificadores.idDireccion)
         def empleo = EmpleoCliente.get(identificadores.idEmpleo)
@@ -790,13 +832,13 @@ class PerfiladorService {
         def cuotaMensualizada = mensualizarCuota(oferta.cuota, oferta.periodicidad.id)
         datos.rcobsldpas12 = ((promedioVecAhorro + (promedioVecInversion * 0.1))/ cuotaMensualizada)
         datos.asalariado = oferta.asalariado
-        println "Regresando: " + datos
-        println "****** Fin Clientes Existentes *********"
+        //println "Regresando: " + datos
+        //println "****** Fin Clientes Existentes *********"
         datos
     }
     
     def calcularTiempoTranscurrido(def fechaAComparar){
-        println "Fecha a Comparar " + fechaAComparar
+        ///println "Fecha a Comparar " + fechaAComparar
         def aniosTranscurridos = 0
         /*use(groovy.time.TimeCategory) {
         def duration = (new Date()) - fechaAComparar
@@ -807,13 +849,13 @@ class PerfiladorService {
         Period diff = LocalDate.now().with { now ->
             Period.between(new java.sql.Date(fechaAComparar.getTime()).toLocalDate(), now)
         }
-        println "Han transcurrido " + diff.getYears() + " años"
+        //println "Han transcurrido " + diff.getYears() + " años"
         aniosTranscurridos = diff.getYears()
         aniosTranscurridos
     }
     
     def calcularMesesTranscurridos(def fechaAComparar){
-        println "Fecha a Comparar " + fechaAComparar
+        //println "Fecha a Comparar " + fechaAComparar
         def mesesTranscurridos = 0
         /*use(groovy.time.TimeCategory) {
         def duration = (new Date()) - fechaAComparar
@@ -824,7 +866,7 @@ class PerfiladorService {
         Period diff = LocalDate.now().with { now ->
             Period.between((new java.sql.Date(fechaAComparar.getTime())).toLocalDate(), now)
         }
-        println "Han transcurrido " + (diff.getMonths() + (diff.getYears() * 12))  + " meses - Full: " + diff
+        ///println "Han transcurrido " + (diff.getMonths() + (diff.getYears() * 12))  + " meses - Full: " + diff
         mesesTranscurridos = (diff.getMonths() + (diff.getYears() * 12))
         mesesTranscurridos
     }

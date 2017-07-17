@@ -720,6 +720,7 @@ function cargarReporteMPGI(periodoTiempo, fechaInicio, fechaFinal){
     }
     jQuery.ajax({
         type: 'POST',
+ 
         data: 'periodoTiempo=' + periodoTiempo + "&template=" + "mPGI"+ "&fechaInicio="+ fechaInicio+ "&fechaFinal="+ fechaFinal ,
         url: 'consultarInformes',
         success: function (data, textStatus) {

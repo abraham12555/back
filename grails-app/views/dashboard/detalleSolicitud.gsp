@@ -574,6 +574,9 @@
                                 <li class="floatLeft">
                                     <a id="documentacionButton" onclick="mostrarTab('documentacion');" class="opcionMenuSolicitud displayInline font14 fontWeight300 gray paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Documentación</a>
                                 </li>
+                                <li class="floatLeft">
+                                    <a id="detalleProductoButton" href='#detalleProducto' onclick="mostrarTab('anclas');" class="ancla opcionMenuSolicitud displayInline font14 fontWeight300 gray paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Producto</a>
+                                </li>
                                 <g:if test="${datosSolicitud.verificacion}">
                                     <li class="floatLeft">
                                         <a id="visitaOcularButton" onclick="mostrarTab('visitaOcular'); iniciarPrettyPhoto();" class="opcionMenuSolicitud displayInline font14 fontWeight300 gray paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Visita Ocular</a>
@@ -1457,7 +1460,94 @@
                                     </g:if>
                                 </g:if>
                             </div>
-                        </div>
+                            <div id='detalleProducto'>
+                                <section class="container width990">
+                                    <div class="padding20">
+                                        <h1 class="darkBluetitle font18 fontWeight600 letterspacing2">5. DETALLE DEL PRODUCTO </h1>
+                                    </div>
+                                    <div class="col12 clearFix">
+                                        <div class="col6 col12-mob floatLeft">
+                                            <div class="mobileAside10 solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
+                                                <div class="navyBg radius2 ">
+                                                    <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">PRODUCTO SOLICITADO </p>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">PRODUCTO</p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.producto} </p>
+                                                        </div>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">CLAVE DEL PRODUCTO </p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.producto.claveDeProducto} </p>
+                                                        </div>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">MONTO DEL CREDITO</p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">$ ${datosSolicitud.productoSolicitud?.montoDelCredito}</p>
+                                                        </div>
+                                                </div>
+                                                <g:if test="${datosSolicitud.productoSolicitud?.colorModelo != null && datosSolicitud.productoSolicitud?.modelo != null}">
+                                                    <div class="marginLeft32 clearFix">
+                                                        <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">MODELO </p>
+                                                            <div class="floatRight">
+                                                                <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.modelo}</p>
+                                                            </div>
+                                                    </div>
+                                                    <div class="marginLeft32 clearFix">
+                                                        <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">COLOR DEL MODELO </p>
+                                                            <div class="floatRight">
+                                                                <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.colorModelo}</p>
+                                                            </div>
+                                                    </div>
+                                                </g:if>  
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">PLAZOS</p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.plazos} ${datosSolicitud.productoSolicitud?.periodicidad.nomenclatura} </p>
+                                                        </div>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft ">PAGO <font style="text-transform: uppercase;">  ${datosSolicitud.productoSolicitud?.periodicidad}</font></p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">$ ${datosSolicitud.productoSolicitud?.montoDelPago} </p>
+                                                        </div>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"><font style="text-transform: uppercase;"> ${datosSolicitud.productoSolicitud?.producto.tipoDeTasa} </font> </p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.producto.tasaDeInteres} </p>
+                                                        </div>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">TASA DE INTERES ANUAL   </p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft"> ${datosSolicitud.productoSolicitud?.producto.tasaDeInteresAnual} </p>
+                                                        </div>
+                                                </div>
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">MONTO DE SEGURO DE DEUDA </p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">$ ${datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda} </p>
+                                                        </div>
+                                                </div>
+                                                <g:if test="${datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia != null }">
+                                                <div class="marginLeft32 clearFix">
+                                                    <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">MONTO SERVICIO DE ASISTENCIA  </p>
+                                                        <div class="floatRight">
+                                                            <p class="font17 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">$ ${datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia} </p>
+                                                        </div>
+                                                </div>
+                                                </g:if>
+                                                 
+                                            </div>
+                                        </div>
+                                   </div>
+                                </section>
+                            </div>    
+                            
                         <div class="solicitudTab" id='documentacion' style='margin-top: 30px; display: none;'>
                             <section class="container">
                                 <div class="clearFix width928 autoMargin">

@@ -31,7 +31,7 @@
         </li>
     </section>
     <section class="regular slider container marginBottom28">
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMINISTRADOR'>
             <div>
                 <li id="usuariosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','usuarios');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Usuarios</a>
@@ -176,14 +176,17 @@
 
 
     <section class="container marginBottom28">
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
-            <div id="usuariosSubMenu" class="configuracionSubMenu lightGrayBG">
-                <ul class="clearFix paddingLeft30">
-                    <li class="floatLeft">
-                        <a title="Reportar contratiempo" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" onclick="openModal('modalAltaDeUsuario');">NUEVO USUARIO</a>
-                    </li>
-                </ul>
-            </div>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+                <div id="usuariosSubMenu" class="configuracionSubMenu lightGrayBG">
+                    <ul class="clearFix paddingLeft30">
+                        <li class="floatLeft">
+                            <a title="Nuevo usuario" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" id="newUser-btn">NUEVO USUARIO</a>
+                        </li>
+                        <li class="floatLeft">
+                            <a title="Descargar lista" class="displayInline font14 gray2 paddingTop10 paddingBottom10 paddingRight20 pointer" id="downloadUserList-btn" href="${createLink(controller: 'dashboard', action:'downloadUserList')}">DESCARGAR LISTA DE USUARIOS</a>
+                        </li>
+                    </ul>
+                </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO'>
             <div id="perfilDeMarcaSubMenu" class="configuracionSubMenu lightGrayBG" style="display: none;">

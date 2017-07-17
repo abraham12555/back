@@ -242,15 +242,15 @@ function validateTemplate() {
 
     if ($("#contenidoSms").val().trim() === "") {
         errors++;
-        errorMessageTemplate('contenidoSms', "El campo es obligatorio");
-    } else if ($('#contenidoSms').val().trim().length > 300) {
+        errorMessageTemplate('contenidoSms', "El campo es obligatorio " );
+    } else if ($('#contenidoSms').val().length > 120) {
         errors++;
-        errorMessageTemplate('contenidoSms', "El texto no puede contener más de 300 caracteres");
+        errorMessageTemplate('contenidoSms', "El texto no puede contener más de 120 caracteres "  );
     }
 
     if ($("#idTemplate").val() === "0" && $('input[name=status]:checked').length <= 0) {
         errors++;
-        errorMessageTemplate('status', "El campo es obligatorio");
+        errorMessageTemplate('status', "El campo es obligatorio  ");
     }
 
     if (errors === 0) {

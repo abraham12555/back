@@ -27,6 +27,7 @@ class SolicitudTemporal {
     int ultimoPaso = 1
     boolean cargarImagen = false
     String folio
+    boolean solicitudVigente = true
  
     static constraints = {
         colorModelo (nullable: true)

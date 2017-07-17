@@ -1126,7 +1126,8 @@ function genererarEstadisticasPor(criterio) {
 function genererarInformesPor(criterio) {
     seleccionarTemporalidad(criterio);
     if (criterio !== 5 && criterio !== 0) {
-      cargarReportesAnaliticas(criterio, null, null);
+        $('#rangoDeFechas').fadeOut();
+        cargarReportesAnaliticas(criterio, null, null);
     } else if (criterio === 5) {
         $('#rangoDeFechas').fadeIn();
         habilitarDatepicker();

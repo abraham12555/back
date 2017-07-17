@@ -16,9 +16,8 @@
                     <p class="center font14 lightGray">Para modificar el rol del usuario ingresa tu contraseña</p>
                 </div>
                 <div class="formContainer">
-                    <div class="control">
-                        <input class="inputs marginBottom30 lightGray letterspacing1 font14" name="password" type="password" required placeholder="Contraseña" id="authPassword"/>
-                    </div>
+                    <div id="authPassword-control" class="marginRight25 letterspacing1"></div>
+                    <input class="inputs marginBottom30 lightGray letterspacing1 font14" name="password" type="password" required placeholder="Contraseña" id="authPassword"/>
                     <button type="submit" class="loginButton blueButton letterspacing2 font14 pointer" id="autenticarUsuario-btn">ACEPTAR</button>
                     <button type="button" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);" id="cancelUserAuthentication-btn">CANCELAR</button>
                 </div>
