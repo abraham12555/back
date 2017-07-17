@@ -1719,8 +1719,6 @@ class SolicitudService {
                 def x = 0
                 respuesta.encontrado = false
                 while(respuesta.encontrado == false && x < cliente.size()) {
-                    println cliente[x].nombreDelCliente
-                    println cliente[x].emailCliente
                     if(valorCoincide(normalizarCadena(cliente[x].nombreDelCliente),normalizarCadena(nombreCompleto))){
                         respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
                         respuesta.encontrado = true
