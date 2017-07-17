@@ -105,8 +105,8 @@ class SolicitudService {
                     if(clienteNuevo && datosPaso.telefonoCliente){
                         def telefonoCelCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCelular, vigente: true)
                         if (telefonoCelCliente){
-                            guardadoCorrecto = false
-                            mensaje= "EL TELEFONO INGRESADO YA CUENTA CON UNA SOLICITUD VIGENTE"
+                            //guardadoCorrecto = false
+                            //mensaje= "EL TELEFONO INGRESADO YA CUENTA CON UNA SOLICITUD VIGENTE"
                         }else {
                             def telefonoCasa
                             def telefonoCelular
@@ -277,7 +277,7 @@ class SolicitudService {
                         }
                     }
                 } else {
-                    guardadoCorrecto = false
+                    //guardadoCorrecto = false
                     if (cliente.hasErrors()) {
                         cliente.errors.allErrors.each {
                             println it
