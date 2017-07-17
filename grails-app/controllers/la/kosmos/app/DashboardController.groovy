@@ -90,7 +90,7 @@ class DashboardController {
         if(params.periodoTiempo && params.template) {
             informes = reporteService.obtenerInformesAnalitica(params.template,  (params.periodoTiempo as int) , params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
            
-        }
+    }
         
         if(params.template == "productosDiscriminados"){
             render(template: "informes/productosDiscriminados", model: [productosDiscriminados: informes])

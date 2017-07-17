@@ -1,4 +1,5 @@
 var ofertasCalculadas;
+var generoConyugue;
 
 function operacionesPerfilador() {
     $(".mat-input").focus(function () {
@@ -387,6 +388,11 @@ function goStep2() {
                     $('.step2').addClass('active');
                     $('.step2 .step').addClass('active');
                     $('#menuPersonales').addClass('active');
+                    $('#cliente_rfc').focus();
+                    $('#cliente_rfc').val($('#rfcClienteExistente').val());
+                    $('#cliente_rfc').prop('readonly', true);
+                    $("#cliente_rfc").addClass('notEmpty');
+                    $("#cliente_rfc").addClass('headingColor');
                     sweetAlert("¡Excelente!", "El R.F.C indicado ha sido encontrado. Complementa los datos que son solicitados en los siguientes apartados.", "success");
                     vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
                 } else {
@@ -408,6 +414,13 @@ function goStep2() {
         $('.step2').addClass('active');
         $('.step2 .step').addClass('active');
         $('#menuPersonales').addClass('active');
+        if ($('#rfcClienteExistente').val() !== null && $('#rfcClienteExistente').val() !== undefined && $('#rfcClienteExistente').val() !== '') {
+            $('#rfcClienteExistente').val('');
+            $('#cliente_rfc').val('');
+            $('#cliente_rfc').prop('readonly', false);
+            $("#cliente_rfc").removeClass('notEmpty');
+            $("#cliente_rfc").removeClass('headingColor');
+        }
         vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
     }
 }
@@ -582,6 +595,7 @@ function generarClaves(persona) {
     var nombres;
     var apellidoMaterno;
     if (persona === 'cliente') {
+        console.log("Entonces que trae el rfc del paso 1 ? " + $('#rfcClienteExistente').val());
         var idEstado = Number($('#cliente_lugarDeNacimiento').val());
         if ($('#cliente_segundoNombre').val().trim() !== '') {
             nombres = $('#cliente_nombre').val() + " " + $('#cliente_segundoNombre').val();
@@ -605,23 +619,25 @@ function generarClaves(persona) {
         if ($('#cliente_genero').val() === '1') {
             generoConyugue = '2';
         } else {
-            conyugue = '1';
+            generoConyugue = '1';
         }
-        var rfcParcial = generarRfcParcial({
-            nombre: nombres,
-            apellido_paterno: $('#cliente_apellidoPaterno').val(),
-            apellido_materno: apellidoMaterno,
-            fecha_nacimiento: [$('#cliente_fechaDeNacimiento_dia').val(), $('#cliente_fechaDeNacimiento_mes').val(), $('#cliente_fechaDeNacimiento_anio').val()]
-        });
-        var rfc = generarHomoclave((nombres), $('#cliente_apellidoPaterno').val(), apellidoMaterno, rfcParcial);
+        if ($('#rfcClienteExistente').val() === null || $('#rfcClienteExistente').val() === undefined || $('#rfcClienteExistente').val() === '') {
+            var rfcParcial = generarRfcParcial({
+                nombre: nombres,
+                apellido_paterno: $('#cliente_apellidoPaterno').val(),
+                apellido_materno: apellidoMaterno,
+                fecha_nacimiento: [$('#cliente_fechaDeNacimiento_dia').val(), $('#cliente_fechaDeNacimiento_mes').val(), $('#cliente_fechaDeNacimiento_anio').val()]
+            });
+            var rfc = generarHomoclave((nombres), $('#cliente_apellidoPaterno').val(), apellidoMaterno, rfcParcial);
+            $('#cliente_rfc').focus();
+            $('#cliente_rfc').val(rfc);
+            $("#cliente_rfc").addClass('notEmpty');
+            $("#cliente_rfc").addClass('headingColor');
+        }
         $('#cliente_curp').focus();
         $('#cliente_curp').val(curp);
-        $('#cliente_rfc').focus();
-        $('#cliente_rfc').val(rfc);
         $("#cliente_curp").addClass('notEmpty');
         $("#cliente_curp").addClass('headingColor');
-        $("#cliente_rfc").addClass('notEmpty');
-        $("#cliente_rfc").addClass('headingColor');
     } else if (persona === 'conyugue') {
         var idEstado = Number($('#cliente_lugarDeNacimientoDelConyugue').val());
         if ($('#cliente_apellidoMaternoDelConyugue').val() === "NA") {

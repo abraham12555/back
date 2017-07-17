@@ -31,7 +31,7 @@
         </li>
     </section>
     <section class="regular slider container marginBottom28">
-        <sec:ifAnyGranted roles='ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
             <div>
                 <li id="usuariosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','usuarios');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Usuarios</a>

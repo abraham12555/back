@@ -375,6 +375,16 @@ function mostrarApartado(claseBoton, claseDiv, apartado) {
     if (claseBoton === "opcConfiguracion") {
         $('.configuracionSubMenu').fadeOut();
         $('#' + apartado + 'SubMenu').fadeIn();
+        
+        $('#' + apartado + 'SubMenu').find('ul').find("li").find("a").each(function() {
+            var tab = this.getAttribute('data-id');
+            if(apartado === tab){
+                $(this).addClass("greenTitle");
+            } else {
+                $(this).removeClass("greenTitle");
+                $(this).addClass("gray");
+            }
+        });
     }
 }
 
@@ -4276,20 +4286,12 @@ function validEmail(callback) {
     });
 }
 
-function getProfilePicture() {
-    $.ajax({
-        type: "POST",
-        url: $.getProfilePicture,
-        contentType: "application/json",
-        success: function (response) {
-            if(!response.empty) {
-                $("#bannerProfilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
-                $("#profilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
-                $("#deleteProfilePicture-btn").css("display", "block");
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            sweetAlert("Oops...", "Algo salió mal con tu foto de perfil, intenta nuevamente en unos minutos.", "error");
+function getProfilePicture() {   
+    $.post($.getProfilePicture, function(response) {
+        if(!response.empty) {
+            $("#bannerProfilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
+            $("#profilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
+            $("#deleteProfilePicture-btn").css("display", "block");
         }
     });
 }
@@ -4331,6 +4333,20 @@ function registrarConfiguracionPasoSolicitud(idPasoSolicitudEntidadFinanciera) {
     });
 }
 
+function mostrarApartadoSubmenu(e) {
+    var currentTab = e.getAttribute('data-id');
 
+    $(e).closest('ul').find('li').find("a").each(function() {
+        var tab = this.getAttribute('data-id');
+        if(currentTab === tab){
+            $('#' + currentTab).fadeIn();
+            $(this).addClass("greenTitle");
+        } else {
+            $('#' + tab).fadeOut();
+            $(this).removeClass("greenTitle");
+            $(this).addClass("gray");
+        }
+    });
+}
 
 
