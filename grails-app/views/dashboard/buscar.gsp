@@ -53,7 +53,7 @@
                             MONTO <br>
                             <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud?.montoCredito}" format="\044###,###,###.##"/></span>
                         </td>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA,ROLE_EJECUTIVO'>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL'>
                     <g:if test="${solicitud?.folio && solicitud?.folio != "-"}">
                         <td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
                             <button class="greenBox colorWhite" type="button" onclick="consultarSolicitud(${solicitud?.id});">ver detalle</button>
@@ -87,7 +87,6 @@
     <input type ="hidden" id="cuantos" value ="${cuantos}" />
     <input type ="hidden" id="totalPages" value ="${totalPages}" />
     <input type ="hidden" id="page" value ="${page}" />
-
 </g:if>
 <section class="container">
     <div class="width480 autoMargin solicitudBox marginBottom84">
@@ -105,10 +104,8 @@
 
 
 <script>
-$.getUsers = "/dashboard/getUsers";
 $(document).ready(function () {
     var idPaginacion = "paginationSolicitudesBusqueda";
-     var idPaginacion = 'paginationSolicitudesBusqueda';
         var totalPages = $('#totalPages').val();
         var page = $('#page').val();
         var folio = $('#folioBuscado').val();
@@ -124,7 +121,7 @@ $(document).ready(function () {
         console.log("apellidoPaterno en buscar" + apellidoPaterno);
         console.log("apellidoMaterno en buscar" + apellidoMaterno);
         console.log("rfc en buscar" + rfc);
-
+        
 	$('#'+idPaginacion).on('click', 'a.page', function (event) {
 		event.preventDefault();
 		var page = $(this).data('page');

@@ -45,63 +45,63 @@
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="configuracionPasosSolicitudButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionPasosSolicitud');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Solicitud</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="usuariosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionPasosCotizador');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Cotizador </a>
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO, ROLE_DIRECTOR'>
             <div>
                 <li id="perfilDeMarcaButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','perfilDeMarca');" title="PERFIL DE MARCA" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Perfil de Marca</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionBuroCredito');"  title="CONFIGURACIÓN BURÓ DE CRÉDITO" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Buró de Crédito</a>
                 </li>      
             </div>
         </sec:ifAnyGranted>   
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DIRECTOR'>
             <div>
                 <li id="variablesButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','variables');"  title="VARIABLES" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Variables</a>
                 </li>
             </div>
         </sec:ifAnyGranted>    
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="seguroButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','seguro');"  title="SEGURO SOBRE DEUDA" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Seguros Sobre Deuda </a>
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="servicioDeAsistenciaButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','servicioDeAsistencia');"  title="SERVICIO DE ASISTENCIA" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Servicio de Asistencia </a>
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','productos');"  title="PRODUCTOS" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Producto </a>
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="rubroDeAplicacionDeCreditoButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','rubroDeAplicacionDeCredito');"  title="Rubro de Aplicacion de Credito" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Rubro de Aplicación de Crédito</a>
@@ -200,7 +200,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO, ROLE_DIRECTOR'>
             <div id="configuracionPasosSolicitudSubMenu" class="configuracionSubMenu lightGrayBG" style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -209,7 +209,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DIRECTOR'>
             <div id="variablesSubMenu" class="configuracionSubMenu lightGrayBG"  style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -218,7 +218,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div id="seguroSubMenu" class="configuracionSubMenu lightGrayBG"  style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -230,7 +230,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div id="servicioDeAsistenciaSubMenu" class="configuracionSubMenu lightGrayBG"  style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -242,7 +242,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div id="rubroDeAplicacionDeCreditoSubMenu" class="configuracionSubMenu lightGrayBG"  style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -254,7 +254,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div id="productosSubMenu" class="configuracionSubMenu lightGrayBG"  style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -326,7 +326,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div id="configuracionPasosCotizadorSubMenu" class="configuracionSubMenu lightGrayBG"  style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -411,7 +411,7 @@
         <g:render template="usuarios"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
     <div class="configuracionTab" id="configuracionPasosCotizador" style="display: none;" >
         <g:render template="configurarPasosCotizador"/>
     </div>
@@ -439,17 +439,17 @@
         <g:render template="servicioDeAsistencia"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO, ROLE_DIRECTOR'>
     <div class="configuracionTab" id="perfilDeMarca" style="display: none;">
         <g:render template="perfilDeMarca"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DIRECTOR'>
     <div class="configuracionTab" id="variables" style="display: none;">
         <g:render template="variables"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
     <div class="configuracionTab" id="productos" style="display: none;">
         <g:render template="productos"/>
     </div>
@@ -465,7 +465,7 @@
         <g:render template="configuracion/notificaciones/envioNotificaciones"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
     <div class="configuracionTab" id="configuracionBuroCredito" style="display: none;">
         <g:render template="configuracionBuroCredito"/>
     </div>

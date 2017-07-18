@@ -1,6 +1,11 @@
 var ofertasCalculadas;
 var generoConyugue;
+$.getProfilePicture = "/dashboard/profilePicture";
+$(document).ready(function () {
 
+getProfilePicture();
+
+});
 function operacionesPerfilador() {
     $(".mat-input").focus(function () {
         $(this).parent().addClass("is-active is-completed");
@@ -1336,4 +1341,11 @@ function fechaValida(year, month, day) {
     } else {
         return false;
     }
+}
+function getProfilePicture() {   
+  $.post($.getProfilePicture, function(response) {
+      if(!response.empty) {
+            $("#bannerProfilePicturePerfilador").attr("src", "data:image/" + response.type + ";base64," + response.base64);
+       }
+    });
 }

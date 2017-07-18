@@ -23,12 +23,6 @@ $(document).ready(function () {
             getSolicitudes(page, idPaginacion);
         });
         getSolicitudes(1, idPaginacion);
-    } else {
-        var idPaginacion = 'paginationSolicitudesBusqueda';
-        var totalPages = $('#totalPages').val();
-        var page = $('#page').val();
-        $("#currentPageSolicitudesBusqueda").val(page);
-        pagination(totalPages, page, idPaginacion);
     }
 
     $(function () {
@@ -4286,12 +4280,12 @@ function validEmail(callback) {
 }
 
 function getProfilePicture() {   
-    $.post($.getProfilePicture, function(response) {
-        if(!response.empty) {
+  $.post($.getProfilePicture, function(response) {
+      if(!response.empty) {
             $("#bannerProfilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
             $("#profilePicture").attr("src", "data:image/" + response.type + ";base64," + response.base64);
             $("#deleteProfilePicture-btn").css("display", "block");
-        }
+       }
     });
 }
 function atras() {

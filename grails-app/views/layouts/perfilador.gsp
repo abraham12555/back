@@ -68,7 +68,7 @@
                 <div class="floatingHeader floatRight clearFix">
                     <div class="floatRight clearFix">
                         <div class="clearFix floatLeft ">
-                            <img class="userPicture dashboard floatLeft" src="${resource(dir:'images', file:'profile.png')}"/>
+                            <img class="userPicture dashboard floatLeft" src="${resource(dir:'images', file:'profile.png')}" id="bannerProfilePicturePerfilador"/>
                         </div>
                         <p class="userName dashboard floatLeft">Hola ${session.usuarioNombre} </p>
                         <div class="dropBox floatLeft marginTop20 marginLeft5 desktop">
@@ -80,7 +80,7 @@
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
-                   <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_EJECUTIVO,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_SUCURSAL'>
+                   <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL'>
                             <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
                                 <div class="searchBox autoMargin clearFix">
                                     <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
@@ -110,7 +110,7 @@
             </sec:ifAnyGranted>
         </li>
         <li>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
             <a href="${createLink(controller:'dashboard', action:'perfilarCliente')}">
                 <img class="menuIcon" src="${resource(dir:'images', file:'perfilador.png')}" alt="perfilador" title="perfilador"> PERFILADOR
             </a>
@@ -131,7 +131,7 @@
 </sec:ifAnyGranted>
 </li>
 <li>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_DISENO'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR'>
     <a href="${createLink(controller:'dashboard', action:'configuracion')}">
         <img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"> CONFIGURACIÓN
     </a>
@@ -144,6 +144,21 @@
     </a>
 </sec:ifAnyGranted>
 </li>
+     <li>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                  <a href="${createLink(controller:'dashboard', action:'reportes')}">
+                      <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
+                  </a>
+              </sec:ifAnyGranted>
+          </li>
+          <li>
+             <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ADMINISTRADOR'>
+             <a href="${createLink(controller:'dashboard', action:'informes')}" class="elementoMenuPrincipal font12">
+             <img class="menuIcon" src="${resource(dir:'images', file:'ej.png')}" alt="informes" title="informes"> INFORME DIRECTIVO
+             </a>
+             </sec:ifAnyGranted>
+
+          </li>
 </ul>
 <nav id="dashboardMenu" class="container menuBox marginBottom28">
     <ul class="clearFix">
@@ -185,7 +200,7 @@
                 </a>
             </li>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR, ROLE_RIESGOS, ROLE_DISENO'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR'>
             <li class="floatLeft">
                 <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
                     <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"></span>
@@ -201,6 +216,22 @@
                 </a>
             </li>
         </sec:ifAnyGranted>  
+             <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                    <li class="floatLeft">
+                        <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'reportes')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"></span>
+                            <span>REPORTES</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ADMINISTRADOR'>
+                    <li class="floatLeft">
+                        <a id="principalOpc9" href="${createLink(controller:'dashboard', action:'informes')}" class="elementoMenuPrincipal font12">
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'ej.png')}" alt="informes" title="informes"></span>
+                            <span>INFORME DIRECTIVO</span>
+                        </a>
+                    </li>
+                </sec:ifAnyGranted>  
     </ul>
 </nav>
 

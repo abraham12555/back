@@ -444,7 +444,6 @@ class DashboardController {
     
     def getSolicitudes (){
         println params
-        println "Entra aca"
         Pager pager = new Pager(request.JSON)
         def entidadFinanciera = session.usuario.entidadFinanciera
         def solicitudes = dashboardService.getSolicitudes(entidadFinanciera, pager)
