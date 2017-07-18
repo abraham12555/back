@@ -5,7 +5,9 @@
     <div class="lightboxPos altaUsuario darkBluetitle font14 fontWeight400 justify">
         <g:urlContextAware value="/dashboard/updatePassword" var="urlForm"/>
         <form action="${urlForm}" method="POST" class="loginForm gray font14" id="updatePassword-form">
-            <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">Cambiar contraseña</p>
+            <div class="clearFix width990 autoMargin">
+                <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10 textUpper marginBottom25">Cambiar contraseña</h1></center>
+            </div>
             <div class="autoMargin">
                 <p class="font14 marginLeft30 paddingRight30">La nueva contraseña debe cumplir con los siguientes requisitos:</p>
                 <ul class="marginLeft30 paddingRight30">

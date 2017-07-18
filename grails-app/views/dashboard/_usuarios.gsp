@@ -1,4 +1,5 @@
 <section class="container paddingBottom38">
+    <div class="div-message div-message-danger center hide" id="error-users-div"></div>
     <table class="applicationContainers solicitudes_table dashboard" id="usuarios-tb">
         <thead>
         <th colspan="6" class="left navyBg">

@@ -147,8 +147,8 @@ function deleteProfilePicture() {
                     if (response.error) {
                         sweetAlert("Oops...", response.mensaje, "error");
                     } else {
-                        $("#bannerProfilePicture").attr("src", "/images/profile.png");
-                        $("#profilePicture").attr("src", "/images/profile.png");
+                        $("#bannerProfilePicture").attr("src", $.defaultProfilePicture);
+                        $("#profilePicture").attr("src", $.defaultProfilePicture);
                         $("#deleteProfilePicture-btn").css("display", "none");
                         sweetAlert({html: false, title: "¡Excelente!", text: "Su foto de perfil se ha eliminado correctamente.", type: "success"});
                     }

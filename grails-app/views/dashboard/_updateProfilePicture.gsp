@@ -5,7 +5,9 @@
     <div class="lightboxPos altaUsuario darkBluetitle font14 fontWeight400 justify">
         <g:urlContextAware value="/dashboard/saveProfilePicture" var="urlForm"/>
         <form action="${urlForm}" method="POST" class="loginForm gray font14" id="updateProfilePicture-form">
-            <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15">Cambiar foto de perfil</p>
+            <div class="clearFix width990 autoMargin">
+                <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10 textUpper">Cambiar foto de perfil</h1></center>
+            </div>
             <div class="formContainer">
                 <div class="image-editor">
                     <div class="control">

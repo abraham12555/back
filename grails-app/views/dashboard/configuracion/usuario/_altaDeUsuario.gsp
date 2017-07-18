@@ -1,7 +1,7 @@
 <div class="idLightbox hide" id="modalAltaDeUsuario">
     <div class="overlay"></div>
     <div class="whiteContainer lightboxPos altaUsuario darkBluetitle font14 fontWeight400 justify">
-        <g:urlContextAware value="/dashboard/guardarTipoDeVivienda" var="urlFormAltaUsuario"/>
+        <g:urlContextAware value="/dashboard/guardarUsuario" var="urlFormAltaUsuario"/>
         <form id="formAltaUsuario" action="${urlFormAltaUsuario}" method="POST" class="loginForm gray font14">
             <input type="hidden" id="userId" name="id"/>
             <div class="clearFix width990 autoMargin">

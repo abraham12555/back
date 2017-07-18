@@ -42,7 +42,7 @@
         </section>
         <section class="container marginTop50 marginBottom50">
             <g:urlContextAware value="/dashboard/saveProfile" var="urlForm"/>
-            <form id="formProfile" action="${urlForm}" method="POST" class="form gray font14">
+            <form id="formProfile" action="${urlForm}" method="POST" class="formProfilePicture gray font14">
                 <input type="hidden" id="userId" name="id"/>
                 <div class="width400 autoMargin">
                     <div class="clearFix">
@@ -55,41 +55,39 @@
                         <div>
                             <img class="profileImage" src="${resource(dir:'images', file:'profile.png')}" id="profilePicture"/>
                         </div>
-                        <div class="paddingTop50 paddingAside30">
+                        <div class="paddingTop50 paddingAside20">
                             <div class="control marginBottom20">
                                 <p class="font14 gray fontWeight500 paddingTop14 letterspacing1">NOMBRE DE USUARIO</p>
-                                <div class="paddingTop5 fullInputs">
-                                    <input class="whiteBox font14 lightGray paddingTop10 paddingBottom10 paddingLeft15" type="text" name="username" placeholder="Nombre de usuario" id="username">
+                                <div class="paddingTop5">
+                                    <input class="whiteBox font14 lightGray paddingTop10 paddingBottom10 paddingLeft15 col12" type="text" name="username" placeholder="Nombre de usuario" id="username">
                                 </div>
                             </div>
                             <div class="control marginBottom20">
                                 <p class="font14 gray fontWeight500 letterspacing1">NOMBRE</p>
-                                <div class="paddingTop5 fullInputs">
-                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15" type="text" name="nombre" placeholder="Nombre" id="name">
+                                <div class="paddingTop5">
+                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15 col12" type="text" name="nombre" placeholder="Nombre" id="name">
                                 </div>
                             </div>
                             <div class="control marginBottom20">
                                 <p class="font14 gray fontWeight500 letterspacing1">APELLIDO PATERNO</p>
-                                <div class="paddingTop5 fullInputs">
-                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15" type="text" name="apellidoPaterno" placeholder="Apellido Paterno" id="apPaterno">
+                                <div class="paddingTop5">
+                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15 col12" type="text" name="apellidoPaterno" placeholder="Apellido Paterno" id="apPaterno">
                                 </div>
                             </div>
                             <div class="control marginBottom20">
                                 <p class="font14 gray fontWeight500 letterspacing1">APELLIDO MATERNO</p>
-                                <div class="paddingTop5 fullInputs">
-                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15" type="text" name="apellidoMaterno" placeholder="Apellido Materno" id="apMaterno">
+                                <div class="paddingTop5">
+                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15 col12" type="text" name="apellidoMaterno" placeholder="Apellido Materno" id="apMaterno">
                                 </div>
                             </div>
                             <div class="control marginBottom20">
                                 <p class="font14 gray fontWeight500 letterspacing1">CORREO ELECTRÓNICO</p>
-                                <div class="paddingTop5 fullInputs">
-                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15" type="text" name="email" placeholder="Correo electrónico" id="email">
+                                <div class="paddingTop5">
+                                    <input class="font14 lightGray whiteBox paddingTop10 paddingBottom10 paddingLeft15 col12" type="text" name="email" placeholder="Correo electrónico" id="email">
                                 </div>
                             </div>
-                            <div class="formContainer">
                                 <button type="button" class="loginButton blueButton letterspacing2 font14 pointer marginBottom30" id="editProfile-btn">EDITAR</button>
                                 <button type="button" class="loginButton letterspacing2 font14 pointer hide" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);" id="discardChanges-btn">CANCELAR</button>
-                            </div>
                         </div>
                     </div>
                 </div>

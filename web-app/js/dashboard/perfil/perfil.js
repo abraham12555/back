@@ -1,5 +1,6 @@
 $.getProfile = $.contextAwarePathJS + "dashboard/getProfile";
 $.deleteProfilePicture = $.contextAwarePathJS + "dashboard/deleteProfilePicture";
+$.defaultProfilePicture = $.contextAwarePathJS + "images/profile.png";
 
 $(document).ready(function () {
 

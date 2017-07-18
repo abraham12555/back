@@ -80,6 +80,9 @@ function getUsers(page) {
         url: $.getUsers,
         data: JSON.stringify(filter),
         contentType: "application/json",
+        beforeSend: function (XMLHttpRequest, settings) {
+            $("#error-users-div").addClass("hide");
+        },
         success: function (response) {
             var page = response.page;
             var totalPages = response.totalPages;
@@ -132,7 +135,8 @@ function getUsers(page) {
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            $("#error-users-div").html("Ocurrió un error al obtener la lista de usuarios. Inténtalo más tarde");
+            $("#error-users-div").removeClass("hide");
         }
     });
 }
@@ -249,6 +253,7 @@ function viewUserDetails(idUser) {
         success: function (response) {
             resetUserForm();
             var data = [];
+            var sucursal = (response.sucursal !== null) ? response.sucursal.id : "";
             $.each(response.authorities, function () {
                 data.push(this.id);
             });
@@ -261,7 +266,7 @@ function viewUserDetails(idUser) {
             $("#password-div").css("display", "none");
             $("#email").val(response.email);
             $("#rol").val(data).change();
-            $("#sucursal").val(response.sucursal.id).change();
+            $("#sucursal").val(sucursal).change();
             $("#noEmpleado").val(response.noEmpleado);
             $("input[name='accountLocked'][value=" + response.accountLocked + "]").prop('checked', true);
             $("input[name='enabled'][value=" + response.enabled + "]").prop('checked', true);
