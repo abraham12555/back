@@ -15,6 +15,10 @@
         <g:external dir="js" file="highchart/highcharts-more.js" />
         <g:external dir="js" file="highchart/modules/funnel.js" />
         <g:external dir="js" file="highchart/modules/exporting.js" />
+        <g:urlContextAware value="/" var="urlContextAware"/>
+        <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+        </script>
         <g:external dir="js" file="graficas.js" />
         <script>
             $(function () {

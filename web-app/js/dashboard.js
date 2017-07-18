@@ -1,9 +1,9 @@
 var solicitudes;
 var kosmosDropzone;
 var pasoActual = 1;
-$.validUsername = "/dashboard/validUsername";
-$.validEmail = "/dashboard/validEmail";
-$.getProfilePicture = "/dashboard/profilePicture";
+$.validUsername = $.contextAwarePathJS + "dashboard/validUsername";
+$.validEmail = $.contextAwarePathJS + "dashboard/validEmail";
+$.getProfilePicture = $.contextAwarePathJS + "dashboard/profilePicture";
 
 function w3_open() {
     document.getElementById("mySidenav").style.display = "block";
@@ -15,7 +15,7 @@ function w3_close() {
 $(document).ready(function () {
     console.log($('#pagina').val());
     /*if ($('#pagina').val() === 'index') {
-        $.getSolicitudes = "/dashboard/getSolicitudes";
+        $.getSolicitudes = $.contextAwarePathJS + "dashboard/getSolicitudes";
         var idPaginacion = "paginationSolicitudes";
         $('#' + idPaginacion).on('click', 'a.page', function (event) {
             event.preventDefault();
@@ -51,7 +51,7 @@ $(document).ready(function () {
 
     jQuery.ajax({
         type: 'POST',
-        url: '/dashboard/consultaConfiguracion',
+        url: $.contextAwarePathJS + "dashboard/consultaConfiguracion",
         success: function (data, textStatus) {
 
             $("#colorBordeSuperior").spectrum({
@@ -343,14 +343,14 @@ function mostrarOpciones() {
 
 function consultarSolicitud(numeroDeSolicitud, temporal) {
     if (temporal === false) {
-        window.location.href = "/dashboard/detalleSolicitud/" + numeroDeSolicitud;
+        window.location.href = $.contextAwarePathJS + "dashboard/detalleSolicitud/" + numeroDeSolicitud;
     } else {
-        window.location.href = "/dashboard/detalleSolicitud?id=" + numeroDeSolicitud + "&temporal=true";
+        window.location.href = $.contextAwarePathJS + "dashboard/detalleSolicitud?id=" + numeroDeSolicitud + "&temporal=true";
     }
 }
 
 function realizarVerificacion(numeroDeSolicitud) {
-    window.location.href = "/dashboard/detalleVerificacion/" + numeroDeSolicitud;
+    window.location.href = $.contextAwarePathJS + "dashboard/detalleVerificacion/" + numeroDeSolicitud;
 }
 
 function mostrarTab(tab) {
@@ -422,7 +422,7 @@ function mostrarDetalle(elemento, idRubroTemp, idDiv, idProductoTemp, idBoton) {
         $.ajax({
             type: 'POST',
             data: 'idRubroTemporal=' + idRubroTemp,
-            url: '/dashboard/buscarRubros',
+            url: $.contextAwarePathJS + "dashboard/buscarRubros",
             success: function (data, textStatus) {
                 var resultado = eval(data);
                 var html = ""
@@ -500,7 +500,7 @@ function mostrarDetalle(elemento, idRubroTemp, idDiv, idProductoTemp, idBoton) {
         $.ajax({
             type: 'POST',
             data: 'idRubroTemporal=' + idRubroTemp,
-            url: '/dashboard/buscarVistas',
+            url: $.contextAwarePathJS + "dashboard/buscarVistas",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 var html = ""
@@ -540,7 +540,7 @@ function mostrarDetalle(elemento, idRubroTemp, idDiv, idProductoTemp, idBoton) {
         $.ajax({
             type: 'POST',
             data: 'idRubro=' + idRubroTemp,
-            url: '/dashboard/buscarDocumentos',
+            url: $.contextAwarePathJS + "dashboard/buscarDocumentos",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 var html = ""
@@ -584,7 +584,7 @@ function mostrarDetalle(elemento, idRubroTemp, idDiv, idProductoTemp, idBoton) {
         $.ajax({
             type: 'POST',
             data: 'idRubroTemporal=' + idRubroTemp,
-            url: '/dashboard/buscarProducto',
+            url: $.contextAwarePathJS + "dashboard/buscarProducto",
             success: function (data, textStatus) {
                 console.log(data);
                 var respuesta = eval(data);
@@ -672,7 +672,7 @@ function mostrarDetalle(elemento, idRubroTemp, idDiv, idProductoTemp, idBoton) {
         $.ajax({
             type: 'POST',
             data: {idRubroTemp: idRubroTemp, idProductoTemp: idProductoTemp},
-            url: '/dashboard/buscarPlazo',
+            url: $.contextAwarePathJS + "dashboard/buscarPlazo",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 var html = ""
@@ -776,7 +776,7 @@ function mostrarDetalle(elemento, idRubroTemp, idDiv, idProductoTemp, idBoton) {
         $.ajax({
             type: 'POST',
             data: {idRubroTemp: idRubroTemp, idProductoTemp: idProductoTemp},
-            url: '/dashboard/buscarGarantia',
+            url: $.contextAwarePathJS + "dashboard/buscarGarantia",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 var html = ""
@@ -854,7 +854,7 @@ function selecciona() {
     $.ajax({
         type: 'POST',
         data: 'idTipoDeCampo=' + idTipoDeCampo,
-        url: '/dashboard/obtenerTipoDeCampo',
+        url: $.contextAwarePathJS + "dashboard/obtenerTipoDeCampo",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             var html = "";
@@ -924,7 +924,7 @@ function drop(ev) {
     jQuery.ajax({
         data: {idCampoFormulario: idCampoFormulario},
         type: 'POST',
-        url: '/producto/altaCampoFormulario',
+        url: $.contextAwarePathJS + "producto/altaCampoFormulario",
         success: function (data, textStatus) {
             $('#altaCampoFormulario').html(data);
             openModal('modalAltaCampoFormulario');
@@ -953,7 +953,7 @@ function dropClear(ev) {
                 $.ajax({
                     type: 'POST',
                     data: 'idCampoFormulario=' + idCampoFormulario,
-                    url: '/dashboard/eliminarCampoFormulario',
+                    url: $.contextAwarePathJS + "dashboard/eliminarCampoFormulario",
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.respuesta.ok) {
@@ -1080,7 +1080,7 @@ function consultarSolicitudesPorTiempo(temporalidad, idDiv, fechaInicio, fechaFi
         dataType: "json",
         data: JSON.stringify(filter),
         contentType: "application/json",
-        url: '/dashboard/getSolicitudesBusqueda',
+        url: $.contextAwarePathJS + "dashboard/getSolicitudesBusqueda",
         success: function (response) {
             var page = response.page;
             var totalPages = response.totalPages;
@@ -1169,7 +1169,7 @@ function mostrarModal(idModal, idRubroTemp, nombre, idProductoTemp, idDiv) {
         $.ajax({
             type: 'POST',
             data: 'idRubro=' + idRubroTemp + "&idDiv=" + idDiv,
-            url: '/dashboard/buscarDocumentos',
+            url: $.contextAwarePathJS + "dashboard/buscarDocumentos",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 mostrarRubroElegido(respuesta.sessionRubro);
@@ -1187,7 +1187,7 @@ function mostrarModal(idModal, idRubroTemp, nombre, idProductoTemp, idDiv) {
         $.ajax({
             type: 'POST',
             data: 'idRubroTemporal=' + idRubroTemp + "&idDiv=" + idDiv,
-            url: '/dashboard/buscarProducto',
+            url: $.contextAwarePathJS + "dashboard/buscarProducto",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 mostrarRubroElegido(respuesta.sessionRubro);
@@ -1203,7 +1203,7 @@ function mostrarModal(idModal, idRubroTemp, nombre, idProductoTemp, idDiv) {
         $.ajax({
             type: 'POST',
             data: 'idRubroTemporal=' + idRubroTemp + "&idDiv=" + idDiv,
-            url: '/dashboard/buscarVistas',
+            url: $.contextAwarePathJS + "dashboard/buscarVistas",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 mostrarRubroElegido(respuesta.sessionRubro);
@@ -1219,7 +1219,7 @@ function mostrarModal(idModal, idRubroTemp, nombre, idProductoTemp, idDiv) {
         $.ajax({
             type: 'POST',
             data: {idRubroTemp: idRubroTemp, idProductoTemp: idProductoTemp},
-            url: '/dashboard/buscarPlazo',
+            url: $.contextAwarePathJS + "dashboard/buscarPlazo",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 mostrarProductoElegido(respuesta.sessionPrueba);
@@ -1234,7 +1234,7 @@ function mostrarModal(idModal, idRubroTemp, nombre, idProductoTemp, idDiv) {
         $.ajax({
             type: 'POST',
             data: {idRubroTemp: idRubroTemp, idProductoTemp: idProductoTemp},
-            url: '/dashboard/buscarGarantia',
+            url: $.contextAwarePathJS + "dashboard/buscarGarantia",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 mostrarProductoElegido(respuesta.sessionPrueba);
@@ -1268,7 +1268,7 @@ function cambiarEstatus(estatus, idSolicitud) {
         jQuery.ajax({
             type: 'POST',
             data: {id: idSolicitud, status: estatus, complemento: complemento},
-            url: '/dashboard/cambiarEstadoSolicitud',
+            url: $.contextAwarePathJS + "dashboard/cambiarEstadoSolicitud",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 if (respuesta.ok) {
@@ -1293,7 +1293,7 @@ function actualizarConfiguracionBuroCredito() {
     jQuery.ajax({
         type: 'POST',
         data: $('#configuracionBuroCreditoForm').serialize(),
-        url: '/configuracionBuroCredito/update',
+        url: $.contextAwarePathJS + "configuracionBuroCredito/update",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -1672,7 +1672,7 @@ function registrarProducto() {
         contentType: false,
         processData: false,
         data: form_data,
-        url: '/producto/save',
+        url: $.contextAwarePathJS + "producto/save",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -1726,7 +1726,7 @@ function registrarDocumentoProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#altaDocumentoProductoForm').serialize(),
-        url: '/producto/registrarDocumentoProducto',
+        url: $.contextAwarePathJS + "producto/registrarDocumentoProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -1748,7 +1748,7 @@ function registrarPasoCotizadorEntidadFinanciera() {
     jQuery.ajax({
         type: 'POST',
         data: $('#altaPasoCotizadorEntidadFinancieraForm').serialize(),
-        url: '/dashboard/registrarPasoCotizadorEntidadFinanciera',
+        url: $.contextAwarePathJS + "dashboard/registrarPasoCotizadorEntidadFinanciera",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -1801,7 +1801,7 @@ function registrarPasoSolicitudEntidadFinanciera() {
     jQuery.ajax({
         type: 'POST',
         data: $('#altaPasoSolicitudEntidadFinancieraForm').serialize(),
-        url: '/dashboard/registrarPasoSolicitudEntidadFinanciera',
+        url: $.contextAwarePathJS + "dashboard/registrarPasoSolicitudEntidadFinanciera",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -1877,7 +1877,7 @@ function registrarLimitePlazoProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#altaLimitePlazosProductoForm').serialize(),
-        url: '/producto/registrarLimitePlazoProducto',
+        url: $.contextAwarePathJS + "producto/registrarLimitePlazoProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -1901,7 +1901,7 @@ function registrarPlazoProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#plazoProductoForm').serialize(),
-        url: '/producto/registrarPlazoProducto',
+        url: $.contextAwarePathJS + "producto/registrarPlazoProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -1927,7 +1927,7 @@ function registrarGarantiaProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#altaGarantiaProductoForm').serialize(),
-        url: '/producto/registrarGarantiaProducto',
+        url: $.contextAwarePathJS + 'producto/registrarGarantiaProducto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -1952,7 +1952,7 @@ function actualizarCampoFormulario() {
     jQuery.ajax({
         type: 'POST',
         data: $('#campoFormularioUpdateForm').serialize(),
-        url: '/dashboard/updateCampoFormulario',
+        url: $.contextAwarePathJS + 'dashboard/updateCampoFormulario',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -1973,7 +1973,7 @@ function actualizarDocumentoProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#actualizarDocumentoProductoForm').serialize(),
-        url: '/producto/updateDocumentoProducto',
+        url: $.contextAwarePathJS + 'producto/updateDocumentoProducto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2006,7 +2006,7 @@ function actualizarPasoCotizadorEntidadFinanciera() {
     jQuery.ajax({
         type: 'POST',
         data: $('#updatePasoCotizadorEntidadFinancieraForm').serialize(),
-        url: '/pasoCotizadorEntidadFinanciera/update',
+        url: $.contextAwarePathJS + 'pasoCotizadorEntidadFinanciera/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2023,7 +2023,7 @@ function actualizarPasoSolicitudEntidadFinanciera() {
     jQuery.ajax({
         type: 'POST',
         data: $('#updatePasoSolicitudEntidadFinancieraForm').serialize(),
-        url: '/pasoSolicitudEntidadFinanciera/update',
+        url: $.contextAwarePathJS + 'pasoSolicitudEntidadFinanciera/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2042,7 +2042,7 @@ function actualizarPlazoProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#plazosForm').serialize(),
-        url: '/producto/updatePlazoProducto',
+        url: $.contextAwarePathJS + 'producto/updatePlazoProducto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2076,7 +2076,7 @@ function actualizarLimitePlazoProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#limitePlazosProductoForm').serialize(),
-        url: '/producto/updateLimitePlazoProducto',
+        url: $.contextAwarePathJS + 'producto/updateLimitePlazoProducto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2108,7 +2108,7 @@ function actualizarGararantiaProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#garantiaProductoForm').serialize(),
-        url: '/producto/updateGarantiaProducto',
+        url: $.contextAwarePathJS + 'producto/updateGarantiaProducto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2140,7 +2140,7 @@ function actualizarRubro() {
     jQuery.ajax({
         type: 'POST',
         data: $('#rubroDeAplicacionDeCreditoForm').serialize(),
-        url: '/rubroDeAplicacionDeCredito/update',
+        url: $.contextAwarePathJS + 'rubroDeAplicacionDeCredito/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2156,7 +2156,7 @@ function actualizarProducto() {
     jQuery.ajax({
         type: 'POST',
         data: $('#productoForm').serialize(),
-        url: '/producto/update',
+        url: $.contextAwarePathJS + 'producto/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2172,7 +2172,7 @@ function actualizarSeguroSobreDeuda() {
     jQuery.ajax({
         type: 'POST',
         data: $('#updateSeguroSobreDeudaForm').serialize(),
-        url: '/seguroSobreDeuda/update',
+        url: $.contextAwarePathJS + 'seguroSobreDeuda/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2188,7 +2188,7 @@ function actualizarServicioDeAsistencia() {
     jQuery.ajax({
         type: 'POST',
         data: $('#updateServicioDeAsistenciaForm').serialize(),
-        url: '/servicioDeAsistencia/update',
+        url: $.contextAwarePathJS + 'servicioDeAsistencia/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2205,7 +2205,7 @@ function actualizarConfiguracionEntidadFinanciera() {
     jQuery.ajax({
         type: 'POST',
         data: $('#configuracionEntidadFinancieraForm').serialize(),
-        url: '/configuracionEntidadFinanciera/update',
+        url: $.contextAwarePathJS + 'configuracionEntidadFinanciera/update',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -2236,7 +2236,7 @@ function guardarNuevaEntidad() {
         processData: false,
         type: 'POST',
         data: form_data,
-        url: '/entidadFinanciera/save',
+        url: $.contextAwarePathJS + 'entidadFinanciera/save',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -2265,7 +2265,7 @@ function guardarNuevaEntidad() {
                 html += "</div></div></div></div>";
                 html += "</section>";
                 $('#listaDeEntidades').append(html);
-                cerrarModal('modalNuevaEntidadFinanciera');
+                cerrarModal('nuevaEntidad');
                 sweetAlert("¡Excelente!", respuesta.mensaje, "success");
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "error");
@@ -2283,7 +2283,7 @@ function inicializarDropzone(elemento, boton) {
     //Dropzone.autoDiscover = false;
     console.log($('#tipoDeDocumento').val());
     kosmosDropzone = new Dropzone(elemento, {
-        url: "/dashboard/subirImagen",
+        url: $.contextAwarePathJS + "dashboard/subirImagen",
         uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",
@@ -2331,7 +2331,7 @@ function mostrarDetalleProducto(idProducto) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idProducto,
-        url: '/producto/obtenerDetalleProducto',
+        url: $.contextAwarePathJS + 'producto/obtenerDetalleProducto',
         success: function (data, textStatus) {
             $('#detalleProducto').html(data);
             openModal('modalDetalleProducto');
@@ -2351,7 +2351,7 @@ function mostrarDetalleSeguroSobreDeuda(idSeguroSobreDeuda) {
     jQuery.ajax({
         type: 'POST',
         data: 'idSeguroSobreDeuda=' + idSeguroSobreDeuda,
-        url: '/seguroSobreDeuda/obtenerDetalleSeguroSobreDeuda',
+        url: $.contextAwarePathJS + 'seguroSobreDeuda/obtenerDetalleSeguroSobreDeuda',
         success: function (data, textStatus) {
             $('#detalleSeguroSobreDeuda').html(data);
             openModal('modalDetalleSeguroSobreDeuda');
@@ -2364,7 +2364,7 @@ function mostrarDetalleServicioDeAsistencia(idServicioDeAsistencia) {
     jQuery.ajax({
         type: 'POST',
         data: 'idServicioDeAsistencia=' + idServicioDeAsistencia,
-        url: '/servicioDeAsistencia/obtenerDetalleServicioDeAsistencia',
+        url: $.contextAwarePathJS + 'servicioDeAsistencia/obtenerDetalleServicioDeAsistencia',
         success: function (data, textStatus) {
             $('#detalleServicioDeAsistencia').html(data);
             openModal('modalDetalleServicioDeAsistencia');
@@ -2377,7 +2377,7 @@ function altaDocumentoProducto(idProducto) {
     jQuery.ajax({
         type: 'POST',
         data: 'idProducto=' + idProducto,
-        url: '/producto/altaDocumentoProducto',
+        url: $.contextAwarePathJS + 'producto/altaDocumentoProducto',
         success: function (data, textStatus) {
             $('#altaDocumentoProducto').html(data);
             openModal('modalAltaDocumentoProducto');
@@ -2391,7 +2391,7 @@ function altaPlazoProducto(idProducto) {
     jQuery.ajax({
         type: 'POST',
         data: 'idProducto=' + idProducto,
-        url: '/producto/altaPlazoProducto',
+        url: $.contextAwarePathJS + 'producto/altaPlazoProducto',
         success: function (data, textStatus) {
             $('#altaPlazoProducto').html(data);
             openModal('modalAltaPlazoProducto');
@@ -2405,7 +2405,7 @@ function altaLimitePlazoProducto(idProducto) {
     jQuery.ajax({
         type: 'POST',
         data: 'idProducto=' + idProducto,
-        url: '/producto/altaLimitePlazoProducto',
+        url: $.contextAwarePathJS + 'producto/altaLimitePlazoProducto',
         success: function (data, textStatus) {
             $('#altaLimitePlazoProducto').html(data);
             openModal('modalAltaLimitePlazoProducto');
@@ -2420,7 +2420,7 @@ function altaGarantiaProducto(idProducto) {
     jQuery.ajax({
         type: 'POST',
         data: 'idProducto=' + idProducto,
-        url: '/producto/altaGarantiaProducto',
+        url: $.contextAwarePathJS + 'producto/altaGarantiaProducto',
         success: function (data, textStatus) {
             $('#altaGarantiaProducto').html(data);
             openModal('modalAltaGarantiaProducto');
@@ -2435,7 +2435,7 @@ function mostrarDetallePasoCotizador(idPasoCotizador) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idPasoCotizador,
-        url: '/pasoCotizadorEntidadFinanciera/obtenerDetallePasoCotizador',
+        url: $.contextAwarePathJS + 'pasoCotizadorEntidadFinanciera/obtenerDetallePasoCotizador',
         success: function (data, textStatus) {
             $('#detallePasoCotizador').html(data);
             openModal('modalDetallePasoCotizador');
@@ -2449,7 +2449,7 @@ function mostrarDetallePasoSolicitud(idPasoCotizador) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idPasoCotizador,
-        url: '/pasoSolicitudEntidadFinanciera/obtenerDetallePasoSolicitud',
+        url: $.contextAwarePathJS + 'pasoSolicitudEntidadFinanciera/obtenerDetallePasoSolicitud',
         success: function (data, textStatus) {
             $('#detallePasoSolicitud').html(data);
             openModal('modalDetallePasoSolicitud');
@@ -2464,7 +2464,7 @@ function mostrarDetalleTipoDeDocumento(idTipoDeDocumento) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeDocumento,
-        url: '/tipoDeDocumento/obtenerDetalleTipoDeDocumento',
+        url: $.contextAwarePathJS + 'tipoDeDocumento/obtenerDetalleTipoDeDocumento',
         success: function (data, textStatus) {
             $('#detalleTipoDeDocumento').html(data);
             openModal('modalDetalleTipoDeDocumento');
@@ -2487,7 +2487,7 @@ function eliminarTipoDeAsentamiento(idTipoDeAsentamiento) {
                 $.ajax({
                     type: 'POST',
                     data: 'id=' + idTipoDeAsentamiento,
-                    url: '/tipoDeAsentamiento/eliminar',
+                    url: $.contextAwarePathJS + 'tipoDeAsentamiento/eliminar',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -2518,7 +2518,7 @@ function eliminarTipoDeVivienda(idTipoDeVivienda) {
                 $.ajax({
                     type: 'POST',
                     data: 'id=' + idTipoDeVivienda,
-                    url: '/tipoDeVivienda/eliminar',
+                    url: $.contextAwarePathJS + 'tipoDeVivienda/eliminar',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -2550,7 +2550,7 @@ function eliminarPasoSolicitud(idPasoSolicitudEntidadFinanciera) {
                 $.ajax({
                     type: 'POST',
                     data: 'id=' + idPasoSolicitudEntidadFinanciera,
-                    url: '/pasoSolicitudEntidadFinanciera/eliminar',
+                    url: $.contextAwarePathJS + 'pasoSolicitudEntidadFinanciera/eliminar',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -2570,7 +2570,7 @@ function editarTipoDeAsentamiento(idTipoDeAsentamiento) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeAsentamiento,
-        url: '/tipoDeAsentamiento/obtenerDetalleTipoDeAsentamiento',
+        url: $.contextAwarePathJS + 'tipoDeAsentamiento/obtenerDetalleTipoDeAsentamiento',
         success: function (data, textStatus) {
             $('#detalleTipoDeAsentamiento').html(data);
             openModal('modalDetalleTipoDeAsentamiento');
@@ -2584,7 +2584,7 @@ function editarRubroDeAplicacionDeCredito(idRubroDeAplicacionDeCredito) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idRubroDeAplicacionDeCredito,
-        url: '/rubroDeAplicacionDeCredito/obtenerDetalleRubroDeAplicacionDeCredito',
+        url: $.contextAwarePathJS + 'rubroDeAplicacionDeCredito/obtenerDetalleRubroDeAplicacionDeCredito',
         success: function (data, textStatus) {
             $('#detalleRubroDeAplicacionDeCredito').html(data);
             openModal('modalDetalleRubroDeAplicacionDeCredito');
@@ -2605,7 +2605,7 @@ function editarTipoDeCampo(idTipoDeCampo) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeCampo,
-        url: '/tipoDeCampo/obtenerDetalleTipoDeCampo',
+        url: $.contextAwarePathJS + 'tipoDeCampo/obtenerDetalleTipoDeCampo',
         success: function (data, textStatus) {
             $('#detalleTipoDeCampo').html(data);
             openModal('modalDetalleTipoDeCampo');
@@ -2617,7 +2617,7 @@ function editarTipoDeGarantia(idTipoDeGarantia) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeGarantia,
-        url: '/tipoDeGarantia/obtenerDetalleTipoDeGarantia',
+        url: $.contextAwarePathJS + 'tipoDeGarantia/obtenerDetalleTipoDeGarantia',
         success: function (data, textStatus) {
             $('#detalleTipoDeGarantia').html(data);
             openModal('modalDetalleTipoDeGarantia');
@@ -2629,7 +2629,7 @@ function editarTipoDeIngresos(idTipoDeIngresos) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeIngresos,
-        url: '/tipoDeIngresos/obtenerDetalleTipoDeIngresos',
+        url: $.contextAwarePathJS + 'tipoDeIngresos/obtenerDetalleTipoDeIngresos',
         success: function (data, textStatus) {
             $('#detalleTipoDeIngresos').html(data);
             openModal('modalDetalleTipoDeIngresos');
@@ -2641,7 +2641,7 @@ function editarTipoDeFotografia(idTipoDeFotografia) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeFotografia,
-        url: '/tipoDeFotografia/obtenerDetalleTipoDeFotografia',
+        url: $.contextAwarePathJS + 'tipoDeFotografia/obtenerDetalleTipoDeFotografia',
         success: function (data, textStatus) {
             $('#detalleTipoDeFotografia').html(data);
             openModal('modalDetalleTipoDeFotografia');
@@ -2653,7 +2653,7 @@ function editarTipoDeContrato(idTipoDeContrato) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeContrato,
-        url: '/tipoDeContrato/obtenerDetalleTipoDeContrato',
+        url: $.contextAwarePathJS + 'tipoDeContrato/obtenerDetalleTipoDeContrato',
         success: function (data, textStatus) {
             $('#detalleTipoDeContrato').html(data);
             openModal('modalDetalleTipoDeContrato');
@@ -2665,7 +2665,7 @@ function editarTipoDeVivienda(idTipoDeVivienda) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeVivienda,
-        url: '/tipoDeVivienda/obtenerDetalleTipoDeVivienda',
+        url: $.contextAwarePathJS + 'tipoDeVivienda/obtenerDetalleTipoDeVivienda',
         success: function (data, textStatus) {
             $('#detalleTipoDeVivienda').html(data);
             openModal('modalDetalleTipoDeVivienda');
@@ -2677,7 +2677,7 @@ function editarTipoDeTasaDeInteres(idTipoDeTasaDeInteres) {
     jQuery.ajax({
         type: 'POST',
         data: 'id=' + idTipoDeTasaDeInteres,
-        url: '/tipoDeTasaDeInteres/obtenerDetalleTipoDeTasaDeInteres',
+        url: $.contextAwarePathJS + 'tipoDeTasaDeInteres/obtenerDetalleTipoDeTasaDeInteres',
         success: function (data, textStatus) {
             $('#detalleTipoDeTasaDeInteres').html(data);
             openModal('modalDetalleTipoDeTasaDeInteres');
@@ -2690,7 +2690,7 @@ function verListaIconos(idDiv, idCampo) {
     jQuery.ajax({
         type: 'POST',
         data: 'idDiv=' + idDiv + "&idCampo=" + idCampo,
-        url: '/producto/obtenerIconos',
+        url: $.contextAwarePathJS + 'producto/obtenerIconos',
         success: function (data, textStatus) {
             $('#' + idDiv).html(data);
             openModal('modalDetalleIconos');
@@ -2750,7 +2750,7 @@ function agregarPregunta() {
     $.ajax({
         type: 'POST',
         data: 'pregunta=' + textoPregunta,
-        url: '/dashboard/agregarPregunta',
+        url: $.contextAwarePathJS + 'dashboard/agregarPregunta',
         success: function (data, textStatus) {
             mostrarPreguntas(data);
         },
@@ -2765,7 +2765,7 @@ function agregarDocumento() {
     $.ajax({
         type: 'POST',
         data: {tipoDeDocumentoId: tipoDeDocumentoId, idRubroTemp: idRubroTemp},
-        url: '/dashboard/agregarDocumento',
+        url: $.contextAwarePathJS + 'dashboard/agregarDocumento',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -2788,7 +2788,7 @@ function agregarVistas() {
     $.ajax({
         type: 'POST',
         data: {pasoCotizadorId: pasoCotizadorId, idRubroTemp: idRubroTemp},
-        url: '/dashboard/agregarVistas',
+        url: $.contextAwarePathJS + 'dashboard/agregarVistas',
         success: function (data, textStatus) {
             mostrarVistas(data);
             var respuesta = eval(data);
@@ -2817,7 +2817,7 @@ function registrarSeguroSobreDeuda() {
     $.ajax({
         type: 'POST',
         data: {montoInicial: montoInicial, montoFinal: montoFinal, plazoAnual: plazoAnual, importeSeguro: importeSeguro},
-        url: '/dashboard/registrarSeguroSobreDeuda',
+        url: $.contextAwarePathJS + 'dashboard/registrarSeguroSobreDeuda',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2841,7 +2841,7 @@ function registrarServicioDeAsistencia() {
     $.ajax({
         type: 'POST',
         data: {montoInicial: montoInicial, montoFinal: montoFinal, importeAsistencia: importeAsistencia, plazoAnual: plazoAnual, plazoQuincenal: plazoQuincenal, plazoSemanal: plazoSemanal},
-        url: '/dashboard/registrarServicioDeAsistencia',
+        url: $.contextAwarePathJS + 'dashboard/registrarServicioDeAsistencia',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -2860,7 +2860,7 @@ function editarPerfilDeMarca(idEntidadFinanciera) {
     $.ajax({
         type: 'POST',
         data: {idEntidadFinanciera: idEntidadFinanciera},
-        url: '/dashboard/editarPerfilDeMarca',
+        url: $.contextAwarePathJS + 'dashboard/editarPerfilDeMarca',
         success: function (data, textStatus) {
 
         },
@@ -2908,7 +2908,7 @@ function agregarProducto() {
         contentType: false,
         processData: false,
         data: form_data,
-        url: '/dashboard/agregarProducto',
+        url: $.contextAwarePathJS + 'dashboard/agregarProducto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -2931,7 +2931,7 @@ function agregarCampoFormulario() {
     $.ajax({
         type: 'POST',
         data: $('#campoFormularioForm').serialize(),
-        url: '/dashboard/agregarCampoFormulario',
+        url: $.contextAwarePathJS + 'dashboard/agregarCampoFormulario',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -2972,7 +2972,7 @@ function agregarRubro() {
         contentType: false,
         processData: false,
         data: form_data,
-        url: '/dashboard/agregarRubro',
+        url: $.contextAwarePathJS + 'dashboard/agregarRubro',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -2999,7 +2999,7 @@ function agregarGarantias() {
         type: 'POST',
         data: {idproductoTemp: idProductoTemp, cantidadMaxima: cantidadMaxima, cantidadMinima: cantidadMinima,
             descripcionGarantia: descripcionGarantia, tipoDeGarantiaId: tipoDeGarantiaId},
-        url: '/dashboard/agregarGarantia',
+        url: $.contextAwarePathJS + 'dashboard/agregarGarantia',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -3034,7 +3034,7 @@ function agregarPlazo() {
         data: {idproductoTemp: idProductoTemp, importeMaximo: importeMaximo, importeMinimo: importeMinimo,
             plazoMaximo: plazoMaximo, plazoMinimo: plazoMinimo, periodicidadId: periodicidadId,
             plazosPermitidos: plazosPermitidos, saltoSlider: saltoSlider, usarListaDePlazos: usarListaDePlazos},
-        url: '/dashboard/agregarPlazo',
+        url: $.contextAwarePathJS + 'dashboard/agregarPlazo',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.respuesta.ok) {
@@ -3052,7 +3052,7 @@ function agregarPlazo() {
 function verificar() {
     $.ajax({
         type: 'POST',
-        url: '/dashboard/verificar',
+        url: $.contextAwarePathJS + 'dashboard/verificar',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {
@@ -3068,7 +3068,7 @@ function verificar() {
 function vistaPrevia() {
     $.ajax({
         type: 'POST',
-        url: '/dashboard/vistaPrevia',
+        url: $.contextAwarePathJS + 'dashboard/vistaPrevia',
         success: function (data, textStatus) {
             $('#vistaPreviaConfiguracionCotizador').html(data);
             openModal('modalVistaPrevia');
@@ -3090,7 +3090,7 @@ function eliminarPregunta(idPregunta) {
     $.ajax({
         type: 'POST',
         data: 'idPregunta=' + idPregunta,
-        url: '/dashboard/eliminarPregunta',
+        url: $.contextAwarePathJS + 'dashboard/eliminarPregunta',
         success: function (data, textStatus) {
             mostrarPreguntas(data);
         },
@@ -3111,7 +3111,7 @@ function eliminarDocumentoProducto(idDocumentoProducto) {
                 $.ajax({
                     type: 'POST',
                     data: 'idDocumentoProducto=' + idDocumentoProducto,
-                    url: '/producto/eliminarDocumentoProducto',
+                    url: $.contextAwarePathJS + 'producto/eliminarDocumentoProducto',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -3154,7 +3154,7 @@ function eliminarPlazoProducto(idPlazoProducto) {
                 $.ajax({
                     type: 'POST',
                     data: 'idPlazoProducto=' + idPlazoProducto,
-                    url: '/producto/eliminarPlazoProducto',
+                    url: $.contextAwarePathJS + 'producto/eliminarPlazoProducto',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -3204,7 +3204,7 @@ function eliminarLimiteProducto(idLimiteProducto) {
                 $.ajax({
                     type: 'POST',
                     data: 'idLimiteProducto=' + idLimiteProducto,
-                    url: '/producto/eliminarLimitePlazoProducto',
+                    url: $.contextAwarePathJS + 'producto/eliminarLimitePlazoProducto',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -3247,7 +3247,7 @@ function eliminarGarantiaProducto(idGarantiaProducto) {
                 $.ajax({
                     type: 'POST',
                     data: 'idGarantiaProducto=' + idGarantiaProducto,
-                    url: '/producto/eliminarGarantiaProducto',
+                    url: $.contextAwarePathJS + 'producto/eliminarGarantiaProducto',
                     success: function (data, textStatus) {
                         var respuesta = eval(data);
                         if (respuesta.ok) {
@@ -3288,7 +3288,7 @@ function modificarCampoFormulario(idCampoFormularioTemp) {
     $.ajax({
         type: 'POST',
         data: 'idCampoFormularioTemp=' + idCampoFormularioTemp,
-        url: '/dashboard/modificarCampoFormulario',
+        url: $.contextAwarePathJS + 'dashboard/modificarCampoFormulario',
         success: function (data, textStatus) {
             $('#detalleCampoFormulario').html(data);
             openModal('modalDetalleCampoFormulario');
@@ -3301,7 +3301,7 @@ function modificarDocumentoProducto(idDocumentoProducto) {
     $.ajax({
         type: 'POST',
         data: 'idDocumentoProducto=' + idDocumentoProducto,
-        url: '/producto/modificarDocumentoproducto',
+        url: $.contextAwarePathJS + 'producto/modificarDocumentoproducto',
         success: function (data, textStatus) {
             $('#detalleDocumentoProducto').html(data);
             openModal('modalDetalleDocumentoProducto');
@@ -3319,7 +3319,7 @@ function modificarLimiteProducto(idLimiteProducto) {
     $.ajax({
         type: 'POST',
         data: 'idLimiteProducto=' + idLimiteProducto,
-        url: '/producto/modificarLimiteProducto',
+        url: $.contextAwarePathJS + 'producto/modificarLimiteProducto',
         success: function (data, textStatus) {
             $('#detalleLimitePlazoProducto').html(data);
             openModal('modalDetalleLimitePlazoProducto');
@@ -3335,7 +3335,7 @@ function modificarPlazoProducto(idPlazoProducto) {
     $.ajax({
         type: 'POST',
         data: 'idPlazoProducto=' + idPlazoProducto,
-        url: '/producto/modificarPlazoProducto',
+        url: $.contextAwarePathJS + 'producto/modificarPlazoProducto',
         success: function (data, textStatus) {
             $('#detallePlazoProducto').html(data);
             openModal('modalDetallePlazoProducto');
@@ -3349,7 +3349,7 @@ function modificarGarantiaProducto(idGarantiaProducto) {
     $.ajax({
         type: 'POST',
         data: 'idGarantiaProducto=' + idGarantiaProducto,
-        url: '/producto/modificarGarantiaProducto',
+        url: $.contextAwarePathJS + 'producto/modificarGarantiaProducto',
         success: function (data, textStatus) {
             $('#detalleGarantiaProducto').html(data);
             openModal('modalDetalleGarantiaProducto');
@@ -3365,7 +3365,7 @@ function eliminarRubro(idRubro) {
     $.ajax({
         type: 'POST',
         data: 'idRubro=' + idRubro,
-        url: '/dashboard/eliminarRubro',
+        url: $.contextAwarePathJS + 'dashboard/eliminarRubro',
         success: function (data, textStatus) {
             mostrarRubros(data);
 
@@ -3377,7 +3377,7 @@ function eliminarVistas(idPaso, idRubroTemp) {
     $.ajax({
         type: 'POST',
         data: 'idPaso=' + idPaso + "&idRubroTemp=" + idRubroTemp,
-        url: '/dashboard/eliminarVistas',
+        url: $.contextAwarePathJS + 'dashboard/eliminarVistas',
         success: function (data, textStatus) {
             mostrarVistas(data);
         },
@@ -3389,7 +3389,7 @@ function eliminarDocumento(idDocumento, idRubroTemp) {
     $.ajax({
         type: 'POST',
         data: 'idDocumento=' + idDocumento + "&idRubroTemp=" + idRubroTemp,
-        url: '/dashboard/eliminarDocumento',
+        url: $.contextAwarePathJS + 'dashboard/eliminarDocumento',
         success: function (data, textStatus) {
             mostrarDocumentos(data);
         },
@@ -3400,7 +3400,7 @@ function eliminarProducto(idProducto, idRubroTemp) {
     $.ajax({
         type: 'POST',
         data: 'idProducto=' + idProducto + "&idRubroTemp=" + idRubroTemp,
-        url: '/dashboard/eliminarProducto',
+        url: $.contextAwarePathJS + 'dashboard/eliminarProducto',
         success: function (data, textStatus) {
             mostrarProductos(data);
         },
@@ -3411,7 +3411,7 @@ function eliminarPlazo(idPlazo, idProductoTemp) {
     $.ajax({
         type: 'POST',
         data: 'idPlazo=' + idPlazo + "&idProductoTemp=" + idProductoTemp,
-        url: '/dashboard/eliminarPlazo',
+        url: $.contextAwarePathJS + 'dashboard/eliminarPlazo',
         success: function (data, textStatus) {
             mostrarPlazos(data);
         },
@@ -3422,7 +3422,7 @@ function eliminarGarantia(idGarantia, idProductoTemp) {
     $.ajax({
         type: 'POST',
         data: 'idGarantia=' + idGarantia + "&idProductoTemp=" + idProductoTemp,
-        url: '/dashboard/eliminarGarantia',
+        url: $.contextAwarePathJS + 'dashboard/eliminarGarantia',
         success: function (data, textStatus) {
             mostrarGarantias(data);
         },
@@ -4002,7 +4002,7 @@ function getSolicitudesBusqueda(page, idPaginacion, folio, nombre, apellidoPater
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: '/dashboard/busquedaCriterio',
+        url: $.contextAwarePathJS + 'dashboard/busquedaCriterio',
         data: JSON.stringify(filter),
         contentType: "application/json",
         success: function (response) {
@@ -4223,7 +4223,7 @@ function configurarPasoSolicitud(idPasoSolicitud) {
     $.ajax({
         type: 'POST',
         data: 'idPasoSolicitud=' + idPasoSolicitud,
-        url: '/dashboard/buscarPaso',
+        url: $.contextAwarePathJS + 'dashboard/buscarPaso',
         success: function (data, textStatus) {
             var respuesta = eval(respuesta);
             if (data.ok) {
@@ -4320,7 +4320,7 @@ function registrarConfiguracionPasoSolicitud(idPasoSolicitudEntidadFinanciera) {
     jQuery.ajax({
         type: 'POST',
         data: {idPasoSolicitudEntidadFinanciera: idPasoSolicitudEntidadFinanciera},
-        url: '/dashboard/registrarConfiguracionPasoSolicitud',
+        url: $.contextAwarePathJS + 'dashboard/registrarConfiguracionPasoSolicitud',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok) {

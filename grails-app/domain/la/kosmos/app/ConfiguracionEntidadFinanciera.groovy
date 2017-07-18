@@ -45,6 +45,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String rutaFotoPerfilUsuario
     int vigenciaSolicitudTemporal
     int vigenciaSolicitudFormal
+    
     static constraints = {
         nombreComercial (blank:false)
         rutaLogotipo (blank: false)

@@ -289,51 +289,101 @@
         pad = zeropad.bind(null, 2);
 
         param.nombre = ajustaCompuesto(normalizaString(param.nombre.toUpperCase())).trim();
+
+        nombres = param.nombre.split(" ").filter(function (palabra) {
+            return palabra !== "";
+        });
+        param.nombre = comunes.indexOf(nombres[0]) > -1 ? (nombres.length > 1 ? nombres[1] : nombres[0]) : nombres[0];
+        console.log("Nombre a usar: " + param.nombre);
+
         param.apellido_paterno = ajustaCompuesto(normalizaString(param.apellido_paterno.toUpperCase())).trim();
 
         param.apellido_materno = param.apellido_materno || "";
         param.apellido_materno = ajustaCompuesto(normalizaString(param.apellido_materno.toUpperCase())).trim();
-        
+
         console.log("Particulas: " + param.nombre + ", " + param.apellido_paterno + ", " + param.apellido_materno);
         console.log("Longitudes: " + param.nombre.length + ", " + param.apellido_paterno.length + ", " + param.apellido_materno.length);
 
-        if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length > 0) {
-            console.log("Entra a 1");
-            inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+        inicial_nombre = extraerInicial(param.nombre);
+        vocal_apellido = param.apellido_paterno.trim().substring(1).replace(/[BCDFGHJKLMNÑPQRSTVWXYZ]/g, '').substring(0, 1);
+        primera_letra_paterno = param.apellido_paterno.substring(0, 1);
 
-            vocal_apellido = "";
+        /*if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length > 0) {
+         console.log("Entra a 1");
+         inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+         
+         vocal_apellido = "";
+         
+         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+         
+         primera_letra_materno = param.apellido_materno.substring(0, 1);
+         } else if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length <= 0) {
+         console.log("Entra a 2 - Revisar");
+         inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+         
+         vocal_apellido = "";
+         
+         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+         
+         primera_letra_materno = "";
+         } else if (!param.apellido_materno || param.apellido_materno === "") {
+         console.log("Entra a 3");
+         if (param.nombre.length === 1) {
+         
+         } else {
+         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+         
+         vocal_apellido = param.apellido_paterno.substring(1, 2);
+         
+         primera_letra_materno = "";
+         
+         inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+         }
+         } else {
+         console.log("Entra a 4");
+         inicial_nombre = extraerInicial(param.nombre);
+         
+         vocal_apellido = param.apellido_paterno.trim().substring(1).replace(/[BCDFGHJKLMNÑPQRSTVWXYZ]/g, '').substring(0, 1);
+         
+         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+         
+         primera_letra_materno = param.apellido_materno.substring(0, 1);
+         } */
 
-            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
+        //Reglas de Libertad
 
-            primera_letra_materno = param.apellido_materno.substring(0, 1);
-        } else if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length <= 0) {
-            console.log("Entra a 2");
-            inicial_nombre = extraerDosPrimerasLetras(param.nombre);
-
-            vocal_apellido = "";
-
-            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-
-            primera_letra_materno = "";
-        } else if (!param.apellido_materno || param.apellido_materno === "") {
-            console.log("Entra a 3");
-            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-
-            vocal_apellido = param.apellido_paterno.substring(1, 2);
-            
-            primera_letra_materno = ""
-            
-            inicial_nombre = extraerDosPrimerasLetras(param.nombre);
+        if (vocal_apellido === '' || vocal_apellido === null || vocal_apellido === undefined) {
+            console.log("Sin vocal en el apellido");
+            if (!param.apellido_materno || param.apellido_materno === "") {
+                vocal_apellido = "X";
+                primera_letra_materno = extraerDosPrimerasLetras(param.nombre);
+                inicial_nombre = "";
+            } else {
+                vocal_apellido = param.apellido_materno.substring(0, 1);
+                primera_letra_materno = extraerDosPrimerasLetras(param.nombre);
+                inicial_nombre = "";
+            }
         } else {
-            console.log("Entra a 4");
-            inicial_nombre = extraerInicial(param.nombre);
-
-            vocal_apellido = param.apellido_paterno.trim().substring(1).replace(/[BCDFGHJKLMNÑPQRSTVWXYZ]/g, '').substring(0, 1);
-
-            primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-
-            primera_letra_materno = param.apellido_materno.substring(0, 1);
+            console.log("Con vocal en el apellido");
+            if (!param.apellido_materno || param.apellido_materno === "") {
+                console.log("Sin apellido materno");
+                if (param.nombre.length === 1) {
+                    primera_letra_materno = extraerInicial(param.nombre);
+                    inicial_nombre = "X";
+                } else {
+                    primera_letra_materno = extraerDosPrimerasLetras(param.nombre);
+                    inicial_nombre = "";
+                }
+            } else {
+                console.log("Con apellido materno");
+                primera_letra_materno = param.apellido_materno.substring(0, 1);
+            }
         }
+
+        console.log("char1: " + primera_letra_paterno);
+        console.log("char2: " + vocal_apellido);
+        console.log("char3: " + primera_letra_materno);
+        console.log("char4: " + inicial_nombre);
 
         posicion_1_4 = [
             primera_letra_paterno,
@@ -344,11 +394,6 @@
 
         posicion_1_4 = filtraInconvenientes(filtraCaracteres(posicion_1_4));
 
-        nombres = param.nombre.split(" ").filter(function (palabra) {
-            return palabra !== "";
-        });
-        nombre_a_usar = comunes.indexOf(nombres[0]) > -1 ? (nombres.length > 1 ? nombres[1] : nombres[0]) : nombres[0];
-
         rfcParcial = [
             posicion_1_4,
             pad(param.fecha_nacimiento[2] - 1900),
@@ -358,6 +403,7 @@
 
         return rfcParcial;
     }
+
 
   // Si es un navegador, exporta 'generaCurp' a una variable global.
   // Si es node.js, exporta esa función en module.exports

@@ -41,7 +41,8 @@
             </div>
         </section>
         <section class="container marginTop50 marginBottom50">
-            <form id="formProfile" action="/dashboard/saveProfile" method="POST" class="form gray font14">
+            <g:urlContextAware value="/dashboard/saveProfile" var="urlForm"/>
+            <form id="formProfile" action="${urlForm}" method="POST" class="form gray font14">
                 <input type="hidden" id="userId" name="id"/>
                 <div class="width400 autoMargin">
                     <div class="clearFix">

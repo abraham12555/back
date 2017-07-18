@@ -26,7 +26,8 @@
                         ${flash.message}
                     </div>
                 </g:if>
-                <form class="loginForm gray font14" action="/j_spring_security_check" method="post" name="loginForm" id="loginForm" autocomplete="off">
+                <g:urlContextAware value="/j_spring_security_check" var="urlLoginForm"/>
+                <form class="loginForm gray font14" action="${urlLoginForm}" method="post" name="loginForm" id="loginForm" autocomplete="off">
                     <p class="loginTitle gray textUpper letterspacing1 center">NÚMERO DE CLIENTE</p>
                     <div class="formContainer">
                         <label class="formLabel letterspacing1 emailLabel">NOMBRE DE USUARIO</label>

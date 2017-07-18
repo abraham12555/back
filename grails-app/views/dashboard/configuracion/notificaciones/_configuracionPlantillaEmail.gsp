@@ -1,7 +1,8 @@
 <div class="idLightbox hide" id="modalPlantillaEmail">
     <div class="overlay"></div>
     <div class="whiteContainer lightboxPos notificacionesWidth50 darkBluetitle font14 fontWeight400 letterspacing1 justify">
-        <form id="formAddEmailTemplate" action="/notificaciones/saveEmailTemplate" method="POST" class="loginForm gray font14">
+        <g:urlContextAware value="/notificaciones/saveEmailTemplate" var="urlFormAddEmailTemplate"/>
+        <form id="formAddEmailTemplate" action="${urlFormAddEmailTemplate}" method="POST" class="loginForm gray font14">
             <input type="hidden" name="idTemplate" id="idEmailTemplate"/>
             <div class="clearFix width990 autoMargin">
                 <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10">PLANTILLA EMAIL</h1></center>

@@ -30,6 +30,10 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.6.0/css/froala_style.min.css" rel="stylesheet" type="text/css" />
 
         <g:external dir="js" file="jquery-3.0.0.min.js" />
+        <g:urlContextAware value="/" var="urlContextAware"/>
+        <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+        </script>
         <g:external dir="js" file="sweetalert.min.js" />
         <g:external dir="js" file="dropzone.js" />
         <g:external dir="js" file="spectrum.js" />
@@ -54,6 +58,9 @@
         <g:layoutHead/>
     </head>
     <body>
+        <g:urlContextAware value="/dashboard/editarPerfil" var="urlEditarPerfil"/>
+        <g:urlContextAware value="/dashboard/buscar" var="urlBuscar"/>
+        <g:urlContextAware value="/logout" var="urlLogout"/>
         <header class="appHeader" style="border-top: solid 5px ${session.configuracion?.colorBordeSuperior}; background-color: ${session.configuracion?.colorEncabezado};">
             <div class="container clearFix">
                 <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file: session.configuracion?.rutaLogotipo )}" alt="Logo" title="Logo" />
@@ -67,8 +74,8 @@
                         <div class="dropBox floatLeft marginTop20 marginLeft5 desktop">
                             <i class="fa fa-angle-down paddingTop4 paddingRight5 paddingLeft5 dropbtn" aria-hidden="true" onclick="mostrarOpciones();"></i>
                             <div id="opcionesUsuario" class="dropdown-content">
-                                <a href="/dashboard/editarPerfil">Editar Perfil</a>
-                                <a href="/logout">Salir</a>
+                                <a href="${urlEditarPerfil}">Editar Perfil</a>
+                                <a href="${urlLogout}">Salir</a>
                             </div>
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>

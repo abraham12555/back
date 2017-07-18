@@ -19,6 +19,7 @@ class SolicitudDeCredito implements Serializable{
     long opcionMedioDeContacto = 0
     Usuario registradaPor
     boolean solicitudVigente = true
+
     static constraints = {
         fechaDeSolicitud (nullable: false)
         cliente (nullable: false)

@@ -1,7 +1,7 @@
-$.getSmsTemplates = "/notificaciones/getSmsTemplates";
-$.loadDataSmsTemplate = "/notificaciones/loadDataSmsTemplate";
-$.viewSmsTemplateDetails = "/notificaciones/viewTemplateDetails";
-$.deleteSmsTemplate = "/notificaciones/deleteSmsTemplate";
+$.getSmsTemplates = $.contextAwarePathJS + "notificaciones/getSmsTemplates";
+$.loadDataSmsTemplate = $.contextAwarePathJS + "notificaciones/loadDataSmsTemplate";
+$.viewSmsTemplateDetails = $.contextAwarePathJS + "notificaciones/viewTemplateDetails";
+$.deleteSmsTemplate = $.contextAwarePathJS + "notificaciones/deleteSmsTemplate";
 
 $(document).ready(function () {
     $('#newSmsTemplate-btn').on('click', function (event) {

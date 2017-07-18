@@ -248,8 +248,7 @@ class CotizadorController {
         render respuesta as JSON
     }
     
-    
-def solicitarCodigo() {
+    def solicitarCodigo() {
         println params
         def respuesta = [:]
         if(params.telefonoCelular){

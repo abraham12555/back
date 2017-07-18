@@ -23,6 +23,10 @@
             <link rel="stylesheet" href="${configuracion?.rutaCss}">
         </g:if>
         <g:external dir="js" file="jquery-3.0.0.min.js" />
+        <g:urlContextAware value="/" var="urlContextAware"/>
+        <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+        </script>
     </head>
     <body>
         <header class="topHeader">

@@ -759,9 +759,9 @@
     </g:form>
 
 
-
+<g:urlContextAware value="/dashboard/getPasosCotizador" var="urlPasosCotizador"/>
  <script>
-    $.getPasosCotizador = "/dashboard/getPasosCotizador";
+    $.getPasosCotizador = "${urlPasosCotizador}";
 
     $(document).ready(function () {
     var idPaginacion = "paginationPasosCotizador";

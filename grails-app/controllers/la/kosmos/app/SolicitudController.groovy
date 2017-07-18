@@ -936,6 +936,10 @@ class SolicitudController {
             respuesta = [:]
             respuesta.error = false
             ocr = false
+        } else if (params.docType == "consentimientoConsultaBC") {
+            respuesta = [:]
+            respuesta.error = false
+            ocr = false
         }
         if((!respuesta?.error || respuesta?.vigente == true) && !respuesta?.motivosRechazo) {
             if(ocr){
@@ -965,6 +969,7 @@ class SolicitudController {
     }
     
     def consultarBuroDeCredito(){
+        //println URLDecoder.decode(params.cadenaDeBuro, "UTF-8")
         ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
         println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
         println "session.identificadores: " + session.identificadores

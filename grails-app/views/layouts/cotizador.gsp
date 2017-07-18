@@ -32,8 +32,12 @@
             <g:layoutBody/>
         </section>
     </body>
+    <g:urlContextAware value="/" var="urlContextAware"/>
     <g:external dir="js" file="sweetalert.min.js" />
     <g:external dir="js" file="jquery-3.0.0.min.js" />
+    <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+    </script>
     <g:external dir="js" file="cotizador.js" />
     <g:external dir="js" file="validaciones.js" />
     <g:external dir="js" file="registro.js" />

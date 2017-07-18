@@ -496,7 +496,7 @@ class DashboardService {
                 } 
                 
             }
-            pager.totalRows = results.totalCount
+            pager.totalRows = (results?.totalCount ?: 0)
             println "total solicitudes No DICTAMINADAS "+pager.totalRows
         }
         else if (opcion == "dictaminadas"){
@@ -518,7 +518,7 @@ class DashboardService {
                     }
                 }
             }
-            else if(usuario.authorities.any { it.authority == "ROLE_EJECUTIVO "}){
+            else if(usuario.authorities.any { it.authority == "ROLE_EJECUTIVO" }){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
@@ -533,7 +533,7 @@ class DashboardService {
                     }
                 }
             }
-            pager.totalRows = results.totalCount
+            pager.totalRows = (results?.totalCount ?: 0)
             println "total solicitudes "+pager.totalRows
             
         } else if (opcion == "complementoSolicitado"){
@@ -568,7 +568,7 @@ class DashboardService {
                     }
                 }
             }
-            pager.totalRows = results.totalCount
+            pager.totalRows = (results?.totalCount ?: 0)
             println "opcion " + opcion
             println "total solicitudes " + pager.totalRows
         }

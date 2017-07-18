@@ -11,8 +11,9 @@
 <g:render template="configuracion/servicioDeAsistencia/altaServicioDeAsistencia"/>
 <div id="detalleServicioDeAsistencia"></div>
 
+<g:urlContextAware value="/dashboard/getServicioDeAsistencia" var="urlServicioDeAsistencia"/>
 <script>
-$.getServicioDeAsistencia = "/dashboard/getServicioDeAsistencia";
+$.getServicioDeAsistencia = "${urlServicioDeAsistencia}";
  
 $(document).ready(function () {
     var idPaginacion = "paginationServicioDeAsistencia";

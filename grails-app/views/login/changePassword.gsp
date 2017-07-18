@@ -13,6 +13,11 @@
         <g:external dir="css" file="formulario.css" title="text/css" rel="stylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <g:external dir="js" file="jquery-3.0.0.min.js" />
+        <g:urlContextAware value="/" var="urlContextAware"/>
+        <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+        </script>
         <g:external dir="js" file="register/register.min.js" />
         <g:external dir="js" file="validaciones.js" />
     </head>
@@ -25,7 +30,8 @@
                         ${message}
                     </div>
                 </g:if>
-                <form class="loginForm gray font14" action="/login/updateUserPassword" id="updatePassword" method="POST" autocomplete="off">
+                    <g:urlContextAware value="/login/updateUserPassword" var="urlUpdatePassword"/>
+                <form class="loginForm gray font14" action="${urlUpdatePassword}" id="updatePassword" method="POST" autocomplete="off">
                     <p class="loginTitle darkBluetitle textUpper letterspacing1 center fontWeight700">¡Atención!</p>
 
                     <div class="formContainer">

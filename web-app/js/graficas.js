@@ -82,7 +82,7 @@ function cargarGraficaGeneral(periodoTiempo, fechaInicio, fechaFinal) {
         series: []
     };
 
-    $.getJSON("/dashboard/getEstadisticas",
+    $.getJSON($.contextAwarePathJS + "dashboard/getEstadisticas",
             {temporalidad: periodoTiempo, grafica: 'general', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -125,7 +125,7 @@ function cargarGraficaEstatus(periodoTiempo, fechaInicio, fechaFinal) {
         series: []
     };
 
-    $.getJSON("/dashboard/getEstadisticas",
+    $.getJSON($.contextAwarePathJS + "dashboard/getEstadisticas",
             {temporalidad: periodoTiempo, grafica: 'status', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -259,7 +259,7 @@ function cargarGraficaProductos(periodoTiempo, fechaInicio, fechaFinal) {
         series: []
     };
 
-    $.getJSON("/dashboard/getEstadisticas",
+    $.getJSON($.contextAwarePathJS + "dashboard/getEstadisticas",
             {temporalidad: periodoTiempo, grafica: 'productos', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -301,7 +301,7 @@ function cargarGraficaUsoCredito(periodoTiempo, fechaInicio, fechaFinal) {
         },
         series: []
     };
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'usoCredito', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -345,7 +345,7 @@ function cargarGraficaProductosSolicitados(periodoTiempo, fechaInicio, fechaFina
         },
         series: []
     };
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'productosSolicitados', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -388,7 +388,7 @@ function cargarGraficaComprobanteIngresos(periodoTiempo, fechaInicio, fechaFinal
         },
         series: []
     };
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'comprobanteIngresos', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -444,7 +444,7 @@ function cargarGraficaProductosDiscriminados(periodoTiempo, fechaInicio, fechaFi
                     }]
             }]
     });
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'productosDiscriminados', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -515,7 +515,7 @@ function cargarGraficaVolumenDia(periodoTiempo, fechaInicio, fechaFinal) {
 
     };
 
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'volumenDia', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -558,7 +558,7 @@ function cargarGraficaDictamenStatus(periodoTiempo, fechaInicio, fechaFinal) {
         },
         series: []
     };
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'dictamenStatus', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -629,7 +629,7 @@ function cargarGraficaVolumenHora(periodoTiempo, fechaInicio, fechaFinal) {
 
     };
 
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'volumenHora', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -700,7 +700,7 @@ function cargarGraficaResidenciaClientes(periodoTiempo, fechaInicio, fechaFinal)
 
     };
 
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'residenciaClientes', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {
@@ -720,7 +720,6 @@ function cargarReporteMPGI(periodoTiempo, fechaInicio, fechaFinal){
     }
     jQuery.ajax({
         type: 'POST',
- 
         data: 'periodoTiempo=' + periodoTiempo + "&template=" + "mPGI"+ "&fechaInicio="+ fechaInicio+ "&fechaFinal="+ fechaFinal ,
         url: 'consultarInformes',
         success: function (data, textStatus) {
@@ -864,7 +863,7 @@ function cargarReporteAbandono(periodoTiempo, fechaInicio, fechaFinal){
       
     };
     
-    $.getJSON("/dashboard/getInformes",
+    $.getJSON($.contextAwarePathJS + "dashboard/getInformes",
             {temporalidad: periodoTiempo, grafica: 'abandono', fechaInicio: fechaInicio, fechaFinal: fechaFinal},
             function (data) {
                 if (data.estadisticas.length > 0) {

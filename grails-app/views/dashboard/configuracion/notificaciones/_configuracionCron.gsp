@@ -1,7 +1,8 @@
 <div class="idLightbox hide" id="modalEnvio">
     <div class="overlay"></div>
     <div class="whiteContainer lightboxPos notificacionesWidth50 darkBluetitle font14 fontWeight400 letterspacing1 justify">
-        <form id="formAddCron" action="/notificaciones/saveCron" method="POST" class="loginForm gray font14">
+        <g:urlContextAware value="/notificaciones/saveCron" var="urlFormAddCron"/>
+        <form id="formAddCron" action="${urlFormAddCron}" method="POST" class="loginForm gray font14">
             <input type="hidden" name="idCron" id="idCron"/>
             <div class="clearFix width990 autoMargin">
                 <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10">ENVÍO DE NOTIFICACIONES</h1></center>

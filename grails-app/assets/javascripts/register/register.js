@@ -1,6 +1,6 @@
-$.login = "/login/auth";
-$.validEmail = "/register/validEmail";
-$.passwordRecovery = "/register/forgotPassword";
+$.login = $.contextAwarePathJS + "login/auth";
+$.validEmail = $.contextAwarePathJS + "register/validEmail";
+$.passwordRecovery = $.contextAwarePathJS + "register/forgotPassword";
 
 $(document).ready(function () {
     $('#updatePassword-btn').on('click', function (event) {
@@ -101,7 +101,7 @@ function sendRequest() {
         beforeSend: function (XMLHttpRequest, settings) {
             $("body").mLoading({
                 text: "Enviando solicitud, espere por favor...",
-                icon: "/images/spinner.gif",
+                icon: $.contextAwarePathJS + "images/spinner.gif",
                 mask: true
             });
         },

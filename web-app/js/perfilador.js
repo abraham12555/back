@@ -346,6 +346,21 @@ function operacionesPerfilador() {
             }
         });
 
+        $('#consultaAutenticadorBtn').off().on('click', function () {
+            $('#divTipoDeConsultaBC').addClass('hide');
+            $('#consultaAutenticador').removeClass('hide');
+            $('#accionesNormales').show();
+            $('#tipoDeConsultaBC').val('autenticador');
+        });
+
+        $('#consultaINTLBtn').off().on('click', function () {
+            $('#divTipoDeConsultaBC').addClass('hide');
+            $('#consultaINTL').removeClass('hide');
+            $('#accionesNormales').show();
+            $('#tipoDeConsultaBC').val('intl');
+            inicializarDropzone('div#uploadFormato', '.foldersBox', 'consentimientoConsultaBC');
+        });
+
         $('#consultarBuroBtn').off().on('click', function () {
             console.log("Dando click para consulta a buró");
             consultarBuro();
@@ -374,7 +389,7 @@ function goStep2() {
             data: {
                 rfcClienteExistente: $('#rfcClienteExistente').val()
             },
-            url: "/dashboard/buscarPerfilExistente",
+            url: $.contextAwarePathJS + "dashboard/buscarPerfilExistente",
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 if (respuesta.encontrado === true) {
@@ -438,7 +453,7 @@ function goStep3() {
         data: {
             codigoConfirmacion: $('#code').val()
         },
-        url: "/dashboard/resultadoVerificacion",
+        url: $.contextAwarePathJS + "dashboard/resultadoVerificacion",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.resultado === true) {
@@ -487,13 +502,13 @@ function goStep5() {
 function goConsultaBuro() {
     $("body").mLoading({
         text: "Guardando los datos de la solicitud, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
         type: 'POST',
         data: $('#perfiladorForm').serialize(),
-        url: '/dashboard/estructurarSolicitud',
+        url: $.contextAwarePathJS + 'dashboard/estructurarSolicitud',
         success: function (data, textStatus) {
             $('#step5').hide();
             $('#buro').removeClass('hide');
@@ -515,12 +530,12 @@ function goConsultaBuro() {
 function verOfertas() {
     $("body").mLoading({
         text: "Obteniendo Ofertas aplicables... Esta operación puede tardar algunos minutos, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
         type: 'POST',
-        url: '/dashboard/obtenerOfertas',
+        url: $.contextAwarePathJS + 'dashboard/obtenerOfertas',
         success: function (data, textStatus) {
             mostrarOfertas(data);
         },
@@ -676,13 +691,13 @@ function consultarCodigoPostal(elemento, codigo) {
     var idCodigo = codigo;
     $("body").mLoading({
         text: "Cargando, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
         type: 'POST',
         data: 'idCodigoPostal=' + idCodigo,
-        url: '/solicitud/consultarCodigoPostal',
+        url: $.contextAwarePathJS + 'solicitud/consultarCodigoPostal',
         success: function (data, textStatus) {
             var response = eval(data);
             if (elemento === 'direccionCliente_codigoPostal') {
@@ -846,7 +861,7 @@ function controlarCampos(control) {
 function enviarSms(telefonoCelular) {
     $("body").mLoading({
         text: "Enviando SMS, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
@@ -854,7 +869,7 @@ function enviarSms(telefonoCelular) {
         data: {
             telefonoCelular: telefonoCelular
         },
-        url: "/dashboard/solicitarCodigo",
+        url: $.contextAwarePathJS + "dashboard/solicitarCodigo",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.mensajeEnviado === true) {
@@ -876,16 +891,23 @@ function consultarBuro() {
     var tarjeta = $('#tCredito').val();
     var hipoteca = $('#creditoH').val();
     var creditoAutomotriz = $('#creditoA').val();
-    if (tarjeta && hipoteca && creditoAutomotriz) {
+    var consentimiento = $('#consentimientoConsulta').val();
+    var tipoDeConsulta = 'autenticador';
+    var cadenaDeBuro = null;
+    if($.contextAwarePathJS === "/qa/") {
+       cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
+       tipoDeConsulta = $('#tipoDeConsultaBC').val();
+    }
+    if ((tipoDeConsulta === 'autenticador' && tarjeta && hipoteca && creditoAutomotriz && cadenaDeBuro) || (tipoDeConsulta === 'intl' && consentimiento)) {
         var numeroTarjeta = $('#numeroTarjeta').val();
-        if (tarjeta === 'SI' && !numeroTarjeta) {
+        if (tipoDeConsulta === 'autenticador' && tarjeta === 'SI' && !numeroTarjeta) {
             sweetAlert("Antes de continuar...", "Por favor proporcione lo últimos 4 digitos de su tarjeta de crédito.", "warning");
         } else {
             loadBar("75%");
             $.ajax({
                 type: 'POST',
-                data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz},
-                url: '/solicitud/consultarBuroDeCredito',
+                data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz, cadenaDeBuro: cadenaDeBuro, intl: (tipoDeConsulta === 'intl' ? true : false)},
+                url: $.contextAwarePathJS + 'solicitud/consultarBuroDeCredito',
                 success: function (data, textStatus) {
                     loadBar("100%");
                     var respuesta = checkIfJson(data);
@@ -1195,7 +1217,7 @@ function calcularOferta(producto, montoDeCredito) {
     console.log("Aca se mandaria llamar el recalculo de la oferta");
     $("body").mLoading({
         text: "Recalculando Oferta, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
@@ -1206,7 +1228,7 @@ function calcularOferta(producto, montoDeCredito) {
             plazo: $(('#plazoSeleccionado_' + producto)).val(),
             periodicidadId: $(('#periodicidadSeleccionada_' + producto)).val()
         },
-        url: "/dashboard/recalcularOferta",
+        url: $.contextAwarePathJS + "dashboard/recalcularOferta",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             $(('#pago_' + producto)).html("<h6>PAGO " + respuesta.periodicidad + "</h6> " + formatCurrency(respuesta.cuota.cuota, "$") + " </li>");
@@ -1254,7 +1276,7 @@ function confirmarSeleccion(posicion, producto) {
 function seleccionarOferta(posicion, producto) {
     $("body").mLoading({
         text: "Guardando Selección, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
@@ -1267,7 +1289,7 @@ function seleccionarOferta(posicion, producto) {
             plazo: $(('#plazoSeleccionado_' + producto)).val(),
             periodicidadId: $(('#periodicidadSeleccionada_' + producto)).val()
         },
-        url: "/dashboard/seleccionarOferta",
+        url: $.contextAwarePathJS + "dashboard/seleccionarOferta",
         success: function (data, textStatus) {
             $('#confirmacion').html(data);
             $('.step4').addClass('completed');
@@ -1336,4 +1358,45 @@ function fechaValida(year, month, day) {
     } else {
         return false;
     }
+}
+
+Dropzone.autoDiscover = false;
+
+function inicializarDropzone(elemento, boton, tipoDeDocumento) {
+    //Dropzone.autoDiscover = false;
+    kosmosDropzone = new Dropzone(elemento, {
+        url: $.contextAwarePathJS + "solicitud/consultarOCR",
+        uploadMultiple: true,
+        parallelUploads: 1,
+        paramName: "archivo",
+        params: {'docType': tipoDeDocumento},
+        maxFiles: 1,
+        maxFilesize: 10,
+        acceptedFiles: ".png, .jpg, .jpeg",
+        autoQueue: true,
+        createImageThumbnails: false,
+        clickable: boton
+    });
+    kosmosDropzone.on("addedfile", function (file) {
+        console.log("Archivo enviado: " + file);
+        $('.dz-preview').hide();
+    });
+    kosmosDropzone.on("success", function (file, response) {
+        var respuesta = eval(response);
+        console.log("Respuesta recibida: " + respuesta);
+        if (respuesta.exito) {
+            sweetAlert("¡Excelente!", respuesta.mensaje, "success");
+            var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+            html += '<p class="center letterspacing1.4 gray">Subido Correctamente</p>';
+            $('#uploadFormato').html(html);
+            $('#consentimientoConsulta').val('true');
+        } else {
+            sweetAlert("Oops...", respuesta.mensaje, "error");
+            this.removeAllFiles();
+        }
+    });
+    kosmosDropzone.on("error", function (file, response) {
+        console.log(response);
+        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
+    });
 }

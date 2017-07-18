@@ -47,7 +47,7 @@
             z-index: 999;
             right: 20px;
             bottom: 20px;
-            background: #2d91f6 url("/images/up-arrow.png") no-repeat center 43%;
+            background: #2d91f6 url("../images/up-arrow.png") no-repeat center 43%;
             box-shadow: 0 0 7px 0 #298df5;
             -webkit-border-radius: 30px;
             -moz-border-radius: 30px;
@@ -1362,7 +1362,8 @@
                                             <div class="overlay"></div>
                                             <div class="loginContainer creditLb">
                                                 <div class="dashBordBox">
-                                                    <form action="/dashboard/autorizarSolicitud" method="POST" class="loginForm gray font14">
+                                                    <g:urlContextAware value="/dashboard/autorizarSolicitud" var="urlForm"/>
+                                                    <form action="${urlForm}" method="POST" class="loginForm gray font14">
                                                         <input type="hidden" name="solicitudId" value="${datosSolicitud.solicitud?.id}">
                                                         <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">APROBACIÓN DE CRÉDITO</p>
                                                         <div class="solicitudTitle width166 autoMargin">

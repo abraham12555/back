@@ -1,7 +1,8 @@
 <div class="creditBtns" style="text-align: center; width: 100%; margin-left: 25%;">
     <div class="col5half col12-mob floatLeft">
         <center>
-            <a href="/dashboard/perfilarCliente">
+            <g:urlContextAware value="/dashboard/perfilarCliente" var="urlPerfilarCliente"/>
+            <a href="${urlPerfilarCliente}">
                 <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">PERFILAR OTRO CLIENTE</div>
             </a>
         </center>

@@ -103,9 +103,9 @@
 
 
 
-
+<g:urlContextAware value="/dashboard/getUsers" var="urlGetUsers"/>
 <script>
-$.getUsers = "/dashboard/getUsers";
+$.getUsers = "${urlGetUsers}";
 $(document).ready(function () {
     var idPaginacion = "paginationSolicitudesBusqueda";
      var idPaginacion = 'paginationSolicitudesBusqueda';

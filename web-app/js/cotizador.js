@@ -328,7 +328,7 @@ function initProduct(id) {
         data: {
             id: id
         },
-        url: "/cotizador/obtenerProducto",
+        url: $.contextAwarePathJS + "cotizador/obtenerProducto",
         success: function (jsonResponse, textStatus) {
             var data = checkIfJson(jsonResponse);
             // Sustituir el contenido necesario
@@ -353,7 +353,7 @@ function obtenerPasos(rubro, paso, elm) {
             rubroId: rubro,
             ef: $('#entidadFinancieraId').val()
         },
-        url: "/cotizador/obtenerPasos",
+        url: $.contextAwarePathJS + "cotizador/obtenerPasos",
         success: function (data, textStatus) {
             $('#contenedorDePasos').html('');
             $('#contenedorDePasos').html(data);
@@ -380,7 +380,7 @@ function obtenerProductos(tipoDeProductoId) {
         data: {
             tipoDeProductoId: tipoDeProductoId
         },
-        url: "/cotizador/obtenerProductos",
+        url: $.contextAwarePathJS + "cotizador/obtenerProductos",
         success: function (data, textStatus) {
             $('#productosList').html('');
             $('#productosList').html(data);
@@ -399,7 +399,7 @@ function obtenerModelos(productoId) {
         data: {
             productoId: productoId
         },
-        url: "/cotizador/obtenerModelos",
+        url: $.contextAwarePathJS + "cotizador/obtenerModelos",
         success: function (data, textStatus) {
             $('#modelosList').html('');
             $('#modelosList').html(data);
@@ -419,7 +419,7 @@ function obtenerColores(modeloId) {
         data: {
             modeloId: modeloId
         },
-        url: "/cotizador/obtenerColores",
+        url: $.contextAwarePathJS + "cotizador/obtenerColores",
         success: function (data, textStatus) {
             $('#coloresList').html('');
             $('#coloresList').html(data);
@@ -443,7 +443,7 @@ function obtenerSeguros(modeloId) {
         data: {
             modeloId: modeloId
         },
-        url: "/cotizador/obtenerSeguros",
+        url: $.contextAwarePathJS + "cotizador/obtenerSeguros",
         success: function (data, textStatus) {
             $('#segurosList').html('');
             $('#segurosList').html(data);
@@ -464,7 +464,7 @@ function identificarProducto(rubro, documento, atraso) {
             documentoId: documento,
             atrasoEnPagos: atraso
         },
-        url: "/cotizador/identificarProducto",
+        url: $.contextAwarePathJS + "cotizador/identificarProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -500,7 +500,7 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
             documentoId: documento,
             monto: montoSeleccionado
         },
-        url: "/cotizador/obtenerPlazosProducto",
+        url: $.contextAwarePathJS + "cotizador/obtenerPlazosProducto",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             var html = "";
@@ -717,7 +717,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
             plazoElegido: plazo,
             periodicidadId: periodicidad
         },
-        url: "/cotizador/calcularPagos",
+        url: $.contextAwarePathJS + "cotizador/calcularPagos",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.exito) {
@@ -815,7 +815,7 @@ function cargarImagen(tipo, identificador) {
     $.ajax({
         type: 'POST',
         data: (tipo + '=' + identificador),
-        url: "/cotizador/cargarImagen",
+        url: $.contextAwarePathJS + "cotizador/cargarImagen",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.extension !== undefined && respuesta.base64 !== undefined) {
@@ -836,7 +836,7 @@ function cargarImagen(tipo, identificador) {
                     opacity: 0
                 }, 'fast', function () {
                     $(this).css({
-                        'background-image': 'url("/images/no-disponible.png")',
+                        'background-image': 'url($.contextAwarePathJS + "images/no-disponible.png")',
                         'background-size': '50%',
                         'background-position': 'center'
                     }).animate({
@@ -854,7 +854,7 @@ function cargarImagen(tipo, identificador) {
 function esperePorFavor() {
     $("body").mLoading({
         text: "Cargando, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
 }
