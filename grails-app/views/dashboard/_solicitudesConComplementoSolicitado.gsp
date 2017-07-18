@@ -39,7 +39,9 @@
     </div>
 </section>
 <script>
-$.getSolicitudesBusqueda = "/dashboard/getSolicitudesBusqueda";
+    
+<g:urlContextAware value="/dashboard/getSolicitudesBusqueda" var="urlSolicitudesBusqueda"/>
+$.getSolicitudesBusqueda = "${urlSolicitudesBusqueda}";
 $(document).ready(function () {
    var fechaInicio = $("#fechaInicioComplementoSolicitado").val();
     var fechaFinal = $("#fechaFinalComplementoSolicitado").val();

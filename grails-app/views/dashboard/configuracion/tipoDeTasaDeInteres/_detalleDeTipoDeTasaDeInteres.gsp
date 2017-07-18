@@ -1,7 +1,8 @@
 <div class="idLightbox hide" id="modalDetalleTipoDeTasaDeInteres">  
     <div class="overlay"></div>
     <div class="whiteContainer detalleProducto lightboxPos darkBluetitle font14 fontWeight400 letterspacing1 justify">
-       <form id="formAltaUsuario" action="/dashboard/guardarTipoDeTasaDeInteres" method="POST" class="loginForm gray font14"> 
+       <g:urlContextAware value="/dashboard/guardarTipoDeTasaDeInteres" var="urlFormAltaUsuario"/>
+       <form id="formAltaUsuario" action="${urlFormAltaUsuario}" method="POST" class="loginForm gray font14"> 
         <div class="width990 autoMargin solicitudWhiteBox clearFix paddingBottom20">
            <div class="clearFix width990 autoMargin borderGrayBottom">
                 <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10">DETALLE TIPO DE TASA DE INTERES: ${tipoDeTasaDeInteres.nombre.toUpperCase()}</h1></center>

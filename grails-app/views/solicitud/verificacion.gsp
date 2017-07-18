@@ -60,7 +60,9 @@
 
         </div>
         <div class="border1"></div>
-        <form id="formAltaUsuario" action="/solicitud/resume" method="POST" class="loginForm gray font14">
+       <g:urlContextAware value="/solicitud/resume" var="urlResume"/>
+
+        <form id="formAltaUsuario" action='${urlResume}' method="POST" class="loginForm gray font14">
         <div class="docStep">
             <div class="col12 col10-tab col12-mob autoMargin marginTop80 marginBottom80">
                 <div class="paddingTop20 paddingBottom20">

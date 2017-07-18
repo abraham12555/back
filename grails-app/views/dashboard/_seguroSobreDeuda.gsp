@@ -11,8 +11,9 @@
 <g:render template="configuracion/seguroSobreDeuda/altaSeguroSobreDeuda"/>
 <div id="detalleSeguroSobreDeuda"></div>
 
+<g:urlContextAware value="/dashboard/getSegurosSobreDeuda" var="urlSegurosSobreDeuda"/>
 <script>
-$.getSegurosSobreDeuda = "/dashboard/getSegurosSobreDeuda";
+$.getSegurosSobreDeuda = "${urlSegurosSobreDeuda}";
  
 $(document).ready(function () {
     var idPaginacion = "paginationSegurosSobreDeuda";

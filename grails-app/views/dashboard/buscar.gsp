@@ -102,8 +102,9 @@
 
 
 
-
+<g:urlContextAware value="/dashboard/getUsers" var="urlGetUsers"/>
 <script>
+$.getUsers = "${urlGetUsers}";
 $(document).ready(function () {
     var idPaginacion = "paginationSolicitudesBusqueda";
         var totalPages = $('#totalPages').val();

@@ -44,7 +44,7 @@
             z-index: 999;
             right: 20px;
             bottom: 20px;
-            background: #2d91f6 url("/images/up-arrow.png") no-repeat center 43%;
+            background: #2d91f6 url("../images/up-arrow.png") no-repeat center 43%;
             box-shadow: 0 0 7px 0 #298df5;
             -webkit-border-radius: 30px;
             -moz-border-radius: 30px;

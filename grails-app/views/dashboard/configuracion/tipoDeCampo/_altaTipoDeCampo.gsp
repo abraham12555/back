@@ -1,7 +1,8 @@
 <div class="idLightbox hide" id="modalAltaTipoDeCampo">
     <div class="overlay"></div>
     <div class="whiteContainer lightboxPos altaUsuario darkBluetitle font14 fontWeight400 letterspacing1 justify">
-        <form id="formAltaUsuario" action="/dashboard/registrarTipoDeCampo" method="POST" class="loginForm gray font14">
+        <g:urlContextAware value="/dashboard/registrarTipoDeCampo" var="urlFormAltaUsuario"/>
+        <form id="formAltaUsuario" action="${urlFormAltaUsuario}" method="POST" class="loginForm gray font14">
             <div class="clearFix width990 autoMargin">
                 <center><h1 class="font18 fontWeight600 darkBluetitle marginLeft20 marginTop10">ALTA DE TIPO CAMPO</h1></center>
             </div>

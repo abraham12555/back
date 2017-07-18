@@ -32,6 +32,10 @@
         <g:external dir="css" file="perfilador.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="vanilla-notify.css" title="text/css" rel="stylesheet" />
         <g:external dir="js" file="jquery-3.0.0.min.js" />
+        <g:urlContextAware value="/" var="urlContextAware"/>
+        <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+        </script>
         <g:external dir="js" file="sweetalert.min.js" />
         <g:external dir="js" file="jasny-bootstrap.min.js" />
         <g:external dir="js" file="dropzone.js" />
@@ -61,6 +65,8 @@
         <g:layoutHead/>
     </head>
     <body>
+        <g:urlContextAware value="/dashboard/editarPerfil" var="urlEditarPerfil"/>
+        <g:urlContextAware value="/logout" var="urlLogout"/>
         <header class="appHeader" style="border-top: solid 5px ${session.configuracion?.colorBordeSuperior}; background-color: ${session.configuracion?.colorEncabezado};">
             <div class="container clearFix">
                 <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file: session.configuracion?.rutaLogotipo )}" alt="Logo" title="Logo" />
@@ -74,8 +80,8 @@
                         <div class="dropBox floatLeft marginTop20 marginLeft5 desktop">
                             <i class="fa fa-angle-down paddingTop4 paddingRight5 paddingLeft5 dropbtn" aria-hidden="true" onclick="mostrarOpciones();"></i>
                             <div id="opcionesUsuario" class="dropdown-content">
-                                <a href="/dashboard/editarPerfil">Editar Perfil</a>
-                                <a href="/logout">Salir</a>
+                                <a href="${urlEditarPerfil}">Editar Perfil</a>
+                                <a href="${urlLogout}">Salir</a>
                             </div>
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
@@ -238,6 +244,8 @@
 <g:layoutBody/>
 
 	<script>
+<g:urlContextAware value="/dashboard" var="urlAbreModal"/>
+$.urlAbreModal = "${urlAbreModal}";
 			(function(){
 
 
@@ -387,14 +395,14 @@
 					 						closeable:true,
 					 						padding:false,
 					 						cache:false,
-					 						url:'/dashboard/',
+					 						url:$.urlAbreModal,
 					 						type:'async',
 					 						content:function(data){
+<g:urlContextAware value="/dashboard/buscar" var="urlBusquedaPerfilador"/>
                                                                                         var html='';
-					 					   
-                                                                                                     html += "<form action='/dashboard/buscar' method='POST' class='form-horizontal' id='busquedaForm'>";
-                                                                                                     html += "<div class='width990 autoMargin solicitudWhiteBox clearFix paddingBottom20'>";
-                                                                 html += "<div class='formContainer'>";
+                html += "<form action='${urlBusquedaPerfilador}' method='POST' class='form-horizontal' id='busquedaForm'>";
+                html += "<div class='width990 autoMargin solicitudWhiteBox clearFix paddingBottom20'>";
+                html += "<div class='formContainer'>";
                 html += "<label class = 'darkBluetitle'>FOLIO</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='folio' id='folioBusqueda' type='text'  placeholder='Folio' />";
                 html += "<label class = 'darkBluetitle' >NOMBRE</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='nombre' id='nombreBusqueda' type='text'  placeholder='Nombre' />";
                  html += "<label class = 'darkBluetitle' >APELLIDOS</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='apellidoPaterno' id='nombreBusqueda' type='text'  placeholder='Apellido Paterno' />";

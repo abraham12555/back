@@ -1,7 +1,8 @@
 <div class="overlay"></div>
 <div class="loginContainer creditLb">
     <div class="dashBordBox">
-        <form action="/dashboard/registrar" method="POST" class="loginForm gray font14">
+        <g:urlContextAware value="/dashboard/registrar" var="urlRegistrar"/>
+        <form action="${urlRegistrar}" method="POST" class="loginForm gray font14">
             <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">REGISTRAR NUEVA ENTIDAD FINANCIERA</p>
             <div style="width: 90%;" class="solicitudTitle autoMargin">
                 <p class="center font14 lightGray">Proporcione el nombre de la Entidad Financiera a Registrar</p>

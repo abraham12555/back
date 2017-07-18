@@ -11,8 +11,9 @@
 <g:render template="configuracion/producto/altaProducto"/>
 <div id="detalleProducto"></div>
 
+<g:urlContextAware value="/dashboard/getProductos" var="urlProductos"/>
 <script>
-$.getProductos = "/dashboard/getProductos";
+$.getProductos = "${urlProductos}";
  
 $(document).ready(function () {
     var idPaginacion = "paginationProductos";

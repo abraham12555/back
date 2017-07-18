@@ -99,6 +99,10 @@
             });
             });
         </script>
+        <g:urlContextAware value="/" var="urlContextAware"/>
+        <script type="text/javascript">
+            $.contextAwarePathJS = "${urlContextAware}";
+        </script>
     </head>
     <body>
 

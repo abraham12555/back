@@ -10,7 +10,6 @@
 // if (System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
-grails.app.context = "/"
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
@@ -89,10 +88,11 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+        grails.app.context = "/qa"
     }
     production {
         grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
+        grails.app.context = "/"
     }
 }
 

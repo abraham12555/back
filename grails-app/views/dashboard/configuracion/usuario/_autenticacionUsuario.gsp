@@ -10,7 +10,8 @@
     <div class="overlay"></div>
     <div class="loginContainer creditLb">
         <div class="dashBordBox">
-            <form action="/dashboard/autenticarUsuario" method="POST" class="loginForm gray font14" id="formUserAuthentication">
+            <g:urlContextAware value="/dashboard/autenticarUsuario" var="urlFormUserAuthentication"/>
+            <form action="${urlFormUserAuthentication}" method="POST" class="loginForm gray font14" id="formUserAuthentication">
                 <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">ASIGNACIÓN DE ROLES</p>
                 <div class="solicitudTitle autoMargin">
                     <p class="center font14 lightGray">Para modificar el rol del usuario ingresa tu contraseña</p>

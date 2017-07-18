@@ -15,9 +15,9 @@
 <div id="elRender"></div>
 
 
-
+<g:urlContextAware value="/dashboard/getPasosSolicitud" var="urlPasosSolicitud"/>
 <script>
-$.getPasosSolicitud = "/dashboard/getPasosSolicitud";
+$.getPasosSolicitud = "${urlPasosSolicitud}";
 $(document).ready(function () {
     var idPaginacion = "paginationPasosSolicitud";
 	$('#'+idPaginacion).on('click', 'a.page', function (event) {

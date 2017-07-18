@@ -176,7 +176,7 @@ function submitPhone() {
                     email: $('#email').val(),
                     nombreCompleto: $('#first_name').val()
                 },
-                url: "/cotizador/solicitarCodigo",
+                url: $.contextAwarePathJS + "cotizador/solicitarCodigo",
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
                     console.log(respuesta);
@@ -271,7 +271,7 @@ function submitCodigo() {
                 data: {
                     codigoConfirmacion: $('#codigo').val()
                 },
-                url: "/cotizador/resultadoVerificacion",
+                url: $.contextAwarePathJS + "cotizador/resultadoVerificacion",
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
                     if (respuesta.resultado === true) {

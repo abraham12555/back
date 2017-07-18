@@ -936,6 +936,10 @@ class SolicitudController {
             respuesta = [:]
             respuesta.error = false
             ocr = false
+        } else if (params.docType == "consentimientoConsultaBC") {
+            respuesta = [:]
+            respuesta.error = false
+            ocr = false
         }
         if((!respuesta?.error || respuesta?.vigente == true) && !respuesta?.motivosRechazo) {
             if(ocr){
@@ -965,6 +969,7 @@ class SolicitudController {
     }
     
     def consultarBuroDeCredito(){
+        //println URLDecoder.decode(params.cadenaDeBuro, "UTF-8")
         ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
         println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
         println "session.identificadores: " + session.identificadores
@@ -1451,10 +1456,11 @@ class SolicitudController {
     }
     
     def printReport(){
+        println params
         def mapa = []
         def respuesta = [:]
         def configuracion = session.configuracion
-        def productoSolicitud = ProductoSolicitud.get(params.idProductoSolicitud as long)
+        def productoSolicitud = ProductoSolicitud.get(params.idProductoSolicitudPrint as long)
         def resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: productoSolicitud.solicitud)
         respuesta.folio = ("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')
         respuesta.montoDelCredito = productoSolicitud.montoDelCredito
@@ -1479,6 +1485,7 @@ class SolicitudController {
         respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
         respuesta.email = session.cotizador.emailCliente
         mapa << respuesta
+        params._format= "PDF"
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
 }

@@ -613,13 +613,13 @@ function consultarCodigoPostal(elemento, codigo) {
     var idCodigo = codigo;
     $("body").mLoading({
         text: "Cargando, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
         type: 'POST',
         data: 'idCodigoPostal=' + idCodigo,
-        url: '/solicitud/consultarCodigoPostal',
+        url: $.contextAwarePathJS + 'solicitud/consultarCodigoPostal',
         success: function (data, textStatus) {
             var response = eval(data);
             if (elemento === 'direccionCliente_codigoPostal') {
@@ -1224,7 +1224,7 @@ function cargarOpcionesDeContacto(opcion) {
         data: {
             opcionElegida: opcion
         },
-        url: "/solicitud/obtenerOpciones",
+        url: $.contextAwarePathJS + "solicitud/obtenerOpciones",
         success: function (data, textStatus) {
             var resultado = eval(data);
             var html = "";
@@ -1356,7 +1356,7 @@ function avanzarPaso(paso) {
     $.ajax({
         type: 'POST',
         data: $('#formFormulario').serialize(),
-        url: '/solicitud/cambiarPaso',
+        url: $.contextAwarePathJS + 'solicitud/cambiarPaso',
         success: function (data, textStatus) {
             var respuesta = checkIfJson(data);
             if (respuesta.error) {
@@ -1602,7 +1602,7 @@ function loginInteractive() {
     $.ajax({
         type: 'POST',
         data: 'data=' + JSON.stringify(data),
-        url: '/solicitud/loginInteractive',
+        url: $.contextAwarePathJS + 'solicitud/loginInteractive',
         success: function (data, textStatus) {
             var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
@@ -1650,7 +1650,7 @@ function authenticate() {
     $.ajax({
         type: 'POST',
         data: 'data=' + JSON.stringify(data),
-        url: '/solicitud/authenticate',
+        url: $.contextAwarePathJS + 'solicitud/authenticate',
         success: function (data, textStatus) {
             var respuesta = checkIfJson(data);
             if ('error_class' in respuesta) {
@@ -1835,7 +1835,7 @@ function consultarBancos() {
             $.ajax({
                 type: 'POST',
                 data: 'banco=' + banco + "&cliente=" + cliente + "&clave=" + clave + "&token=" + token + "&intentos=" + intentos,
-                url: '/solicitud/consultaBancos',
+                url: $.contextAwarePathJS + 'solicitud/consultaBancos',
                 success: function (data, textStatus) {
                     var respuesta = checkIfJson(data);
                     restartLoadBar();
@@ -1872,7 +1872,11 @@ function consultarBuro() {
     var tarjeta = $('#tCredito').val();
     var hipoteca = $('#creditoH').val();
     var creditoAutomotriz = $('#creditoA').val();
-    if (tarjeta && hipoteca && creditoAutomotriz) {
+    var cadenaDeBuro = null;
+    if($.contextAwarePathJS === "/qa/") {
+       cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
+    }
+    if (tarjeta && hipoteca && creditoAutomotriz && cadenaDeBuro) {
         var numeroTarjeta = $('#numeroTarjeta').val();
         if (tarjeta === 'SI' && !numeroTarjeta) {
             sweetAlert("Antes de continuar...", "Por favor proporcione lo últimos 4 digitos de su tarjeta de crédito.", "warning");
@@ -1880,8 +1884,8 @@ function consultarBuro() {
             loadBar("75%");
             $.ajax({
                 type: 'POST',
-                data: 'tarjeta=' + tarjeta + "&numeroTarjeta=" + numeroTarjeta + "&hipoteca=" + hipoteca + "&creditoAutomotriz=" + creditoAutomotriz,
-                url: '/solicitud/consultarBuroDeCredito',
+                data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz, cadenaDeBuro: cadenaDeBuro},
+                url: $.contextAwarePathJS + 'solicitud/consultarBuroDeCredito',
                 success: function (data, textStatus) {
                     loadBar("100%");
                     var respuesta = checkIfJson(data);
@@ -2009,7 +2013,7 @@ function guardarFoto(cara) {
     $.ajax({
         type: 'POST',
         data: 'img_data=' + $("#imagenCapturada" + cara).val() + "&cara=" + cara,
-        url: '/solicitud/guardarFoto',
+        url: $.contextAwarePathJS + 'solicitud/guardarFoto',
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.status === 200) {
@@ -2238,7 +2242,7 @@ function enviarShortUrl() {
         data: {
             opcionElegida: documento
         },
-        url: "/solicitud/enviarShortUrl",
+        url: $.contextAwarePathJS + "solicitud/enviarShortUrl",
         success: function (data, textStatus) {
             var resultado = eval(data);
             if (resultado.mensajeEnviado) {
@@ -2265,7 +2269,7 @@ Dropzone.autoDiscover = false;
 function inicializarDropzone(elemento, boton) {
 
     var kosmosDropzone = new Dropzone(elemento, {
-        url: "/solicitud/consultarOCR",
+        url: $.contextAwarePathJS + "solicitud/consultarOCR",
         uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",
@@ -2719,7 +2723,7 @@ function calcularOferta(producto, montoDeCredito) {
     console.log("Aca se mandaria llamar el recalculo de la oferta");
     $("body").mLoading({
         text: "Recalculando Oferta, espere por favor...",
-        icon: "/images/spinner.gif",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });
     $.ajax({
@@ -2730,7 +2734,7 @@ function calcularOferta(producto, montoDeCredito) {
             plazo: $(('#plazoSeleccionado_' + producto)).val(),
             periodicidadId: $(('#periodicidadSeleccionada_' + producto)).val()
         },
-        url: "/solicitud/recalcularOferta",
+        url: $.contextAwarePathJS + "solicitud/recalcularOferta",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             $(('#pago_' + producto)).html("<h6>PAGO " + respuesta.periodicidad + "</h6> " + formatCurrency(respuesta.cuota.cuota, "$") + " </li>");
@@ -2787,7 +2791,7 @@ function seleccionarOferta(posicion, producto) {
             plazo: $(('#plazoSeleccionado_' + producto)).val(),
             periodicidadId: $(('#periodicidadSeleccionada_' + producto)).val()
         },
-        url: "/solicitud/seleccionarOferta",
+        url: $.contextAwarePathJS + "solicitud/seleccionarOferta",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.error) {
@@ -2872,7 +2876,7 @@ function verificarCodigo() {
         data: {
             codigoConfirmacion: $('#codigoVerificacion').val()
         },
-        url: "/cotizador/resultadoVerificacion",
+        url: $.contextAwarePathJS + "cotizador/resultadoVerificacion",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.resultado === true) {
@@ -3005,7 +3009,7 @@ function verificarSolicitudSms(telefonoCelular,token) {
         data: {
             telefonoCelular: telefonoCelular,token:token
         },
-        url: "/solicitud/verificarSolicitudSms",
+        url: $.contextAwarePathJS + "solicitud/verificarSolicitudSms",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.ok === true) {
@@ -3037,7 +3041,7 @@ function enviarSms(telefonoCelular) {
         data: {
             telefonoCelular: telefonoCelular
         },
-        url: "/cotizador/solicitarCodigoShorUrl",
+        url: $.contextAwarePathJS + "cotizador/solicitarCodigoShorUrl",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.mensajeEnviado === true) {
@@ -3066,7 +3070,7 @@ function resultadoVerificacion(codigoConfirmacion) {
         data: {
             codigoConfirmacion: codigoConfirmacion
         },
-        url: "/cotizador/resultadoVerificacion",
+        url: $.contextAwarePathJS + "cotizador/resultadoVerificacion",
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.resultado === true) {

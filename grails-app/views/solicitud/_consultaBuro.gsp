@@ -74,7 +74,16 @@
                 <input type="hidden" class="formValues textUpper" name="creditoA" id="creditoA" value="${generales?.creditoA}">
             </div>
         </div>
-
+        <g:if env="test">
+        <!-- TEMPORAL -->
+        <div class="clearFix marginBottom30">
+            <div class="floatLeft col12 col12-tab col12-mob clearFix marginBottom20">
+                <p class="correctaBoxLabel">INTRODUZCA LA CADENA DE BURÓ DE CRÉDITO PARA EJECUTAR LA PRUEBA</p>
+                <textarea class="datoPerfilador" style="width:100%; height: 200px;" name="cadenaBuroTest" id="cadenaBuroTest" ></textarea>
+            </div>
+        </div>
+        <!-- TEMPORAL -->
+       </g:if>
         <div id="divAutorizacionBuro" class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
             <p class="font18 gray letterspacing1 justify">
                 Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">

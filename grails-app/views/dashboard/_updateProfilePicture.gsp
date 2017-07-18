@@ -3,7 +3,8 @@
 <div class="idLightbox hide" id="updateProfilePicture">
     <div class="overlay"></div>
     <div class="lightboxPos altaUsuario darkBluetitle font14 fontWeight400 justify">
-        <form action="/dashboard/saveProfilePicture" method="POST" class="loginForm gray font14" id="updateProfilePicture-form">
+        <g:urlContextAware value="/dashboard/saveProfilePicture" var="urlForm"/>
+        <form action="${urlForm}" method="POST" class="loginForm gray font14" id="updateProfilePicture-form">
             <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15">Cambiar foto de perfil</p>
             <div class="formContainer">
                 <div class="image-editor">

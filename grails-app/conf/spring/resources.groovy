@@ -6,9 +6,14 @@ import la.kosmos.app.RegistrationCodeStrategyService
 import la.kosmos.app.security.AuthenticationFailureListener
 import la.kosmos.app.security.AuthenticationSuccessEventListener
 import la.kosmos.app.security.UserLoginDetailsService
+import la.kosmos.rest.SmsMockService
+import la.kosmos.rest.SmsService
+
 import la.kosmos.app.security.CustomLoginSuccessHandler
 import la.kosmos.app.security.CustomPreAuthenticationChecks
 import la.kosmos.app.security.CustomPostAuthenticationChecks
+import la.kosmos.app.security.CustomPostAuthenticationChecks
+import grails.util.Environment;
 
 beans = {
     authenticationSuccessHandler(CustomLoginSuccessHandler) {
@@ -45,5 +50,22 @@ beans = {
 
     uiMailStrategy(MailStrategyService){
         mailService = ref('mailService')
+    }
+    
+    switch(Environment.current) {
+    case Environment.PRODUCTION:
+        smsService(SmsService) {
+        }
+        break
+
+    case Environment.DEVELOPMENT:
+        smsService(SmsMockService) {
+        }
+        break
+        
+    case Environment.TEST:
+        smsService(SmsMockService) {
+        }
+        break
     }
 }

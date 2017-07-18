@@ -1,7 +1,8 @@
 <div class="creditBtns" style="text-align: center; width: 100%; margin-left: 25%;">
     <div class="col5half col12-mob floatLeft">
         <center>
-            <a href="/dashboard/perfilarCliente">
+            <g:urlContextAware value="/dashboard/perfilarCliente" var="urlPerfilarCliente"/>
+            <a href="${urlPerfilarCliente}">
                 <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">PERFILAR OTRO CLIENTE</div>
             </a>
         </center>
@@ -13,13 +14,19 @@
     <p class="felicidadesP1">LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE</p>
     <br/>
 </div>
-<div class="container">
-    <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-            <a style="color:white;text-decoration:none;" href="/dashboard/printReport?_format=PDF&_name=Mi_Solicitud_PERFILADOR&_file=reporte10&idProductoSolicitud=${ofertaSeleccionada?.productoSolicitud?.id}">
-                IMPRIMIR SOLICITUD <i class="fa fa-print"></i>
-            </a></strong>
-    </div>
-</div>
+        <div class="container">
+            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
+                    <g:jasperReport
+                        controller="dashboard"
+                        jasper="reporte10"
+                        action="printReport"
+                        format="PDF"
+                        name="Mi_Solicitud ">
+                        <input type="hidden" name="idProductoSolicitudPrintPerfilador" value='${ofertaSeleccionada?.productoSolicitud?.id}'/> 
+                    </g:jasperReport>
+                </strong>
+            </div>
+        </div>
 <div class="container containerBox">
     <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
         <div class="titles8">

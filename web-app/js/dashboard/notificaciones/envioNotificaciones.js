@@ -1,7 +1,7 @@
-$.getCronList = "/notificaciones/getCronList";
-$.loadCronInformation = "/notificaciones/loadCronInformation";
-$.loadDataCron = "/notificaciones/loadDataCron";
-$.deleteCron = "/notificaciones/deleteCron";
+$.getCronList = $.contextAwarePathJS +"notificaciones/getCronList";
+$.loadCronInformation = $.contextAwarePathJS + "notificaciones/loadCronInformation";
+$.loadDataCron = $.contextAwarePathJS +"notificaciones/loadDataCron";
+$.deleteCron = $.contextAwarePathJS +"notificaciones/deleteCron";
 
 $(document).ready(function () {
     $("#hours-cron").timepicker({

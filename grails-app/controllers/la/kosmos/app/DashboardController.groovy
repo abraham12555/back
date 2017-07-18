@@ -30,7 +30,6 @@ class DashboardController {
         //def solicitudes = dashboardService.listaGeneralDeSolicitudes()
         //def temporales = dashboardService.listaDeSolicitudesTemporales()
         def entidadFinanciera = session.usuario.entidadFinanciera
-
         def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
         //linea agregada para obtener el usuario
         session.usuarioNombre= springSecurityService.currentUser.nombre
@@ -88,7 +87,7 @@ class DashboardController {
         session.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
         def informes = []
         if(params.periodoTiempo && params.template) {
-            informes = reporteService.obtenerInformesAnalitica(params.template,  (params.periodoTiempo as int) , params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
+            informes = reporteService.obtenerInformesAnalitica(params.template, (params.periodoTiempo ? (params.periodoTiempo as int) : null), params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
         }
     
         if(params.template == "productosDiscriminados"){
@@ -2413,15 +2412,15 @@ class DashboardController {
     def getInformes() {
         session.entidadFinanciera = springSecurityService.currentUser.entidadFinanciera
         def informes = []
-        
         if(params.temporalidad && params.grafica) {
-            informes = reporteService.obtenerInformesAnalitica(params.grafica,  (params.temporalidad as int) , params.fechaInicio, params.fechaFinal,session.entidadFinanciera)
+            informes = reporteService.obtenerInformesAnalitica(params.grafica,  (params.temporalidad ? (params.temporalidad as int) : null) , params.fechaInicio, params.fechaFinal, session.entidadFinanciera)
         }
         render informes as JSON
     }
-        def printReport(){
+
+    def printReport(){
         def configuracion = session.configuracion
-        def productoSolicitud = ProductoSolicitud.get(params.idProductoSolicitud as long)
+        def productoSolicitud = ProductoSolicitud.get(params.idProductoSolicitudPrintPerfilador as long)
         def resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: productoSolicitud.solicitud)
         def mapa = []
         def respuesta = [:]
@@ -2448,6 +2447,7 @@ class DashboardController {
         respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
         respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
         mapa << respuesta
+        params._format= "PDF"
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
 }

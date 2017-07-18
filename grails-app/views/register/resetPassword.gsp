@@ -24,7 +24,8 @@
                         ${message}
                     </div>
                 </g:if>
-                <form class="loginForm gray font14" action="/register/resetPassword" id="updatePassword" method="POST" autocomplete="off">
+                    <g:urlContextAware value="/register/resetPassword" var="urlUpdatePassword"/>
+                <form class="loginForm gray font14" action="${urlUpdatePassword}" id="updatePassword" method="POST" autocomplete="off">
                     <g:hiddenField name='t' value='${token}'/>
                     <p class="loginTitle darkBluetitle textUpper letterspacing1 center fontWeight700">Restablecimiento de contraseña</p>
 

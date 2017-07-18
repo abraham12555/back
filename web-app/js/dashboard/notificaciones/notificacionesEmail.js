@@ -1,7 +1,7 @@
-$.getEmailTemplates = "/notificaciones/getEmailTemplates";
-$.loadDataEmailTemplate = "/notificaciones/loadDataEmailTemplate";
-$.viewEmailTemplateDetails = "/notificaciones/viewTemplateDetails";
-$.deleteEmailTemplate = "/notificaciones/deleteEmailTemplate";
+$.getEmailTemplates = $.contextAwarePathJS + "notificaciones/getEmailTemplates";
+$.loadDataEmailTemplate = $.contextAwarePathJS + "notificaciones/loadDataEmailTemplate";
+$.viewEmailTemplateDetails = $.contextAwarePathJS + "notificaciones/viewTemplateDetails";
+$.deleteEmailTemplate = $.contextAwarePathJS + "notificaciones/deleteEmailTemplate";
 
 $(document).ready(function () {
     $('#newEmailTemplate-btn').on('click', function (event) {

@@ -7,14 +7,19 @@
             <p class="felicidadesP1">TU CRÉDITO HA SIDO PRE-AUTORIZADO</p>
             <br/>
         </div>
-         <div class="container">
+        <div class="container">
             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <a style="color:white;text-decoration:none;" href="/solicitud/printReport?_format=PDF&_name=Mi_Solicitud_${configuracion?.nombreComercial?.toUpperCase()}&_file=reporte10&idProductoSolicitud=${productoSolicitud?.id}">
-                        IMPRIME TU SOLICITUD <i class="fa fa-print"></i>
-                    </a></strong>
+                    <g:jasperReport
+                        controller="solicitud"
+                        jasper="reporte10"
+                        action="printReport"
+                        format="PDF"
+                        name="Mi_Solicitud ">
+                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                    </g:jasperReport>
+                </strong>
             </div>
         </div>
-
         <div class="container containerBox">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
                 <div class="titles8">
@@ -64,10 +69,10 @@
                         en www.libertad.com.mx . Recuerde que Libertad Servicios Financieros nunca le solicitará que proporcione ningún tipo de información confidencial mediante un correo 
                         electrónico o mediante una liga que lo lleve a nuestra página de Internet.
                     </p>
-                    
-                     <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
-                            verificar la carpeta de "Correo no deseado" (SPAM).</p>
-                        
+
+                    <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                        verificar la carpeta de "Correo no deseado" (SPAM).</p>
+
                 </div>
             </div>
         </div>
@@ -81,11 +86,17 @@
                 <span class="formTitleColor">${productoSolicitud?.solicitud?.sucursal?.toString()?.toUpperCase()}</span> 
                 PARA CONTINUAR CON EL TRÁMITE Y BRINDARTE MAYOR INFORMACIÓN DE NUESTROS PRODUCTOS DE CRÉDITO, AHORRO E INVERSIÓN.</p>
         </div>
-         <div class="container">
+        <div class="container">
             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <a style="color:white;text-decoration:none;" href="/solicitud/printReport?_format=PDF&_name=Mi_Solicitud_${configuracion?.nombreComercial?.toUpperCase()}&_file=reporte10&idProductoSolicitud=${productoSolicitud?.id}">
-                        IMPRIME TU SOLICITUD <i class="fa fa-print"></i>
-                    </a></strong>
+                    <g:jasperReport
+                        controller="solicitud"
+                        jasper="reporte10"
+                        action="printReport"
+                        format="PDF"
+                        name="Mi_Solicitud ">
+                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                    </g:jasperReport>
+                </strong>
             </div>
         </div>
         <div class="container containerBox marginTop25">
@@ -132,9 +143,9 @@
                         <p class="formTitleColor">LIBERTAD@LIBERTAD.COM.MX</p>
                         <p class="formTitleColor">TEL. 01800 714 02 74</p>
                         <p class="formTitleColor">NUESTRO HORARIO DE ATENCIÓN ES DE LUNES A VIERNES DE 9:00 A 19:00 HORAS Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.</p>
-                     <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                        <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
                             verificar la carpeta de "Correo no deseado" (SPAM).</p>
-                        
+
                     </div>
                 </div>
                 <br />
@@ -161,9 +172,15 @@
         </div>
         <div class="container">
             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <a style="color:white;text-decoration:none;" href="/solicitud/printReport?_format=PDF&_name=Mi_Solicitud_${configuracion?.nombreComercial?.toUpperCase()}&_file=reporte10&idProductoSolicitud=${productoSolicitud?.id}">
-                        IMPRIME TU SOLICITUD <i class="fa fa-print"></i>
-                    </a></strong>
+                    <g:jasperReport
+                        controller="solicitud"
+                        jasper="reporte10"
+                        action="printReport"
+                        format="PDF"
+                        name="Mi_Solicitud ">
+                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                    </g:jasperReport>
+                </strong>
             </div>
         </div>
         <div class="container containerBox marginTop25">
@@ -210,7 +227,7 @@
                         <p class="formTitleColor">LIBERTAD@LIBERTAD.COM.MX</p>
                         <p class="formTitleColor">TEL. 01800 714 02 74</p>
                         <p class="formTitleColor">NUESTRO HORARIO DE ATENCIÓN ES DE LUNES A VIERNES DE 9:00 A 19:00 HORAS Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.</p>
-                     <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                        <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session.cotizador?.emailCliente}", en caso de no visualizar el correo en la Bandeja de Entrada,
                             verificar la carpeta de "Correo no deseado" (SPAM).</p>
                     </div>
                 </div>
