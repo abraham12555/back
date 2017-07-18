@@ -73,13 +73,15 @@
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
-                    <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
-                        <div class="searchBox autoMargin clearFix">
-                            <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                            </a>
-                        </div>
-                    </div>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_EJECUTIVO,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_SUCURSAL'>
+                            <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
+                                <div class="searchBox autoMargin clearFix">
+                                    <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
+                                        <i class="fa fa-search" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </sec:ifAnyGranted>
                     <div class="floatRight notificationBox dashboardHeader marginTop15 paddingTop5 paddingRight5 paddingLeft5">
                         <img class="floatLeft paddingLeft10 paddingTop5" src="${resource(dir:'images', file:'bell.png')}" alt="bell" title="bell">
                         <p class="floatLeft colorWhite font16 paddingLeft10">${(session.solicitudesPendientes ?: 0)}</p>

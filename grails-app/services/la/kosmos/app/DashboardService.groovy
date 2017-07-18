@@ -218,11 +218,19 @@ class DashboardService {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
                     eq("sucursal",sucursal)
+                    eq("registradaPor",usuario)
                 }
             }
         }
-
-        pager.totalRows = results.totalCount
+        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_DIRECTOR"}){
+            results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
+                solicitud{
+                    eq("entidadFinanciera", entidadFinanciera)
+                    eq("sucursal",sucursal)
+                }
+            }
+        }
+        pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
         println pager.totalRows
         results.each{
             def solicitudes = [:]
@@ -289,7 +297,26 @@ class DashboardService {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
                     eq("sucursal",sucursal)
+                    eq("registradaPor",usuario)
+
+                    like("folio","%"+folio+"%")
                     
+                    cliente{
+                        like("nombre","%"+nombre+"%")
+                        like("rfc","%"+rfc+"%")
+                        like("apellidoPaterno","%"+apellidoPaterno+"%")
+                        like("apellidoMaterno","%"+apellidoMaterno+"%")
+                    }
+                }
+            }
+                    
+        }
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_DIRECTOR" }){
+            
+            results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
+                solicitud{
+                    eq("entidadFinanciera", entidadFinanciera)
+                    eq("sucursal",sucursal)
                     like("folio","%"+folio+"%")
                     
                     cliente{
@@ -306,7 +333,7 @@ class DashboardService {
        
         
    
-        pager.totalRows = results.totalCount
+        pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
         println "total de rows"+pager.totalRows
         results.each {
             def solicitudes = [:]
@@ -485,6 +512,7 @@ class DashboardService {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
                         eq("sucursal",sucursal)
+                        eq("registradaPor",usuario)
 
                         and{
                             between("fechaDeSolicitud", from,toDate)
@@ -496,7 +524,22 @@ class DashboardService {
                 } 
                 
             }
-            pager.totalRows = results.totalCount
+             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL"|| it.authority == "ROLE_DIRECTOR" }){
+                results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
+                    solicitud{
+                        eq("entidadFinanciera", entidadFinanciera)
+                        eq("sucursal",sucursal)
+                        and{
+                            between("fechaDeSolicitud", from,toDate)
+                        }
+                        statusDeSolicitud{
+                            not {'in'("id",ids)}
+                        }
+                    }
+                } 
+                
+            }
+            pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
             println "total solicitudes No DICTAMINADAS "+pager.totalRows
         }
         else if (opcion == "dictaminadas"){
@@ -523,6 +566,7 @@ class DashboardService {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
                         eq("sucursal",sucursal)
+                        eq("registradaPor",usuario)
 
                         and{
                             between("fechaDeSolicitud", from,toDate)
@@ -533,7 +577,23 @@ class DashboardService {
                     }
                 }
             }
-            pager.totalRows = results.totalCount
+            else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL " || it.authority == "ROLE_DIRECTOR" }){
+                results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
+                    solicitud{
+                        eq("entidadFinanciera", entidadFinanciera)
+                        eq("sucursal",sucursal)
+                        eq("registradaPor",usuario)
+
+                        and{
+                            between("fechaDeSolicitud", from,toDate)
+                        }
+                        statusDeSolicitud{
+                    'in'("id",ids2) 
+                        }
+                    }
+                }
+            }
+            pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
             println "total solicitudes "+pager.totalRows
             
         } else if (opcion == "complementoSolicitado"){
@@ -559,6 +619,8 @@ class DashboardService {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
                         eq("sucursal",sucursal)
+                        eq("registradaPor",usuario)
+
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
@@ -568,7 +630,23 @@ class DashboardService {
                     }
                 }
             }
-            pager.totalRows = results.totalCount
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_DIRECTOR" }){
+                results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
+                    solicitud{
+                        eq("entidadFinanciera", entidadFinanciera)
+                        eq("sucursal",sucursal)
+                        eq("registradaPor",usuario)
+
+                        and{
+                            between("fechaDeSolicitud", from,toDate)
+                        }
+                        statusDeSolicitud{
+                    'in'("id",ids3) 
+                        }
+                    }
+                }
+            }
+            pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
             println "opcion " + opcion
             println "total solicitudes " + pager.totalRows
         }

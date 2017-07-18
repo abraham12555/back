@@ -14,7 +14,7 @@ function w3_close() {
 
 $(document).ready(function () {
     console.log($('#pagina').val());
-    /*if ($('#pagina').val() === 'index') {
+    if ($('#pagina').val() === 'index') {
         $.getSolicitudes = "/dashboard/getSolicitudes";
         var idPaginacion = "paginationSolicitudes";
         $('#' + idPaginacion).on('click', 'a.page', function (event) {
@@ -36,7 +36,7 @@ $(document).ready(function () {
             header: "h1",
             collapsible: true
         });
-    });*/
+    });
 
     var opcion = $('#opcionMenu').val();
     $('.elementoMenuPrincipal').removeClass('blueButton');
@@ -3967,7 +3967,6 @@ function getSolicitudes(page, idPaginacion) {
             var totalPages = response.totalPages;
             $('#' + idPaginacion).empty();
             if (response.solicitudes.length > 0) {
-                console.log("Si entra a la funcion, osea que si trae solicitudes....");
                 pagination(totalPages, page, idPaginacion);
                 mostrarSolicitudesPaginados(response.solicitudes);
             } else {
@@ -3976,7 +3975,7 @@ function getSolicitudes(page, idPaginacion) {
                 row += '<tr></tr>';
                 row += '<tr>';
                 row += '<td colspan="5" class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                row += '<span class="font14 tableDescriptionColor">No hay Solicitudes Registradas</span>';
+                row += '<span class="font14 tableDescriptionColor"></span>';
                 row += '</td>';
                 row += '</tr>';
                 $("#listaDeSolicitudes").append(row);
