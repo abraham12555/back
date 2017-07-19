@@ -1,6 +1,5 @@
-$.login = $.contextAwarePathJS + "login/auth";
-$.validEmail = $.contextAwarePathJS + "register/validEmail";
-$.passwordRecovery = $.contextAwarePathJS + "register/forgotPassword";
+$.validEmail = "validEmail";
+$.passwordRecovery = "forgotPassword";
 
 $(document).ready(function () {
     $('#updatePassword-btn').on('click', function (event) {
@@ -16,11 +15,6 @@ $(document).ready(function () {
         $("#successMessage-div").addClass("hidden");
         $("#errorMessage-div").addClass("hidden");
         validateForm();
-    });
-
-    $('#cancelPasswordRecovery-btn').on('click', function (event) {
-        event.preventDefault();
-        window.location.href = $.login;
     });
 });
 
@@ -101,7 +95,6 @@ function sendRequest() {
         beforeSend: function (XMLHttpRequest, settings) {
             $("body").mLoading({
                 text: "Enviando solicitud, espere por favor...",
-                icon: $.contextAwarePathJS + "images/spinner.gif",
                 mask: true
             });
         },

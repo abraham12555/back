@@ -31,8 +31,9 @@
                             <input class="inputs emailInput letterspacing1 font14" type="text" placeholder="Escribe tu correo electrónico" id="email"/>
                         </div>
                         <button type="button" class="loginButton blueButton letterspacing2 font14" id="recoveryPassword-btn">ACEPTAR</button>
-                        <button type="button" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);" id="cancelPasswordRecovery-btn">CANCELAR</button>
-
+                        <g:link controller="login" action="auth">
+                            <button type="button" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                        </g:link>
                     </div>
                 </form>
             </div>
