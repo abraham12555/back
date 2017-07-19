@@ -149,6 +149,7 @@ class SolicitudService {
                                     if(datosPaso.telefonoCliente.telefonoCasa && (datosPaso.telefonoCliente.telefonoCasa != it.numeroTelefonico)){
                                         it.vigente = false
                                         it.save(flush:true)
+                                        telefonoCasa = new TelefonoCliente()
                                         telefonoCasa.cliente = cliente
                                         telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
                                         telefonoCasa.vigente = true
@@ -167,7 +168,7 @@ class SolicitudService {
                                     }
                                 }
                             }
-                           }else{
+                           } else {
                                         telefonoCasa = new TelefonoCliente()
                                         telefonoCasa.cliente = cliente
                                         telefonoCasa.numeroTelefonico = datosPaso.telefonoCliente.telefonoCasa
