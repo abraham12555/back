@@ -35,6 +35,7 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
             url = "jdbc:postgresql://10.1.245.167:5432/kosmosprod"
+            //url = "jdbc:postgresql://localhost:5432/kosmosprod"
             properties {
                // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
                jmxEnabled = true

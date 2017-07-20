@@ -1875,6 +1875,8 @@ function consultarBuro() {
     var cadenaDeBuro = null;
     if($.contextAwarePathJS === "/qa/") {
        cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
+    } else {
+       cadenaDeBuro = "undefined";
     }
     if (tarjeta && hipoteca && creditoAutomotriz && cadenaDeBuro) {
         var numeroTarjeta = $('#numeroTarjeta').val();
