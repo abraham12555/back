@@ -78,7 +78,7 @@
     $.ajax({
     type: "POST",
     dataType: "json",
-    url: $.getSolicitudesBusqueda,
+    url: ${urlSolicitudesBusqueda},
     data: JSON.stringify(filter),
     contentType: "application/json",
     success: function (response) {

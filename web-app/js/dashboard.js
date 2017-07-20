@@ -14,7 +14,8 @@ function w3_close() {
 
 $(document).ready(function () {
     console.log($('#pagina').val());
-       /*if ($('#pagina').val() === 'index') {
+    //se descomentó  esta función para mostrar los resultados páginados debido a que se corrigió ese bug
+       if ($('#pagina').val() === 'index') {
         $.getSolicitudes = $.contextAwarePathJS + "dashboard/getSolicitudes";
         var idPaginacion = "paginationSolicitudes";
         $('#' + idPaginacion).on('click', 'a.page', function (event) {
@@ -28,7 +29,7 @@ $(document).ready(function () {
         var totalPages = $('#totalPages').val();
         var page = $('#page').val();
         $("#currentPageSolicitudesBusqueda").val(page);
-        pagination(totalPages, page, idPaginacion);
+         pagination(parseInt(totalPages),parseInt(page), idPaginacion);
     }
     
     $(function () {
@@ -36,7 +37,7 @@ $(document).ready(function () {
             header: "h1",
             collapsible: true
         });
-    });*/
+    });
 
     var opcion = $('#opcionMenu').val();
     $('.elementoMenuPrincipal').removeClass('blueButton');
@@ -3868,6 +3869,9 @@ function iniciarPrettyPhoto() {
 }
 
 function pagination(totalPages, page, idPaginacion) {
+    console.log("totalPages");
+    console.log(totalPages);
+    console.log(page);
     if (totalPages > 1) {
         $('#' + idPaginacion).empty();
         $('#' + idPaginacion).append(function () {
@@ -4080,7 +4084,7 @@ function mostrarSolicitudesPaginados(data) {
         html += "<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>";
         if (respuesta[x].folio && respuesta[x].folio !== "-") {
             html += "<td class='center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
-            html += "<button class='greenBox colorWhite' type='button' onclick='consultarSolicitud(" + respuesta[x].solicitud.id + ");'>ver detalle</button>";
+            html += "<button class='greenBox colorWhite' type='button' onclick='consultarSolicitud(" + respuesta[x].solicitud.id + ","+false+");'>ver detalle</button>";
             html += "</td>";
         } else {
             html += "<td class='center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
@@ -4142,7 +4146,7 @@ function mostrarSolicitudesFechas(data, idTabla) {
         html += "<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>";
         if (respuesta[x].folio && respuesta[x].folio != "-") {
             html += "<td class='center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
-            html += "<button class='greenBox colorWhite' type='button' onclick='consultarSolicitud(" + respuesta[x].solicitud.id + ");'>ver detalle</button>";
+            html += "<button class='greenBox colorWhite' type='button' onclick='consultarSolicitud(" + respuesta[x].solicitud.id + ","+false+");'>ver detalle</button>";
             html += "</td>";
         } else {
             html += "<td class='center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
@@ -4203,7 +4207,7 @@ function mostrarSolicitudesPaginadosBusqueda(data) {
         html += "<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>";
         if (respuesta[x].folio && respuesta[x].folio != "-") {
             html += "<td class='center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
-            html += "<button class='greenBox colorWhite' type='button' onclick='consultarSolicitud(" + respuesta[x].solicitud.id + ");'>ver detalle</button>";
+            html += "<button class='greenBox colorWhite' type='button' onclick='consultarSolicitud(" + respuesta[x].solicitud.id + ","+false+");'>ver detalle</button>";
             html += "</td>";
         } else {
             html += "<td class='center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";

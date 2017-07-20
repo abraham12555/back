@@ -141,7 +141,8 @@ class UserService {
     def getUsers(EntidadFinanciera entidadFinanciera, Pager pager){
         pager.rowsPerPage = Constants.TOTAL_ROWS
         def userList = []
-
+        println pager.rowsPerPage
+        println pager.firstRow
         def criteria = Usuario.createCriteria()
         def results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
             eq ('entidadFinanciera', entidadFinanciera)
@@ -458,7 +459,7 @@ class UserService {
             }
         }
         workbook = builder.build {
-            sheet(name: "Usuarios", widthColumns: [20, 20, 20, 20, 20, 20, 20]) {
+            sheet(name: "Usuarios", widthColumns: [20, 20, 20, 20, 20, 20, 20, 35, 20, 20]) {
                 row (style: 'titulo') {
                     cell { "Nombre" }
                     cell { "Apellido Paterno" }
@@ -467,6 +468,9 @@ class UserService {
                     cell { "Correo electrónico" }
                     cell { "Sucursal" }
                     cell { "Número de empleado" }
+                    cell { "Rol" }
+                    cell { "Activo" }
+                    cell { "Bloqueado" }
                 }
                 usuarios.each { fila ->
                     row (style: 'contenido') {
@@ -477,6 +481,9 @@ class UserService {
                         cell { fila.email }
                         cell { fila.sucursal?.nombre ?: "" }
                         cell { fila.numeroDeEmpleado ?: ""}
+                        cell { fila.authorities.authority.join(", ") ?: ""}
+                        cell { (fila.enabled) ? "SI" : "NO"}
+                        cell { (fila.accountLocked) ? "SI" : "NO"}
                     }
                 }
             }

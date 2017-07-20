@@ -205,11 +205,12 @@ class DashboardService {
         def usuario = Usuario.get(id as long)
         def solicitudesLista = []
         def criteria = ProductoSolicitud.createCriteria()
-        def results
+        def results 
         if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
+                    order("fechaDeSolicitud", "desc")
                 }
             }
         }
@@ -219,6 +220,8 @@ class DashboardService {
                     eq("entidadFinanciera", entidadFinanciera)
                     eq("sucursal",sucursal)
                     eq("registradaPor",usuario)
+                    order("fechaDeSolicitud", "desc")
+
                 }
             }
         }
@@ -227,6 +230,8 @@ class DashboardService {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
                     eq("sucursal",sucursal)
+                    order("fechaDeSolicitud", "desc")
+
                 }
             }
         }

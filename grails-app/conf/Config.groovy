@@ -90,6 +90,9 @@ environments {
         grails.logging.jul.usebridge = true
         grails.app.context = "/qa"
     }
+    test {
+        grails.app.context = "/qa"
+    }
     production {
         grails.logging.jul.usebridge = false
         grails.app.context = "/"
