@@ -41,7 +41,7 @@ class CotizadorController {
         respuesta
         //}
     }
-
+   
     def obtenerPasos() {
         def respuesta = cotizadorService.cargarCatalogos(params)
         def pasosCotizador = RubroDeAplicacionPasoCotizador.executeQuery('Select r.paso from RubroDeAplicacionPasoCotizador r Where r.rubro.id = :rubro', [rubro: (params.rubroId as long)])
@@ -253,8 +253,9 @@ class CotizadorController {
         def respuesta = [:]
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
-            respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
-            
+            //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
+            respuesta = cotizadorService.verificarSolicitudExistenteCotizador(params.telefonoCelular)
+
             println  "encontrado " + respuesta
             if(!respuesta.encontrado && !respuesta.multiplesClientes) {
                 String sid = smsService.sendSMS(toPhone, session.configuracion)
@@ -279,8 +280,6 @@ def solicitarCodigoShorUrl() {
         def respuesta = [:]
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
-            //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email,session.configuracion)
-            //if(!respuesta.encontrado) {
                 String sid = smsService.sendSMS(toPhone, session.configuracion)
                 if(sid){
                     session.sid = sid
@@ -288,7 +287,6 @@ def solicitarCodigoShorUrl() {
                 } else {
                     respuesta.mensajeEnviado = false
                 }
-            //}
         } else {
             respuesta.mensajeEnviado = false
         }

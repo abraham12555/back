@@ -20,6 +20,7 @@ import org.aspectj.apache.bcel.classfile.annotation.NameValuePair
 import groovy.json.JsonSlurper
 import groovy.time.TimeCategory
 import static java.lang.Double.parseDouble
+import groovy.sql.Sql
 
 //import org.apache.commons.io.FileUtils
 
@@ -34,7 +35,8 @@ class SolicitudController {
     def smsService
     def emailSenderService
     def perfiladorService
-	
+    def dataSource
+
     int timeWait = 500
     def maximumAttempts = 100
     def formatoFecha = "dd-MM-yyyy"
@@ -1275,17 +1277,26 @@ class SolicitudController {
         def solicitud
         def temporal
         def respuesta = [:]
+        def query 
+        def sql = new Sql(dataSource)
+        def resultados
         if (params.telefonoCelular){
-            cliente = TelefonoCliente.findAllWhere(numeroTelefonico : params.telefonoCelular,tipoDeTelefono: TipoDeTelefono.get(2),vigente : true)
-                def solicitudTemp
-                cliente.each{
-                    solicitud = SolicitudDeCredito.findWhere(cliente : it.cliente,token: params.token,solicitudVigente:true)
-                    if (solicitud){
-                        respuesta.ok = true
-                        respuesta.tipo = "credito"
-                        respuesta.solicitud = solicitud.id
-                    }                   
-                }
+            query = "select solicitud_de_credito.id_solicitud_de_credito \
+            from solicitud_de_credito,cliente, telefono_cliente \
+            where solicitud_de_credito.cliente_id = cliente.id_cliente \
+            and solicitud_de_credito.status_de_solicitud_id in (1,2,3) \
+            and solicitud_de_credito.ultimo_paso != 6 and solicitud_de_credito.solicitud_vigente=true \
+            and  solicitud_de_credito.token ='"+params.token+"' \
+            and cliente.id_cliente = telefono_cliente.cliente_id \
+            and telefono_cliente.numero_telefonico ='"+params.telefonoCelular+"' \
+            and telefono_cliente.tipo_de_telefono_id = 2 and telefono_cliente.vigente = true"
+            resultados = sql.rows(query)
+            if(resultados){
+                 respuesta.ok = true
+                 respuesta.tipo = "credito"
+                 respuesta.solicitud = resultados[0][0]
+            }
+
             if(!respuesta.ok){
                 temporal = SolicitudTemporal.findWhere(token: params.token,telefonoCliente:params.telefonoCelular,solicitudVigente:true)
                 if(temporal){
@@ -1319,17 +1330,21 @@ class SolicitudController {
         println params
         def cliente
         def emailCliente
-        def telefonoCliente
+        def results
+        def criteria
         if(params.token){
             def solicitud
             if(params.fechaDeNacimiento){
-                Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
-                cliente = Cliente.findWhere(fechaDeNacimiento:fechaDeNacimiento)
-                if(cliente){
-                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente,token: params.token,solicitudVigente:true)
-                }
+            Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
+            criteria = SolicitudDeCredito.createCriteria()
+            results = criteria.list{
+                 createAlias('cliente', 'cef')
+                    eq("token", params.token)
+                    eq("cef.fechaDeNacimiento",fechaDeNacimiento)
+            }
+            solicitud = results[0]        
             }else if (params.correoElectronico){
-                cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
+               cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
                 if(cliente){
                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token,solicitudVigente:true)
                 }

@@ -2910,28 +2910,7 @@ function operacionesShortUrl() {
         $(this).parent().removeClass("is-active");
     });
 
-    
-    $('#cliente_si').on('click', function () {
-        console.log("Si entraaaaaa");
-        $(this).parent().children('.correctaBox').removeClass('active_green');
-        $(this).addClass('active_green');
-        $('#clienteExistente').val('SI');
-        $('#clienteExistente').addClass('notEmpty');
-        $('#inputNoCliente').removeClass('hide');
-    });
-
-    $('#cliente_no').on('click', function () {
-        console.log("Si entraaaaaa");
-        $(this).parent().children('.correctaBox').removeClass('active_green');
-        $(this).addClass('active_green');
-        $('#clienteExistente').val('NO');
-        $('#clienteExistente').addClass('notEmpty');
-        $('#inputNoCliente').addClass('hide');
-        $('#inputNoCliente').val('');
-    });
-
     $('.datoShortUrl').change(function (index) {
-        console.log("--->" + $(this).attr('id') + " = " + $(this).val());
         if ($(this).val() !== '') {
             if ($(this).hasClass('validarEmail')) {
                 if (validateEmail($(this).val())) {
@@ -2964,10 +2943,12 @@ function operacionesShortUrl() {
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
             }
-            if ($(this).attr('id') === 'phoneVerificacion') {
+            /*if ($(this).attr('id') === 'phoneVerificacion') {
                 
-                verificarSolicitudSms($('#phoneVerificacion').val(),$('#token').val());
-            }
+                //verificarSolicitudSms($('#phoneVerificacion').val(),$('#token').val());
+                $('.enviar').attr('disabled', false);
+
+            }*/
              if ($(this).attr('id') === 'codigoVerificacion') {
                 
                 resultadoVerificacion($('#codigoVerificacion').val());
@@ -2998,10 +2979,12 @@ function validateDefaultAddress(email) {
         return true;
     }
 }
-
-
-function verificarSolicitudSms(telefonoCelular,token) {
-    $("body").mLoading({
+function verificarSms(){
+    if ($('#phoneVerificacion').val() === '') {
+     sweetAlert("Oops...","El campo no puede ir vacio", "error");
+    }else{
+        var telefonoCelular = $('#phoneVerificacion').val();
+          $("body").mLoading({
         text: "Verificando Solicitud, espere por favor...",
         icon: "/images/spinner.gif",
         mask: true
@@ -3009,7 +2992,7 @@ function verificarSolicitudSms(telefonoCelular,token) {
     $.ajax({
         type: 'POST',
         data: {
-            telefonoCelular: telefonoCelular,token:token
+            telefonoCelular: $('#phoneVerificacion').val(),token:$('#token').val()
         },
         url: $.contextAwarePathJS + "solicitud/verificarSolicitudSms",
         success: function (data, textStatus) {
@@ -3034,8 +3017,16 @@ function verificarSolicitudSms(telefonoCelular,token) {
             $("body").mLoading('hide');
         }
     });
+    }
+    
+    
 }
-
+ $('#phoneVerificacion').on('keyup', function (e) {
+        if (e.keyCode === 13) {
+            verificarSms();
+            return false;
+        }
+    });
 
 function enviarSms(telefonoCelular) {
     $.ajax({

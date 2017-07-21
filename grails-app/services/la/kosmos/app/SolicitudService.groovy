@@ -14,6 +14,7 @@ import java.util.Calendar
 import org.hibernate.transform.Transformers
 import java.util.HashSet
 import javax.xml.bind.DatatypeConverter
+import groovy.sql.Sql
 
 @Transactional
 class SolicitudService {
@@ -109,11 +110,6 @@ class SolicitudService {
                     datosPaso.cliente.idCliente = cliente.id
                     println ("El cliente ha sigo guardo correctamente con el id " + cliente.id)
                     if(clienteNuevo && datosPaso.telefonoCliente){
-                        def telefonoCelCliente = TelefonoCliente.findWhere(numeroTelefonico: datosPaso.telefonoCliente.telefonoCelular, vigente: true)
-                        if (telefonoCelCliente){
-                            //guardadoCorrecto = false
-                            //mensaje= "EL TELEFONO INGRESADO YA CUENTA CON UNA SOLICITUD VIGENTE"
-                        }else {
                             def telefonoCasa
                             def telefonoCelular
                             if(datosPaso.telefonoCliente.telefonoCasa){
@@ -132,7 +128,6 @@ class SolicitudService {
                                 telefonoCelular.tipoDeTelefono = TipoDeTelefono.get(2)
                                 telefonoCelular.save(flush: true)
                             }
-                        }
                     } else if(!clienteNuevo && datosPaso.telefonoCliente){
                         def telefonoCasa
                         def telefonoCelular
@@ -203,7 +198,7 @@ class SolicitudService {
                             //correoExistente.save(flush: true)
                             }
                         } else if (correoExistente) {
-                            correoExistente.vigente = false
+                            correoExistente.vigente = true
                             correoExistente.save(flush: true)
                         }
                     } /*else if(!clienteNuevo && datosPaso.emailCliente) {
@@ -1664,43 +1659,67 @@ class SolicitudService {
         return existe
     }
     
-    def verificarSolicitudExistente(def telefono, def nombreCompleto, def email) {
+    /*def verificarSolicitudExistente(def telefono, def nombreCompleto, def email) {
         def respuesta = [:]
         def listaDeClientes = []
-        def cliente = TelefonoCliente.executeQuery("Select tc.cliente From TelefonoCliente tc Where replace(tc.numeroTelefonico,'-','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono044 OR replace(tc.numeroTelefonico,' ','') = :telefono045", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
+        def cliente = TelefonoCliente.executeQuery("Select tc.cliente From TelefonoCliente tc Where (replace(tc.numeroTelefonico,'-','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono044 OR replace(tc.numeroTelefonico,' ','') = :telefono045) and tc.tipoDeTelefono = 2 and tc.vigente=true", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
         if(cliente) {
             respuesta = buscarSolicitudFormalExisten(cliente, telefono, nombreCompleto, email)
         } else {
             respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
         }
         return respuesta
-    }
+    }*/
     
-    def buscarSolicitudFormalExisten(def cliente, def telefono, def nombreCompleto, def email) {
+    /*def buscarSolicitudFormalExisten(def cliente, def telefono, def nombreCompleto, def email) {
+        def query 
+        def resultados
+        def sql = new Sql(dataSource)
+            query = "select solicitud_de_credito.id_solicitud_de_credito \
+            from solicitud_de_credito,cliente, telefono_cliente \
+            where solicitud_de_credito.cliente_id = cliente.id_cliente \
+            and solicitud_de_credito.status_de_solicitud_id in (1,2,3) \
+            and solicitud_de_credito.ultimo_paso != 6 and solicitud_de_credito.solicitud_vigente=true \
+            and cliente.id_cliente = telefono_cliente.cliente_id \
+            and telefono_cliente.numero_telefonico ='"+telefono+"' \
+            and telefono_cliente.tipo_de_telefono_id = 2 and telefono_cliente.vigente = true"
+            resultados = sql.rows(query)
+        
         def respuesta = [:]
         def listaDeClientes = []
         println "Cliente(s) encontrado(s): " + cliente
         if(cliente.size() > 1) {
             def x = 0
+            def cuantos = 0
             respuesta.encontrado = false
-            email = email?.replaceAll("\\s+", " ")?.toLowerCase()
-            def emailRegistrado = EmailCliente.executeQuery("Select ec.cliente from EmailCliente ec Where lower(ec.direccionDeCorreo) = :mail", [mail: email])
+            def token
+            //email = email?.replaceAll("\\s+", " ")?.toLowerCase()
+            //def emailRegistrado = EmailCliente.executeQuery("Select ec.cliente from EmailCliente ec Where lower(ec.direccionDeCorreo) = :mail", [mail: email])
             while(respuesta.encontrado == false && x < cliente.size()) {
-                if( (valorCoincide(normalizarCadena(cliente[x].toString()), normalizarCadena(nombreCompleto))) || (emailRegistrado && emailRegistrado?.contains(cliente[x])) ){
+                //if( (valorCoincide(normalizarCadena(cliente[x].toString()), normalizarCadena(nombreCompleto))) || (emailRegistrado && emailRegistrado?.contains(cliente[x])) ){
                     def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 and sc.solicitudVigente=true Order by sc.fechaDeSolicitud",[idCliente: cliente[x].id])
                     if(solicitudFormalExistente) {
-                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
-                        respuesta.encontrado = true
+                        if(cuantos > 1 ){
+                        respuesta.multiplesClientes = true   
+                        break
+                        } 
+                        //respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + solicitudFormalExistente[0].token //solicitudFormalExistente[0].shortUrl
+                        //respuesta.encontrado = true
+                        token = solicitudFormalExistente[0].token
+                        cuantos++
                     }
-                }
+                //}
+                    
                 x++
             }
-            if(!respuesta.encontrado) {
+            if(cuantos ==1){
+                 respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + token //solicitudFormalExistente[0].shortUrl
+                 respuesta.encontrado = true
+            }
+            if(cuantos == 0 &&!respuesta.encontrado) {
                 respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
             }
-            if(listaDeClientes.size() > 0 && !respuesta.shortUrl){
-                respuesta.multiplesClientes = true   
-            }     
+                
         } else {
             def solicitudFormalExistente = SolicitudDeCredito.executeQuery("Select sc from SolicitudDeCredito sc Where sc.cliente.id = :idCliente and sc.statusDeSolicitud.id in (1,2,3) and sc.ultimoPaso != 6 and sc.solicitudVigente=true Order by sc.fechaDeSolicitud",[idCliente: cliente[0].id])
             if(solicitudFormalExistente) {
@@ -1712,9 +1731,9 @@ class SolicitudService {
         }
         println ("Regresando: " + respuesta)
         respuesta
-    }
+    }*/
     
-    def buscarSolicitudInformalExistente(def telefono, def nombreCompleto, def email){
+    /* def buscarSolicitudInformalExistente(def telefono, def nombreCompleto, def email){
         def respuesta = [:]
         def listaDeClientes = []
         def cliente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where (replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045) and st.solicitudVigente= true Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
@@ -1723,21 +1742,21 @@ class SolicitudService {
             if(cliente.size() > 1) {
                 def x = 0
                 respuesta.encontrado = false
-                while(respuesta.encontrado == false && x < cliente.size()) {
-                    if(valorCoincide(normalizarCadena(cliente[x].nombreDelCliente),normalizarCadena(nombreCompleto))){
-                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
-                        respuesta.encontrado = true
-                    } else if(cliente[x].emailCliente.toLowerCase() == email?.toLowerCase()){
-                        respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
-                        respuesta.encontrado = true
-                    } else {
-                        listaDeClientes << cliente[x]
-                    }
-                    x++
-                }
-                if(listaDeClientes.size() > 0 && !respuesta.shortUrl){
+                //while(respuesta.encontrado == false && x < cliente.size()) {
+                  //  if(valorCoincide(normalizarCadena(cliente[x].nombreDelCliente),normalizarCadena(nombreCompleto))){
+                    //    respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
+                      //  respuesta.encontrado = true
+                    //} else if(cliente[x].emailCliente.toLowerCase() == email?.toLowerCase()){
+                      //  respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" + cliente[x].token //cliente[x].shortUrl
+                       // respuesta.encontrado = true
+                    //} else {
+                      //  listaDeClientes << cliente[x]
+                    //}
+                    //x++
+                //}
+                //if(listaDeClientes.size() > 0 && !respuesta.shortUrl){
                     respuesta.multiplesClientes = true   
-                }
+                //}
             } else {
                 def solicitudInformalExistente = SolicitudTemporal.executeQuery("Select st From SolicitudTemporal st Where (replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045) and st.solicitudVigente= true Order by st.fechaDeSolicitud", [telefono: telefono, telefono044: ('044' + telefono), telefono045: ('045' + telefono)])
                 if(solicitudInformalExistente) {
@@ -1750,7 +1769,7 @@ class SolicitudService {
         }
         println ("Regresando: " + respuesta)
         respuesta
-    }
+    }*/
     
     def normalizarCadena(def cadena) {
         def original = "áàäéèëíìïóòöúùuñÁÀÄÉÈËÍÌÏÓÒÖÚÙÜÑçÇ";
@@ -1843,5 +1862,61 @@ class SolicitudService {
         }
         
     }
+    
+     def verificarSolicitudExistenteCotizador(def telefono){
+    def respuesta = [:]
+        def query 
+        def resultados
+        def sql = new Sql(dataSource)
+            query = "select solicitud_de_credito.id_solicitud_de_credito,solicitud_de_credito.token \
+            from solicitud_de_credito,cliente, telefono_cliente \
+            where solicitud_de_credito.cliente_id = cliente.id_cliente \
+            and solicitud_de_credito.status_de_solicitud_id in (1,2,3) \
+            and solicitud_de_credito.ultimo_paso != 6 and solicitud_de_credito.solicitud_vigente=true \
+            and cliente.id_cliente = telefono_cliente.cliente_id \
+            and telefono_cliente.numero_telefonico ='"+telefono+"' \
+            and telefono_cliente.tipo_de_telefono_id = 2 and telefono_cliente.vigente = true"
+            resultados = sql.rows(query)
+            resultados.each{
+                println it.token
+            }
+            println "tamaño"+ resultados.size()
+            if (resultados.size > 1) {
+                respuesta.multiplesClientes = true   
+            }
+            else if (resultados.size == 1){
+                  respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
+                  respuesta.encontrado = true
+            }else if(resultados.size == 0){
+                      //respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
+                      respuesta = verificarSolicitudInformalExistenteCotizador(telefono)
+                
+            }
+           println ("Regresando: " + respuesta)
+           respuesta
+    }
+    def verificarSolicitudInformalExistenteCotizador(def telefono){
+         def respuesta = [:]
+        def query 
+        def resultados
+        def sql = new Sql(dataSource)
+        query = "select solicitud_temporal.id_solicitud_temporal,solicitud_temporal.token\
+            from solicitud_temporal\
+            where solicitud_temporal.telefono_cliente = '"+telefono+"'\
+            and solicitud_temporal.solicitud_vigente = true "
+            resultados = sql.rows(query)
+            if (resultados.size > 1) {
+                respuesta.multiplesClientes = true   
+            }
+            else if (resultados.size == 1){
+                  respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
+                  respuesta.encontrado = true
+            }else if(resultados.size == 0){
+                      //respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
+                      respuesta.encontrado = false 
+            }
+            respuesta
+}
+    
     
 }

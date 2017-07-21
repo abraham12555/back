@@ -285,7 +285,7 @@ class DashboardService {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
                     ilike("folio","%"+folio+"%")
-                    
+                    order("fechaDeSolicitud", "desc")
                     cliente{
                         ilike("nombre","%"+nombre+"%")
                         ilike("rfc","%"+rfc+"%")
@@ -305,7 +305,8 @@ class DashboardService {
                     eq("registradaPor",usuario)
 
                     like("folio","%"+folio+"%")
-                    
+                    order("fechaDeSolicitud", "desc")
+
                     cliente{
                         like("nombre","%"+nombre+"%")
                         like("rfc","%"+rfc+"%")
@@ -323,7 +324,8 @@ class DashboardService {
                     eq("entidadFinanciera", entidadFinanciera)
                     eq("sucursal",sucursal)
                     like("folio","%"+folio+"%")
-                    
+                    order("fechaDeSolicitud", "desc")
+
                     cliente{
                         like("nombre","%"+nombre+"%")
                         like("rfc","%"+rfc+"%")
@@ -487,14 +489,12 @@ class DashboardService {
         Date from =new Date().parse("dd/MM/yyyy HH:mm:ss", fechaInicio+" 00:00:00") 
         Date toDate =new Date().parse("dd/MM/yyyy HH:mm:ss", fechaFinal+" 23:59:59")
         pager.rowsPerPage = 25
-        println "pager first rowgetSolicitudesNoDictaminadas"+ pager.firstRow
         def solicitudesLista = []
         def sucursal = springSecurityService.currentUser.sucursal
-
+        
         def criteria
         def results
         if (opcion == "noDictaminadas"){
-            println "opcion No dictaminadas"
             def ids = [5 as long, 6 as long, 7 as long]
             criteria = ProductoSolicitud.createCriteria()
             if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
@@ -505,6 +505,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                             not {'in'("id",ids)}
                         }
@@ -522,6 +523,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                             not {'in'("id",ids)}
                         }
@@ -537,6 +539,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                             not {'in'("id",ids)}
                         }
@@ -549,7 +552,6 @@ class DashboardService {
         }
         else if (opcion == "dictaminadas"){
             
-            println "opcion dictaminadas"
             def ids2 = [5 as long,7 as long]
             criteria = ProductoSolicitud.createCriteria()
             if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
@@ -560,6 +562,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                     'in'("id",ids2) 
                         }
@@ -576,6 +579,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                     'in'("id",ids2) 
                         }
@@ -592,6 +596,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                     'in'("id",ids2) 
                         }
@@ -599,10 +604,8 @@ class DashboardService {
                 }
             }
             pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
-            println "total solicitudes "+pager.totalRows
             
         } else if (opcion == "complementoSolicitado"){
-            println "opcion complementoSolicitado"
             def ids3 = [6 as long]
             criteria = ProductoSolicitud.createCriteria()
             if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
@@ -613,6 +616,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                     'in'("id",ids3) 
                         }
@@ -629,6 +633,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                     'in'("id",ids3) 
                         }
@@ -645,6 +650,7 @@ class DashboardService {
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
+                        order("fechaDeSolicitud", "desc")
                         statusDeSolicitud{
                     'in'("id",ids3) 
                         }
@@ -652,8 +658,6 @@ class DashboardService {
                 }
             }
             pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
-            println "opcion " + opcion
-            println "total solicitudes " + pager.totalRows
         }
         
         results.each{

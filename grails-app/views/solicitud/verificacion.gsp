@@ -131,7 +131,7 @@
                                                  <span class="">ATRAS</span>
                                              </p>
                                               <p class="" style="display: inline-block;margin-top: 10px; text-align: center;">
-                                                 <input type="submit" class="goBtn email" value="VERIFICAR" disabled/>
+                                                 <input type="submit" class="goBtn email" value="VERIFICAR" />
                                              </p>
                                             </div>
                                         </div>
@@ -146,13 +146,13 @@
                                      <div class="row">
                                          <div id="first_name_form" class="input-field col12">
                                              <label for="first_name" class="darkBluetitle"><span><strong style="color:#fb5e48;">*</strong></span>¿Cuál Número de celular?</label>
-                                             <input id="phoneVerificacion" name="telefonoCelular" type="text" class="datoShortUrl mat-input" data-mask="99-99-99-99-99" maxlength="14" >
+                                             <input id="phoneVerificacion" name="telefonoCelular" type="text" class="datoShortUrl mat-input" data-mask="99-99-99-99-99" maxlength="14" onkeypress="return event.keyCode != 13;" >
                                               <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
                                                  <span class="">ATRAS</span>
                                              </p>
-                                              <p class="" style="display: inline-block;margin-top: 10px; text-align: center;">
-
-                                              </p>
+                                             <p class="" style="display: inline-block;margin-top: 10px; text-align: center;">
+                                                 <input type="button" onclick="verificarSms();" class="goBtn enviar" value="ENVIAR" />
+                                             </p>
                                              <p style="margin-top: 10px;" id="leyendaTel"><small class="darkBluetitle">* Enviaremos un código de confirmación al número ingresado.</small></p>
 
                                          </div>

@@ -53,7 +53,6 @@
     event.preventDefault();
     var page = $(this).data('page');
     if (fechaInicio && fechaFinal ){
-    console.log("preparandome para buscar");
     consultarSolicitudesPorTiempo(temporalidad,"noDictaminadas",fechaInicio,fechaFinal,"listaDeSolicitudesNoDictaminadas",idPaginacion,"temporalidadSolicitudesNoDictaminadas",page);
     }else{
     getSolicitudesBusqueda(page,idPaginacion,temporalidad,template,"listaDeSolicitudesNoDictaminadas",null,null);

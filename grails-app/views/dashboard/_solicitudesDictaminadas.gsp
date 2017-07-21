@@ -56,7 +56,6 @@ $(document).ready(function () {
 	event.preventDefault();
         var page = $(this).data('page');
          if (fechaInicio && fechaFinal ){
-    console.log("preparandome para buscar");
     consultarSolicitudesPorTiempo(temporalidad,"dictaminadas",fechaInicio,fechaFinal,"listaDeSolicitudesDictaminadas",idPaginacion,"temporalidadSolicitudesDictaminadas",page);
     }else {
         getSolicitudesBusqueda(page,idPaginacion,temporalidad,template,"listaDeSolicitudesDictaminadas",null,null);

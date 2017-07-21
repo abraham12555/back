@@ -13,7 +13,6 @@ function w3_close() {
 }
 
 $(document).ready(function () {
-    console.log($('#pagina').val());
     //se descomentó  esta función para mostrar los resultados páginados debido a que se corrigió ese bug
        if ($('#pagina').val() === 'index') {
         $.getSolicitudes = $.contextAwarePathJS + "dashboard/getSolicitudes";
@@ -3869,9 +3868,6 @@ function iniciarPrettyPhoto() {
 }
 
 function pagination(totalPages, page, idPaginacion) {
-    console.log("totalPages");
-    console.log(totalPages);
-    console.log(page);
     if (totalPages > 1) {
         $('#' + idPaginacion).empty();
         $('#' + idPaginacion).append(function () {
@@ -3974,7 +3970,6 @@ function getSolicitudes(page, idPaginacion) {
                 pagination(totalPages, page, idPaginacion);
                 mostrarSolicitudesPaginados(response.solicitudes);
             } else {
-                console.log("No entra a la funcion, osea que no trae solicitudes....");
                 var row = "";
                 row += '<tr></tr>';
                 row += '<tr>';
@@ -3986,7 +3981,6 @@ function getSolicitudes(page, idPaginacion) {
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            console.log("Ocurrio error");
         }
     });
 }
@@ -4009,8 +4003,6 @@ function getSolicitudesBusqueda(page, idPaginacion, folio, nombre, apellidoPater
         data: JSON.stringify(filter),
         contentType: "application/json",
         success: function (response) {
-            console.log("dentro del ajax");
-            console.log(response);
             var page = response.page;
             var totalPages = response.totalPages;
             $('#' + idPaginacion).empty();
@@ -4039,7 +4031,6 @@ function getSolicitudesBusqueda(page, idPaginacion, folio, nombre, apellidoPater
 
 function mostrarSolicitudesPaginados(data) {
     $('#listaDeSolicitudes tbody').html('');
-    console.log(data);
     var respuesta = eval(data);
     var html = "";
     for (var x = 0; x < respuesta.length; x++) {
@@ -4099,7 +4090,6 @@ function mostrarSolicitudesPaginados(data) {
 }
 
 function mostrarSolicitudesFechas(data, idTabla) {
-    console.log(idTabla);
     $('#' + idTabla + 'tbody').html('');
     //$('#lista1').html('');
     $(window).scrollTop($('#' + idTabla).position().top);

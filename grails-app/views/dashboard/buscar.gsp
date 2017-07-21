@@ -114,14 +114,6 @@ $(document).ready(function () {
         var apellidoPaterno = $('#apellidoPaternoBuscado').val();
         var apellidoMaterno = $('#apellidoMaternoBuscado').val();
         var rfc = $('#rfcBuscado').val();
-        console.log("div en buscar" + idPaginacion);
-        console.log("page en buscar" + page);
-        console.log("totalpages en buscar" + totalPages);
-        console.log("folio en buscar" + folio);
-        console.log("nombre en buscar" + nombre);
-        console.log("apellidoPaterno en buscar" + apellidoPaterno);
-        console.log("apellidoMaterno en buscar" + apellidoMaterno);
-        console.log("rfc en buscar" + rfc);
         
 	$('#'+idPaginacion).on('click', 'a.page', function (event) {
 		event.preventDefault();

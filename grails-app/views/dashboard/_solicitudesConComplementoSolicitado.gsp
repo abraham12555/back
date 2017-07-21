@@ -51,11 +51,9 @@ $(document).ready(function () {
         var fechaFinal = $("#fechaFinalComplementoSolicitado").val();
         var temporalidad = $("#temporalidadComplementoSolicitado").val();
         var template = $("#templateComplementoSolicitado").val();
-        console.log("temporalidad" + temporalidad);
 		event.preventDefault();
 		var page = $(this).data('page');
         if (fechaInicio && fechaFinal ){
-             console.log("preparandome para buscar");
              consultarSolicitudesPorTiempo(temporalidad,"complementoSolicitado",fechaInicio,fechaFinal,"listaSolicitudesConComplementoSolicitado",idPaginacion,"temporalidadComplementoSolicitado",page);
             }else{
 		getSolicitudesBusqueda(page,idPaginacion,temporalidad,template,"listaSolicitudesConComplementoSolicitado");
