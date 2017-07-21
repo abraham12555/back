@@ -48,6 +48,26 @@
 
     return str;
   }
+  
+    /**
+  * filtraInconvenientes()
+  * Filtra palabras altisonantes en los primeros 4 caracteres del CURP
+  * @param {string} str - Los primeros 4 caracteres del CURP
+  */
+  function filtraInconvenientesRFC(str) {
+    var inconvenientes = [ 'BUEI', 'BUEY', 'CACA', 'CACO', 'CAGA', 'CAGO', 'CAKA',
+      'COGE', 'COJA', 'COJE', 'COJI', 'COJO', 'CULO', 'FETO', 'GUEY', 'JOTO', 'KACA',
+      'KACO', 'KAGA', 'KAGO', 'KOGE', 'KOJO', 'KAKA', 'KULO', 'MAME', 'MAMO', 'MEAR',
+      'MEON', 'MION', 'MOCO', 'MULA', 'PEDA', 'PEDO', 'PENE', 'PUTA', 'PUTO', 'QULO',
+      'RATA', 'RUIN' ];
+
+    if (inconvenientes.indexOf(str) > -1) {
+      //str = str.replace(/^(\w)\w/, '$1X');
+      str = str.replace(/.$/, 'X');
+    }
+
+    return str;
+  }
 
   /**
    * ajustaCompuesto()
@@ -308,50 +328,6 @@
         vocal_apellido = param.apellido_paterno.trim().substring(1).replace(/[BCDFGHJKLMNÑPQRSTVWXYZ]/g, '').substring(0, 1);
         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
 
-        /*if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length > 0) {
-         console.log("Entra a 1");
-         inicial_nombre = extraerDosPrimerasLetras(param.nombre);
-         
-         vocal_apellido = "";
-         
-         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-         
-         primera_letra_materno = param.apellido_materno.substring(0, 1);
-         } else if (param.apellido_paterno.length > 0 && param.apellido_paterno.length < 3 && param.apellido_materno.length <= 0) {
-         console.log("Entra a 2 - Revisar");
-         inicial_nombre = extraerDosPrimerasLetras(param.nombre);
-         
-         vocal_apellido = "";
-         
-         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-         
-         primera_letra_materno = "";
-         } else if (!param.apellido_materno || param.apellido_materno === "") {
-         console.log("Entra a 3");
-         if (param.nombre.length === 1) {
-         
-         } else {
-         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-         
-         vocal_apellido = param.apellido_paterno.substring(1, 2);
-         
-         primera_letra_materno = "";
-         
-         inicial_nombre = extraerDosPrimerasLetras(param.nombre);
-         }
-         } else {
-         console.log("Entra a 4");
-         inicial_nombre = extraerInicial(param.nombre);
-         
-         vocal_apellido = param.apellido_paterno.trim().substring(1).replace(/[BCDFGHJKLMNÑPQRSTVWXYZ]/g, '').substring(0, 1);
-         
-         primera_letra_paterno = param.apellido_paterno.substring(0, 1);
-         
-         primera_letra_materno = param.apellido_materno.substring(0, 1);
-         } */
-
-        //Reglas de Libertad
-
         if (vocal_apellido === '' || vocal_apellido === null || vocal_apellido === undefined) {
             console.log("Sin vocal en el apellido");
             if (!param.apellido_materno || param.apellido_materno === "") {
@@ -392,7 +368,7 @@
             inicial_nombre
         ].join('');
 
-        posicion_1_4 = filtraInconvenientes(filtraCaracteres(posicion_1_4));
+        posicion_1_4 = filtraInconvenientesRFC(filtraCaracteres(posicion_1_4));
 
         rfcParcial = [
             posicion_1_4,

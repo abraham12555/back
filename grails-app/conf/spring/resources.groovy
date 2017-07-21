@@ -2,6 +2,7 @@
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import la.kosmos.app.MailStrategyService
+import la.kosmos.app.mock.EmailServiceMock
 import la.kosmos.app.RegistrationCodeStrategyService
 import la.kosmos.app.security.AuthenticationFailureListener
 import la.kosmos.app.security.AuthenticationSuccessEventListener
@@ -51,7 +52,7 @@ beans = {
     uiMailStrategy(MailStrategyService){
         mailService = ref('mailService')
     }
-    
+
     switch(Environment.current) {
     case Environment.PRODUCTION:
         smsService(SmsService) {
@@ -61,8 +62,9 @@ beans = {
     case Environment.DEVELOPMENT:
         smsService(SmsMockService) {
         }
+        emailService(EmailServiceMock)
         break
-        
+
     case Environment.TEST:
         smsService(SmsMockService) {
         }

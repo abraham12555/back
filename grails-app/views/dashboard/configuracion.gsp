@@ -187,7 +187,7 @@
                             <a title="Nuevo usuario" class="displayInline font14 gray2 paddingTop10 paddingBottom10  paddingRight20 pointer" id="newUser-btn">NUEVO USUARIO</a>
                         </li>
                         <li class="floatLeft">
-                            <a title="Descargar lista" class="displayInline font14 gray2 paddingTop10 paddingBottom10 paddingRight20 pointer" id="downloadUserList-btn" href="${createLink(controller: 'dashboard', action:'downloadUserList')}">DESCARGAR LISTA DE USUARIOS</a>
+                            <a title="Descargar lista" class="displayInline font14 gray2 paddingTop10 paddingBottom10 paddingRight20 pointer" href="${createLink(controller: 'dashboard', action:'downloadUserList')}">DESCARGAR LISTA DE USUARIOS</a>
                         </li>
                     </ul>
                 </div>

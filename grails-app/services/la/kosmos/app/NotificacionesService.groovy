@@ -7,7 +7,6 @@ import java.util.Calendar
 import java.util.HashSet
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
-import la.kosmos.app.EmailConfiguration
 import la.kosmos.app.bo.Cron
 import la.kosmos.app.bo.CronExpression
 import la.kosmos.app.bo.EnvioNotificaciones
@@ -55,6 +54,7 @@ class NotificacionesService {
             def solicitudesTemporales = criteria.list{
                 eq ('ultimoPaso', notificacion.status)
                 eq ('entidadFinanciera', entidadFinanciera)
+                eq ('solicitudVigente', Boolean.TRUE)
             }
 
             if (solicitudesTemporales != null && !solicitudesTemporales?.empty) {
@@ -136,6 +136,7 @@ class NotificacionesService {
 
                     eq ('ultimoPaso', notificacion.status)
                     eq ('entidadFinanciera', entidadFinanciera)
+                    eq ('solicitudVigente', Boolean.TRUE)
                     eq ('tc.vigente', Boolean.TRUE)
                     eq ('t.id', Constants.TipoTelefono.CELULAR.value)
 
@@ -168,15 +169,15 @@ class NotificacionesService {
                         }
                         ProductoSolicitud productoSolicitud = list[0]
                         def origen
-                        if(productoSolicitud != null){  //!=
+                        if(productoSolicitud != null){
                             origen = new PlantillaSolicitud(productoSolicitud)
                         } else {
                             origen = new PlantillaSolicitud(solicitudDeCredito)
                         }
-                         
+
                         def message = this.buildMessage(origen, map, notificacion.plantilla)
                         if(message != null) {
-                            
+
                             def phoneNumber = solicitudDeCredito.cliente.telefonoCliente.numeroTelefonico
 
                             try {
@@ -226,6 +227,7 @@ class NotificacionesService {
 
                     eq ('ultimoPaso', notificacion.status)
                     eq ('entidadFinanciera', entidadFinanciera)
+                    eq ('solicitudVigente', Boolean.TRUE)
                     eq ('ec.vigente', Boolean.TRUE)
                     eq ('t.id', Constants.TipoEmail.PERSONAL.value)
                     eq ('t.activo', Boolean.TRUE)
@@ -267,12 +269,12 @@ class NotificacionesService {
                             origen = new PlantillaSolicitud(solicitudDeCredito)
                         }
                         String message = this.buildMessage(origen, map, notificacion.plantilla)
-                        
+
                         if(message != null) {
                             String email = solicitudDeCredito.cliente.emailCliente.direccionDeCorreo
 
                             try {
-                               
+
                                 (this.sendEmailMessage(notificacion.asunto, email, message, configuracion)) ? exitosos ++ : erroneos ++
                             } catch (Exception ex){
                                 erroneos ++
@@ -295,7 +297,7 @@ class NotificacionesService {
     private String buildMessage(Object obj, Map map, String template){
         try {
             Object someObject = obj;
-            
+
             for (Field field : someObject.getClass().getDeclaredFields()) {
                 field.setAccessible(Boolean.TRUE);
                 Object value = field.get(someObject);
@@ -325,10 +327,9 @@ class NotificacionesService {
 
     private boolean sendMessage(String phoneNumber, String message, ConfiguracionEntidadFinanciera configuracion) throws Exception {
         phoneNumber = phoneNumber.replaceAll('-', '')
-        
+
         Future future = executorService.submit([call: {
                     boolean value = this.smsService.sendSMS(phoneNumber, message, configuracion)
-                    
                     return value
                 }] as Callable)
         boolean response = future.get()
@@ -347,7 +348,7 @@ class NotificacionesService {
     }
 
     def getSmsTemplates(EntidadFinanciera entidadFinanciera){
-        
+
         return this.getTemplatesByType(entidadFinanciera, Constants.TipoPlantilla.SMS)
     }
 
