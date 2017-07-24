@@ -2277,7 +2277,6 @@ function inicializarDropzone(elemento, boton) {
         paramName: "archivo",
         params: {'docType': $('#tipoDeDocumento').val(), 'cara': cara},
         maxFiles: 1,
-        maxFilesize: 3,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
         autoQueue: true,
         createImageThumbnails: false,
