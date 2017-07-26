@@ -3,6 +3,7 @@ package la.kosmos.app
 
 import grails.transaction.Transactional
 import la.kosmos.app.NotificacionesJob
+import la.kosmos.app.vo.Constants
 import org.quartz.CronScheduleBuilder
 import org.quartz.CronTrigger
 import org.quartz.TriggerBuilder
@@ -10,8 +11,6 @@ import org.quartz.TriggerKey
 
 @Transactional
 class ConfiguracionNotificacionesService {
-
-    def quartzScheduler
 
     def startScheduler(){
         def criteria = NotificacionesCron.createCriteria()
@@ -23,25 +22,20 @@ class ConfiguracionNotificacionesService {
 
         if (cronList != null && !cronList?.empty) {
             cronList.each {
-                def trigger = buildTrigger(it)
-                NotificacionesJob.schedule(trigger);
+                stopScheduler(it)
+                addJob(it)
             }
         }
     }
 
     def stopScheduler(NotificacionesCron cron) {
         def id = cron.id.toString()
-
-        TriggerKey triggerKey = TriggerKey.triggerKey(id);
-        this.quartzScheduler.unscheduleJob(triggerKey)
+        NotificacionesJob.unschedule(id, Constants.TRIGGER_GROUP_CONFIG)
     }
 
     def rescheduleJob(NotificacionesCron cron){
         def trigger = buildTrigger(cron)
-
-        def id = cron.id.toString()
-        TriggerKey triggerKey = TriggerKey.triggerKey(id);
-        this.quartzScheduler.rescheduleJob(triggerKey, trigger)
+        NotificacionesJob.reschedule(trigger)
     }
 
     def addJob(NotificacionesCron cron) {
@@ -51,9 +45,9 @@ class ConfiguracionNotificacionesService {
 
     def buildTrigger (NotificacionesCron notificacion){
         CronTrigger trigger = TriggerBuilder.newTrigger()
-        .withIdentity(notificacion.id.toString())
+        .withIdentity(notificacion.id.toString(), Constants.TRIGGER_GROUP_CONFIG)
         .withSchedule(CronScheduleBuilder.cronSchedule(notificacion.cron))
-        .build();
+        .build()
 
         return trigger
     }

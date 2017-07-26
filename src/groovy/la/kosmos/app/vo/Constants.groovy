@@ -19,6 +19,7 @@ class Constants {
     static final Integer TOTAL_ROWS = 15
     static final Long ENTIDAD_FINANCIERA_ROOT = 1
     static final Integer STATUS_SOLICITUD_NOTIFICACION = 5
+    static final String TRIGGER_GROUP_CONFIG = "NOTIFICACION_TRIGGERS"
 
     enum TipoTelefono {
         FIJO(1), CELULAR(2), OFICINA(3)
