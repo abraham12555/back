@@ -38,7 +38,7 @@
                     <div class="col6 col12-mob floatLeft">
                         <div class="boxMargins solicitudWhiteBox height251 radius2 paddingBottom12 marginTop20">
                             <div class="navyBg radius2">
-                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">PRODUCTOS DISCRIMINDOS POR DICTAMEN </p>
+                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">PRODUCTOS DISCRIMINADOS POR DICTAMEN </p>
                             </div>
                             <div id="graficaProductosDiscriminados" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
                         </div>
