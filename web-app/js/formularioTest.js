@@ -2277,11 +2277,11 @@ function inicializarDropzone(elemento, boton) {
         paramName: "archivo",
         params: {'docType': $('#tipoDeDocumento').val(), 'cara': cara},
         maxFiles: 1,
-        maxFilesize: 3,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
         autoQueue: true,
         createImageThumbnails: false,
-        clickable: boton
+        clickable: boton,
+        maxFilesize: 10
     });
     kosmosDropzone.on("addedfile", function (file) {
 
@@ -2431,7 +2431,7 @@ function inicializarDropzone(elemento, boton) {
     kosmosDropzone.on("error", function (file, response) {
         $('.barraProgresoComp').fadeOut();
         $('#progresoConsultaIds').fadeOut();
-        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
+        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento \n"+ response, "error");
         this.removeAllFiles();
     });
 }
