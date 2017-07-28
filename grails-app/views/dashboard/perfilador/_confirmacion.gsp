@@ -14,19 +14,6 @@
     <p class="felicidadesP1">LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE</p>
     <br/>
 </div>
-        <div class="container">
-            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <g:jasperReport
-                        controller="dashboard"
-                        jasper="reporte10"
-                        action="printReport"
-                        format="PDF"
-                        name="Mi_Solicitud ">
-                        <input type="hidden" name="idProductoSolicitudPrintPerfilador" value='${ofertaSeleccionada?.productoSolicitud?.id}'/> 
-                    </g:jasperReport>
-                </strong>
-            </div>
-        </div>
 <div class="container containerBox">
     <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
         <div class="titles8">
@@ -47,6 +34,22 @@
             <div class="col6 col6-tab col12-mob floatLeft">
                 <div class="paddingAside10">
                     <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">EL FOLIO ES: <strong>${("" + ofertaSeleccionada?.productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
+                </div>  
+            </div>
+            <div class="col6 col6-tab col12-mob floatLeft">
+                <div class="paddingAside10">
+                    <g:jasperReport
+                        class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                        delimiter=" "
+                        description="IMPRIMIR"
+                        controller="dashboard"
+                        jasper="reporte10"
+                        action="printReport"
+                        format="PDF"
+                        name="Solicitud ">
+                        <input type="hidden" name="idProductoSolicitudPrintPerfilador" value='${ofertaSeleccionada?.productoSolicitud?.id}'/> 
+                    </g:jasperReport>
+                    </strong>
                 </div>  
             </div>
         </div>
