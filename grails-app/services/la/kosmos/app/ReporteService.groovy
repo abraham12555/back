@@ -35,6 +35,7 @@ class ReporteService {
                 datos.id = it.folio
                 datos.fechaDeSolicitud = it.fecha_de_solicitud
                 datos.tipo = it.tipo
+                datos.origen = it.origen
                 datos.status = it.status
                 datos.medioDeContacto  = it.medio_de_contacto 
                 datos.opcionDeContacto = it.opcion_de_contacto
@@ -103,6 +104,8 @@ class ReporteService {
                 datos.razonDeCobertura = it.razon_de_cobertura
                 datos.log = it.log
                 datos.respuesta = it.respuesta
+                datos.usuario = it.usuario
+                datos.montoPagoBuro = it.monto_pago_buro
                 datosReporte << datos
             }
             if(datosReporte.size() > 1 ){
@@ -136,6 +139,7 @@ class ReporteService {
                         row (style: 'titulo') {
                             cell { "FOLIO" }
                             cell { "FECHA DE SOLICITUD" }
+                            cell { "ORIGEN DE SOLICITUD" } 
                             cell { "STATUS" }
                             cell { "MEDIO DE CONTACTO" }
                             cell { "OPCION DE CONTACTO" }
@@ -143,6 +147,7 @@ class ReporteService {
                             cell { "ULTIMO PASO" }
                             cell { "SHORT URL" }
                             cell { "SUCURSAL" }
+                            cell { "EJECUTIVO QUE REGISTRÒ" }
                             cell { "NOMBRE DEL PRODUCTO" }
                             cell { "RUBRO" }
                             cell { "TIPO DE DOCUMENTO" }
@@ -151,6 +156,7 @@ class ReporteService {
                             cell { "MONTO DEL CREDITO" }
                             cell { "MONTO DEL PAGO" }
                             cell { "MONTO DEL SEGURO DE DEUDA" }
+                            cell { "MONTO DEL PAGO DE BC" }
                             cell { "PLAZOS" }
                             cell { "PERIODICIDAD" }
                             cell { "FECHA DE NACIMIENTO" }
@@ -206,6 +212,7 @@ class ReporteService {
                             row (style: 'contenido') {
                                 cell { fila.id ?: "-" }
                                 cell { fila.fechaDeSolicitud }
+                                cell { fila.origen }
                                 cell { fila.status } 
                                 cell { fila.medioDeContacto ?: "" }
                                 cell { fila.opcionDeContacto ?: ""} 
@@ -213,6 +220,7 @@ class ReporteService {
                                 cell { fila.ultimoPaso } 
                                 cell { fila.shortUrl ?: ""} 
                                 cell { fila.sucursal ?: ""} 
+                                cell { fila.usuario ?: ""} 
                                 cell { fila.nombreDelProducto ?: ""} 
                                 cell { fila.rubro ?: "" } 
                                 cell { fila.tipoDeDocumento ?: ""}
@@ -221,6 +229,7 @@ class ReporteService {
                                 cell { fila.montoDelCredito }
                                 cell { fila.montoDelPago } 
                                 cell { fila.montoDelSeguroDeDeuda } 
+                                cell { fila.montoPagoBuro } 
                                 cell { fila.plazos }
                                 cell { fila.periodicidad } 
                                 cell { fila.fechaDeNacimiento ?: "" } 

@@ -739,6 +739,8 @@ class PerfiladorService {
         //println "Oferta encontrada: " + oferta
         if(oferta && identificadores.idSolicitud) {
             def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud as long)
+            solicitud.montoPagoBuro = oferta.montoAPagar as float 
+            solicitud.save()
             ProductoSolicitud.executeUpdate("delete ProductoSolicitud ps where ps.solicitud.id = :idSolicitud",[idSolicitud: solicitud.id])
             def productoSolicitud =  new ProductoSolicitud()
             productoSolicitud.producto = Producto.get(params.productoId as long)
