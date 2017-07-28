@@ -15,7 +15,7 @@ class ConfiguracionBuroCreditoController {
 		println params
 		def respuesta = [:]
 		if(params.id_configuracion_buro && params.encabezadoClaveUsuario && params.encabezadoPassword && params.encabezadoProductoRequerido && params.urlBuroCredito && params.reintentos) {
-			ConfiguracionBuroCredito configuracion = ConfiguracionBuroCredito.findById(params.id_configuracion_buro)
+                        ConfiguracionBuroCredito configuracion = ConfiguracionBuroCredito.findById(params.id_configuracion_buro)
 			configuracion.encabezadoClaveUsuario = params.encabezadoClaveUsuario
 			configuracion.encabezadoPassword = params.encabezadoPassword
 			configuracion.encabezadoProductoRequerido = params.encabezadoProductoRequerido

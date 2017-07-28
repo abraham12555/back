@@ -1900,10 +1900,6 @@ class SolicitudService {
             and telefono_cliente.numero_telefonico ='"+telefono+"' \
             and telefono_cliente.tipo_de_telefono_id = 2 and telefono_cliente.vigente = true"
             resultados = sql.rows(query)
-            resultados.each{
-                println it.token
-            }
-            println "tamaño"+ resultados.size()
             if (resultados.size > 1) {
                 respuesta.multiplesClientes = true   
             }

@@ -110,8 +110,6 @@ class DashboardController {
     }
 
     def getSolicitudesBusqueda (){
-        println "Params: " + params
-        println "JSON: " + request.JSON
         def fechaInicio
         def fechaFinal
         def pagina = request.JSON.page as long
@@ -442,7 +440,6 @@ class DashboardController {
     }
     
     def getSolicitudes (){
-        println params
         Pager pager = new Pager(request.JSON)
         def entidadFinanciera = session.usuario.entidadFinanciera
         def solicitudes = dashboardService.getSolicitudes(entidadFinanciera, pager)

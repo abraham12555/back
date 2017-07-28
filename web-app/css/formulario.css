@@ -1078,7 +1078,17 @@ body{
     box-shadow: inset 0 -1px 0 0 #71758d;
     border: solid 1px #dfe2f4;
 }
+.inputCorrect {
+    border-radius: 2px;
+    background-color: #ffffff;
+    border: solid 1px #33c56e;
+}
 
+.inputError {
+    border-radius: 2px;
+    background-color: #ffffff;
+    border: solid 1px #ff0000;
+}
 .graphBox{
     background-color: white;
     margin: 0 15px 43px 15px;

@@ -30,7 +30,7 @@ $(document).ready(function () {
         $("#currentPageSolicitudesBusqueda").val(page);
          pagination(parseInt(totalPages),parseInt(page), idPaginacion);
     }
-    
+        
     $(function () {
         $("#accordion").accordion({
             header: "h1",
@@ -169,8 +169,9 @@ $(document).ready(function () {
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
     });
-
+ 
     getProfilePicture();
+    operacionesValidar();
 });
 
 window.onclick = function (event) {
@@ -3431,7 +3432,7 @@ function eliminarGarantia(idGarantia, idProductoTemp) {
 }
 
 function mostrarDocumentos(data) {
-    var html = ""
+    var html = "";
     var resultado = eval(data);
     $('#cantidadDePreguntas').val(resultado.length);
     if (resultado.length > 0) {

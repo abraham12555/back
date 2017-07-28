@@ -6,9 +6,6 @@ function cargarGraficas(periodoTiempo, fechaInicio, fechaFinal) {
     cargarGraficaOrigen(periodoTiempo, fechaInicio, fechaFinal);
     cargarGraficaPDV(periodoTiempo, fechaInicio, fechaFinal);
     cargarGraficaProductos(periodoTiempo, fechaInicio, fechaFinal);
-}
-
-function cargarReportesAnaliticas(periodoTiempo, fechaInicio, fechaFinal) {
     cargarGraficaUsoCredito(periodoTiempo, fechaInicio, fechaFinal);
     cargarGraficaProductosSolicitados(periodoTiempo, fechaInicio, fechaFinal);
     cargarGraficaComprobanteIngresos(periodoTiempo, fechaInicio, fechaFinal);

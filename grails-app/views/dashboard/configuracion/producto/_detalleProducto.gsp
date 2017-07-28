@@ -161,8 +161,13 @@
                                             <section class="container marginBottom20">
                                                 <div class="solicitudBox width480 autoMargin radius2 ">
                                                     <div id="urlImagenRubro" class="clearFix paddingTop15 paddingBottom15 paddingLeft25 paddingRight25">
+                                                        <g:if test="${rutaImagenDefault}">
                                                         <div  class="rubro-bg" style="background-image: url('data:image/${rutaImagenDefault?.extension};base64,${rutaImagenDefault?.base64}');">
                                                         </div>
+                                                        </g:if>
+                                                        <g:else>
+                                                         <img class="menuIcon" src="${resource(dir:'images', file:'red-icon.png')}" alt="No se encontró imagen" title="No se encontró imagen"> No se encotró imagen
+                                                        </g:else>
                                                         <div id="divDropzone2"  class="floatLeft subirImagen">
                                                             <a id="subirImagenProducto" title="BUSCAR EN MI PC" class="block whiteBox center gray2 paddingTop15 paddingBottom15 paddingLeft80 paddingRight80 pointer">BUSCAR EN MI PC</a>
                                                         </div>

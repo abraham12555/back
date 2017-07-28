@@ -44,9 +44,13 @@ class ProductoController {
     def obtenerBase64Imagenes(def ruta){
         def respuesta = [:]
         if(ruta){
-            byte[] array = Files.readAllBytes(new File(ruta).toPath());
-            respuesta.base64 = Base64.encodeBase64String(array)
-            respuesta.extension =  ruta.split("\\.")[-1]
+            try {
+                byte[] array = Files.readAllBytes(new File(ruta).toPath());
+                respuesta.base64 = Base64.encodeBase64String(array)
+                respuesta.extension =  ruta.split("\\.")[-1]
+            }
+            catch (Exception e){
+            }
         }
         return respuesta
     }

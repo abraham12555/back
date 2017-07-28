@@ -41,7 +41,7 @@ class CotizadorController {
         respuesta
         //}
     }
-   
+
     def obtenerPasos() {
         def respuesta = cotizadorService.cargarCatalogos(params)
         def pasosCotizador = RubroDeAplicacionPasoCotizador.executeQuery('Select r.paso from RubroDeAplicacionPasoCotizador r Where r.rubro.id = :rubro', [rubro: (params.rubroId as long)])

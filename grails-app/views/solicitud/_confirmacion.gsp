@@ -7,19 +7,6 @@
             <p class="felicidadesP1">TU CRÉDITO HA SIDO PRE-AUTORIZADO</p>
             <br/>
         </div>
-        <div class="container">
-            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <g:jasperReport
-                        controller="solicitud"
-                        jasper="reporte10"
-                        action="printReport"
-                        format="PDF"
-                        name="Mi_Solicitud ">
-                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
-                    </g:jasperReport>
-                </strong>
-            </div>
-        </div>
         <div class="container containerBox">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
                 <div class="titles8">
@@ -40,6 +27,22 @@
                             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
+                            <div class="col6 col6-tab col12-mob floatLeft">
+                                <div class="paddingAside10">
+                                            <g:jasperReport
+                                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                                                delimiter=" "
+                                                description="IMPRIME TU SOLICITUD"
+                                                controller="solicitud"
+                                                jasper="reporte10"
+                                                action="printReport"
+                                                format="PDF"
+                                                name="Mi_Solicitud ">
+                                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                                            </g:jasperReport>
+                                        </strong>
+                                </div>  
+                            </div>
                 </div>
                 <div class="titles8">
                     <h3 class="colorblue">SIGUIENTE PASO:</h3>
@@ -86,19 +89,6 @@
                 <span class="formTitleColor">${productoSolicitud?.solicitud?.sucursal?.toString()?.toUpperCase()}</span> 
                 PARA CONTINUAR CON EL TRÁMITE Y BRINDARTE MAYOR INFORMACIÓN DE NUESTROS PRODUCTOS DE CRÉDITO, AHORRO E INVERSIÓN.</p>
         </div>
-        <div class="container">
-            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <g:jasperReport
-                        controller="solicitud"
-                        jasper="reporte10"
-                        action="printReport"
-                        format="PDF"
-                        name="Mi_Solicitud ">
-                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
-                    </g:jasperReport>
-                </strong>
-            </div>
-        </div>
         <div class="container containerBox marginTop25">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
                 <div class="titles8">
@@ -118,6 +108,22 @@
                         <div class="paddingAside10">
                             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
+                    </div>
+                    <div class="col6 col6-tab col12-mob floatLeft">
+                                <div class="paddingAside10">
+                                    <g:jasperReport
+                                        class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                                        delimiter=" "
+                                        description="IMPRIME TU SOLICITUD"
+                                        controller="solicitud"
+                                        jasper="reporte10"
+                                        action="printReport"
+                                        format="PDF"
+                                        name="Mi_Solicitud ">
+                                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                                    </g:jasperReport>
+                                    </strong>
+                                </div>  
                     </div>
                 </div>
                 <div class="titles8">
@@ -170,19 +176,6 @@
                 <span class="formTitleColor">${productoSolicitud?.solicitud?.sucursal?.toString()?.toUpperCase()}</span> 
                 PARA CONTINUAR CON EL TRÁMITE Y BRINDARTE MAYOR INFORMACIÓN DE NUESTROS PRODUCTOS DE CRÉDITO, AHORRO E INVERSIÓN.</p>
         </div>
-        <div class="container">
-            <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto"><strong>
-                    <g:jasperReport
-                        controller="solicitud"
-                        jasper="reporte10"
-                        action="printReport"
-                        format="PDF"
-                        name="Mi_Solicitud ">
-                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
-                    </g:jasperReport>
-                </strong>
-            </div>
-        </div>
         <div class="container containerBox marginTop25">
             <div class="paddingTop40 paddingRight40 paddingBottom40 paddingLeft40 paddingTop25">
                 <div class="titles8">
@@ -201,6 +194,22 @@
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <div class="paddingAside10">
                             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
+                        </div>  
+                    </div>
+                    <div class="col6 col6-tab col12-mob floatLeft">
+                        <div class="paddingAside10">
+                            <g:jasperReport
+                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                                delimiter=" "
+                                description="IMPRIME TU SOLICITUD"
+                                controller="solicitud"
+                                jasper="reporte10"
+                                action="printReport"
+                                format="PDF"
+                                name="Mi_Solicitud ">
+                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                            </g:jasperReport>
+                            </strong>
                         </div>  
                     </div>
                 </div>
