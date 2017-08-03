@@ -11,6 +11,7 @@ var generoConyugue;
 var ubicacionSucursal;
 var listaDeSucursales;
 var cara = "frente";
+var vuelta;
 showSlides(slideIndex);
 
 function inicializarFormulario() {
@@ -2272,11 +2273,11 @@ function inicializarDropzone(elemento, boton) {
 
     var kosmosDropzone = new Dropzone(elemento, {
         url: $.contextAwarePathJS + "solicitud/consultarOCR",
-        uploadMultiple: true,
+        //uploadMultiple: true,
         parallelUploads: 1,
         paramName: "archivo",
         params: {'docType': $('#tipoDeDocumento').val(), 'cara': cara},
-        maxFiles: 1,
+        //maxFiles: 1,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
         autoQueue: true,
         createImageThumbnails: false,
@@ -2289,12 +2290,16 @@ function inicializarDropzone(elemento, boton) {
         $('.barraProgresoComp').fadeIn();
         $('#progresoConsultaIds').fadeIn();
     });
-    kosmosDropzone.on("sending", function (file, xhr, formData) {
+    kosmosDropzone.on("sending", function (file, xhr) {
 
-        formData.set("docType", $('#tipoDeDocumento').val());
-        formData.set("cara", cara);
+        $('#buttonArchivoFrente').removeClass('colorGreen');
+        $('#buttonArchivoFrente').addClass('darkGray');
+        $(".dz-hidden-input").prop("disabled",true);
     });
     kosmosDropzone.on("success", function (file, response) {
+          $('#buttonArchivoFrente').removeClass('darkGray'); 
+          $('#buttonArchivoFrente').addClass('colorGreen');
+          $(".dz-hidden-input").prop("disabled",false);
         var respuesta = eval(response);
 
         if (respuesta.vigente === true || respuesta.exito === true) {
@@ -2359,6 +2364,9 @@ function inicializarDropzone(elemento, boton) {
                         $('#archivoFrente').fadeOut();
                         $('#archivoVuelta').fadeIn();
                         cara = "vuelta";
+                        kosmosDropzone.off();
+                        kosmosDropzone.destroy();
+                        inicializarDropzone('div#divDropzoneIds', '.foldersBox');
                         $('#label3Ids').addClass('active_blue');
                         $('#label2Ids').removeClass('active_blue');
                         $('#label1Ids').removeClass('active_blue');
@@ -2429,6 +2437,9 @@ function inicializarDropzone(elemento, boton) {
         $('#progresoConsultaIds').fadeOut();
     });
     kosmosDropzone.on("error", function (file, response) {
+        $('#buttonArchivoFrente').removeClass('darkGray');
+        $('#buttonArchivoFrente').addClass('colorGreen');
+        $(".dz-hidden-input").prop("disabled",false);
         $('.barraProgresoComp').fadeOut();
         $('#progresoConsultaIds').fadeOut();
         sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento \n"+ response, "error");

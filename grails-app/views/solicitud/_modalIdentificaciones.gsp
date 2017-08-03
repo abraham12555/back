@@ -267,7 +267,7 @@
                         <div id="uploadFrente" class="col folderContainer center span_4_of_4">
                             <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder"/>
                             <p class="center letterspacing1.4 gray">Identificación (Frente)</p>
-                            <div data-box="archivoFrente" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
+                            <div id='buttonArchivoFrente'data-box="archivoFrente" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
                                 <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">subir</p>
                             </div>
                         </div>
