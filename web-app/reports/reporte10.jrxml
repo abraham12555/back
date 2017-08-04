@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c04e1347-252e-447b-9570-cfdae918e0ab">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="385"/>
+	<property name="ireport.y" value="308"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#FEFEFE"/>
@@ -42,6 +42,9 @@
 	<field name="origen" class="java.lang.String"/>
 	<field name="nombreCliente" class="java.lang.String"/>
 	<field name="email" class="java.lang.String"/>
+	<field name="rutaLogotipoFormatoBuro" class="java.lang.String"/>
+	<field name="claveDeProducto" class="java.lang.String"/>
+	<field name="montoPagoBuro" class="java.lang.Float"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -49,7 +52,7 @@
 		<band height="42" splitType="Stretch">
 			<image>
 				<reportElement x="2" y="0" width="237" height="42" uuid="cc68346e-dae5-4735-8161-dd5b01fc8249"/>
-				<imageExpression><![CDATA["/var/uploads/kosmos/config/CajaLibertad/imagenCorporativa/logo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$F{rutaLogotipoFormatoBuro}]]></imageExpression>
 			</image>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="237" y="0" width="316" height="42" forecolor="#013F7F" uuid="653e26d9-3576-44cb-ad17-be8b3aff0939"/>
@@ -93,7 +96,7 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="175" splitType="Stretch">
+		<band height="179" splitType="Stretch">
 			<line direction="BottomUp">
 				<reportElement x="354" y="0" width="1" height="168" uuid="f7e22720-b8af-43bd-bdcc-c560b62f2f40"/>
 				<graphicElement>
@@ -106,37 +109,30 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				<text><![CDATA[TU FOLIO ES :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="16" width="165" height="20" forecolor="#007DFF" uuid="de0c72cf-535c-4df2-ae35-5ab236064def"/>
+				<reportElement mode="Opaque" x="0" y="0" width="165" height="20" forecolor="#007DFF" uuid="de0c72cf-535c-4df2-ae35-5ab236064def"/>
 				<textElement verticalAlignment="Top">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DATOS DE TU CRÉDITO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="46" width="46" height="20" forecolor="#007DFF" uuid="03b13cf6-6830-4784-a154-cab021cb9541"/>
-				<textElement>
-					<font isBold="false"/>
-				</textElement>
-				<text><![CDATA[MONTO:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="66" width="46" height="20" forecolor="#007DFF" uuid="8235f54b-dfbd-49c9-b69e-6c59e5e84d4c"/>
+				<reportElement x="4" y="43" width="46" height="20" forecolor="#007DFF" uuid="8235f54b-dfbd-49c9-b69e-6c59e5e84d4c"/>
 				<text><![CDATA[PLAZO:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="86" width="136" height="20" forecolor="#007DFF" uuid="1cd9f8ab-4400-4b2b-8007-3ca69b908e91"/>
+				<reportElement x="4" y="60" width="136" height="20" forecolor="#007DFF" uuid="1cd9f8ab-4400-4b2b-8007-3ca69b908e91"/>
 				<text><![CDATA[SEGURO CON LIBERTAD:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="126" width="354" height="42" forecolor="#007DFF" uuid="972bf2da-602c-4dcc-ad86-940821f0cf71"/>
+				<reportElement x="4" y="126" width="354" height="42" forecolor="#007DFF" uuid="972bf2da-602c-4dcc-ad86-940821f0cf71"/>
 				<text><![CDATA[CAT:              Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="106" width="68" height="20" forecolor="#007DFF" uuid="da971dec-07ec-483e-93ca-b48bba08d5d1"/>
+				<reportElement x="4" y="91" width="68" height="20" forecolor="#007DFF" uuid="da971dec-07ec-483e-93ca-b48bba08d5d1"/>
 				<text><![CDATA[PRODUCTO:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="168" width="555" height="1" uuid="0a7d28f2-a132-4e0d-9be1-871881d0baae"/>
+				<reportElement x="0" y="167" width="555" height="1" uuid="0a7d28f2-a132-4e0d-9be1-871881d0baae"/>
 				<graphicElement>
 					<pen lineColor="#71758D"/>
 				</graphicElement>
@@ -149,28 +145,28 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				<textFieldExpression><![CDATA[$F{folio}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="$ #,##0" isBlankWhenNull="true">
-				<reportElement x="48" y="46" width="189" height="20" forecolor="#013F7F" uuid="74630aba-149f-42d6-9cca-9a98f303cf59"/>
+				<reportElement x="50" y="27" width="189" height="20" forecolor="#013F7F" uuid="74630aba-149f-42d6-9cca-9a98f303cf59"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{montoDelCredito}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="48" y="66" width="22" height="20" forecolor="#013F7F" uuid="88f249d6-3b92-41b3-8d65-1484363d705d"/>
+				<reportElement x="48" y="43" width="22" height="20" forecolor="#013F7F" uuid="88f249d6-3b92-41b3-8d65-1484363d705d"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{plazos}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="137" y="86" width="196" height="20" forecolor="#013F7F" uuid="b0163b7b-2aea-4350-9049-5ca062078e5d"/>
+				<reportElement x="138" y="60" width="196" height="20" forecolor="#013F7F" uuid="b0163b7b-2aea-4350-9049-5ca062078e5d"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{montoDelSeguroDeDeuda}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="70" y="106" width="231" height="20" forecolor="#013F7F" uuid="f89cdcb8-19eb-4a36-adaf-52f905cedc2c"/>
+				<reportElement x="70" y="91" width="231" height="20" forecolor="#013F7F" uuid="f89cdcb8-19eb-4a36-adaf-52f905cedc2c"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
@@ -184,11 +180,46 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				<textFieldExpression><![CDATA[$F{cat}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="70" y="66" width="208" height="20" forecolor="#013F7F" uuid="742f17ed-aeea-4768-b15c-29533c73e72d"/>
+				<reportElement x="70" y="43" width="208" height="20" forecolor="#013F7F" uuid="742f17ed-aeea-4768-b15c-29533c73e72d"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nomenclatura}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="76" width="127" height="20" forecolor="#007DFF" uuid="ec24a438-b4ba-4e54-819b-1f241816ad1d"/>
+				<text><![CDATA[CLAVE DEL PRODUCTO: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0" isBlankWhenNull="true">
+				<reportElement x="127" y="77" width="189" height="20" forecolor="#013F7F" uuid="ed473a28-1dd7-4596-8dea-0bfa446d10eb"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{claveDeProducto}]]></textFieldExpression>
+			</textField>
+			<elementGroup>
+				<staticText>
+					<reportElement x="4" y="26" width="46" height="20" forecolor="#007DFF" uuid="03b13cf6-6830-4784-a154-cab021cb9541"/>
+					<textElement>
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[MONTO:]]></text>
+				</staticText>
+			</elementGroup>
+			<staticText>
+				<reportElement x="4" y="106" width="136" height="20" forecolor="#007DFF" uuid="ffea176b-d61d-4125-94bd-0b45567c6864">
+					<printWhenExpression><![CDATA[$F{perfilador}.equals("true")]]></printWhenExpression>
+				</reportElement>
+				<text><![CDATA[MONTO A PAGAR EN BC:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.##" isBlankWhenNull="true">
+				<reportElement x="134" y="106" width="189" height="20" forecolor="#013F7F" uuid="d8b47005-fcfd-4f04-ae2d-a3ffcd08bc66">
+					<printWhenExpression><![CDATA[$F{perfilador}.equals("true")]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoPagoBuro}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
@@ -202,7 +233,7 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				<text><![CDATA[SIGUIENTE PASO: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="183" width="551" height="229" forecolor="#007DFF" uuid="35797af2-0c6b-4440-b71c-57a0f6bbd319">
+				<reportElement x="2" y="184" width="551" height="228" forecolor="#007DFF" uuid="35797af2-0c6b-4440-b71c-57a0f6bbd319">
 					<printWhenExpression><![CDATA[$F{origen}.equals("solicitud" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None">
@@ -226,13 +257,13 @@ Recuerde que Libertad Servicios Financieros nunca le solicitará que proporcione
 ]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="182" width="553" height="1" uuid="d605c08c-67d4-4c8b-bb9e-127328c90a6f"/>
+				<reportElement x="0" y="177" width="553" height="1" uuid="d605c08c-67d4-4c8b-bb9e-127328c90a6f"/>
 				<graphicElement>
 					<pen lineColor="#71758D"/>
 				</graphicElement>
 			</line>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="2" y="19" width="541" height="163" forecolor="#013F7F" uuid="d8e8e9e0-fa87-4f23-98fb-3d50af4f0ef7">
+				<reportElement x="2" y="19" width="541" height="156" forecolor="#013F7F" uuid="d8e8e9e0-fa87-4f23-98fb-3d50af4f0ef7">
 					<printWhenExpression><![CDATA[$F{origen}.equals("solicitud")]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -248,7 +279,7 @@ $F{documentoElegidoCantidad}+" "+$F{documentoElegido}.toUpperCase()+
 "al momento de cotizar tu crédito."]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="2" y="20" width="539" height="162" forecolor="#013F7F" uuid="acf0a95f-18a7-484d-90a6-5ce3ccbb226c">
+				<reportElement x="2" y="15" width="539" height="156" forecolor="#013F7F" uuid="acf0a95f-18a7-484d-90a6-5ce3ccbb226c">
 					<printWhenExpression><![CDATA[$F{perfilador}.equals("true")]]></printWhenExpression>
 				</reportElement>
 				<textFieldExpression><![CDATA["RECUERDA QUE EL CLIENTE DEBE CUMPLIR CON LOS SIGUIENTES REQUISITOS:"+
@@ -257,7 +288,7 @@ $F{documentoElegidoCantidad}+" "+$F{documentoElegido}.toUpperCase()+
 $F{documentoElegidoCantidad}+" "+$F{documentoElegido}.toUpperCase()+" DEL ÚLTIMO MES"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="2" y="184" width="555" height="229" forecolor="#007DFF" uuid="64d2332c-ae36-4933-8628-6c8fa9c36c4b">
+				<reportElement x="1" y="184" width="555" height="229" forecolor="#007DFF" uuid="64d2332c-ae36-4933-8628-6c8fa9c36c4b">
 					<printWhenExpression><![CDATA[$F{perfilador}.equals( "true" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Justified">

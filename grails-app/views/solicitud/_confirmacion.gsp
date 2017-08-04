@@ -18,6 +18,7 @@
                             <p>MONTO: <strong><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /></strong></p>
                             <p>PLAZO: <strong>${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}</strong></p>
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
+                            <p>CLAVE DEL PRODUCTO: <strong>${productoSolicitud?.producto?.claveDeProducto?.toUpperCase()}</strong></p>
                             <p>PRODUCTO: <strong>${productoSolicitud?.producto?.nombreDelProducto?.toUpperCase()}</strong></p>
                             <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
@@ -27,22 +28,6 @@
                             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
-                            <div class="col6 col6-tab col12-mob floatLeft">
-                                <div class="paddingAside10">
-                                            <g:jasperReport
-                                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
-                                                delimiter=" "
-                                                description="IMPRIME TU SOLICITUD"
-                                                controller="solicitud"
-                                                jasper="reporte10"
-                                                action="printReport"
-                                                format="PDF"
-                                                name="Mi_Solicitud ">
-                                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
-                                            </g:jasperReport>
-                                        </strong>
-                                </div>  
-                            </div>
                 </div>
                 <div class="titles8">
                     <h3 class="colorblue">SIGUIENTE PASO:</h3>
@@ -59,6 +44,36 @@
                         <div class="paddingAside10">
                             <div class="colorGreen buttonM abrirMapa radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer">UBICA TU SUCURSAL EN EL MAPA</div>
                         </div>
+                    </div>
+                </div>
+                <div class="boxes8 col12 clearFix">
+                    <div class="col6 col6-tab col12-mob floatLeft marginTop20 marginBottom20 formTitleColor">
+                        <p class="colorblue"><b> ¡AYÙDANOS A MEJORAR!</b></p> 
+                        <p class="formTitleColor"><br>Responde estas 4 breves preguntas para saber que te pareció nuestro Servicio en Línea</p>
+                    </div>
+                    <div class="col6 col6-tab col12-mob floatLeft">
+                        <center>
+                            <div class="colorGreen buttonM abrirEncuesta radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer" > 
+                                <a href='https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true' target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+                <div class="boxes8  clearFix"><br>
+                    <div class="center colorblue font16 ">
+                        <center>
+                            <g:jasperReport
+                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                                delimiter=" "
+                                description="IMPRIME TU SOLICITUD"
+                                controller="solicitud"
+                                jasper="reporte10"
+                                action="printReport"
+                                format="PDF"
+                                name="Mi_Solicitud ">
+                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                            </g:jasperReport>
+                        </center>
                     </div>
                 </div>
                 <div class="center colorblue font16 marginTop50">
@@ -109,22 +124,6 @@
                             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
-                    <div class="col6 col6-tab col12-mob floatLeft">
-                                <div class="paddingAside10">
-                                    <g:jasperReport
-                                        class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
-                                        delimiter=" "
-                                        description="IMPRIME TU SOLICITUD"
-                                        controller="solicitud"
-                                        jasper="reporte10"
-                                        action="printReport"
-                                        format="PDF"
-                                        name="Mi_Solicitud ">
-                                        <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
-                                    </g:jasperReport>
-                                    </strong>
-                                </div>  
-                    </div>
                 </div>
                 <div class="titles8">
                     <h3 class="colorblue">SIGUIENTE PASO:</h3>
@@ -141,6 +140,36 @@
                         <div class="paddingAside10">
                             <div class="colorGreen buttonM abrirMapa radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer">UBICA TU SUCURSAL EN EL MAPA</div>
                         </div>
+                    </div>
+                </div>
+                <div class="boxes8 col12 clearFix">
+                    <div class="col6 col6-tab col12-mob floatLeft marginTop20 marginBottom20 formTitleColor">
+                        <p class="colorblue"><b> ¡AYÙDANOS A MEJORAR!</b></p> 
+                        <p class="formTitleColor"><br>Responde estas 4 breves preguntas para saber que te pareció nuestro Servicio en Línea</p>
+                    </div>
+                    <div class="col6 col6-tab col12-mob floatLeft">
+                        <center>
+                            <div class="colorGreen buttonM abrirEncuesta radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer" > 
+                                <a href='https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true' target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+                <div class="boxes8  clearFix"><br>
+                    <div class="center colorblue font16 ">
+                        <center>
+                            <g:jasperReport
+                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                                delimiter=" "
+                                description="IMPRIME TU SOLICITUD"
+                                controller="solicitud"
+                                jasper="reporte10"
+                                action="printReport"
+                                format="PDF"
+                                name="Mi_Solicitud ">
+                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                            </g:jasperReport>
+                        </center>
                     </div>
                 </div>
                 <div class="boxes8 col12 clearFix">
@@ -196,22 +225,6 @@
                             <div class="colorGreen buttonM radius100 colorWhite marginTop25 marginBottom25 mobileAuto">TU FOLIO ES: <strong>${("" + productoSolicitud?.solicitud?.folio).padLeft(6, '0')}</strong></div>
                         </div>  
                     </div>
-                    <div class="col6 col6-tab col12-mob floatLeft">
-                        <div class="paddingAside10">
-                            <g:jasperReport
-                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
-                                delimiter=" "
-                                description="IMPRIME TU SOLICITUD"
-                                controller="solicitud"
-                                jasper="reporte10"
-                                action="printReport"
-                                format="PDF"
-                                name="Mi_Solicitud ">
-                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
-                            </g:jasperReport>
-                            </strong>
-                        </div>  
-                    </div>
                 </div>
                 <div class="titles8">
                     <h3 class="colorblue">SIGUIENTE PASO:</h3>
@@ -228,6 +241,36 @@
                         <div class="paddingAside10">
                             <div class="colorGreen buttonM abrirMapa radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer">UBICA TU SUCURSAL EN EL MAPA</div>
                         </div>
+                    </div>
+                </div>
+                <div class="boxes8 col12 clearFix">
+                    <div class="col6 col6-tab col12-mob floatLeft marginTop20 marginBottom20 formTitleColor">
+                        <p class="colorblue"><b> ¡AYÙDANOS A MEJORAR!</b></p> 
+                        <p class="formTitleColor"><br>Responde estas 4 breves preguntas para saber que te pareció nuestro Servicio en Línea</p>
+                    </div>
+                    <div class="col6 col6-tab col12-mob floatLeft">
+                        <center>
+                            <div class="colorGreen buttonM abrirEncuesta radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer" > 
+                                <a href='https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true' target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+                <div class="boxes8  clearFix"><br>
+                    <div class="center colorblue font16 ">
+                        <center>
+                            <g:jasperReport
+                                class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
+                                delimiter=" "
+                                description="IMPRIME TU SOLICITUD"
+                                controller="solicitud"
+                                jasper="reporte10"
+                                action="printReport"
+                                format="PDF"
+                                name="Mi_Solicitud ">
+                                <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
+                            </g:jasperReport>
+                        </center>
                     </div>
                 </div>
                 <div class="boxes8 col12 clearFix">
@@ -254,19 +297,6 @@
     </div>
 </section>
 </g:else>
-<div class="solicitudLightbox " id="encuesta">
-    <div class="overlay"></div>
-    <div class="resumenSolicitud lightboxPos">
-        <div onclick="closeModal('encuesta');">
-            <span class="floatRight borderGray radius100 " style="margin-right: 5%;">
-                <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><i class="fa fa-times " aria-hidden="true"></i></p>
-            </span>
-        </div>
-        <div class="padding20">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true" width="100%" height="500" frameborder="0" marginheight="-100" marginwidth="0">Cargando...</iframe> 
-        </div>
-    </div>
-</div>
 <g:render template="modalMapa"/>
 <script>
     $(document).ready(function() {

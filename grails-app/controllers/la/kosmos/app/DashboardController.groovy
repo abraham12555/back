@@ -2443,6 +2443,9 @@ class DashboardController {
         respuesta.perfilador = true
         respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
         respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
+        respuesta.rutaLogotipoFormatoBuro = configuracion?.rutaLogotipoFormatoBuro
+        respuesta.montoPagoBuro =  productoSolicitud?.solicitud?.montoPagoBuro
+        respuesta.claveDeProducto =  productoSolicitud.producto?.claveDeProducto
         mapa << respuesta
         params._format= "PDF"
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)

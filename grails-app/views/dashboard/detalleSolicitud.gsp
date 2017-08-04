@@ -603,13 +603,13 @@
                                 </div>
                                 <div class="col6 col12-mob floatLeft">
                                     <div class="mobileAside10 solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom1">
-                                        <div class="marginLeft32">
-                                            <p class="font12 fontWeight500 gray paddingTop10">PRODUCTO</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto}</p>
-                                        </div>
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">CLAVE DEL PRODUCTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto.claveDeProducto}</p>
+                                        </div>
+                                        <div class="marginLeft32">
+                                            <p class="font12 fontWeight500 gray paddingTop10">PRODUCTO</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto}</p>
                                         </div>
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">MONTO DEL CRÉDITO</p>
@@ -1197,6 +1197,10 @@
                                         <div class="paddingLeft30 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">SALDO VENCIDO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldosVencidos}</p>
+                                        </div>
+                                        <div class="paddingLeft30 lightGrayBG">
+                                            <p class="font12 fontWeight500 gray paddingTop10">MONTO A PAGAR EN BC</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">$ ${datosSolicitud.solicitud?.montoPagoBuro}</p>
                                         </div>
                                     </div>
                                 </div>
