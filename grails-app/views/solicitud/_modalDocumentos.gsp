@@ -6,6 +6,18 @@
             <p class="textUpper gray paddingTop7 paddingBottom5 font18 center paddingLeft20 paddingRight20"><span class="notMobile paddingRight5">cerrar</span><i class="fa fa-times " aria-hidden="true"></i></p>
         </span>
         <div class="border1 clearFloat"></div>
+        <div class="clearFix">
+            <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20 barraProgresoComp">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+                <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
+            </div>
+        </div>
         <div class="docStep">
             <div class="col12 col10-tab col12-mob autoMargin marginTop80 marginBottom80">
                 <div class="paddingTop20 paddingBottom20">
@@ -31,17 +43,5 @@
                 </div>
             </div>
         </div>
-        <div class="clearFix">
-            <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
-                <div class="spinner">
-                    <div class="rect1"></div>
-                    <div class="rect2"></div>
-                    <div class="rect3"></div>
-                    <div class="rect4"></div>
-                    <div class="rect5"></div>
-                </div>
-                <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
-            </div>
-        </div>
-    </div>
+</div>
 </div>

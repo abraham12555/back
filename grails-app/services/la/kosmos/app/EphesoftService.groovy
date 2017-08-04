@@ -63,6 +63,24 @@ class EphesoftService {
             file1 = new File(namePDF)
         }
         println("#######Ruta del archivo1: " + file1.absolutePath)
+
+        /*
+         * PARA AGREGAR FUNCIONALIDAD DE EPHESOFT SE DEBERÁ INVOCAR AL MÉTODO 
+         * consultaEphesoft(file1, docType)
+         * */
+        
+        responseBody.vigente = Boolean.TRUE
+        responseBody.ephesoftDefault = Boolean.TRUE
+        return responseBody;
+    }
+
+    /*
+     * METODO SIN USAR. VER ocrClassifyExtract
+     * */
+    def consultaEphesoft(File file1, docType) {
+        PostMethod mPost
+        def responseBody = [:]
+
         Part[] parts = new Part[3];
         try {
             def configuracion = ConfiguracionKosmos.get(1)
@@ -157,6 +175,9 @@ class EphesoftService {
         return nombrePDF;
     }
     
+    /*
+     * METODO SIN USAR. VER consultaEphesoft
+     * */
     def verificarRespuestaEphesoft(String respuesta){
         def mapa = [:]
         def respuestaEphesoft = new XmlParser().parseText(respuesta)

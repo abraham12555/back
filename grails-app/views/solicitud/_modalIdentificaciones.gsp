@@ -260,6 +260,16 @@
                 <div class="clearFloat"></div>
             </div>
         </div>
+        <div id="progresoConsultaIds" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+            <center><span style="color: #71758d;">Estamos subiendo tu identificación, espera por favor...</span></center>
+        </div>
         <div id="subirArchivoIds" class="file_uploads" style="display: none;">
             <div id="archivoFrente" class="col12 clearFix">
                 <div class="clearFix padding20">
@@ -327,16 +337,6 @@
                 </div>
                 <div class="clearFloat"></div>
             </div>
-        </div>
-        <div id="progresoConsultaIds" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20">
-            <div class="spinner">
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-            </div>
-            <center><span style="color: #71758d;">Estamos subiendo tu identificación, espera por favor...</span></center>
         </div>
         <div class="idLastStep hide">
         </div>

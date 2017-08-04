@@ -1429,6 +1429,7 @@ function avanzarPaso(paso) {
                 } else if (tipoDePaso === "resumen") {
                     habilitarBotonesAvance();
                     operacionesResumen();
+                    addCloseModalEvent();
                 } else if (tipoDePaso === "confirmacion") {
                     habilitarBotonesAvance();
                     operacionesConfirmacion();
@@ -2071,10 +2072,7 @@ function closeModal(divModal) {
 }
 
 function operacionesModal() {
-    $('.closeModal').unbind('click');
-    $('.closeModal').click(function () {
-        $(this).parent().parent().fadeOut();
-    });
+    addCloseModalEvent();
     
     $('.pasaporteId').unbind('click');
     $('.pasaporteId').click(function () {
@@ -2348,31 +2346,13 @@ function inicializarDropzone(elemento, boton) {
             if (pasoActual === "0") {
                 $('#formLogin').submit();
             } else {
-                var direccion = (respuesta.calle ? respuesta.calle : respuesta.direccion);
-                if (respuesta.direccion) {
+                if (respuesta.ephesoftDefault) {
                     sweetAlert({html: false, title: "¡Excelente!", text: "El documento se ha subido correctamente.", type: "success"});
                     closeModal('comprobante_domicilio');
-                    $('#calle').val(direccion);
-                    $('#calle').addClass("notEmpty");
-                    $('#calle').addClass("headingColor");
-                    if (respuesta.codigoPostal) {
-                        $('#codigoPostal').val(respuesta.codigoPostal);
-                        $('#codigoPostal').addClass("notEmpty");
-                        $('#codigoPostal').addClass("headingColor");
-                        $('#municipio').val(respuesta.municipio);
-                        $('#municipio').addClass("notEmpty");
-                        $('#municipio').addClass("headingColor");
-                        $('#estado').val(respuesta.estado);
-                        $('#estado').addClass("notEmpty");
-                        $('#estado').addClass("headingColor");
-                    }
                     $('.defaultBubble').fadeOut();
                     $('.successBubble').fadeIn();
+                    $('#paso6CompDom').removeClass('darkGray');
                     $('#paso6CompDom').addClass('colorGreen');
-                    $('#pasoPrellenado').val("true");
-                    $('.showOnFill').each(function (index) {
-                        mostrarSiguienteCampo(index);
-                    });
                     habilitarTerminarSolicitud();
                     if (document.getElementById('login')) {
                         $('#submitLogin').click();
@@ -2495,6 +2475,12 @@ function sendRequestForm() {
     ga('send', 'pageview');
 }
 
+function addCloseModalEvent() {
+    $('.closeModal').unbind('click');
+    $('.closeModal').click(function () {
+        $(this).parent().parent().fadeOut();
+    });
+}
 // ***************************** Fin de Funciones Auxiliares
 
 // ***************************** Inicio de Validaciones

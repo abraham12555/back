@@ -71,6 +71,16 @@
                         <span class="font16 colorWhite center letterspacing1">VER MÁS TIPS</span>
                     </div>
                 </div>-->
+                <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20 barraProgresoComp">
+                    <div class="spinner">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+                    <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
+                </div>
                 <div class="clearFix">
 
                     <div class="col6 col12-tab floatLeft">
@@ -174,17 +184,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div id="progresoConsultaComp" style="display:none;margin-left: 25%;width: 50%;" class="floatLeft marginLeft20 barraProgresoComp">
-            <div class="spinner">
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-            </div>
-            <center><span style="color: #71758d;">Estamos subiendo tu comprobante, espera por favor...</span></center>
         </div>
     </div>
 </div>
