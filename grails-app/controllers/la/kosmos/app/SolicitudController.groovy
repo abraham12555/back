@@ -921,6 +921,12 @@ class SolicitudController {
                     def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
                     respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId)
                     session.contadorOcr++
+                } else {
+                    respuesta = [:]
+                    respuesta.vigente = true
+                    respuesta.exito = true
+                    respuesta.llenadoPrevio = false
+                    ocr = true
                 }
             } else if (params.cara == "vuelta") {
                 respuesta = [:]
@@ -944,7 +950,7 @@ class SolicitudController {
             ocr = false
         }
         if((!respuesta?.error || respuesta?.vigente == true) && !respuesta?.motivosRechazo) {
-            if(ocr){
+            if(ocr && respuesta.llenadoPrevio){
                 session["pasoFormulario"] = respuesta
                 if(session.cotizador?.emailCliente && session["pasoFormulario"]){
                     session["pasoFormulario"].emailCliente = [:]
@@ -955,33 +961,42 @@ class SolicitudController {
                     session["pasoFormulario"].telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
                 }
             }
-        }
-        session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
-        if(session.identificadores?.idSolicitud){
-            if(ocr){
-                solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+            //} 
+            session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
+            if(session.identificadores?.idSolicitud){
+                if(ocr){
+                    solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                } else {
+                    respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                }
             } else {
-                respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
             }
-        } else {
-            session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
         }
         println respuesta
         render respuesta as JSON
     }
     
     def consultarBuroDeCredito(){
-        //println URLDecoder.decode(params.cadenaDeBuro, "UTF-8")
-        ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
-        println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
-        println "session.identificadores: " + session.identificadores
-        def respuesta
-        if(params.intl && params.intl == "true") {
-            respuesta = buroDeCreditoService.consultaINTL(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+        if(session.ef){
+            //println URLDecoder.decode(params.cadenaDeBuro, "UTF-8")
+            ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
+            println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
+            println "session.identificadores: " + session.identificadores
+            def respuesta
+            if(params.intl && params.intl == "true") {
+                respuesta = buroDeCreditoService.consultaINTL(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+            } else {
+                respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+            }
+            render respuesta as JSON
         } else {
-            respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
+            session.invalidate()
+            def respuesta = [:]
+            respuesta.sesionExpirada = true
+            respuesta.mensaje = "Tu sesión ha expirado. Para continuar con tu solicitud da click en el siguiente botón."
+            render respuesta as JSON
         }
-        render respuesta as JSON
     }
     
     def cargaDeArchivos(){
@@ -1045,41 +1060,48 @@ class SolicitudController {
     def consultarCodigoPostal(){
         println params
         def respuesta = [:]
-        if(params.idCodigoPostal){
-            def cp = params.idCodigoPostal?.replaceFirst('^0+(?!$)', '')
-            def codigo = CodigoPostal.findAllWhere(codigo: cp)
-            if(codigo){
-                respuesta.asentamientos = codigo*.asentamiento as Set
-                respuesta.asentamientos = respuesta.asentamientos.sort{ it }
-                respuesta.municipio =  codigo*.municipio[0]
-                respuesta.estado = respuesta.municipio.estado
-                def sucursales = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: respuesta.estado)
-                if(sucursales) {
-                    respuesta.sucursales = []
-                    sucursales.each { sucursal ->
-                        def registro = [:]
-                        registro.coordenadas = [:]
-                        registro.id = sucursal.id
-                        registro.coordenadas.lat = sucursal.latitud
-                        registro.coordenadas.lng = sucursal.longitud
-                        registro.ubicacion = sucursal.ubicacion
-                        registro.numeroDeSucursal = sucursal.numeroDeSucursal
-                        registro.nombre = sucursal.nombre
-                        respuesta.sucursales << registro
+        if(session.ef){
+            if(params.idCodigoPostal){
+                def cp = params.idCodigoPostal?.replaceFirst('^0+(?!$)', '')
+                def codigo = CodigoPostal.findAllWhere(codigo: cp)
+                if(codigo){
+                    respuesta.asentamientos = codigo*.asentamiento as Set
+                    respuesta.asentamientos = respuesta.asentamientos.sort{ it }
+                    respuesta.municipio =  codigo*.municipio[0]
+                    respuesta.estado = respuesta.municipio.estado
+                    def sucursales = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef, estado: respuesta.estado)
+                    if(sucursales) {
+                        respuesta.sucursales = []
+                        sucursales.each { sucursal ->
+                            def registro = [:]
+                            registro.coordenadas = [:]
+                            registro.id = sucursal.id
+                            registro.coordenadas.lat = sucursal.latitud
+                            registro.coordenadas.lng = sucursal.longitud
+                            registro.ubicacion = sucursal.ubicacion
+                            registro.numeroDeSucursal = sucursal.numeroDeSucursal
+                            registro.nombre = sucursal.nombre
+                            respuesta.sucursales << registro
+                        }
+                    } else {
+                        respuesta.sucursales = [:]
+                        respuesta.sucursales.noHaySucursales = true
+                        respuesta.sucursales.mensaje = ""
                     }
                 } else {
                     respuesta.sucursales = [:]
                     respuesta.sucursales.noHaySucursales = true
                     respuesta.sucursales.mensaje = ""
                 }
-            } else {
-                respuesta.sucursales = [:]
-                respuesta.sucursales.noHaySucursales = true
-                respuesta.sucursales.mensaje = ""
             }
+            println "Regresando: " + respuesta
+            render respuesta as JSON
+        } else {
+            session.invalidate()
+            respuesta.sesionExpirada = true
+            respuesta.mensaje = "Tu sesión ha expirado. Para continuar con tu solicitud da click en el siguiente botón."
+            render respuesta as JSON
         }
-        println "Regresando: " + respuesta
-        render respuesta as JSON
     }
     
     def obtenerOpciones(){
@@ -1292,9 +1314,9 @@ class SolicitudController {
             and telefono_cliente.tipo_de_telefono_id = 2 and telefono_cliente.vigente = true"
             resultados = sql.rows(query)
             if(resultados){
-                 respuesta.ok = true
-                 respuesta.tipo = "credito"
-                 respuesta.solicitud = resultados[0][0]
+                respuesta.ok = true
+                respuesta.tipo = "credito"
+                respuesta.solicitud = resultados[0][0]
             }
 
             if(!respuesta.ok){
@@ -1319,11 +1341,11 @@ class SolicitudController {
     
     def verificacion (){
         if(params.token){
-           [token:params.token]        
+            [token:params.token]        
         }else{
-               def entidadFinanciera = EntidadFinanciera.get(6)
-                    def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
-                    [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+            def entidadFinanciera = EntidadFinanciera.get(6)
+            def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+            [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
         }
     }
     def resume(){
@@ -1335,22 +1357,22 @@ class SolicitudController {
         if(params.token){
             def solicitud
             if(params.fechaDeNacimiento){
-            Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
-            criteria = SolicitudDeCredito.createCriteria()
-            results = criteria.list{
-                 createAlias('cliente', 'cef')
+                Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
+                criteria = SolicitudDeCredito.createCriteria()
+                results = criteria.list{
+                    createAlias('cliente', 'cef')
                     eq("token", params.token)
                     eq("cef.fechaDeNacimiento",fechaDeNacimiento)
-            }
-            solicitud = results[0]        
+                }
+                solicitud = results[0]        
             }else if (params.correoElectronico){
-               cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
+                cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
                 if(cliente){
-                   solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token,solicitudVigente:true)
+                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token,solicitudVigente:true)
                 }
             }
             else if ((params.telefonoCelular && params.solicitudId) && params.tipo=="credito"){
-                        solicitud = SolicitudDeCredito.findWhere(id:params.solicitudId as long,token:params.token)
+                solicitud = SolicitudDeCredito.findWhere(id:params.solicitudId as long,token:params.token)
             }
             if(solicitud){
                 def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
@@ -1371,7 +1393,7 @@ class SolicitudController {
             } else {
                 def temporal
                 if((params.telefonoCelular && params.solicitudId) && params.tipo=="temporal"){
-                   temporal = SolicitudTemporal.findWhere(token: params.token,id:params.solicitudId as long )
+                    temporal = SolicitudTemporal.findWhere(token: params.token,id:params.solicitudId as long )
                 }else if (params.correoElectronico){
                     temporal = SolicitudTemporal.findWhere(token: params.token,emailCliente:params.correoElectronico,solicitudVigente:true )
                 }
@@ -1458,16 +1480,30 @@ class SolicitudController {
     def recalcularOferta() {
         println params
         def respuesta = [:]
-        respuesta = perfiladorService.recalcularOferta(session.ofertas, params)
-        render respuesta as JSON
+        if(session.ef){
+            respuesta = perfiladorService.recalcularOferta(session.ofertas, params)
+            render respuesta as JSON
+        } else {
+            session.invalidate()
+            respuesta.sesionExpirada = true
+            respuesta.mensaje = "Tu sesión ha expirado. Para continuar con tu solicitud da click en el siguiente botón."
+            render respuesta as JSON
+        }
     }
     
     def seleccionarOferta() {
         println params
-        def respuesta
-        println session.pasoFormulario
-        respuesta = perfiladorService.guardarOferta(session.ofertas, session.pasoFormulario, session.identificadores , params)
-        render respuesta as JSON
+        def respuesta = [:]
+        if(session.ef){
+            println session.pasoFormulario
+            respuesta = perfiladorService.guardarOferta(session.ofertas, session.pasoFormulario, session.identificadores , params)
+            render respuesta as JSON
+        } else {
+            session.invalidate()
+            respuesta.sesionExpirada = true
+            respuesta.mensaje = "Tu sesión ha expirado. Para continuar con tu solicitud da click en el siguiente botón."
+            render respuesta as JSON
+        }
     }
     
     def printReport(){

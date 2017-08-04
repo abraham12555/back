@@ -37,10 +37,12 @@ function inicializarFormulario() {
         listaDeControl[i] = 0;
     }
 
+    $('.crosCircle').unbind('click');
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
     });
 
+    $('.overlay').unbind('click');
     $('.overlay').click(function () {
         return false;
     });
@@ -62,7 +64,7 @@ function inicializarFormulario() {
     } else if (tipoDePaso === "confirmacion") {
         operacionesConfirmacion();
     }
-    
+
     sendRequestForm();
 
     habilitarBotonesAvance();
@@ -181,10 +183,12 @@ function operacionesFormulario() {
     footerH = $('.footerContainer').outerHeight();
     setFooter();
 
+    $('.crosCircle').unbind('click');
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
     });
 
+    $('.overlay').unbind('click');
     $('.overlay').click(function () {
         return false;
     });
@@ -623,7 +627,10 @@ function consultarCodigoPostal(elemento, codigo) {
         url: $.contextAwarePathJS + 'solicitud/consultarCodigoPostal',
         success: function (data, textStatus) {
             var response = eval(data);
-            if (elemento === 'direccionCliente_codigoPostal') {
+            if (response.sesionExpirada) {
+                var mensaje = "<p style='text-align: justifiy;'>" + response.mensaje + "</p>";
+                continuarSolicitudExpirada(mensaje);
+            } else if (elemento === 'direccionCliente_codigoPostal') {
                 var colonia = $('#direccionCliente_colonia').val();
                 $('#direccionCliente_colonia').html("");
                 $('#direccionCliente_delegacion').html("");
@@ -1151,10 +1158,12 @@ function operacionesResumen() {
     footerH = $('.footerContainer').outerHeight();
     setFooter();
 
+    $('.crosCircle').unbind('click');
     $('.crosCircle').click(function () {
         $(this).parent().fadeOut();
     });
 
+    $('.overlay').unbind('click');
     $('.overlay').click(function () {
         $(this).parent().fadeOut();
     });
@@ -1173,35 +1182,42 @@ function operacionesResumen() {
         }
     });
 
+    $('.enviarSolicitud').unbind('click');
     $('.enviarSolicitud').click(function () {
         showValues();
         $('.enviarSolicitud').addClass('sendBtn');
     });
 
+    $('#paso6IdOf').unbind('click');
     $('#paso6IdOf').click(function () {
         if ($(this).hasClass("darkGray")) {
             openModal('identification_oficial');
         }
     });
 
+    $('#paso6CompDom').unbind('click');
     $('#paso6CompDom').click(function () {
         if ($(this).hasClass("darkGray")) {
             openModal('comprobante_domicilio');
         }
     });
 
+    $('#paso6Docto').unbind('click');
     $('#paso6Docto').click(function () {
         if ($(this).hasClass("darkGray")) {
             $('#tipoDeDocumento').val('ComprobanteDeIngresos');
             openModal('documento_solicitud');
-            inicializarDropzone('div#divDropzoneDocs', '.foldersBox');
+            inicializarDropzone('#divDropzoneDocs', '.foldersBoxDocs');
         }
     });
 
-    $('.foldersBox').click(function () {
+    $('.foldersBoxDocs').unbind('click');
+    $('.foldersBoxDocs').click(function () {
+        console.log("Evento de click sobre box: " + $(this).data('box'));
         $('#doctoCargado').val($(this).data('box'));
     });
 
+    $('#terminarSolicitud').unbind('click');
     $('#terminarSolicitud').click(function () {
         if ($(this).hasClass("blueButton")) {
             $('#resumen_solicitud').fadeOut();
@@ -1211,6 +1227,7 @@ function operacionesResumen() {
         }
     });
 
+    $('.solicitud_modal').unbind('click');
     $('.solicitud_modal').click(function () {
         if ($(this).hasClass('blueButton') === true) {
             $('#resumen_solicitud').fadeIn();
@@ -1347,6 +1364,19 @@ function checkIfJson(data) {
     }
 }
 
+function continuarSolicitudExpirada(mensaje) {
+    sweetAlert({html: true,
+        title: "¡Atención!",
+        text: mensaje,
+        type: "warning",
+        showCancelButton: false,
+        confirmButtonText: "Continuar mi solicitud",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = $('.tuShortUrl').text().replace("TU URL: ", "");
+    });
+}
+
 
 function avanzarPaso(paso) {
     var paso = paso;
@@ -1363,33 +1393,23 @@ function avanzarPaso(paso) {
             if (respuesta.error) {
                 var html = "<div class='container clearFix relative autoMargin width920'>";
                 html += "<div class='errorBoxRed floatLeft'><div class='infoContainer4c'>";
-                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensaje.toUpperCase() +"  "+ respuesta.mensajeError.toUpperCase()+"</p>";
+                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensaje.toUpperCase() + "  " + respuesta.mensajeError.toUpperCase() + "</p>";
                 html += "</div></div><div class='buttonOrange line18 floatLeft' style='background-color: #fb5e48;'></div><div class='buttonOrange crosCircle floatLeft' style='background-color: #fb5e48;'>";
                 html += "<p class='center marginTop5 font12 colorWhite'><i class='fa fa-times' aria-hidden='true'></i></p></div></div>";
                 $('#erroBubble').html(html);
                 $('#erroBubble').fadeIn();
-            } else if(respuesta.mensajeError){
-                    var html = "<div class='container clearFix relative autoMargin width920'>";
+            } else if (respuesta.mensajeError) {
+                var html = "<div class='container clearFix relative autoMargin width920'>";
                 html += "<div class='errorBoxRed floatLeft'><div class='infoContainer4c'>";
-                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensajeError.toUpperCase()+"</p>";
+                html += "<p class='center letterspacing0.5 font13 paddingLeft15 paddingTop15 paddingBottom10 colorWhite marginTop5'>" + respuesta.mensajeError.toUpperCase() + "</p>";
                 html += "</div></div><div class='buttonOrange line18 floatLeft' style='background-color: #fb5e48;'></div><div class='buttonOrange crosCircle floatLeft' style='background-color: #fb5e48;'>";
                 html += "<p class='center marginTop5 font12 colorWhite'><i class='fa fa-times' aria-hidden='true'></i></p></div></div>";
                 $('#erroBubble').html(html);
                 $('#erroBubble').fadeIn();
-                
-            }
-            else if (respuesta.sesionExpirada) {
+
+            } else if (respuesta.sesionExpirada) {
                 var mensaje = "<p style='text-align: justifiy;'>" + respuesta.mensaje + "</p>";
-                sweetAlert({html: true,
-                    title: "¡Atención!",
-                    text: mensaje,
-                    type: "warning",
-                    showCancelButton: false,
-                    confirmButtonText: "Continuar mi solicitud",
-                    closeOnConfirm: false
-                }, function () {
-                    window.location.href = $('.tuShortUrl').text().replace("TU URL: ", "");
-                });
+                continuarSolicitudExpirada(mensaje);
             } else {
                 $('#pasoActual').hide();
                 $('#pasoActual').html(data);
@@ -1417,7 +1437,7 @@ function avanzarPaso(paso) {
                     habilitarBotonesAvance();
                 }
                 actualizarProgreso(paso);
-                
+
                 if (tipoDePaso !== "pasoFormulario") {
                     sendRequestForm();
                 }
@@ -1874,10 +1894,10 @@ function consultarBuro() {
     var hipoteca = $('#creditoH').val();
     var creditoAutomotriz = $('#creditoA').val();
     var cadenaDeBuro = null;
-    if($.contextAwarePathJS === "/qa/") {
-       cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
+    if ($.contextAwarePathJS === "/qa/") {
+        cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
     } else {
-       cadenaDeBuro = "undefined";
+        cadenaDeBuro = "undefined";
     }
     if (tarjeta && hipoteca && creditoAutomotriz && cadenaDeBuro) {
         var numeroTarjeta = $('#numeroTarjeta').val();
@@ -2051,13 +2071,16 @@ function closeModal(divModal) {
 }
 
 function operacionesModal() {
+    $('.closeModal').unbind('click');
     $('.closeModal').click(function () {
         $(this).parent().parent().fadeOut();
     });
+    
+    $('.pasaporteId').unbind('click');
     $('.pasaporteId').click(function () {
         $('#tipoDeDocumento').val('Pasaportes');
         $('#nombreDeLaIdentificacion').html('frente de tu Pasaporte');
-        inicializarDropzone('div#divDropzoneIds', '.foldersBox');
+        inicializarDropzone('div#divDropzoneIds', '.foldersBoxIds');
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
         $('#label2Ids').addClass('active_blue');
@@ -2069,10 +2092,11 @@ function operacionesModal() {
         cara = "frente";
     });
 
+    $('.ineId').unbind('click');
     $('.ineId').click(function () {
         $('#tipoDeDocumento').val('Identicaciones');
         $('#nombreDeLaIdentificacion').html('frente de tu Credencial de Elector');
-        inicializarDropzone('div#divDropzoneIds', '.foldersBox');
+        inicializarDropzone('div#divDropzoneIds', '.foldersBoxIds');
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $(this).parent().parent().parent().parent().parent().next('.idView').delay(300).fadeIn();
         $('#label2Ids').addClass('active_blue');
@@ -2084,56 +2108,68 @@ function operacionesModal() {
         cara = "frente";
     });
 
+    $('.phoneCapture').unbind('click');
     $('.phoneCapture').click(function () {
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $('.phone_capture').delay(300).fadeIn();
     });
 
+    $('.camCapture').unbind('click');
     $('.camCapture').click(function () {
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $('.webcam_capture').fadeIn();
         inicializarCamara('Frente');
     });
 
+    $('#subirIdentificacion').unbind('click');
     $('#subirIdentificacion').click(function () {
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $('.file_uploads').fadeIn();
     });
 
+    $('.camCaptureComp').unbind('click');
     $('.camCaptureComp').click(function () {
         $(this).parent().parent().parent().parent().parent().fadeOut();
         $('.webcamCaptureComp').fadeIn();
         inicializarCamara('Comprobante');
     });
 
+    $('#repetirFotoFrente').unbind('click');
     $('#repetirFotoFrente').click(function () {
         inicializarCamara('Frente');
     });
 
+    $('#guardarFotoFrente').unbind('click');
     $('#guardarFotoFrente').click(function () {
         guardarFoto('Frente');
     });
 
+    $('#repetirFotoVuelta').unbind('click');
     $('#repetirFotoVuelta').click(function () {
         inicializarCamara('Vuelta');
     });
 
+    $('#guardarFotoVuelta').unbind('click');
     $('#guardarFotoVuelta').click(function () {
         guardarFoto('Vuelta');
     });
 
+    $('#repetirFotoComprobante').unbind('click');
     $('#repetirFotoComprobante').click(function () {
         inicializarCamara('Comprobante');
     });
 
+    $('#guardarFotoComprobante').unbind('click');
     $('#guardarFotoComprobante').click(function () {
         guardarFoto('Comprobante');
     });
 
+    $('.goLastStep').unbind('click');
     $('.goLastStep').click(function () {
         enviarShortUrl();
     });
 
+    $('.cfe').unbind('click');
     $('.cfe').click(function () {
         $('#tipoDeDocumento').val('reciboCfe');
         $('#nombreDelDocumento').html('Recibo de C.F.E.');
@@ -2146,6 +2182,8 @@ function operacionesModal() {
         $('#label2Comp').removeClass('gray');
         cara = "frente";
     });
+    
+    $('.telmex').unbind('click');
     $('.telmex').click(function () {
         $('#tipoDeDocumento').val('reciboTelmex');
         $('#nombreDelDocumento').html('Recibo de Telmex');
@@ -2159,6 +2197,7 @@ function operacionesModal() {
         cara = "frente";
     });
 
+    $('#paso1CompDom').unbind('click');
     $('#paso1CompDom').click(function () {
         $('#label1Comp').addClass('active_blue');
         $('#label2Comp').removeClass('active_blue');
@@ -2170,6 +2209,7 @@ function operacionesModal() {
         $('#webcamCaptureComp').hide();
     });
 
+    $('#paso2CompDom').unbind('click');
     $('#paso2CompDom').click(function () {
         if ($('#tipoDeDocumento').val()) {
             $('#label2Comp').addClass('active_blue');
@@ -2183,6 +2223,7 @@ function operacionesModal() {
         }
     });
 
+    $('#paso1Ids').unbind('click');
     $('#paso1Ids').click(function () {
         $('#label1Ids').addClass('active_blue');
         $('#label2Ids').removeClass('active_blue');
@@ -2201,6 +2242,7 @@ function operacionesModal() {
         $('#webcamCaptureIds').hide();
     });
 
+    $('#paso2Ids').unbind('click');
     $('#paso2Ids').click(function () {
         if ($('#tipoDeDocumento').val()) {
             $('#label2Ids').addClass('active_blue');
@@ -2273,11 +2315,11 @@ function inicializarDropzone(elemento, boton) {
 
     var kosmosDropzone = new Dropzone(elemento, {
         url: $.contextAwarePathJS + "solicitud/consultarOCR",
-        //uploadMultiple: true,
+        uploadMultiple: false,
         parallelUploads: 1,
         paramName: "archivo",
         params: {'docType': $('#tipoDeDocumento').val(), 'cara': cara},
-        //maxFiles: 1,
+        maxFiles: 1,
         acceptedFiles: ".pdf, .png, .jpg, .jpeg",
         autoQueue: true,
         createImageThumbnails: false,
@@ -2291,7 +2333,6 @@ function inicializarDropzone(elemento, boton) {
         $('#progresoConsultaIds').fadeIn();
     });
     kosmosDropzone.on("sending", function (file, xhr) {
-
         $('#buttonArchivoFrente').removeClass('colorGreen');
         $('#buttonArchivoFrente').addClass('darkGray');
         $(".dz-hidden-input").prop("disabled",true);
@@ -2344,7 +2385,7 @@ function inicializarDropzone(elemento, boton) {
                     }
                     mensaje += "</ul>";
                     sweetAlert({html: true, title: "¡Oops!", text: mensaje, type: "warning"});
-                } else if (respuesta.exito === true && respuesta.idArchivo) {
+                } else if (respuesta.exito === true && respuesta.idArchivo && respuesta.soloCarga) {
                     var posicion = $('#doctoCargado').val();
 
                     var cantidadRequerida = $('#cantidadSolicitada').val();
@@ -2360,13 +2401,10 @@ function inicializarDropzone(elemento, boton) {
                     habilitarTerminarSolicitud();
                 } else if (respuesta.exito || (respuesta.nombre && (respuesta.apellidoPaterno || respuesta.apellidoMaterno))) {
                     sweetAlert({html: true, title: "¡Excelente!", text: "El documento se ha subido correctamente.", type: "success"});
+                    console.log("Tipo de Documento: " + $('#tipoDeDocumento').val() + " Cara: " + cara);
                     if ($('#tipoDeDocumento').val() === "Identicaciones" && cara === "frente") {
                         $('#archivoFrente').fadeOut();
                         $('#archivoVuelta').fadeIn();
-                        cara = "vuelta";
-                        kosmosDropzone.off();
-                        kosmosDropzone.destroy();
-                        inicializarDropzone('div#divDropzoneIds', '.foldersBox');
                         $('#label3Ids').addClass('active_blue');
                         $('#label2Ids').removeClass('active_blue');
                         $('#label1Ids').removeClass('active_blue');
@@ -2376,6 +2414,10 @@ function inicializarDropzone(elemento, boton) {
                         var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
                         html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
                         $('#uploadFrente').html(html);
+                        cara = "vuelta";
+                        kosmosDropzone.off();
+                        kosmosDropzone.destroy();
+                        inicializarDropzone('div#divDropzoneIds', '.foldersBoxIds');
                     } else if ($('#tipoDeDocumento').val() === "Identicaciones" && cara === "vuelta") {
                         var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
                         html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
@@ -2442,12 +2484,12 @@ function inicializarDropzone(elemento, boton) {
         $(".dz-hidden-input").prop("disabled",false);
         $('.barraProgresoComp').fadeOut();
         $('#progresoConsultaIds').fadeOut();
-        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento \n"+ response, "error");
+        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento \n" + response, "error");
         this.removeAllFiles();
     });
 }
 
-function sendRequestForm(){
+function sendRequestForm() {
     var step = $("#currentStep").val();
     ga('set', 'page', '/solicitud/formulario/paso' + step);
     ga('send', 'pageview');
@@ -2750,22 +2792,27 @@ function calcularOferta(producto, montoDeCredito) {
         url: $.contextAwarePathJS + "solicitud/recalcularOferta",
         success: function (data, textStatus) {
             var respuesta = eval(data);
-            $(('#pago_' + producto)).html("<h6>PAGO " + respuesta.periodicidad + "</h6> " + formatCurrency(respuesta.cuota.cuota, "$") + " </li>");
-            $(('#pagoSeleccionado_' + producto)).val(respuesta.cuota.cuota);
-            //inicio-temporal
-            var html = "<h6>CÁLCULOS (Fines de Prueba)</h6>";
-            html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta.tasaDeInteres * 100), 2) + " %</p>";
-            html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta.cuota.montoSeguro, "$") + "</p>";
-            html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta.cuota.montoAsistencia, "$") + "</p>";
-            $('#temporal_' + producto).html(html);
-            //fin-temporal
-            var html2 = "4. GARANTIAS <ul>";
-            for (var k = 0; k < respuesta.garantias.length; k++) {
-                html2 += "<li class=\"requisitos\">" + respuesta.garantias[k].descripcion + "</li>";
+            if (respuesta.sesionExpirada) {
+                var mensaje = "<p style='text-align: justifiy;'>" + respuesta.mensaje + "</p>";
+                continuarSolicitudExpirada(mensaje);
+            } else {
+                $(('#pago_' + producto)).html("<h6>PAGO " + respuesta.periodicidad + "</h6> " + formatCurrency(respuesta.cuota.cuota, "$") + " </li>");
+                $(('#pagoSeleccionado_' + producto)).val(respuesta.cuota.cuota);
+                //inicio-temporal
+                var html = "<h6>CÁLCULOS (Fines de Prueba)</h6>";
+                html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta.tasaDeInteres * 100), 2) + " %</p>";
+                html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta.cuota.montoSeguro, "$") + "</p>";
+                html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta.cuota.montoAsistencia, "$") + "</p>";
+                $('#temporal_' + producto).html(html);
+                //fin-temporal
+                var html2 = "4. GARANTIAS <ul>";
+                for (var k = 0; k < respuesta.garantias.length; k++) {
+                    html2 += "<li class=\"requisitos\">" + respuesta.garantias[k].descripcion + "</li>";
+                }
+                html2 += "</ul>";
+                $('#requisitos_' + producto).html(html2);
+                $("body").mLoading('hide');
             }
-            html2 += "</ul>";
-            $('#requisitos_' + producto).html(html2);
-            $("body").mLoading('hide');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -2807,7 +2854,10 @@ function seleccionarOferta(posicion, producto) {
         url: $.contextAwarePathJS + "solicitud/seleccionarOferta",
         success: function (data, textStatus) {
             var respuesta = eval(data);
-            if (respuesta.error) {
+            if (respuesta.sesionExpirada) {
+                var mensaje = "<p style='text-align: justifiy;'>" + respuesta.mensaje + "</p>";
+                continuarSolicitudExpirada(mensaje);
+            } else if (respuesta.error) {
                 sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
             } else {
                 avanzarPaso($('#siguientePaso').val());
@@ -2830,13 +2880,13 @@ function round(value, decimals) {
 
 
 // ***************************** Inicio de Funciones Short Url
-function medioDeVerificacion(idDiv){
-            $('#seleccionMedioDeVerificacion').fadeOut();
-            $('#'+idDiv).fadeIn();
-            if (idDiv==="fechaDeNacimiento"){
-                 habilitarDatepicker();
+function medioDeVerificacion(idDiv) {
+    $('#seleccionMedioDeVerificacion').fadeOut();
+    $('#' + idDiv).fadeIn();
+    if (idDiv === "fechaDeNacimiento") {
+        habilitarDatepicker();
 
-            }
+    }
 
 }
 function habilitarDatepicker() {
@@ -2845,19 +2895,18 @@ function habilitarDatepicker() {
         var dateFormat = "dd/mm/yy",
                 from = $("#fechaNac")
                 .datepicker({
-                   changeMonth: true,
-                changeYear: true,
-                yearRange: '1900:+0',
-                
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: '1900:+0',
                 })
                 .on("change", function () {
                     to.datepicker("option", "minDate", getDate(this));
                 }),
                 to = $("#to").datepicker({
-               changeMonth: true,
-                changeYear: true,
-                yearRange: '1950:2013',
-                })
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2013',
+        })
                 .on("change", function () {
                     from.datepicker("option", "maxDate", getDate(this));
                 });
@@ -2876,13 +2925,13 @@ function habilitarDatepicker() {
 }
 
 $('.antPaso').on('click', function () {
-                $('#seleccionMedioDeVerificacion').fadeIn();
-                $('#fechaDeNacimiento').fadeOut();
-                $('#correoElectronico').fadeOut();
-                $('#telefonoCelular').fadeOut();
-                $('#codigoConfirmacion').fadeOut();
-    });
-   
+    $('#seleccionMedioDeVerificacion').fadeIn();
+    $('#fechaDeNacimiento').fadeOut();
+    $('#correoElectronico').fadeOut();
+    $('#telefonoCelular').fadeOut();
+    $('#codigoConfirmacion').fadeOut();
+});
+
 function verificarCodigo() {
     $.ajax({
         type: 'POST',
@@ -2926,9 +2975,9 @@ function operacionesShortUrl() {
             if ($(this).hasClass('validarEmail')) {
                 if (validateEmail($(this).val())) {
                     var respuesta = validateEmail($(this).val());
-                    if(respuesta === true){
+                    if (respuesta === true) {
                         //habilitarBoton();
-                       $('.email').attr('disabled', false);
+                        $('.email').attr('disabled', false);
 
                     }
                     if (validateDefaultAddress($(this).val())) {
@@ -2955,23 +3004,23 @@ function operacionesShortUrl() {
                 $(this).addClass('headingColor');
             }
             /*if ($(this).attr('id') === 'phoneVerificacion') {
-                
-                //verificarSolicitudSms($('#phoneVerificacion').val(),$('#token').val());
-                $('.enviar').attr('disabled', false);
+             
+             //verificarSolicitudSms($('#phoneVerificacion').val(),$('#token').val());
+             $('.enviar').attr('disabled', false);
+             
+             }*/
+            if ($(this).attr('id') === 'codigoVerificacion') {
 
-            }*/
-             if ($(this).attr('id') === 'codigoVerificacion') {
-                
                 resultadoVerificacion($('#codigoVerificacion').val());
             }
-        
+
         } else {
             $(this).removeClass('notEmpty');
             $(this).removeClass('headingColor');
         }
     });
 
-    
+
 }
 
 function validateEmail(email) {
@@ -2990,54 +3039,54 @@ function validateDefaultAddress(email) {
         return true;
     }
 }
-function verificarSms(){
+function verificarSms() {
     if ($('#phoneVerificacion').val() === '') {
-     sweetAlert("Oops...","El campo no puede ir vacio", "error");
-    }else{
+        sweetAlert("Oops...", "El campo no puede ir vacio", "error");
+    } else {
         var telefonoCelular = $('#phoneVerificacion').val();
-          $("body").mLoading({
-        text: "Verificando Solicitud, espere por favor...",
-        icon: "/images/spinner.gif",
-        mask: true
-    });
-    $.ajax({
-        type: 'POST',
-        data: {
-            telefonoCelular: $('#phoneVerificacion').val(),token:$('#token').val()
-        },
-        url: $.contextAwarePathJS + "solicitud/verificarSolicitudSms",
-        success: function (data, textStatus) {
-            var respuesta = eval(data);
-            if (respuesta.ok === true) {
-                sweetAlert("SMS Enviado", "Espera por favor entre 15 y 30 segundos para recibir tu código.", "success");
-                $('#telefonoCelular').fadeOut();
-                $('#codigoConfirmacion').fadeIn();
-                $('#phoneVerificacion').val(telefonoCelular);
-                $('#solicitudId').val(respuesta.solicitud);
-                $('#tipo').val(respuesta.tipo);
+        $("body").mLoading({
+            text: "Verificando Solicitud, espere por favor...",
+            icon: "/images/spinner.gif",
+            mask: true
+        });
+        $.ajax({
+            type: 'POST',
+            data: {
+                telefonoCelular: $('#phoneVerificacion').val(), token: $('#token').val()
+            },
+            url: $.contextAwarePathJS + "solicitud/verificarSolicitudSms",
+            success: function (data, textStatus) {
+                var respuesta = eval(data);
+                if (respuesta.ok === true) {
+                    sweetAlert("SMS Enviado", "Espera por favor entre 15 y 30 segundos para recibir tu código.", "success");
+                    $('#telefonoCelular').fadeOut();
+                    $('#codigoConfirmacion').fadeIn();
+                    $('#phoneVerificacion').val(telefonoCelular);
+                    $('#solicitudId').val(respuesta.solicitud);
+                    $('#tipo').val(respuesta.tipo);
 
-                enviarSms(telefonoCelular);
-            } else {
-                sweetAlert("Oops...", respuesta.mensaje, "error");
-                $('#phoneVerificacion').val(' ');
+                    enviarSms(telefonoCelular);
+                } else {
+                    sweetAlert("Oops...", respuesta.mensaje, "error");
+                    $('#phoneVerificacion').val(' ');
+                }
+                $("body").mLoading('hide');
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                $("body").mLoading('hide');
             }
-            $("body").mLoading('hide');
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
-            $("body").mLoading('hide');
-        }
-    });
+        });
     }
-    
-    
+
+
 }
- $('#phoneVerificacion').on('keyup', function (e) {
-        if (e.keyCode === 13) {
-            verificarSms();
-            return false;
-        }
-    });
+$('#phoneVerificacion').on('keyup', function (e) {
+    if (e.keyCode === 13) {
+        verificarSms();
+        return false;
+    }
+});
 
 function enviarSms(telefonoCelular) {
     $.ajax({

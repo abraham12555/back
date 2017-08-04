@@ -22,7 +22,7 @@
                             <div id="uploadDocto${i}" class="col folderContainer center span_1_of_4">
                                 <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder"/>
                                 <p class="center letterspacing1.4 gray">${productoSolicitud.documentoElegido?.nombre + " " + (i+1)}</p>
-                                <div data-box="${i}" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
+                                <div data-box="${i}" class="colorGreen radius100 marginTop17 marginLeft60 foldersBoxDocs marginBottom20">
                                     <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">subir</p>
                                 </div>
                             </div>

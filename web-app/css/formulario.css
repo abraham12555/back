@@ -1649,6 +1649,18 @@ body{
     margin-right: 50px;
 }
 
+.foldersBoxIds{
+    margin-right: 50px;
+}
+
+.foldersBoxCompDom{
+    margin-right: 50px;
+}
+
+.foldersBoxDocs{
+    margin-right: 50px;
+}
+
 .inputsFormulario{
     background-color: #F1F3FA;
     font-size: 35px;

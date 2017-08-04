@@ -561,6 +561,7 @@ class SolicitudService {
                 documento.tipoDeDocumento = TipoDeDocumento.get(11)
             } else {
                 documento.tipoDeDocumento = TipoDeDocumento.findByNombreMapeo(tipoDeDocumento)
+                respuesta.soloCarga = true
             }
             if(documento.save(flush:true)){
                 def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
