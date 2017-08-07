@@ -70,7 +70,7 @@
                                 jasper="reporte10"
                                 action="printReport"
                                 format="PDF"
-                                name="Mi_Solicitud ">
+                                name="Solicitud_de_Crédito_Libertad_SF">
                                 <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
                             </g:jasperReport>
                         </center>
@@ -115,6 +115,7 @@
                             <p>MONTO: <strong><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /></strong></p>
                             <p>PLAZO: <strong>${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}</strong></p>
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
+                            <p>CLAVE DEL PRODUCTO: <strong>${productoSolicitud?.producto?.claveDeProducto?.toUpperCase()}</strong></p>
                             <p>PRODUCTO: <strong>${productoSolicitud?.producto?.nombreDelProducto?.toUpperCase()}</strong></p>
                             <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
@@ -166,7 +167,7 @@
                                 jasper="reporte10"
                                 action="printReport"
                                 format="PDF"
-                                name="Mi_Solicitud ">
+                                name="Solicitud_de_Crédito_Libertad_SF ">
                                 <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
                             </g:jasperReport>
                         </center>
@@ -216,6 +217,7 @@
                             <p>MONTO: <strong><g:formatNumber number="${productoSolicitud?.montoDelCredito}" format="\044###,###,###.##" /></strong></p>
                             <p>PLAZO: <strong>${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}</strong></p>
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
+                            <p>CLAVE DEL PRODUCTO: <strong>${productoSolicitud?.producto?.claveDeProducto?.toUpperCase()}</strong></p>
                             <p>PRODUCTO: <strong>${productoSolicitud?.producto?.nombreDelProducto?.toUpperCase()}</strong></p>
                             <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
@@ -267,7 +269,7 @@
                                 jasper="reporte10"
                                 action="printReport"
                                 format="PDF"
-                                name="Mi_Solicitud ">
+                                name="Solicitud_de_Crédito_Libertad_SF ">
                                 <input type="hidden" name="idProductoSolicitudPrint" value='${productoSolicitud?.id}'/> 
                             </g:jasperReport>
                         </center>

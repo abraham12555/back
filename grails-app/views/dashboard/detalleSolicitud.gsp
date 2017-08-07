@@ -607,15 +607,15 @@
                                             <p class="font12 fontWeight500 gray paddingTop10">CLAVE DEL PRODUCTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto.claveDeProducto}</p>
                                         </div>
-                                        <div class="marginLeft32">
+                                        <div class="marginLeft32 ">
                                             <p class="font12 fontWeight500 gray paddingTop10">PRODUCTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto}</p>
                                         </div>
-                                        <div class="marginLeft32">
+                                        <div class="marginLeft32 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">MONTO DEL CRÉDITO</p>
                                             <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.##"/></p>
                                         </div>
-                                        <div class="marginLeft32 lightGrayBG">
+                                        <div class="marginLeft32  ">
                                             <p class="font12 fontWeight500 gray paddingTop10">PLAZOS</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.plazos} ${datosSolicitud.productoSolicitud?.periodicidad.nomenclatura}</p>
                                         </div>
@@ -627,7 +627,7 @@
                                 </div>
                                     <div class="col6 col12-mob floatLeft">
                                         <div class="mobileAside10 solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom1">
-                                            <div class="marginLeft32">
+                                            <div class="marginLeft32 lightGrayBG">
                                                 <p class="font12 fontWeight500 gray paddingTop10"> ${datosSolicitud.productoSolicitud?.producto.tipoDeTasa.nombre.toUpperCase()}</p>
                                                 <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto.tasaDeInteres} </p>
                                             </div>
@@ -1186,15 +1186,15 @@
     <p class="font12 fontWeight500 gray paddingTop10">DESTINO</p>
     <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.destino}</p>
 </div-->
-                                        <div class="paddingLeft30 lightGrayBG">
+                                        <div class="paddingLeft30 ">
                                             <p class="font12 fontWeight500 gray paddingTop10">JUICIOS AP</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.juicios}</p>
                                         </div>
-                                        <div class="marginLeft32">
+                                        <div class="marginLeft32 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">SALDO ACTUAL</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldoActual}</p>
                                         </div>
-                                        <div class="paddingLeft30 lightGrayBG">
+                                        <div class="paddingLeft30 ">
                                             <p class="font12 fontWeight500 gray paddingTop10">SALDO VENCIDO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${segmentoHistorialDeCredito?.reporteBuro?.totalSaldosVencidos}</p>
                                         </div>

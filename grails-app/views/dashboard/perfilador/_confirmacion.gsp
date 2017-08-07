@@ -48,7 +48,7 @@
                         jasper="reporte10"
                         action="printReport"
                         format="PDF"
-                        name="Solicitud ">
+                        name="Solicitud_de_Crédito_Libertad_SF ">
                         <input type="hidden" name="idProductoSolicitudPrintPerfilador" value='${ofertaSeleccionada?.productoSolicitud?.id}'/> 
                     </g:jasperReport>
                     </strong>

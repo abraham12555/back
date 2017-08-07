@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c04e1347-252e-447b-9570-cfdae918e0ab">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="308"/>
+	<property name="ireport.y" value="229"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#FEFEFE"/>
@@ -104,8 +104,10 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement mode="Opaque" x="374" y="46" width="148" height="20" forecolor="#FEFEFE" backcolor="#21B447" uuid="2d0f62ef-cb4c-4ab1-adb5-809aa9adb910"/>
-				<textElement verticalAlignment="Top"/>
+				<reportElement mode="Opaque" x="374" y="46" width="148" height="20" forecolor="#007DFF" backcolor="#FFFFFF" uuid="2d0f62ef-cb4c-4ab1-adb5-809aa9adb910"/>
+				<textElement verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
 				<text><![CDATA[TU FOLIO ES :]]></text>
 			</staticText>
 			<staticText>
@@ -124,7 +126,7 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				<text><![CDATA[SEGURO CON LIBERTAD:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="4" y="126" width="354" height="42" forecolor="#007DFF" uuid="972bf2da-602c-4dcc-ad86-940821f0cf71"/>
+				<reportElement x="1" y="126" width="354" height="42" forecolor="#007DFF" uuid="972bf2da-602c-4dcc-ad86-940821f0cf71"/>
 				<text><![CDATA[CAT:              Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.]]></text>
 			</staticText>
 			<staticText>
@@ -138,7 +140,7 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				</graphicElement>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement mode="Opaque" x="450" y="46" width="105" height="20" forecolor="#FEFEFE" backcolor="#21B447" uuid="bb69582d-379b-4ab5-8e79-8f54551dc0ab"/>
+				<reportElement mode="Opaque" x="450" y="46" width="105" height="20" forecolor="#013F7F" backcolor="#FFFFFF" uuid="bb69582d-379b-4ab5-8e79-8f54551dc0ab"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
@@ -173,14 +175,14 @@ LA SOLICITUD HA SIDO REGISTRADA CORRECTAMENTE]]></text>
 				<textFieldExpression><![CDATA[$F{nombreDelProducto}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement x="25" y="126" width="45" height="20" forecolor="#013F7F" uuid="cb565b4b-15c7-49ad-930a-bfde48ce7419"/>
+				<reportElement x="26" y="126" width="45" height="20" forecolor="#013F7F" uuid="cb565b4b-15c7-49ad-930a-bfde48ce7419"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cat}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="70" y="43" width="208" height="20" forecolor="#013F7F" uuid="742f17ed-aeea-4768-b15c-29533c73e72d"/>
+				<reportElement x="67" y="43" width="208" height="20" forecolor="#013F7F" uuid="742f17ed-aeea-4768-b15c-29533c73e72d"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
