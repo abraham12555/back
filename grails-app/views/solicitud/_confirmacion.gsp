@@ -54,7 +54,7 @@
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <center>
                             <div class="colorGreen buttonM abrirEncuesta radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer" > 
-                                <a href='https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true' target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
+                                <a href="encuesta" target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
                             </div>
                         </center>
                     </div>
@@ -151,7 +151,7 @@
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <center>
                             <div class="colorGreen buttonM abrirEncuesta radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer" > 
-                                <a href='https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true' target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
+                                <a href="encuesta" target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
                             </div>
                         </center>
                     </div>
@@ -253,7 +253,7 @@
                     <div class="col6 col6-tab col12-mob floatLeft">
                         <center>
                             <div class="colorGreen buttonM abrirEncuesta radius100 colorWhite marginTop25 marginBottom25 mobileAuto pointer" > 
-                                <a href='https://docs.google.com/forms/d/e/1FAIpQLScQD1gQ_0mMHykBNLQokdy2bKdF_R4QAa9Zk7igvgX6ddxK4Q/viewform?embedded=true' target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
+                                <a href="encuesta" target='_blank'><font color = white >DAR MI OPINIÒN</font></a>
                             </div>
                         </center>
                     </div>

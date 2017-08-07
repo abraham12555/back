@@ -1541,4 +1541,8 @@ class SolicitudController {
         params._format= "PDF"
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
+    
+    def encuesta(){        
+        render(template: "/solicitud/encuesta")
+    }
 }
