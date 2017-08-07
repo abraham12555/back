@@ -1,4 +1,4 @@
-<section id="pasoConsultaBuro" class="container paddingTop30 paddingBottom20 clearFix contentHeight">
+<section id="pasoOpcional" class="container paddingTop30 paddingBottom20 clearFix contentHeight">
     <input type="hidden" id="tipoDePaso" value="${pasoActual?.tipoDePaso?.nombre}">
     <input type="hidden" id="tituloDelPaso" value="${pasoActual?.titulo}"/>
     <g:if test="${pasoActual}">

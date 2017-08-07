@@ -1,14 +1,16 @@
-<g:external dir="css" file="perfilador.css" title="text/css" rel="stylesheet" />
+<g:external dir="css" file="swiper.min.css" title="text/css" rel="stylesheet" />
+<g:external dir="css" file="ofertas.css" title="text/css" rel="stylesheet" />
+<g:external dir="js" file="swiper.min.js" />
 <br />
 <h2>Ofertas disponibles</h2>
 <g:if test="${ofertas.size() > 1}">
-    <div class="promos" style="height: 1100px;">
+    <div class="col12 floatLeft stepsContainer" style="height: 1100px;">
 </g:if>
 <g:else>
-    <div class="promos" style="height: 500px;">
+    <div class="col12 floatLeft stepsContainer" style="height: 500px;">
     </g:else>
     <div id="wrapper_bu">
-        <div id="listaDeOfertasDiv"></div>
+        <div id="listaDeOfertasDiv" class="credit-proposals swiper-container"></div>
     </div>
 </div>
 <input type="hidden" id="ofertasJSON" value="${ofertas as grails.converters.JSON}">
