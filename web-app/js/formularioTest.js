@@ -2641,7 +2641,8 @@ function mostrarOfertas() {
     }
     if (isMobile) {
         swiper = new Swiper('.swiper-container');
-        $('.swiper-container').width('' + (respuesta.length * 105) + '%');
+        $('.swiper-wrapper').width('' + (respuesta.length * 105) + '%');
+        $('.swiper-slide').width('300px');
     } else {
         Conclave = (function () {
             var buArr = [], arlen;
@@ -2701,6 +2702,7 @@ function mostrarOfertas() {
         })();
         window['conclave'] = Conclave;
         Conclave.init();
+        $('.swiper-container').css('overflow', 'visible');
     }
 }
 
