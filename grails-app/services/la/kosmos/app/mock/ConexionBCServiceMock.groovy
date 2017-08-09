@@ -12,7 +12,13 @@ package la.kosmos.app.mock
  */
 class ConexionBCServiceMock {
 
-    def socketRequest(String ip, String port, String intlResponse) throws Exception {
+    def socketRequest(String ip, String port, String intl, data) throws Exception {
+        String intlResponse
+
+        if(data != null) {
+            intlResponse = URLDecoder.decode(data.cadenaDeBuro.trim(), "UTF-8")
+        }
+
         return intlResponse
     }
 }

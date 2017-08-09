@@ -2,7 +2,10 @@ package la.kosmos.app
 
 class ConexionBCService {
 
-    def socketRequest(String ip, String puerto, String message) throws Exception {
+    /*
+     * Argumento data. Se usa solo para el servicio ConexionBCServiceMock
+     * */
+    def socketRequest(String ip, String puerto, String message, def data) throws Exception {
         Integer port = Integer.parseInt(puerto)
 
         SocketAddress sockaddr = new InetSocketAddress(ip, port);

@@ -307,13 +307,8 @@ class BuroDeCreditoService {
         String referenciaOperador = "                         "
 	String intl = this.buildINTLRequest(datosPersonales, direccion, solicitud, configuracion, referenciaOperador)
 
-        //La siguiente condicion solo es valida en los ambientes DEVELOPMENT y TEST
-        if(data != null) {
-            intl = URLDecoder.decode(data.cadenaDeBuro.trim(), "UTF-8")
-        }
-
         try {
-            String intlResponse = conexionBCService.socketRequest(configuracion.ipBuroCredito, configuracion.portBuroCredito, intl)
+            String intlResponse = conexionBCService.socketRequest(configuracion.ipBuroCredito, configuracion.portBuroCredito, intl, data)
             intlResponse = corregirCaracteres(intlResponse)
             addBitacoraBuroCredito(intl, intlResponse, solicitud, Constants.TipoConsulta.TRADICIONAL, usuario)
 
