@@ -151,7 +151,7 @@ $(document).ready(function () {
         $('#terminosYCondiciones').froalaEditor({
             height: 300,
             language: 'es'
-        })
+        });
     });
 
     $(".js-example-basic-multiple").select2({
@@ -171,7 +171,7 @@ $(document).ready(function () {
     });
  
     getProfilePicture();
-    operacionesValidar();
+    //operacionesValidar();
 });
 
 window.onclick = function (event) {
