@@ -375,15 +375,15 @@ class PerfiladorService {
         if(datosSolicitud) {
             entidadFinanciera = EntidadFinanciera.get(datosSolicitud.entidadFinancieraId as long)
             /*if(origen == "cotizador") {
-                oferta = calcularOferta(datosSolicitud)
-                println "RATIO = " + oferta.ratio 
-                if(oferta.ratio > 1 ){
-                    println "RATIO APROBADO"
-                }else{
-                    println "RATIO MENOR A UNO"
-                }
-                println "NUEVA OFERTA p/solicitudid " + datosSolicitud.idSolicitud 
-                ofertas << oferta
+            oferta = calcularOferta(datosSolicitud)
+            println "RATIO = " + oferta.ratio 
+            if(oferta.ratio > 1 ){
+            println "RATIO APROBADO"
+            }else{
+            println "RATIO MENOR A UNO"
+            }
+            println "NUEVA OFERTA p/solicitudid " + datosSolicitud.idSolicitud 
+            ofertas << oferta
             }*/
             def tipoDeDocumento = (datosSolicitud.documento ?: TipoDeDocumento.get(idTipoDeDocumento as long)) //Falta tomar en cuenta clienteExistente
             //Primer Filtro
@@ -459,13 +459,13 @@ class PerfiladorService {
                 ofertaProducto.producto = producto
                 ofertaProducto.listaDeOpciones = []
                 ofertaProducto.listaDePlazos = []
-               // println "Perfilando: " + producto
+                // println "Perfilando: " + producto
                 def plazosPosibles = PlazoProducto.findWhere(producto: producto, usarEnPerfilador: true)
                 def plazosPermitidos = ((plazosPosibles.plazosPermitidos ? (plazosPosibles.plazosPermitidos.tokenize(',')) : null))
                 plazosPermitidos = plazosPermitidos?.reverse()
                 //println "Plazos Permitidos: " + plazosPermitidos
                 plazosPermitidos?.each { plazo ->
-                  ///  println "Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
+                    ///  println "Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
                     datosSolicitud.plazos = plazo
                     datosSolicitud.periodicidad = plazosPosibles.periodicidad
                     datosSolicitud.producto = producto
@@ -489,13 +489,16 @@ class PerfiladorService {
                                 listado.dictamenPerfil = ' El Dictamen de Perfil Rechazo tu Solicitud  '
                             } /* BUSCA  R*/
                         }
-                        if(respuestaDictamenDePerfil) {
+                        if(respuestaDictamenDePerfil?.dictamen == 'A') {
                             def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
                             if(tasaAplicable) {
                                 datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
                                 oferta = calcularOferta(datosSolicitud)
                             }
                             oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                            oferta.dictamenDePoliticas = ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
+                            println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
                             ofertaProducto.listaDeOpciones << oferta
                             def mapaPlazo = [:]
                             mapaPlazo.plazos = (plazo as int)
@@ -725,7 +728,7 @@ class PerfiladorService {
         //println "Buscar producto..."
         def producto = ofertas.find { it.producto.id == (params.productoId as long)}
         //println "Producto encontrado: " + producto
-//        println "Buscar oferta..."
+        //        println "Buscar oferta..."
         def oferta = producto.listaDeOpciones.find { it.plazos == (params.plazo) && it.periodicidad.id == (params.periodicidadId as long) }
         //println "Oferta encontrada: " + oferta
         respuesta.cuota =  calcularCuota((params.montoDeCredito as float), oferta.periodicidad, oferta.plazos, oferta.tasaDeInteres, producto.producto.entidadFinanciera.id)
@@ -764,8 +767,27 @@ class PerfiladorService {
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
                 ///println("El producto se ha registrado correctamente")
-                respuesta.oferta = oferta
-                respuesta.productoSolicitud = productoSolicitud
+                def resultadoMotorDeDecision = new ResultadoMotorDeDecision()
+                resultadoMotorDeDecision.solicitud = solicitud
+                resultadoMotorDeDecision.probabilidadDeMora = oferta.probabilidadDeMora
+                resultadoMotorDeDecision.razonDeCobertura = oferta.ratio
+                resultadoMotorDeDecision.dictamenDePerfil = oferta.dictamenDePerfil
+                resultadoMotorDeDecision.dictamenCapacidadDePago = "-"
+                resultadoMotorDeDecision.dictamenConjunto = "-"
+                resultadoMotorDeDecision.dictamenDePoliticas = oferta.dictamenDePoliticas
+                resultadoMotorDeDecision.dictamenFinal = "A"
+                resultadoMotorDeDecision.log = "NO DISPONIBLE"
+                ResultadoMotorDeDecision.executeUpdate("Delete From ResultadoMotorDeDecision r Where r.solicitud.id = :solicitudId", [solicitudId: solicitud.id])
+                if(resultadoMotorDeDecision.save(flush: true)) {
+                    respuesta.oferta = oferta
+                    respuesta.productoSolicitud = productoSolicitud
+                } else {
+                    if (resultadoMotorDeDecision.hasErrors()) {
+                        resultadoMotorDeDecision.errors.allErrors.each {
+                            println it
+                        }
+                    }
+                }
             } else {
                 //println("[Guardado-ProductoSolicitud] No se guardo nada")
                 if (productoSolicitud.hasErrors()) {

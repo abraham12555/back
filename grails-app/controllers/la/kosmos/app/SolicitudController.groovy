@@ -1493,6 +1493,7 @@ class SolicitudController {
         if(session.ef){
             println session.pasoFormulario
             respuesta = perfiladorService.guardarOferta(session.ofertas, session.pasoFormulario, session.identificadores , params)
+            session.identificadores.idProductoSolicitud = respuesta.productoSolicitud.id
             render respuesta as JSON
         } else {
             session.invalidate()
