@@ -40,17 +40,15 @@
             </div>
             <div class="col6 col6-tab col12-mob floatLeft">
                 <div class="paddingAside10">
-                    <g:jasperReport
+                    <g:jasperForm 
                         class="colorGreen buttonM radius100 colorWhite marginBottom25 mobileAuto"
-                        delimiter=" "
-                        description="IMPRIMIR"
                         controller="dashboard"
-                        jasper="reporte10"
                         action="printReport"
-                        format="PDF"
-                        name="Solicitud_de_Crédito_Libertad_SF ">
+                        jasper="reporte10" 
+                        name="Solicitud_de_Cr&eacute;dito_Libertad_SF">
                         <input type="hidden" name="idProductoSolicitudPrintPerfilador" value='${ofertaSeleccionada?.productoSolicitud?.id}'/> 
-                    </g:jasperReport>
+                        <g:jasperButton format="pdf" jasper="jasper-test" class="colorWhite marginBottom15" text="IMPRIMIR"  />
+                    </g:jasperForm>
                     </strong>
                 </div>  
             </div>
