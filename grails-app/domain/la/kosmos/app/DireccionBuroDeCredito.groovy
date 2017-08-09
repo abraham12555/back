@@ -17,7 +17,8 @@ class DireccionBuroDeCredito implements Serializable{
 	String numeroFax
 	String tipoDomicilio
 	String indicadorEspecialDomicilio
-	//String fechaDeReporteDireccion
+        String fechaDeReporteDireccion
+        String origenDomicilio
 	ReporteBuroCredito reporteBuroCredito
 
     static constraints = {
@@ -34,6 +35,8 @@ class DireccionBuroDeCredito implements Serializable{
 		 numeroFax  nullable: true
 		 tipoDomicilio  nullable: true
 		 indicadorEspecialDomicilio  nullable: true
+                fechaDeReporteDireccion  nullable: true
+                origenDomicilio nullable: true
     }
 	
 	String toString(){

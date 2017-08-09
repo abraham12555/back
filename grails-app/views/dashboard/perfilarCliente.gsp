@@ -44,7 +44,7 @@
                                 <li class="step3">
                                     <span class="bubble"><span>3</span><i class="fa fa-check"></i></span>
                                     <span class="stacked-text">
-                                        <span class="step">Consulta a Buró de Crédito</span>
+                                        <span class="step" id='menuBuroDeCredito'>Consulta a Buró de Crédito</span>
                                     </span>
                                 </li>
                                 <li class="step4">
@@ -56,6 +56,10 @@
                             </ul>
                         </div>
                         <div class="col9 floatLeft stepsContainer">
+                            <div id='tabs'class="tab hide col9 floatLeft stepsContainer marginBottom28">
+                                <button id='buttonconsultaAutenticador'class="tablinks consultaAutenticador blueButton" onclick="openTab('consultaAutenticador','consultaINTL')" >CONSULTA AUTENTICADOR</button>
+                                <button id='buttonconsultaINTL'class="tablinks consultaINTL " onclick="openTab('consultaINTL','consultaAutenticador')">CONSULTA TRADICIONAL</button>
+                            </div>                            
                             <form id="perfiladorForm">
                                 <div id="step1" class="col12 floatLeft stepContent animated fadeInRight">
                                     <h2>Perfilador del cliente</h2>
@@ -499,79 +503,8 @@
                             <div id="buro" class="hide col12 floatLeft animated fadeInRight">
                                 <h2>Consulta de Buró de Crédito</h2><br><br>
                                 <g:if env="production">
-                                <div class="clearFix marginBottom30">
-                                    <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
-                                        <p class="correctaBoxLabel">¿TIENES UNA TARJETA DE CRÉDITO?</p>
-                                        <div id="tarjeta_correcto_si" class=" correctaBox floatLeft hasCc">
-                                            <p class="center paddingTop15 paddingBottom15 ">SI</p>
-                                        </div>
-                                        <div id="tarjeta_correcto_no" class="floatLeft correctaBox">
-                                            <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-                                        </div>
-                                        <input type="hidden" class="datoPerfilador formValues textUpper" name="tCredito" id="tCredito" value="${generales?.tCredito}">
-                                    </div>
+                                  <div id="consultaAutenticador" class=" animated fadeInRight"S>
 
-                                    <div class="floatLeft col3 col6-tab col12-mob">
-                                        <p class="gray font14 letterspacing1.1">ÚLTIMOS CUATRO DÍGITOS</p>
-                                        <input class="inPuts4a marginTop15 headingColor" type="text" id="numeroTarjeta" name="numeroTarjeta" placeholder="0000" maxlength="4" />
-                                        <div class="col7 col12-tab floatLeft marginTop30" id="bubbleMensajeTarjeta">
-                                            <div class="rectangleRound font11 letterspacing0.5 center">LAS TARJETAS DE DÉBITO Y TIENDAS DEPARTAMENTALES NO SON CONSIDERADAS TARJETAS DE CRÉDITO</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clearFix marginBottom30" id="buroSegundaFila">
-                                    <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
-                                        <p class="correctaBoxLabel">¿ERES TÍTULAR DE UN CREDITO HIPOTECARIO?</p>
-                                        <div id="hipotecario_correcto_si" class="correctaBox floatLeft hasCc">
-                                            <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-                                        </div>
-                                        <div id="hipotecario_correcto_no" class="floatLeft correctaBox">
-                                            <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-                                        </div>
-                                        <input type="hidden" class="datoPerfilador formValues textUpper" name="creditoH" id="creditoH" value="${generales?.creditoH}">
-                                    </div>
-                                    <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
-                                        <p class="correctaBoxLabel">¿HAZ SIDO TÍTULAR DE UN CREDITO AUTOMOTRIZ EN LOS ÚLTIMOS 24 MESES?</p>
-                                        <div id="automotriz_correcto_si" class="correctaBox floatLeft hasCc">
-                                            <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
-                                        </div>
-                                        <div id="automotriz_correcto_no" class="floatLeft correctaBox">
-                                            <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
-                                        </div>
-                                        <input type="hidden" class="datoPerfilador formValues textUpper" name="creditoA" id="creditoA" value="${generales?.creditoA}">
-                                    </div>
-                                </div>
-                                <div id="divAutorizacionBuro" class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
-                                    <p class="font18 gray letterspacing1 justify">
-                                        Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">
-                                            ${fechaActual}
-                                        </span>, Autoriza a <span id="razonSocial" class="headingColor"> ${razonSocial}
-                                        </span> a consultar sus antecedentes crediticios por &uacute;nica
-                                        ocasi&oacute;n ante las Sociedades de Informaci&oacute;n Crediticia
-                                        que estime conveniente, declarando que conoce la naturaleza, alcance
-                                        y uso que <span id="razonSocial" class="headingColor"> ${razonSocial}
-                                        </span> har&aacute; de tal informaci&oacute;n?
-                                    </p>
-                                </div>
-                                <div id="accionesNormales" class="creditBtns">
-                                </g:if>
-                                <g:else>
-                                <div id="divTipoDeConsultaBC" class="col12">
-                                    <p class="correctaBoxLabel">¿CÓMO DESEA EJECUTAR LA CONSULTA A BURÓ DE CRÉDITO?</p>
-                                    <br/>
-                                    <div class="col6 col12-mob floatLeft">
-                                        <a id="consultaINTLBtn">
-                                            <div class="otherGreenButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;"><strong>CONSULTA INTL</strong></div>
-                                        </a>
-                                    </div>
-                                    <div class="col6 col12-mob floatLeft">
-                                        <a id="consultaAutenticadorBtn">
-                                            <div class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;"><strong>CONSULTA CON AUTENTICADOR</strong></div>
-                                        </a>
-                                    </div>
-                                    <input type="hidden" name="tipoDeConsultaBC" id="tipoDeConsultaBC">
-                                </div>
-                                <div id="consultaAutenticador" class="hide animated fadeInRight">
                                     <div class="clearFix marginBottom30">
                                         <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
                                             <p class="correctaBoxLabel">¿TIENES UNA TARJETA DE CRÉDITO?</p>
@@ -614,14 +547,6 @@
                                             <input type="hidden" class="datoPerfilador formValues textUpper" name="creditoA" id="creditoA" value="${generales?.creditoA}">
                                         </div>
                                     </div>
-                                    <!-- TEMPORAL -->
-                                    <div class="clearFix marginBottom30">
-                                        <div class="floatLeft col12 col12-tab col12-mob clearFix marginBottom20">
-                                            <p class="correctaBoxLabel">INTRODUZCA LA CADENA DE BURÓ DE CRÉDITO PARA EJECUTAR LA PRUEBA</p>
-                                            <textarea class="datoPerfilador" style="width:100%; height: 200px;" name="cadenaBuroTest" id="cadenaBuroTest" ></textarea>
-                                        </div>
-                                    </div>
-                                    <!-- TEMPORAL -->
                                     <div id="divAutorizacionBuro" class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
                                         <p class="font18 gray letterspacing1 justify">
                                             Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">
@@ -634,66 +559,239 @@
                                             </span> har&aacute; de tal informaci&oacute;n?
                                         </p>
                                     </div>
-                                </div>
-                                <div id="consultaINTL" class="hide animated fadeInRight">
-                                    <div class="clearFix padding20">
-                                        <div class="col12 col12-mob floatLeft mobileDiv">
-                                            <div id="downloadFormato" class="col folderContainer center span_2_of_4">
-                                                <img class="folderImage" src="${resource(dir:'images', file:'identification.png')}" alt="folder"/>
-                                                <p class="center letterspacing1.4 gray">Descargar Formato de Autorización</p>
-                                                <div class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
-                                                    <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">Descargar</p>
-                                                </div>
-                                                <input type="hidden" name="consentimientoConsulta" id="consentimientoConsulta">
+                                           <div id="accionesNormalesAutenticador" class="creditBtnsautenticador">
+                                            <div class="col5half col12-mob floatLeft">
+                                                <a id="" class="consultarBuroBtn">
+                                                    <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZO CONSULTAR MI BURÓ DE CRÉDITO</div>
+                                                </a>
                                             </div>
-                                            <div id="uploadFormato" class="col folderContainer center span_2_of_4">
-                                                <img class="folderImage" src="${resource(dir:'images', file:'folder.png')}" alt="folder"/>
-                                                <p class="center letterspacing1.4 gray">Subir Formato de Autorización Firmado</p>
-                                                <div data-box="archivoVuelta" class="colorGreen radius100 marginTop17 marginLeft60 foldersBox marginBottom20">
-                                                    <p class="textUpper colorWhite font16 center paddingTop10 paddingBottom10 pointer">Subir</p>
+                                            <div class="loadingContainerautenticador clearFix clearFloat">
+                                                <div class="loadingBarautenticador marginTop50 hide">
+                                                    <div class="loadingActiveautenticador"></div>
+                                                    <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU BURÓ DE CRÉDITO</p>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div id="accionesNormales" style="display: none;" class="creditBtns">
-                                </g:else>
-                                    <div class="col5half col12-mob floatLeft">
-                                        <a id="consultarBuroBtn">
-                                            <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZÓ CONSULTAR MI BURÓ DE CRÉDITO</div>
-                                        </a>
-                                    </div>
-                                    <div class="loadingContainer clearFix clearFloat">
-                                        <div class="loadingBar marginTop50 hide">
-                                            <div class="loadingActive"></div>
-                                            <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU BURÓ DE CRÉDITO</p>
+                                        <div id="accionesSuccessAutenticador" style="display: none;" class="clearFix clearFloat">
+                                            <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor: pointer;">CONSULTA EXITOSA</div>
+                                        </div>
+                                        <div id="accionesErrorAutenticador" style="display: none;" class="clearFix">
+                                            <div class="col5 col12-tab floatLeft">
+                                                <div class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto" style="cursor: pointer;">CONSULTA FALLIDA</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div id="accionesSuccess" style="display: none;" class="clearFix clearFloat">
-                                    <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor: pointer;">CONSULTA EXITOSA</div>
-                                </div>
-                                <div id="accionesError" style="display: none;" class="clearFix">
-                                    <div class="col5 col12-tab floatLeft">
-                                        <div class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto" style="cursor: pointer;">CONSULTA FALLIDA</div>
+                                       <div id="consultaINTL" class="hide animated fadeInRight">
+                                        <div class="clearFix padding20">
+                                            <div class="col12 col12-mob floatLeft mobileDiv">
+                                                <div id="" class="col12 folderContainer center span_2_of_4">
+                                                    <img class="folderImage" src="${resource(dir:'images', file:'identification.png')}" alt="folder"/>
+                                                    <p class="center letterspacing1.4 gray">Descargar Formato de Autorización</p>
+                                                    <div class="colorGreen colorWhite radius100 marginTop17 marginLeft60  marginBottom20 marginRight20"><strong>
+                                                            <g:jasperReport
+                                                                controller="dashboard"
+                                                                jasper="FormatoDeAutorizacionBc"
+                                                                action="printBcFormat"
+                                                                format="PDF"
+                                                                name="FormatoDeAutorizacionBC "
+                                                                description="Descargar"
+                                                                delimiter=" ">
+                                                                <input type="hidden" name="idClienteBc" value="${session?.identificadores?.idCliente}"/> 
+                                                                <input type="hidden" name="idDireccionBc" value="${session?.identificadores?.idDireccion}"/> 
+                                                                <input type="hidden" name="idSolicitudBc" value="${session?.identificadores?.idSolicitud}"/> 
+                                                            </g:jasperReport>
+                                                        </strong>
+                                                    </div>
+                                                    <input type="hidden" name="consentimientoConsulta" id="consentimientoConsulta">
+                                                </div>
+                                                <div id="accionesNormalesIntl" class="creditBtnsintl marginTop30">
+                                                    <div class="col5half col12-mob floatLeft">
+                                                        <a id="" class="consultarBuroTradicionalBtn">
+                                                            <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZO CONSULTAR MI BURÓ DE CRÉDITO</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="loadingContainerintl clearFix clearFloat">
+                                                        <div class="loadingBarintl marginTop50 hide">
+                                                            <div class="loadingActiveintl"></div>
+                                                            <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU BURÓ DE CRÉDITO</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="accionesSuccessIntl" style="display: none;" class="clearFix clearFloat marginTop30">
+                                                    <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor: pointer;">CONSULTA EXITOSA</div>
+                                                </div>
+                                                <div id="accionesErrorIntl" style="display: none;" class="clearFix marginTop30">
+                                                    <div class="col5 col12-tab floatLeft">
+                                                        <div class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto" style="cursor: pointer;">CONSULTA FALLIDA</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             </div>
+                                           </div>
+                                </g:if>
+                                <g:else>
+
+                                    <div id="consultaAutenticador" class=" animated fadeInRight"S>
+                                        <div class="clearFix marginBottom30">
+                                            <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+                                                <p class="correctaBoxLabel">¿TIENES UNA TARJETA DE CRÉDITO?</p>
+                                                <div id="tarjeta_correcto_si" class=" correctaBox floatLeft hasCc">
+                                                    <p class="center paddingTop15 paddingBottom15 ">SI</p>
+                                                </div>
+                                                <div id="tarjeta_correcto_no" class="floatLeft correctaBox">
+                                                    <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
+                                                </div>
+                                                <input type="hidden" class="datoPerfilador formValues textUpper" name="tCredito" id="tCredito" value="${generales?.tCredito}">
+                                            </div>
+
+                                            <div class="floatLeft col3 col6-tab col12-mob">
+                                                <p class="gray font14 letterspacing1.1">ÚLTIMOS CUATRO DÍGITOS</p>
+                                                <input class="inPuts4a marginTop15 headingColor" type="text" id="numeroTarjeta" name="numeroTarjeta" placeholder="0000" maxlength="4" />
+                                                <div class="col7 col12-tab floatLeft marginTop30" id="bubbleMensajeTarjeta">
+                                                    <div class="rectangleRound font11 letterspacing0.5 center">LAS TARJETAS DE DÉBITO Y TIENDAS DEPARTAMENTALES NO SON CONSIDERADAS TARJETAS DE CRÉDITO</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clearFix marginBottom30" id="buroSegundaFila">
+                                            <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+                                                <p class="correctaBoxLabel">¿ERES TÍTULAR DE UN CREDITO HIPOTECARIO?</p>
+                                                <div id="hipotecario_correcto_si" class="correctaBox floatLeft hasCc">
+                                                    <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
+                                                </div>
+                                                <div id="hipotecario_correcto_no" class="floatLeft correctaBox">
+                                                    <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
+                                                </div>
+                                                <input type="hidden" class="datoPerfilador formValues textUpper" name="creditoH" id="creditoH" value="${generales?.creditoH}">
+                                            </div>
+                                            <div class="floatLeft col4 col6-tab col12-mob clearFix marginBottom20 ccInfo">
+                                                <p class="correctaBoxLabel">¿HAZ SIDO TÍTULAR DE UN CRÉDITO AUTOMOTRIZ EN LOS ÚLTIMOS 24 MESES?</p>
+                                                <div id="automotriz_correcto_si" class="correctaBox floatLeft hasCc">
+                                                    <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
+                                                </div>
+                                                <div id="automotriz_correcto_no" class="floatLeft correctaBox">
+                                                    <p class="center paddingTop15 paddingBottom15 lightGray">NO</p>
+                                                </div>
+                                                <input type="hidden" class="datoPerfilador formValues textUpper" name="creditoA" id="creditoA" value="${generales?.creditoA}">
+                                            </div>
+                                        </div>
+                                        <!-- TEMPORAL -->
+                                        <div class="clearFix marginBottom30">
+                                            <div class="floatLeft col12 col12-tab col12-mob clearFix marginBottom20">
+                                                <p class="correctaBoxLabel">INTRODUZCA LA CADENA DE BURÓ DE CRÉDITO PARA EJECUTAR LA PRUEBA</p>
+                                                <textarea class="datoPerfilador" style="width:100%; height: 200px;" name="cadenaBuroTest" id="cadenaBuroTest" ></textarea>
+                                            </div>
+                                        </div>
+                                        <!-- TEMPORAL -->
+                                        <div id="divAutorizacionBuro" class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
+                                            <p class="font18 gray letterspacing1 justify">
+                                                Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">
+                                                    ${fechaActual}
+                                                </span>, Autoriza a <span id="razonSocial" class="headingColor"> ${razonSocial}
+                                                </span> a consultar sus antecedentes crediticios por &uacute;nica
+                                                ocasi&oacute;n ante las Sociedades de Informaci&oacute;n Crediticia
+                                                que estime conveniente, declarando que conoce la naturaleza, alcance
+                                                y uso que <span id="razonSocial" class="headingColor"> ${razonSocial}
+                                                </span> har&aacute; de tal informaci&oacute;n?
+                                            </p>
+                                        </div>
+                                        <div id="accionesNormalesAutenticador" class="creditBtnsautenticador">
+                                            <div class="col5half col12-mob floatLeft">
+                                                <a id="" class="consultarBuroBtn">
+                                                    <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZO CONSULTAR MI BURÓ DE CRÉDITO</div>
+                                                </a>
+                                            </div>
+                                            <div class="loadingContainerautenticador clearFix clearFloat">
+                                                <div class="loadingBarautenticador marginTop50 hide">
+                                                    <div class="loadingActiveautenticador"></div>
+                                                    <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU BURÓ DE CRÉDITO</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="accionesSuccessAutenticador" style="display: none;" class="clearFix clearFloat">
+                                            <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor: pointer;">CONSULTA EXITOSA</div>
+                                        </div>
+                                        <div id="accionesErrorAutenticador" style="display: none;" class="clearFix">
+                                            <div class="col5 col12-tab floatLeft">
+                                                <div class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto" style="cursor: pointer;">CONSULTA FALLIDA</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                    <div id="consultaINTL" class="hide animated fadeInRight">
+                                        <div class="clearFix padding20">
+                                            <div class="col12 col12-mob floatLeft mobileDiv">
+                                                <div id="" class="col folderContainer center span_2_of_4">
+                                                    <img class="folderImage" src="${resource(dir:'images', file:'identification.png')}" alt="folder"/>
+                                                    <p class="center letterspacing1.4 gray">Descargar Formato de Autorización</p>
+                                                    <div class="colorGreen colorWhite radius100 marginTop17 marginLeft60  marginBottom20 marginRight20"><strong>
+                                                            <g:jasperReport
+                                                                controller="dashboard"
+                                                                jasper="FormatoDeAutorizacionBc"
+                                                                action="printBcFormat"
+                                                                format="PDF"
+                                                                name="FormatoDeAutorizacionBC "
+                                                                description="Descargar"
+                                                                delimiter=" ">
+                                                                <input type="hidden" name="idClienteBc" value="${session?.identificadores?.idCliente}"/> 
+                                                                <input type="hidden" name="idDireccionBc" value="${session?.identificadores?.idDireccion}"/> 
+                                                                <input type="hidden" name="idSolicitudBc" value="${session?.identificadores?.idSolicitud}"/> 
+                                                            </g:jasperReport>
+                                                        </strong>
+                                                    </div>
+                                                    <input type="hidden" name="consentimientoConsulta" id="consentimientoConsulta">
+                                                </div>
+                                                <!-- TEMPORAL -->
+                                                <div class="clearFix marginBottom30">
+                                                    <div class="floatLeft col12 col12-tab col12-mob clearFix marginBottom20">
+                                                        <p class="correctaBoxLabel">INTRODUZCA LA CADENA DE BURÓ DE CRÉDITO PARA EJECUTAR LA PRUEBA</p>
+                                                        <textarea class="datoPerfilador" style="width:100%; height: 200px;" id="cadenaBuroTestTradicional" ></textarea>
+                                                    </div>
+                                                </div>
+                                                <!-- TEMPORAL -->
+                                                <div id="accionesNormalesIntl" class="creditBtnsintl">
+                                                    <div class="col5half col12-mob floatLeft">
+                                                        <a id="" class="consultarBuroTradicionalBtn">
+                                                            <div  class="blueButton buttonM radius100 font16 colorWhite letterspacing1.5 mobileAuto consultarBc" style="cursor: pointer;">AUTORIZO CONSULTAR MI BURÓ DE CRÉDITO</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="loadingContainerintl clearFix clearFloat">
+                                                        <div class="loadingBarintl marginTop50 hide">
+                                                            <div class="loadingActiveintl"></div>
+                                                            <p class="mAuto lightGray font14 marginTop10">CONSULTANDO TU BURÓ DE CRÉDITO</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="accionesSuccessIntl" style="display: none;" class="clearFix clearFloat">
+                                                    <div class="colorGreen buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 center blockAuto" style="cursor: pointer;">CONSULTA EXITOSA</div>
+                                                </div>
+                                                <div id="accionesErrorIntl" style="display: none;" class="clearFix">
+                                                    <div class="col5 col12-tab floatLeft">
+                                                        <div class="buttonOrange buttonM avanzaBtn radius100 font16 colorWhite letterspacing1.5 blockAuto" style="cursor: pointer;">CONSULTA FALLIDA</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             </div>
+                                           </div>
+                                        </g:else>
+                                   
+                           
+                                    <div class="col12 floatLeft paddingTop20">
+                                        <button id='goBackStep5' class="greenBox colorWhite hide" type="button" onclick="goBackStep5()">ATRAS</button>
+                                    </div>
                                 <div class="col12 floatLeft paddingTop20">
                                     <button class="greenBox colorWhite hide consultarB" type="button" onclick="verOfertas()">Siguiente</button>
                                 </div>
                             </div>
                             <div id="ofertas" class="hide col12 floatLeft animated fadeInRight"></div>
                             <div id="confirmacion" class="hide col12 floatLeft animated fadeInRight"></div>
+
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-        <script type="text/javascript">
-            $(document).ready(function() {
-            operacionesPerfilador()
-            });
-        </script>
-    </body>
-</html>
+                    </section>
+                    <script type="text/javascript">
+                        $(document).ready(function() {
+                        operacionesPerfilador()
+                        });
+                    </script>
+                    </body>
+                    </html>
 

@@ -94,5 +94,9 @@ class Constants {
             value
 	}
     }
+
+    enum TipoConsulta {
+        AUTENTICADOR, TRADICIONAL
+    }
 }
 

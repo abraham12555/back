@@ -25,7 +25,6 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String urlDominio
     String htmlTitle
     int ejecutarMotorEnPaso
-    ConfiguracionBuroCredito configuracionBuroCredito
     boolean aplicacionVariable = false
     boolean navegacionLibre = false
     boolean subirDocumentosOpcional = false
@@ -69,7 +68,6 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         wsdlMotorDeDecision (nullable: true)
         wsdlMotorDeDecisionCE (nullable: true)
         htmlTitle (nullable: false)
-        configuracionBuroCredito (nullable: true)
         mensajeConfirmacionCelular (nullable: true)
         mensajeEnvioShortUrl (nullable: true)
         emailHost (nullable: true)
@@ -78,6 +76,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         emailUsername (nullable: true)
         emailPassword (nullable: true)
         rutaFotoPerfilUsuario (nullable: true)
+        rutaLogotipoFormatoBuro (nullable: true)
+        nombreEntidadFinancieraFormatoBuro (nullable: true)
     }
 
     static mapping = {

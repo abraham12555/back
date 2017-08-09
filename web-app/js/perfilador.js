@@ -1,6 +1,9 @@
 var ofertasCalculadas;
 var generoConyugue;
 $.getProfilePicture = $.contextAwarePathJS + "dashboard/profilePicture";
+$.tradicionalBC = $.contextAwarePathJS + "solicitud/consultaBCTradicional";
+var consultaAutenticador = true;
+var consultaTradicional = true;
 $(document).ready(function () {
 
 getProfilePicture();
@@ -351,24 +354,12 @@ function operacionesPerfilador() {
             }
         });
 
-        $('#consultaAutenticadorBtn').off().on('click', function () {
-            $('#divTipoDeConsultaBC').addClass('hide');
-            $('#consultaAutenticador').removeClass('hide');
-            $('#accionesNormales').show();
-            $('#tipoDeConsultaBC').val('autenticador');
-        });
-
-        $('#consultaINTLBtn').off().on('click', function () {
-            $('#divTipoDeConsultaBC').addClass('hide');
-            $('#consultaINTL').removeClass('hide');
-            $('#accionesNormales').show();
-            $('#tipoDeConsultaBC').val('intl');
-            inicializarDropzone('div#uploadFormato', '.foldersBox', 'consentimientoConsultaBC');
-        });
-
-        $('#consultarBuroBtn').off().on('click', function () {
-            console.log("Dando click para consulta a buró");
+        $('.consultarBuroBtn').off().on('click', function () {
             consultarBuro();
+        });
+        
+        $('.consultarBuroTradicionalBtn').off().on('click', function () {
+            consultarBuroTradicional();
         });
     });
 }
@@ -503,6 +494,17 @@ function goStep5() {
     $('#menuFamilia').removeClass('active');
     $('#menuEmpleo').addClass('active');
 }
+function goBackStep5() {
+    $('#step5').show();
+    $('#buro').addClass('hide');
+    $('#menuEmpleo').addClass('active');
+    $('#menuBuroDeCredito').removeClass('active');
+    $('#tabs').addClass('hide');
+    $('#accionesNormalesAutenticador').fadeIn();
+    $('#accionesNormalesIntl').fadeIn();
+    $('#accionesErrorAutenticador').fadeOut();
+    $('#accionesErrorIntl').fadeOut();
+}
 
 function goConsultaBuro() {
     $("body").mLoading({
@@ -517,6 +519,7 @@ function goConsultaBuro() {
         success: function (data, textStatus) {
             $('#step5').hide();
             $('#buro').removeClass('hide');
+            $('#tabs').removeClass('hide');
             $('.step2').removeClass('active');
             $('.step2 .step').removeClass('active');
             $('.step2').addClass('completed');
@@ -892,63 +895,78 @@ function enviarSms(telefonoCelular) {
 }
 
 function consultarBuro() {
-    loadBar("45%");
+    loadBar("45%",'autenticador');
     var tarjeta = $('#tCredito').val();
     var hipoteca = $('#creditoH').val();
     var creditoAutomotriz = $('#creditoA').val();
-    var consentimiento = $('#consentimientoConsulta').val();
     var tipoDeConsulta = 'autenticador';
     var cadenaDeBuro = null;
-    if($.contextAwarePathJS === "/qa/") {
-       cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
-       tipoDeConsulta = $('#tipoDeConsultaBC').val();
+    if ($.contextAwarePathJS === "/qa/") {
+       cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());
+    } else {
+        cadenaDeBuro = "undefined";
     }
-    if ((tipoDeConsulta === 'autenticador' && tarjeta && hipoteca && creditoAutomotriz && cadenaDeBuro) || (tipoDeConsulta === 'intl' && consentimiento)) {
+    if ((tipoDeConsulta === 'autenticador' && tarjeta && hipoteca && creditoAutomotriz && cadenaDeBuro)) {
         var numeroTarjeta = $('#numeroTarjeta').val();
         if (tipoDeConsulta === 'autenticador' && tarjeta === 'SI' && !numeroTarjeta) {
+            restartLoadBar('autenticador');
+            $('.loadingBarautenticador').fadeOut();
             sweetAlert("Antes de continuar...", "Por favor proporcione lo últimos 4 digitos de su tarjeta de crédito.", "warning");
         } else {
-            loadBar("75%");
+            loadBar("75%",'autenticador');
             $.ajax({
                 type: 'POST',
-                data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz, cadenaDeBuro: cadenaDeBuro, intl: (tipoDeConsulta === 'intl' ? true : false)},
+                data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz, cadenaDeBuro: cadenaDeBuro},
                 url: $.contextAwarePathJS + 'solicitud/consultarBuroDeCredito',
                 success: function (data, textStatus) {
-                    loadBar("100%");
+                    loadBar("100%",'autenticador');
                     var respuesta = checkIfJson(data);
-                    $('.loadingBar').fadeOut();
-                    $('.creditBtns').fadeOut();
-                    $('.loadingContainer .buttonM').delay(1000).fadeIn();
+                        $('.loadingBarautenticador').fadeOut();
+                        $('.creditBtnsautenticador').fadeOut();
+                        $('.loadingContainerautenticador .buttonM').delay(1000).fadeIn();
+
                     if (respuesta.status === 200) {
-                        $('#accionesNormales').fadeOut();
-                        $('#accionesSuccess').fadeIn();
+                        $('#accionesNormalesAutenticador').fadeOut();
+                        $('#accionesSuccessAutenticador').fadeIn();
                         $('#divAutorizacionBuro').fadeOut();
                         $('.consultarB').fadeIn();
                         $('.correctaBox').unbind('click');
+                        $('#buttonconsultaINTL').attr('disabled', true);
+                        $('#buttonconsultaAutenticador').attr('disabled', true);
+                        $('#goBackStep5').addClass('hide');
+                        $('#goBackStep5').fadeOut();
                     } else if (respuesta.problemasBuro) {
                         var mensaje = "Algo salió mal, por favor verifica los siguientes datos: <br /> <ul>";
                         for (var i = 0; i < respuesta.problemasBuro.length; i++) {
                             mensaje += "<li>" + respuesta.problemasBuro[i].segmento + " ( Paso " + respuesta.problemasBuro[i].pasoError.numeroDePaso + " - " + respuesta.problemasBuro[i].pasoError.tituloPaso + ") </li>";
                         }
                         mensaje += "</ul>";
-                        sweetAlert({html: true, title: "¡Oops!", text: mensaje, type: "warning"});
-                        $('#accionesNormales').fadeIn();
-                        $('#divAutorizacionBuro').fadeIn();
-                    } else if (respuesta.error) {
-                        $('#accionesNormales').fadeOut();
-                        $('#accionesError').fadeIn();
+                        $('#accionesNormalesAutenticador').fadeOut();
+                        $('#accionesErrorAutenticador').fadeIn();
                         $('#divAutorizacionBuro').fadeOut();
-                        $('.consultarB').fadeIn();
+                        $('#goBackStep5').removeClass('hide');
+                        $('#goBackStep5').fadeIn();
+                        sweetAlert({html: true, title: "¡Oops!", text: mensaje, type: "warning"});
+                    } else if (respuesta.error) {
+                        $('#accionesNormalesAutenticador').fadeOut();
+                        $('#accionesErrorAutenticador').fadeIn();
+                        $('#divAutorizacionBuro').fadeOut();
+                        $('#goBackStep5').addClass('hide');
+                        $('#goBackStep5').fadeOut();
+                        consultaAutenticador = false;
+                        sweetAlert("Oops...", "Algo salió mal, la consulta con autenticador falló."+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    restartLoadBar();
-                    $('.loadingBar').fadeOut();
+                    restartLoadBar('autenticador');
+                    $('.loadingBarautenticador').fadeOut();
                     sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
                 }
             });
         }
     } else {
+        restartLoadBar('autenticador');
+        $('.loadingBarautenticador').fadeOut();
         sweetAlert("Antes de continuar...", "Por favor llena los datos solicitados.", "warning");
     }
 }
@@ -957,14 +975,14 @@ function loadBar() {
     $('.loadingBar').fadeIn();
     $(".loadingActive").animate({width: "100%"}, 800);
 }
-function loadBar(percentage) {
-    $('.loadingBar').fadeIn();
-    $(".loadingActive").animate({width: percentage}, 800);
+function loadBar(percentage,id) {
+    $('.loadingBar'+id).fadeIn();
+    $('.loadingActive'+id).animate({width: percentage}, 800);
 }
 
-function restartLoadBar() {
-    $('.loadingBar').fadeIn();
-    $('.loadingActive').css({'width': '0%'});
+function restartLoadBar(id) {
+    $('.loadingBar'+id).fadeIn();
+    $('.loadingActive'+id).css({'width': '0%'});
 }
 
 function checkIfJson(data) {
@@ -1070,6 +1088,7 @@ function mostrarOfertas(data) {
     html += "</div></div>";
     $('#ofertas').html(html);
     $('#buro').hide();
+    $('#tabs').hide();
     $('#ofertas').removeClass('hide');
     $('.step3').removeClass('active');
     $('.step3 .step').removeClass('active');
@@ -1412,5 +1431,116 @@ function getProfilePicture() {
       if(!response.empty) {
             $("#bannerProfilePicturePerfilador").attr("src", "data:image/" + response.type + ";base64," + response.base64);
        }
+    });
+}
+function openTab(tabOpen,tabClose) {
+    $('#'+tabClose).addClass('hide');
+    $('#'+tabClose).fadeOut();
+    
+    $('#'+tabOpen).removeClass('hide');
+    $('#'+tabOpen).fadeIn();
+  if ($('#button'+tabOpen).hasClass('blueButton')){
+      
+  } else{
+       $('#button'+tabClose).removeClass('blueButton');
+       $('#button'+tabOpen).addClass('blueButton');
+  }
+  if(tabOpen === 'consultaAutenticador'){
+      $('#accionesNormalesAutenticador').show();
+      $('#accionesErrorAutenticador').fadeOut();
+
+  }
+  if(tabOpen === 'consultaINTL'){
+     $('#accionesNormalesIntl').show();
+     $('#accionesErrorIntl').fadeOut();
+  }
+  if(tabOpen === 'consultaAutenticador' && consultaAutenticador === false){
+      $('#consultaAutenticador').fadeIn();
+      $('#accionesNormalesAutenticador').hide();
+
+  }
+  if(tabOpen === 'consultaINTL' && consultaTradicional === false){
+      $('#consultaIntl').fadeIn();
+      $('#accionesNormalesIntl').hide();
+
+  }
+}
+
+function consultarBuroTradicional() {
+    $("body").mLoading({
+        text: "Obteniendo Resultado del Buró de Crédito... Espere un momento por favor...",
+        icon: $.contextAwarePathJS + "images/spinner.gif",
+        mask: true
+    });
+    var cadenaDeBuro = null;
+    
+    if ($.contextAwarePathJS === "/qa/") {
+        cadenaDeBuro = encodeURIComponent($('#cadenaBuroTestTradicional').val());
+    }
+
+    var data = new Object();
+    data.cadenaDeBuro = cadenaDeBuro;
+
+    $.ajax({
+        type: 'POST',
+        dataType: "json",
+        url: $.tradicionalBC,
+        data: JSON.stringify(data),
+        contentType: "application/json",
+        success: function (respuesta, textStatus) {
+            $("body").mLoading('hide');
+            loadBar("100%","intl");
+            $('.loadingBarintl').fadeOut();
+            $('.creditBtnsintl').fadeOut();
+            $('.loadingContainerintl .buttonM').delay(1000).fadeIn();
+            if (respuesta.status === 200) {
+                $('#buttonconsultaAutenticador').attr('disabled', true);
+                $('#buttonconsultaINTL').attr('disabled', true);
+                $('#accionesNormalesIntl').fadeOut();
+                $('#accionesSuccessIntl').fadeIn();
+                $('#divAutorizacionBuro').fadeOut();
+                $('.consultarB').fadeIn();
+                $('.correctaBox').unbind('click');
+                $('#goBackStep5').addClass('hide');
+                $('#goBackStep5').fadeOut();
+                $('#buttonconsultaAutenticador').attr('disabled', true);
+                sweetAlert("Consulta exitosa", "Folio: "+respuesta.folio, "success");
+            }
+             else if (respuesta.problemasBuro) {
+                        var mensaje = "Algo salió mal, por favor verifica los siguientes datos: <br /> <ul>";
+                        for (var i = 0; i < respuesta.problemasBuro.length; i++) {
+                            mensaje += "<li>" + respuesta.problemasBuro[i].segmento + " ( Paso " + respuesta.problemasBuro[i].pasoError.numeroDePaso + " - " + respuesta.problemasBuro[i].pasoError.tituloPaso + ") </li>";
+                        }
+                         mensaje += "</ul>";
+                        $('#accionesNormalesIntl').fadeOut();
+                        $('#accionesErrorIntl').fadeIn();
+                        $('#divAutorizacionBuro').fadeOut();
+                        $('#goBackStep5').removeClass('hide');
+                        $('#goBackStep5').fadeIn();
+                        $('#buttonconsultaAutenticador').attr('disabled', true);
+                        sweetAlert({html: true, title: "¡Oops!", text: mensaje, type: "warning"});
+
+             }
+            else if (respuesta.error){
+                $('#buttonconsultaAutenticador').attr('disabled', true);
+                $('#accionesNormalesIntl').fadeOut();
+                $('#accionesErrorIntl').fadeIn();
+                $('#divAutorizacionBuro').fadeOut();
+                $('.consultarB').fadeIn();
+                $('.correctaBox').unbind('click');
+                $('#goBackStep5').addClass('hide');
+                $('#goBackStep5').fadeOut();
+                consultaTradicional = false;
+                $('#buttonconsultaINTL').attr('disabled', true);
+                sweetAlert("Oops...", "Algo salió mal. La consulta tradicional falló. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
+
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("body").mLoading('hide');
+            restartLoadBar('intl');
+            $('.loadingBarintl').fadeOut();
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
     });
 }

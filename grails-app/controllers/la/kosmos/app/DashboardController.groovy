@@ -216,7 +216,8 @@ class DashboardController {
         def listaTipoDeGarantia = TipoDeGarantia.findAll();
         def listaTipoDeIngresos = TipoDeIngresos.findAll();
         def campoFormulario = CampoFormulario.findAll();
-        def configuracionBuroCredito = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(session.usuario.entidadFinanciera).configuracionBuroCredito
+        //TODO: CHANGE CONFIGURATION
+        def configuracionBuroCredito = null//ConfiguracionEntidadFinanciera.findByEntidadFinanciera(session.usuario.entidadFinanciera).configuracionBuroCredito
         def configuracion = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(session.usuario.entidadFinanciera)
         def listaPasoCotizador = PasoCotizadorEntidadFinanciera.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
         def listaPasosSolicitud = PasoSolicitudEntidadFinanciera.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
@@ -2448,6 +2449,38 @@ class DashboardController {
         respuesta.claveDeProducto =  productoSolicitud.producto?.claveDeProducto
         mapa << respuesta
         params._format= "PDF"
+        chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
+    }
+    
+    def printBcFormat(){
+        def configuracion = session.configuracion
+        def cliente = Cliente.get(session.identificadores.idCliente as long)
+        def direccion = DireccionCliente.get(session.identificadores.idDireccion as long)
+        def telefonoCliente = TelefonoCliente.findWhere(cliente:cliente , tipoDeTelefono: TipoDeTelefono.get(2))
+        def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud as long)
+
+        def mapa = []
+        def respuesta = [:]
+        SimpleDateFormat formato = 
+        new SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy", new Locale("es", "ES")); 
+        String fecha = formato.format(new Date());
+        respuesta.razonSocial = configuracion?.razonSocial
+        respuesta.nombreCliente = cliente
+        respuesta.rfc = cliente?.rfc?.toUpperCase()
+        respuesta.calle = direccion?.calle
+        respuesta.numeroExterior = "No. ${direccion?.numeroExterior}"
+        respuesta.numeroInterior = (direccion?.numeroInterior ? direccion?.numeroInterior : " ")
+        respuesta.colonia = direccion?.colonia
+        respuesta.municipioDelegacion = direccion?.codigoPostal?.municipio?.nombre
+        respuesta.estado = direccion?.codigoPostal?.municipio?.estado?.nombre
+        respuesta.codigoPostal = direccion?.codigoPostal
+        respuesta.telefono = telefonoCliente?.numeroTelefonico
+        respuesta.lugar = "${solicitud?.sucursal?.estado?.nombre}, ${fecha.toUpperCase()}"
+        respuesta.rutaLogotipoFormatoBuro = configuracion?.rutaLogotipoFormatoBuro
+        respuesta.nombreEntidadFinancieraFormatoBuro = configuracion?.nombreEntidadFinancieraFormatoBuro
+        mapa << respuesta
+        params._format= "PDF"
+
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
 }

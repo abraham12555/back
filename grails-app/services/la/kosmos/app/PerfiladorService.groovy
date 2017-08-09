@@ -407,22 +407,28 @@ class PerfiladorService {
             datos.solicitudId = identificadores.idSolicitud
             datos.listaDeServicios = (productosAplicables*.claveDeProducto)?.join(',')
             if(bitacoraDeBuro){
-                datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+                datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
             } else {
                 datos.cadenaBuroDeCredito = ""
             }
-            def respuestaEnvioCadenaBC
+            boolean respuestaEnvioCadenaBC
             def respuestaDictameneDePoliticas
             if(datos.cadenaBuroDeCredito) {
                 if(clienteExistente == "SI") {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuroClienteExistente(entidadFinanciera,datos)
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
+                    } else {
+                        listado.bitacoraBuro = "Se detectaron errores en la respuesta de buró de credito"
+                        log.error("ERRCLEX" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito.")
                     }
                 } else {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuro(entidadFinanciera, datos)
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticas(entidadFinanciera, datos)
+                    } else {
+                        listado.bitacoraBuro = "Se detectaron errores en la respuesta de buró de credito"
+                        log.error("ERRCLN" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito.")
                     }
                 }
             }
@@ -800,7 +806,7 @@ class PerfiladorService {
         datos.tipoDeVivienda = direccion.tipoDeVivienda.id.intValue()
         datos.asalariado = oferta.asalariado
         /*if(bitacoraDeBuro){
-        datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+        datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
         } else {
         datos.cadenaBuroDeCredito = ""
         }*/

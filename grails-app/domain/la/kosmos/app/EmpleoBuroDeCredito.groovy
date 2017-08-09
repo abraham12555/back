@@ -25,6 +25,7 @@ class EmpleoBuroDeCredito implements Serializable{
 	String fechaReporteEmpleo
 	String fechaVerificacionEmpleo
 	String modoVerificacion
+        String origenRazonSocialDomicilio
 	ReporteBuroCredito reporteBuroCredito
 
     static constraints = {
@@ -49,6 +50,7 @@ class EmpleoBuroDeCredito implements Serializable{
 		 fechaReporteEmpleo nullable: true
 		 fechaVerificacionEmpleo nullable: true
 		 modoVerificacion nullable: true
+                origenRazonSocialDomicilio nullable:true
     }
 	String toString(){
 		"${razonSocial} ${direccionLinea1}"

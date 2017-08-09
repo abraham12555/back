@@ -30,8 +30,6 @@ class EntidadFinancieraController {
                 configuracionEntidadFinanciera.colorGradienteInferior = "__ "
                 configuracionEntidadFinanciera.colorGradienteSuperior = "__ "
                 configuracionEntidadFinanciera.colorTitulos = "__ "
-                def configuracionBuroCredito = ConfiguracionBuroCredito.get(1)
-                configuracionEntidadFinanciera.configuracionBuroCredito = configuracionBuroCredito
                 configuracionEntidadFinanciera.ejecutarMotorEnPaso = 0
                 configuracionEntidadFinanciera.enviarNotificacionesPorCorreo = true
                 configuracionEntidadFinanciera.htmlTitle = "__"

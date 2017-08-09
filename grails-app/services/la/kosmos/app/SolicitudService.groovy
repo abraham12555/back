@@ -1018,7 +1018,7 @@ class SolicitudService {
                 def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
             
                 if(bitacoraDeBuro){
-                    solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+                    solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
                 }
             }
             
@@ -1402,7 +1402,7 @@ class SolicitudService {
         datos.tipoDeVivienda = direccion.tipoDeVivienda.id.intValue()
         datos.asalariado = (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ? true : false)
         if(bitacoraDeBuro){
-            datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0)?.respuesta)
+            datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
         } else {
             datos.cadenaBuroDeCredito = ""
         }

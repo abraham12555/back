@@ -2,6 +2,7 @@
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import la.kosmos.app.MailStrategyService
+import la.kosmos.app.mock.ConexionBCServiceMock
 import la.kosmos.app.mock.EmailServiceMock
 import la.kosmos.app.RegistrationCodeStrategyService
 import la.kosmos.app.security.AuthenticationFailureListener
@@ -63,11 +64,13 @@ beans = {
         smsService(SmsMockService) {
         }
         emailService(EmailServiceMock)
+        conexionBCService(ConexionBCServiceMock)
         break
 
     case Environment.TEST:
         smsService(SmsMockService) {
         }
+        conexionBCService(ConexionBCServiceMock)
         break
     }
 }

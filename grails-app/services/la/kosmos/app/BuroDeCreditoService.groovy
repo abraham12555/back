@@ -12,8 +12,10 @@ import org.apache.http.util.EntityUtils;
 import org.apache.http.entity.ByteArrayEntity;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import la.kosmos.app.exception.BusinessException
+import la.kosmos.app.vo.Constants
 import javax.xml.parsers.DocumentBuilder;
-
+import org.hibernate.transform.Transformers
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -29,6 +31,7 @@ import java.io.File;
 class BuroDeCreditoService {
 
     def sequenceGeneratorService
+    def conexionBCService
 	
 
     static transactional = false
@@ -47,7 +50,18 @@ class BuroDeCreditoService {
     }
 	
 	
-    def callWebServicePersonasFisicas(def datosBancarios, def datosPersonales, def direccion, SolicitudDeCredito solicitud, ConfiguracionBuroCredito configuracion){
+    def callWebServicePersonasFisicas(def datosBancarios, def datosPersonales, def direccion, SolicitudDeCredito solicitud, idEntidadFinanciera, Usuario usuario){
+        def criteria = ConfiguracionBuroCredito.createCriteria()
+        ConfiguracionBuroCredito configuracion = criteria.get {
+            createAlias('configuracionEntidadFinanciera', 'ef')
+            eq ('ef.id', idEntidadFinanciera)
+            eq ('tipoConsulta', Constants.TipoConsulta.AUTENTICADOR)
+        }
+
+        if(configuracion == null){
+            throw new BusinessException("Error. No se ha configurado el servicio web de la entidad financiera para la consulta a BC");
+        }
+        
         def referenciaOperador = sequenceGeneratorService.nextNumber('REFERENCIA_LIB')
         println "Configuracion Buro Credito --" + configuracion
         StringBuilder soap = new StringBuilder()
@@ -186,8 +200,6 @@ class BuroDeCreditoService {
 	
         String response =null
 	def respuesta = [:]
-	BitacoraBuroCredito bitacora = new BitacoraBuroCredito()
-	bitacora.peticion = soap.toString()
 	String soap_request = cambiarCaracteresEspeciales(soap.toString());
 	println "Request Buro de Credito::::::> "+ soap_request
 	 
@@ -217,7 +229,7 @@ class BuroDeCreditoService {
                         //response ="<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>INTL110001146492               MX1010FF2407253910PN08VALDESTA0006ROMANO0204SAUL0307ANTONIO0408231019790513VARS7910236530802MX090111101M1201M141305391147596611518VARS791023HQYGMS071602MX170201PA11AV EL BOSAL0107LA LONA0203QRO0403QRO050576220070729644001001H120807082015PA15DEL BOSAL 0 S/N0109LA TOLANA0203GRO0403GRO050576230060820062016071044243782461001H1101K120813062015PA16AV EL ROMAL NO 50203QRO0403QRO050576226060820062016071044220709451001H120830042012PA15CTO SN ELLAS SN0003QRO0109LA TOLANA0203QRO0403QRO050576220071044226945251001H1101K120831102009PE26EJKERKE DE MEXICO SA DE CV0010TUSICA 1210238PARQUE INDUSTRIAL BOLIGNO EMPRESARIAL0303QRO0503QRO060576220071044229644001011SUBORDINADO1108200120141202MX130497651401MTL08130820160216TIENDA COMERCIAL030110501I0601O0702PL0802MX100101101W120101308291120141408040120161508260920151708130820162101022020+230102401026020127241111111111111111111111112808130820162908010119013002IA36041155370814112015380203TL08080820160215MICROFINANCIERA030100501I0601I0702PL0802MX1002361101M120410191308040120161408050820161508050820161708050820161801A210525000220621546+26020127071111111280805072016290805012016TL08120820160215MICROFINANCIERA030100501I0601O0702PL0802MX1002181101M120411501308240620161408250720161508250720161708310720161801A210515000220614472+2305150002401026020127011280828062016290828062016TL08110820160205BANCO030100501I0601M0702HI0802MX100111101V120411031308150520151408070520161508150520151708310720161801A210524933220616113+24010260201271411111111111111280830062016290830052015TL08231120150216TIENDA COMERCIAL030110501I0601I0702CL0802MX1002801101W1201013082209201514082011201515082209201516082311201517082311201521051001522020+23010240102602012708332222112808231120152908010119013002VR36041011370817112015380203TL08220320150216TIENDA COMERCIAL030110501I0601I0702CL0802MX1002801101W120101308291120141408220320151508291120141608220320151708220320152104899522020+2301024010260201271621111111111111112808220320152908010119013603224370821032015380202TL08100620130215MICROFINANCIERA030100501I0601I0702PL0802N\$100111101M120101308040420131408030520131508030520131608030520131708310520131801A2104900022020+24010260201270112808300420132908300420133002CCTL08171220130211COOPERATIVA030100501I0601O0702PL0802N\$1101Z120101308130320121408300120131508300120131608040320131708280220131801A21052000022020+24010260201271023276543212808310120132908300420123002CL360519165370831052012380202TL08200420120215MICROFINANCIERA030100501I0601I0702PL0802N\$1002241101M120101308010620111408190420121508190420121608190420121708190420121801A21051500022020+2401025012260201271076546532112808310320122908300620113002CC36043750370813042012380207TL08111220110211COOPERATIVA030110501I0601I0702PL0802MX1002241101M1201013081612201014081112201115080309201116081112201117081112201121052000022020+23010240102602012706111111280811122011290801011901TL08160520110215MICROFINANCIERA030100501I0601I0702PL0802N\$1002241101M120101308031020091408140520111508140520111608140520111708140520111801A21051000022020+24010250122602012708113211212808300420112908300920103002CC3603692370828022011IQ08220820160110FF240725390212LIBERTAD SFP0502MX0605150000701I09010IQ0822082016000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08200620160215MICROFINANCIERA0402PL060100701I09010IQ0820062016000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08211220150215MICROFINANCIERA0402AF060100701I09010IQ0821122015000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08070820150205BANCO0402CC060100701I09010IQ08130620150205BANCO0402CC060100701I09010IQ0813062015000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08140520150205BANCO0402HI060100701I09010IQ0814052015000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08281120140203SIC0402UK060100701I09010IQ0828112014000400000206BANCOS0402UK0502MX060900000000009011IQ08180920140110FF240713400212LIBERTAD SFP060100701I09010IQ0818092014000400000215BURO DE CREDITO0402UK0502MX060900000000009011RS08131120090002000102000202000302000402000502000602110702000802000904001110040008110400031204000713040000140400051502001602031701N1805NNNNN1901N2002MX210900001500022090000000002310000014472+24090000000002509000001150260309627090000499332810000037659+29090000000003009000002122310200320200330200340803102009350824062016360214370822082016380200390800000000400200410800000000SC08BC SCORE000300701040655020228030213040204SC08BC SCORE0003004010400060202710302460403210ES0504455001012303945380102**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
 			//temporal
                         if(datosBancarios.cadenaDeBuro != null && datosBancarios.cadenaDeBuro != "undefined" && datosBancarios.cadenaDeBuro != "null") {
-                            response = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>" + URLDecoder.decode(datosBancarios.cadenaDeBuro, "UTF-8") + "</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
+                           response = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>" + URLDecoder.decode(datosBancarios.cadenaDeBuro, "UTF-8") + "</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
                         } else {
                             //response = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>INTL110001146492               MX1010FF2407253910PN08VALDESTA0006ROMANO0204SAUL0307ANTONIO0408231019790513VARS7910236530802MX090111101M1201M141305391147596611518VARS791023HQYGMS071602MX170201PA11AV EL BOSAL0107LA LONA0203QRO0403QRO050576220070729644001001H120807082015PA15DEL BOSAL 0 S/N0109LA TOLANA0203GRO0403GRO050576230060820062016071044243782461001H1101K120813062015PA16AV EL ROMAL NO 50203QRO0403QRO050576226060820062016071044220709451001H120830042012PA15CTO SN ELLAS SN0003QRO0109LA TOLANA0203QRO0403QRO050576220071044226945251001H1101K120831102009PE26EJKERKE DE MEXICO SA DE CV0010TUSICA 1210238PARQUE INDUSTRIAL BOLIGNO EMPRESARIAL0303QRO0503QRO060576220071044229644001011SUBORDINADO1108200120141202MX130497651401MTL08130820160216TIENDA COMERCIAL030110501I0601O0702PL0802MX100101101W120101308291120141408040120161508260920151708130820162101022020+230102401026020127241111111111111111111111112808130820162908010119013002IA36041155370814112015380203TL08080820160215MICROFINANCIERA030100501I0601I0702PL0802MX1002361101M120410191308040120161408050820161508050820161708050820161801A210525000220621546+26020127071111111280805072016290805012016TL08120820160215MICROFINANCIERA030100501I0601O0702PL0802MX1002181101M120411501308240620161408250720161508250720161708310720161801A210515000220614472+2305150002401026020127011280828062016290828062016TL08110820160205BANCO030100501I0601M0702HI0802MX100111101V120411031308150520151408070520161508150520151708310720161801A210524933220616113+24010260201271411111111111111280830062016290830052015TL08231120150216TIENDA COMERCIAL030110501I0601I0702CL0802MX1002801101W1201013082209201514082011201515082209201516082311201517082311201521051001522020+23010240102602012708332222112808231120152908010119013002VR36041011370817112015380203TL08220320150216TIENDA COMERCIAL030110501I0601I0702CL0802MX1002801101W120101308291120141408220320151508291120141608220320151708220320152104899522020+2301024010260201271621111111111111112808220320152908010119013603224370821032015380202TL08100620130215MICROFINANCIERA030100501I0601I0702PL0802N\$100111101M120101308040420131408030520131508030520131608030520131708310520131801A2104900022020+24010260201270112808300420132908300420133002CCTL08171220130211COOPERATIVA030100501I0601O0702PL0802N\$1101Z120101308130320121408300120131508300120131608040320131708280220131801A21052000022020+24010260201271023276543212808310120132908300420123002CL360519165370831052012380202TL08200420120215MICROFINANCIERA030100501I0601I0702PL0802N\$1002241101M120101308010620111408190420121508190420121608190420121708190420121801A21051500022020+2401025012260201271076546532112808310320122908300620113002CC36043750370813042012380207TL08111220110211COOPERATIVA030110501I0601I0702PL0802MX1002241101M1201013081612201014081112201115080309201116081112201117081112201121052000022020+23010240102602012706111111280811122011290801011901TL08160520110215MICROFINANCIERA030100501I0601I0702PL0802N\$1002241101M120101308031020091408140520111508140520111608140520111708140520111801A21051000022020+24010250122602012708113211212808300420112908300920103002CC3603692370828022011IQ08220820160110FF240725390212LIBERTAD SFP0502MX0605150000701I09010IQ0822082016000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08200620160215MICROFINANCIERA0402PL060100701I09010IQ0820062016000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08211220150215MICROFINANCIERA0402AF060100701I09010IQ0821122015000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08070820150205BANCO0402CC060100701I09010IQ08130620150205BANCO0402CC060100701I09010IQ0813062015000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08140520150205BANCO0402HI060100701I09010IQ0814052015000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08281120140203SIC0402UK060100701I09010IQ0828112014000400000206BANCOS0402UK0502MX060900000000009011IQ08180920140110FF240713400212LIBERTAD SFP060100701I09010IQ0818092014000400000215BURO DE CREDITO0402UK0502MX060900000000009011RS08131120090002000102000202000302000402000502000602110702000802000904001110040008110400031204000713040000140400051502001602031701N1805NNNNN1901N2002MX210900001500022090000000002310000014472+24090000000002509000001150260309627090000499332810000037659+29090000000003009000002122310200320200330200340803102009350824062016360214370822082016380200390800000000400200410800000000SC08BC SCORE000300701040655020228030213040204SC08BC SCORE0003004010400060202710302460403210ES0504455001012303945380102**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
                             response = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\'http://bean.consulta.ws.bc.com/\'><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>INTL110000384071               MX1010FF2407253910PN06ORTIGA0005CATLA0204ROLY0308CECILIAI0408221119910513ORCR9911229S80802MX090111101D1201F170201PA18PA PALO ALTO 202 30109PALO ALTO0215SN JUAN DEL RIO0403QRO050576734060808078906070794008741001H1101K120808015016PA14TELADEMUCIO SN0210TEOCOLUCAN0402EM050554786120825022015PA33NACARANDAS 34 L 6 RBA CREO DEL MT0210TEOCOLUCAN0402EM050553250120815032011PA14SN PEDRO PALMA0012JALPANDESERA0115SAN PEDRO PALMA0212JALPANDESERA0402DF050503230120805112013PE04ER&F0000071142759400875170816052016PE08TYFRGEHL00001003DIR110812042012170808012016TL08240820160216TIENDA COMERCIAL030110501I0601I0702AF0802MX1002781101W120327013081702201614081708201615081702201617082408201621051047722052102+23010240313526020127241111111111111111111111112808240820162908010119013603135370808062016380202TL08230820160216TIENDA COMERCIAL030110501I0601I0702CL0802MX10031281101W120366013081406201614080908201615081406201617082308201621052816522051405+230102403440260201271011111111112808230820162908010119013603440370823082016380202IQ08270820160110FF240725390212LIBERTAD SFP060100701I09010IQ0827082016000400000215BURO DE CREDITO0402UK0502MX060900000000009011IQ08100620160205BANCO0402UK060100701I09010IQ08160520160216TIENDA COMERCIAL0402CC060100701I09010IQ08120420160205BANCO0402UK060100701I09010IQ08010220160203SIC0402UK060100701I09010IQ0801022016000400000206BANCOS0402UK0502MX060900000000009011IQ08080120160205BANCO0402UK060100701I09010IQ0822042015000400000216REPORTE DE CREDI0402UK0502MX060900000000109011IQ08250220150205BANCO0402AF0502N$060450000701I09010IQ08260120150203SIC0402UK0502N$060480000701I09010IQ0826012015000400000206BANCOS0402UK0502MX060900000800009011RS08051120130002000102000202000302000402000502030602050702010802010904001010040006110400041204000313040003140400001502001602041701N1805NNNNN1901N2002MX210900002874522090000285002310000028477+24090000001082509000000162260310027090001156422810000109785+29090000005753009000002229310200320200330200340809122013350821072016360211370827082016380200390800000000400200410800000000SC08BC SCORE000300701040644020228030213040204SC08BC SCORE000300401040005020316603032000403205ES0503652001012329500860102**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>'
@@ -241,10 +253,8 @@ class BuroDeCreditoService {
                     response = post(soap_request,configuracion.urlBuroCredito)
                 }
                 response = corregirCaracteres(response)
-                bitacora.respuesta = response
-                bitacora.fechaRespuesta = new Date()
-                bitacora.solicitud=solicitud
-                bitacora.save(flush:true)
+                addBitacoraBuroCredito(soap.toString(), response, solicitud, Constants.TipoConsulta.AUTENTICADOR, usuario)
+
                 println "REPORTE A ANALIZAR..."+response
                 return analizarReporte(response,solicitud,configuracion.reintentos,referenciaOperador)
             }catch(Exception e){
@@ -265,176 +275,79 @@ class BuroDeCreditoService {
         }
     }
     
-    def consultaINTL(def datosBancarios, def datosPersonales, def direccion, SolicitudDeCredito solicitud, ConfiguracionBuroCredito configuracion) {
-        def referenciaOperador = sequenceGeneratorService.nextNumber('REFERENCIA_LIB')
-        StringBuilder soap = new StringBuilder()
-        soap.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:bean=\"http://bean.consulta.ws.bc.com/\">")
-        soap.append("<soapenv:Header/>")
-        soap.append("<soapenv:Body>")
-        soap.append("<bean:consultaXML>")
-        soap.append("<Consulta>")
-        soap.append("<Personas>")
-        soap.append("<Persona>")
-        soap.append("<Encabezado>")
-        soap.append("<Version>${configuracion.encabezadoVersion}</Version>")
-        soap.append("<NumeroReferenciaOperador>${referenciaOperador}</NumeroReferenciaOperador>")
-        soap.append("<ProductoRequerido>${configuracion.encabezadoProductoRequerido}</ProductoRequerido>")
-        soap.append("<ClavePais>${configuracion.encabezadoClavePais}</ClavePais>")
-        soap.append("<IdentificadorBuro>${configuracion.encabezadoIdentificadorBuro}</IdentificadorBuro>")
-        soap.append("<ClaveUsuario>${configuracion.encabezadoClaveUsuario}</ClaveUsuario>")
-        soap.append("<Password>${configuracion.encabezadoPassword}</Password>")
-        soap.append("<TipoConsulta>${configuracion.encabezadoTipoConsulta}</TipoConsulta>")
-        soap.append("<TipoContrato>${configuracion.encabezadoTipoContrato}</TipoContrato>")
-        soap.append("<ClaveUnidadMonetaria>${configuracion.encabezadoClaveUnidadMonetaria}</ClaveUnidadMonetaria>")
-        soap.append("<ImporteContrato></ImporteContrato>")
-        soap.append("<Idioma>${configuracion.encabezadoIdioma}</Idioma>")
-        soap.append("<TipoSalida>${configuracion.encabezadoTipoSalida}</TipoSalida>")
-        soap.append("</Encabezado>")
-        soap.append("<Nombre>")
-        soap.append("<ApellidoPaterno>"+datosPersonales?.apellidoPaterno.toUpperCase()+"</ApellidoPaterno>")
-        soap.append("<ApellidoMaterno>"+datosPersonales?.apellidoMaterno.toUpperCase()+"</ApellidoMaterno>")
-        soap.append("<ApellidoAdicional></ApellidoAdicional>")
-        soap.append("<PrimerNombre>"+datosPersonales?.nombre.toUpperCase()+"</PrimerNombre>")
-        soap.append("<SegundoNombre></SegundoNombre>")
-        soap.append("<FechaNacimiento>"+obtenerFechaTipo2("${datosPersonales?.fechaDeNacimiento.dia}","${datosPersonales?.fechaDeNacimiento.mes}","${datosPersonales?.fechaDeNacimiento.anio}")+"</FechaNacimiento>")
-        soap.append("<RFC>${datosPersonales?.rfc}</RFC>")
-        soap.append("<Prefijo></Prefijo>")
-        soap.append("<Sufijo></Sufijo>")
-        soap.append("<Nacionalidad>MX</Nacionalidad>")
-        soap.append("<Residencia>1</Residencia>")
-        soap.append("<NumeroLicenciaConducir></NumeroLicenciaConducir>")
-        if(datosPersonales?.estadoCivil == 1) {
-            soap.append("<EstadoCivil>S</EstadoCivil>")  
-        } else {
-            soap.append("<EstadoCivil>M</EstadoCivil>")
+    def consultaINTL(data, def datosPersonales, def direccion, SolicitudDeCredito solicitud, Long idEntidadFinanciera, Usuario usuario){
+        def respuesta = [:]
+
+        def criteria = ConfiguracionBuroCredito.createCriteria()
+        ConfiguracionBuroCredito configuracion = criteria.get {
+            createAlias('configuracionEntidadFinanciera', 'ef')
+            eq ('ef.id', idEntidadFinanciera)
+            eq ('tipoConsulta', Constants.TipoConsulta.TRADICIONAL)
         }
-        if(datosPersonales?.genero == 1) {
-            soap.append("<Sexo>M</Sexo>")  
-        } else {
-            soap.append("<Sexo>F</Sexo>")
-        }
-        soap.append("</Nombre>")
-        soap.append("<Domicilios>")
-        soap.append("<Domicilio>")
-        soap.append("<Direccion1>"+direccion?.calle.toUpperCase()+" "+direccion?.numeroExterior.toUpperCase()+" "+direccion?.numeroInterior?.toUpperCase()+"</Direccion1>")
-        soap.append("<Direccion2></Direccion2>")
-        soap.append("<ColoniaPoblacion>"+direccion?.colonia.toUpperCase()+"</ColoniaPoblacion>")
-        Municipio municipio = Municipio.findById(direccion?.delegacion)
-        soap.append("<DelegacionMunicipio>"+municipio.nombre.toUpperCase()+"</DelegacionMunicipio>")
-        soap.append("<Ciudad></Ciudad>")
-        Estado estado = Estado.findById(direccion?.estado)
-        soap.append("<Estado>"+estado.siglasrenapo.toUpperCase()+"</Estado>")
-        soap.append("<CP>${direccion?.codigoPostal}</CP>")
-        soap.append("<FechaResidencia></FechaResidencia>")
-        soap.append("<NumeroTelefono></NumeroTelefono>")
-        soap.append("<Extension></Extension>")
-        soap.append("<Fax></Fax>")
-        soap.append("<TipoDomicilio></TipoDomicilio>")
-        soap.append("<IndicadorEspecialDomicilio></IndicadorEspecialDomicilio>")
-        soap.append("</Domicilio>")
-        soap.append("</Domicilios>")
-        soap.append("<Empleos>")
-        soap.append("<Empleo>")
-        soap.append("<NombreEmpresa></NombreEmpresa>")
-        soap.append("<Direccion1></Direccion1>")
-        soap.append("<Direccion2></Direccion2>")
-        soap.append("<ColoniaPoblacion></ColoniaPoblacion>")
-        soap.append("<DelegacionMunicipio></DelegacionMunicipio>")
-        soap.append("<Ciudad></Ciudad>")
-        soap.append("<Estado></Estado>")
-        soap.append("<CP></CP>")
-        soap.append("<NumeroTelefono></NumeroTelefono>")
-        soap.append("<Extension></Extension>")
-        soap.append("<Fax></Fax>")
-        soap.append("<Cargo></Cargo>")
-        soap.append("<FechaContratacion></FechaContratacion>")
-        soap.append("<ClaveMonedaSalario></ClaveMonedaSalario>")
-        soap.append("<Salario></Salario>")
-        soap.append("<BaseSalarial></BaseSalarial>")
-        soap.append("<NumeroEmpleado></NumeroEmpleado>")
-        soap.append("<FechaUltimoDiaEmpleo></FechaUltimoDiaEmpleo>")
-        soap.append("</Empleo>")
-        soap.append("</Empleos>")
-        soap.append("<CuentaC>")
-        soap.append("<NumeroCuenta></NumeroCuenta>")
-        soap.append("<ClaveOtorgante></ClaveOtorgante>")
-        soap.append("<NombreOtorgante></NombreOtorgante>")
-        soap.append("</CuentaC>")
-        soap.append("<Autentica>")
-        soap.append("<TipoReporte>${configuracion.autenticaTipoReporte}</TipoReporte>")
-        soap.append("<TipoSalidaAU>${configuracion.autenticaTipoSalidaAU}</TipoSalidaAU>")
-        soap.append("<ReferenciaOperador>${referenciaOperador}</ReferenciaOperador>")
-						  
-        if(datosBancarios.tarjeta.equalsIgnoreCase("SI")) {
-            soap.append("<TarjetaCredito>V</TarjetaCredito>")  
-            soap.append("<UltimosCuatroDigitos>${datosBancarios.numeroTarjeta}</UltimosCuatroDigitos>")
-        } else {
-            soap.append("<TarjetaCredito>F</TarjetaCredito>")
-        }
-        if(datosBancarios.hipoteca.equalsIgnoreCase("SI")) {
-            soap.append("<EjercidoCreditoHipotecario>V</EjercidoCreditoHipotecario>")
-        } else {
-            soap.append("<EjercidoCreditoHipotecario>F</EjercidoCreditoHipotecario>")
-        }
-        if(datosBancarios.creditoAutomotriz.equalsIgnoreCase("SI")) {
-            soap.append("<EjercidoCreditoAutomotriz>V</EjercidoCreditoAutomotriz>")
-        } else {
-            soap.append("<EjercidoCreditoAutomotriz>F</EjercidoCreditoAutomotriz>")
-        }
-        soap.append("</Autentica>")
-        soap.append("<Caracteristicas>")
-        soap.append("<Plantilla></Plantilla>")
-        soap.append("</Caracteristicas>")
-        soap.append("</Persona>")
-        soap.append("</Personas>")
-        soap.append("</Consulta>")
-        soap.append("</bean:consultaXML>")
-        soap.append("</soapenv:Body>")
-        soap.append("</soapenv:Envelope>")
-        
-        String response =null
-	def respuesta = [:]
-	BitacoraBuroCredito bitacora = new BitacoraBuroCredito()
-	bitacora.peticion = soap.toString()
-	String soap_request = cambiarCaracteresEspeciales(soap.toString());
-	println "[INTL] Request Buro de Credito::::::> "+ soap_request
-        
-        if(solicitud?.reporteBuroCredito == null || solicitud?.reporteBuroCredito?.errorConsulta?.contains("ERRR")) {
-            try {
-                if(configuracion.habilitarMockBuroCredito){
-                    if(configuracion.habilitarMockBuroCreditoSuccess) {
-                        response ="<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Encabezado><NumeroReferenciaOperador>1234567890     1234567890</NumeroReferenciaOperador><ClavePais>MX</ClavePais><IdentificadorBuro>1010</IdentificadorBuro><ClaveOtorgante>KK76871001</ClaveOtorgante><ClaveRetornoConsumidorPrincipal>1</ClaveRetornoConsumidorPrincipal><ClaveRetornoConsumidorSecundario>0</ClaveRetornoConsumidorSecundario><NumeroControlConsulta>1351435824</NumeroControlConsulta></Encabezado><Nombre><ApellidoPaterno>CASTILLO</ApellidoPaterno><ApellidoMaterno>NESTOR</ApellidoMaterno><PrimerNombre>OSCAR</PrimerNombre><SegundoNombre>EDUARDO</SegundoNombre><FechaNacimiento>06021986</FechaNacimiento><RFC>CANO860206CB8</RFC><Prefijo>SR</Prefijo><Nacionalidad>MX</Nacionalidad><Residencia>1</Residencia><EstadoCivil>S</EstadoCivil><Sexo>M</Sexo><ClaveImpuestosOtroPais>CANO860206HDFSSS00</ClaveImpuestosOtroPais></Nombre><Domicilios><Domicilio><Direccion1>SN ANTONIO MARIA ZACARIA 76</Direccion1><ColoniaPoblacion>RANCHO SAN DIMAS</ColoniaPoblacion><DelegacionMunicipio>SN ANTONIO LA IA</DelegacionMunicipio><Estado>EM</Estado><CP>52282</CP><NumeroTelefono>7224321587</NumeroTelefono><FechaReporteDireccion>18042016</FechaReporteDireccion></Domicilio><Domicilio><Direccion1>CEREZOS 943</Direccion1><Direccion2>CASA BLANCA</Direccion2><DelegacionMunicipio>METEPEC</DelegacionMunicipio><Ciudad>METEPEC</Ciudad><Estado>EM</Estado><CP>52150</CP><FechaReporteDireccion>28022014</FechaReporteDireccion></Domicilio><Domicilio><Direccion1>SN ANTONIO MARIA ZACARIA MZ34</Direccion1><Direccion2>RCHO SN DIMAS</Direccion2><DelegacionMunicipio>SN ANTONIO LA IA</DelegacionMunicipio><Estado>EM</Estado><CP>52282</CP><FechaReporteDireccion>31122013</FechaReporteDireccion></Domicilio><Domicilio><Direccion1>PROL 16 DE SEP 68</Direccion1><Direccion2>LOC SN LUCAS TEPEMAJALCO</Direccion2><ColoniaPoblacion>PUEBLO SAN LUCAS TEPEMAJALCO</ColoniaPoblacion><DelegacionMunicipio>SN ANTONIO LA IA</DelegacionMunicipio><Estado>EM</Estado><CP>52280</CP><FechaResidencia>11112000</FechaResidencia><NumeroTelefono>7171320328</NumeroTelefono><TipoDomicilio>H</TipoDomicilio><FechaReporteDireccion>29042005</FechaReporteDireccion></Domicilio></Domicilios><Empleos><Empleo><NombreEmpresa>SISTEMA ESTATAL DE INFORMATICA</NombreEmpresa><Direccion1></Direccion1><NumeroTelefono>72201320328</NumeroTelefono><FechaReportoEmpleo>24052009</FechaReportoEmpleo></Empleo><Empleo><NombreEmpresa>NUUPTECH SA DE CV</NombreEmpresa><Direccion1></Direccion1></Empleo></Empleos><Cuentas><Cuenta><FechaActualizacion>24042017</FechaActualizacion><NombreOtorgante>COMUNICACIONES</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>O</TipoCuenta><TipoContrato>CL</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>M</FrecuenciaPagos><MontoPagar>548</MontoPagar><FechaAperturaCuenta>14042012</FechaAperturaCuenta><FechaUltimoPago>21042017</FechaUltimoPago><FechaUltimaCompra>15032017</FechaUltimaCompra><FechaReporte>21042017</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>1068</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>2</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>111111111111111111111111</HistoricoPagos><FechaMasRecienteHistoricoPagos>21032017</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>21032012</FechaMasAntiguaHistoricoPagos><FechaHistoricaMorosidadMasGrave>30042014</FechaHistoricaMorosidadMasGrave><MopHistoricoMorosidadMasGrave>02</MopHistoricoMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>10042017</FechaActualizacion><NombreOtorgante>COMUNICACIONES</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CL</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>749</MontoPagar><FechaAperturaCuenta>27052015</FechaAperturaCuenta><FechaUltimoPago>04062015</FechaUltimoPago><FechaUltimaCompra>02042016</FechaUltimaCompra><FechaReporte>31032017</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>749</CreditoMaximo><SaldoActual>749+</SaldoActual><LimiteCredito>1000</LimiteCredito><SaldoVencido>749</SaldoVencido><NumeroPagosVencidos>1</NumeroPagosVencidos><FormaPagoActual>96</FormaPagoActual><HistoricoPagos>9999997777776543221111</HistoricoPagos><FechaMasRecienteHistoricoPagos>28022017</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>28052015</FechaMasAntiguaHistoricoPagos><ImporteSaldoMorosidadHistMasGrave>749</ImporteSaldoMorosidadHistMasGrave><FechaHistoricaMorosidadMasGrave>30092015</FechaHistoricaMorosidadMasGrave><MopHistoricoMorosidadMasGrave>02</MopHistoricoMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>11042017</FechaActualizacion><NombreOtorgante>BANCO</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>01102011</FechaAperturaCuenta><FechaUltimoPago>20022017</FechaUltimoPago><FechaUltimaCompra>21032017</FechaUltimaCompra><FechaReporte>31032017</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>7439</CreditoMaximo><SaldoActual>1490+</SaldoActual><LimiteCredito>3400</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>111111111111111111111111</HistoricoPagos><FechaMasRecienteHistoricoPagos>28022017</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>20102011</FechaMasAntiguaHistoricoPagos><ImporteSaldoMorosidadHistMasGrave>350</ImporteSaldoMorosidadHistMasGrave><FechaHistoricaMorosidadMasGrave>05042014</FechaHistoricaMorosidadMasGrave><MopHistoricoMorosidadMasGrave>02</MopHistoricoMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>31032017</FechaActualizacion><NombreOtorgante>TIENDA COMERCIAL</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CL</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>82</MontoPagar><FechaAperturaCuenta>28052009</FechaAperturaCuenta><FechaUltimoPago>16022017</FechaUltimoPago><FechaUltimaCompra>10022017</FechaUltimaCompra><FechaReporte>31032017</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>7689</CreditoMaximo><SaldoActual>690+</SaldoActual><LimiteCredito>8000</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>11UU11UU1112111111212121</HistoricoPagos><FechaMasRecienteHistoricoPagos>28022017</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>28072011</FechaMasAntiguaHistoricoPagos><FechaHistoricaMorosidadMasGrave>30042014</FechaHistoricaMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>19082015</FechaActualizacion><NombreOtorgante>AUTOMOTRIZ</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>I</TipoCuenta><TipoContrato>AU</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><NumeroPagos>48</NumeroPagos><FrecuenciaPagos>M</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>16072013</FechaAperturaCuenta><FechaUltimoPago>10082015</FechaUltimoPago><FechaUltimaCompra>16072013</FechaUltimaCompra><FechaCierreCuenta>10082015</FechaCierreCuenta><FechaReporte>16082015</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>201880</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>201880</LimiteCredito><SaldoVencido>0</SaldoVencido><NumeroPagosVencidos>1</NumeroPagosVencidos><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>111111132111111432111111</HistoricoPagos><FechaMasRecienteHistoricoPagos>16072015</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>16072013</FechaMasAntiguaHistoricoPagos><ImporteSaldoMorosidadHistMasGrave>6253</ImporteSaldoMorosidadHistMasGrave><FechaHistoricaMorosidadMasGrave>30042014</FechaHistoricaMorosidadMasGrave><MopHistoricoMorosidadMasGrave>04</MopHistoricoMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>06092014</FechaActualizacion><NombreOtorgante>BANCO</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>31052010</FechaAperturaCuenta><FechaUltimoPago>18082014</FechaUltimoPago><FechaUltimaCompra>29012014</FechaUltimaCompra><FechaCierreCuenta>18082014</FechaCierreCuenta><FechaReporte>31082014</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>63776</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>79800</LimiteCredito><SaldoVencido>40631</SaldoVencido><NumeroPagosVencidos>5</NumeroPagosVencidos><FormaPagoActual>97</FormaPagoActual><HistoricoPagos>6543211111</HistoricoPagos><FechaMasRecienteHistoricoPagos>31072014</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>02102013</FechaMasAntiguaHistoricoPagos><ClaveObservacion>LC</ClaveObservacion><ImporteSaldoMorosidadHistMasGrave>15363</ImporteSaldoMorosidadHistMasGrave><FechaHistoricaMorosidadMasGrave>31072014</FechaHistoricaMorosidadMasGrave><MopHistoricoMorosidadMasGrave>06</MopHistoricoMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>30042014</FechaActualizacion><NombreOtorgante>COMUNICACIONES</NombreOtorgante><NumeroTelefonoOtorgante>1</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>1</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CL</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><NumeroPagos>0</NumeroPagos><FrecuenciaPagos>M</FrecuenciaPagos><MontoPagar>1021</MontoPagar><FechaAperturaCuenta>24022014</FechaAperturaCuenta><FechaUltimoPago>31032014</FechaUltimoPago><FechaReporte>30042014</FechaReporte><CreditoMaximo>1541</CreditoMaximo><SaldoActual>1021+</SaldoActual><LimiteCredito>1000</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>11</HistoricoPagos><FechaMasRecienteHistoricoPagos>30032014</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>28022014</FechaMasAntiguaHistoricoPagos></Cuenta><Cuenta><FechaActualizacion>12112013</FechaActualizacion><NombreOtorgante>BANCO</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>31052010</FechaAperturaCuenta><FechaUltimoPago>03102013</FechaUltimoPago><FechaUltimaCompra>21102013</FechaUltimaCompra><FechaCierreCuenta>31102013</FechaCierreCuenta><FechaReporte>31102013</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>48332</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>79800</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>UR</FormaPagoActual><HistoricoPagos>111111111111111111111111</HistoricoPagos><FechaMasRecienteHistoricoPagos>30092013</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>31052011</FechaMasAntiguaHistoricoPagos><ClaveObservacion>LS</ClaveObservacion></Cuenta><Cuenta><FechaActualizacion>30052013</FechaActualizacion><NombreOtorgante>BANCO</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>29052006</FechaAperturaCuenta><FechaUltimoPago>28022013</FechaUltimoPago><FechaUltimaCompra>24042012</FechaUltimaCompra><FechaCierreCuenta>28022013</FechaCierreCuenta><FechaReporte>01032013</FechaReporte><ModoReportar>C</ModoReportar><UltimaFechaSaldoCero>31072006</UltimaFechaSaldoCero><CreditoMaximo>5364</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>2990</LimiteCredito><SaldoVencido>3218</SaldoVencido><NumeroPagosVencidos>6</NumeroPagosVencidos><FormaPagoActual>97</FormaPagoActual><HistoricoPagos>X654321121121111111111</HistoricoPagos><FechaMasRecienteHistoricoPagos>01022013</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>31052011</FechaMasAntiguaHistoricoPagos><ClaveObservacion>LC</ClaveObservacion><FechaHistoricaMorosidadMasGrave>31032013</FechaHistoricaMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>06092012</FechaActualizacion><NombreOtorgante>COMUNICACIONES</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>O</TipoCuenta><TipoContrato>CL</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>30042008</FechaAperturaCuenta><FechaUltimoPago>18042012</FechaUltimoPago><FechaUltimaCompra>12072012</FechaUltimaCompra><FechaCierreCuenta>31082012</FechaCierreCuenta><FechaReporte>31082012</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>563</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>1</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>111111111111121</HistoricoPagos><FechaMasRecienteHistoricoPagos>31072012</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>31052011</FechaMasAntiguaHistoricoPagos><ClaveObservacion>CC</ClaveObservacion><FechaHistoricaMorosidadMasGrave>30062011</FechaHistoricaMorosidadMasGrave></Cuenta><Cuenta><FechaActualizacion>10082012</FechaActualizacion><NombreOtorgante>COMUNICACIONES</NombreOtorgante><NumeroTelefonoOtorgante>0</NumeroTelefonoOtorgante><IdentificadorSociedadInformacionCrediticia>0</IdentificadorSociedadInformacionCrediticia><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><TipoCuenta>R</TipoCuenta><TipoContrato>CL</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><FrecuenciaPagos>Z</FrecuenciaPagos><MontoPagar>0</MontoPagar><FechaAperturaCuenta>24042010</FechaAperturaCuenta><FechaUltimoPago>02062012</FechaUltimoPago><FechaCierreCuenta>02062012</FechaCierreCuenta><FechaReporte>31072012</FechaReporte><ModoReportar>A</ModoReportar><CreditoMaximo>660</CreditoMaximo><SaldoActual>0+</SaldoActual><LimiteCredito>1000</LimiteCredito><SaldoVencido>0</SaldoVencido><FormaPagoActual>01</FormaPagoActual><HistoricoPagos>1111111111111</HistoricoPagos><FechaMasRecienteHistoricoPagos>30062012</FechaMasRecienteHistoricoPagos><FechaMasAntiguaHistoricoPagos>30062011</FechaMasAntiguaHistoricoPagos><ClaveObservacion>CC</ClaveObservacion></Cuenta></Cuentas><ConsultasEfectuadas><ConsultaEfectuada><FechaConsulta>27042017</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TelefonoOtorgante>54494832</TelefonoOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>27042017</FechaConsulta><ClaveOtorgante>KK76871001</ClaveOtorgante><NombreOtorgante>KOSMOS</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>25042017</FechaConsulta><NombreOtorgante>CONSUMIDOR FINAL</NombreOtorgante><TipoContrato>UK</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>21042017</FechaConsulta><NombreOtorgante>BANCO</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>26012017</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>26012017</FechaConsulta><NombreOtorgante>FINANCIERA</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>25012017</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>25012017</FechaConsulta><NombreOtorgante>FINANCIERA</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>19012017</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>19012017</FechaConsulta><NombreOtorgante>FINANCIERA</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>17012017</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>17012017</FechaConsulta><NombreOtorgante>FINANCIERA</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>17112016</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>17112016</FechaConsulta><ClaveOtorgante>KK76871001</ClaveOtorgante><NombreOtorgante>KOSMOS</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>07112016</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>BURO DE CREDITO</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>07112016</FechaConsulta><ClaveOtorgante>KK76871001</ClaveOtorgante><NombreOtorgante>KOSMOS</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>18092016</FechaConsulta><NombreOtorgante>BANCO</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>31082016</FechaConsulta><NombreOtorgante>BANCO</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>18042016</FechaConsulta><IdentificacionBuro>0000</IdentificacionBuro><NombreOtorgante>SIC</NombreOtorgante><TipoContrato>CC</TipoContrato><ClaveUnidadMonetaria>MX</ClaveUnidadMonetaria><ImporteContrato>000000000</ImporteContrato><ResultadoFinal>1</ResultadoFinal><IdentificadorOrigenConsulta>1</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>18042016</FechaConsulta><NombreOtorgante>CONSUMIDOR FINAL</NombreOtorgante><TipoContrato>UK</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada><ConsultaEfectuada><FechaConsulta>13042016</FechaConsulta><NombreOtorgante>BANCO</NombreOtorgante><TipoContrato>CC</TipoContrato><ImporteContrato>0</ImporteContrato><IndicadorTipoResponsabilidad>I</IndicadorTipoResponsabilidad><ResultadoFinal>0</ResultadoFinal><IdentificadorOrigenConsulta>0</IdentificadorOrigenConsulta></ConsultaEfectuada></ConsultasEfectuadas><ResumenReporte><ResumenReporte><FechaIngresoBD>07072004</FechaIngresoBD><NumeroMOP7>00</NumeroMOP7><NumeroMOP6>00</NumeroMOP6><NumeroMOP5>00</NumeroMOP5><NumeroMOP4>00</NumeroMOP4><NumeroMOP3>00</NumeroMOP3><NumeroMOP2>00</NumeroMOP2><NumeroMOP1>07</NumeroMOP1><NumeroMOP0>00</NumeroMOP0><NumeroMOPUR>01</NumeroMOPUR><NumeroCuentas>0011</NumeroCuentas><CuentasPagosFijosHipotecas>0001</CuentasPagosFijosHipotecas><CuentasRevolventesAbiertas>0010</CuentasRevolventesAbiertas><CuentasCerradas>0006</CuentasCerradas><CuentasNegativasActuales>0003</CuentasNegativasActuales><CuentasClavesHistoriaNegativa>0003</CuentasClavesHistoriaNegativa><CuentasDisputa>00</CuentasDisputa><NumeroSolicitudesUltimos6Meses>15</NumeroSolicitudesUltimos6Meses><NuevaDireccionReportadaUltimos60Dias>N</NuevaDireccionReportadaUltimos60Dias><MensajesAlerta>NNYNY</MensajesAlerta><ExistenciaDeclaracionesConsumidor>N</ExistenciaDeclaracionesConsumidor><TipoMoneda>MX</TipoMoneda><TotalCreditosMaximosRevolventes>000018486</TotalCreditosMaximosRevolventes><TotalLimitesCreditoRevolventes>000013400</TotalLimitesCreditoRevolventes><TotalSaldosActualesRevolventes>000003950+</TotalSaldosActualesRevolventes><TotalSaldosVencidosRevolventes>000044598</TotalSaldosVencidosRevolventes><TotalPagosRevolventes>000002400</TotalPagosRevolventes><PctLimiteCreditoUtilizadoRevolventes>029</PctLimiteCreditoUtilizadoRevolventes><TotalCreditosMaximosPagosFijos>000000000</TotalCreditosMaximosPagosFijos><TotalSaldosActualesPagosFijos>000000000+</TotalSaldosActualesPagosFijos><TotalSaldosVencidosPagosFijos>000000000</TotalSaldosVencidosPagosFijos><TotalPagosPagosFijos>000000000</TotalPagosPagosFijos><NumeroMOP96>01</NumeroMOP96><NumeroMOP97>02</NumeroMOP97><NumeroMOP99>00</NumeroMOP99><FechaAperturaCuentaMasAntigua>29052006</FechaAperturaCuentaMasAntigua><FechaAperturaCuentaMasReciente>27052015</FechaAperturaCuentaMasReciente><TotalSolicitudesReporte>20</TotalSolicitudesReporte><FechaSolicitudReporteMasReciente>27042017</FechaSolicitudReporteMasReciente><NumeroTotalCuentasDespachoCobranza>00</NumeroTotalCuentasDespachoCobranza><FechaAperturaCuentaMasRecienteDespachoCobranza>00000000</FechaAperturaCuentaMasRecienteDespachoCobranza><NumeroTotalSolicitudesDespachosCobranza>00</NumeroTotalSolicitudesDespachosCobranza><FechaSolicitudMasRecienteDespachoCobranza>00000000</FechaSolicitudMasRecienteDespachoCobranza></ResumenReporte></ResumenReporte><HawkAlertConsulta><HawkAlertC><FechaReporte>27042017</FechaReporte><CodigoClave>002</CodigoClave><TipoInstitucion>BURO DE CREDITO </TipoInstitucion><Mensaje>NO EXISTE INFORMACION</Mensaje></HawkAlertC></HawkAlertConsulta><HawkAlertBD><HawkAlertBD><FechaReporte>27042017</FechaReporte><CodigoClave>860</CodigoClave><TipoInstitucion>BURO DE CREDITO </TipoInstitucion><Mensaje>TELEFONO 717132328 CORRESPONDE A NUMERO FIJO</Mensaje></HawkAlertBD><HawkAlertBD><FechaReporte>27042017</FechaReporte><CodigoClave>850</CodigoClave><TipoInstitucion>BURO DE CREDITO </TipoInstitucion><Mensaje>TELEFONO 7224321587 NO CORRESPONDE A ZONA POSTAL</Mensaje></HawkAlertBD><HawkAlertBD><FechaReporte>27042017</FechaReporte><CodigoClave>890</CodigoClave><TipoInstitucion>BURO DE CREDITO </TipoInstitucion><Mensaje>COLONIA NO COINCIDE CON CODIGO POSTAL 52280</Mensaje></HawkAlertBD><HawkAlertBD><FechaReporte>27042017</FechaReporte><CodigoClave>870</CodigoClave><TipoInstitucion>BURO DE CREDITO </TipoInstitucion><Mensaje>TELEFONO 7224321587 CORRESPONDE A NUMERO MOVIL</Mensaje></HawkAlertBD></HawkAlertBD><DeclaracionesCliente/><ScoreBuroCredito><ScoreBC><nombreScore>BC SCORE</nombreScore><CodigoScore>007</CodigoScore><ValorScore>0590</ValorScore><CodigoRazon>21</CodigoRazon><CodigoRazon>17</CodigoRazon></ScoreBC></ScoreBuroCredito></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"		  
-                    } else {
-                        response = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:consultaXMLResponse xmlns:ns2=\"http://bean.consulta.ws.bc.com/\"><return><Personas><Persona><Cuentas><Cuenta/></Cuentas><ConsultasEfectuadas><ConsultaEfectuada/></ConsultasEfectuadas><ReporteImpreso>ERRRAR25LIB-0000000000000000002820014NO AUTENTICADOES05000660002**</ReporteImpreso></Persona></Personas></return></ns2:consultaXMLResponse></soapenv:Body></soapenv:Envelope>"
-                    }
-                } else {
-                    response = post(soap_request,configuracion.urlBuroCredito)
-                }
-                response = corregirCaracteres(response)
-                bitacora.respuesta = response
-                bitacora.fechaRespuesta = new Date()
-                bitacora.solicitud=solicitud
-                bitacora.save(flush:true)
-                println "[INTL] REPORTE A ANALIZAR..."+response
-                return analizarReporteINTL(response, solicitud, configuracion.reintentos, referenciaOperador)
-            } catch(Exception e) {
-                respuesta.error = 500
-                respuesta.errorDesc = "[INTL] No se pudo obtener el reporte de buro de credito en un primer intento, En breve recibiras ayuda."
-                println "[INTL]  EXCEPTION GENERAL: " +e
-                return respuesta
-            }		  
-        } else {
-            if(solicitud.reporteBuroCredito.errorConsulta == null) {
-                respuesta.status = 200 
-            } else {
-                respuesta.error = 500
-                respuesta.errorDesc = "[INTL] No se pudo obtener el reporte de buro de credito en un primer intento, En breve recibiras ayuda."
-            }
+
+        if(configuracion == null){
+            respuesta.error = Boolean.TRUE
+            respuesta.message = "Error. No se ha configurado la conexion de la entidad financiera para la consulta a BC"
             return respuesta
-	 
+        }
+
+        if (solicitud.reporteBuroCredito != null) {
+            if(solicitud.reporteBuroCredito.errorConsulta == null){
+                respuesta.folio = getFolioConsultaTradicional(reporteBuroCredito)
+                respuesta.status = 200
+                return respuesta
+            } else if(!solicitud.reporteBuroCredito.errorConsulta.contains("ERRR")){
+                respuesta.error = 500
+                respuesta.errorDesc = "No se pudo obtener el reporte de buro de credito. En breve recibirás ayuda."
+                return respuesta
+            }
+        }
+
+        // Numero de referencia del operador. Si se envía otro dato diferente de 25 espacios no se realizará la petición
+        String referenciaOperador = "                         "
+	String intl = this.buildINTLRequest(datosPersonales, direccion, solicitud, configuracion, referenciaOperador)
+
+        //La siguiente condicion solo es valida en los ambientes DEVELOPMENT y TEST
+        if(data != null) {
+            intl = URLDecoder.decode(data.cadenaDeBuro.trim(), "UTF-8")
+        }
+
+        try {
+            String intlResponse = conexionBCService.socketRequest(configuracion.ipBuroCredito, configuracion.portBuroCredito, intl)
+            intlResponse = corregirCaracteres(intlResponse)
+            addBitacoraBuroCredito(intl, intlResponse, solicitud, Constants.TipoConsulta.TRADICIONAL, usuario)
+
+            return analizarReporteINTL(intlResponse, solicitud, configuracion.reintentos, referenciaOperador)
+        } catch(Exception e) {
+            respuesta.error = 500
+            respuesta.errorDesc = "No se pudo obtener el reporte de buró de crédito en el primer intento. En breve recibirás ayuda."
+            log.error("Error consulta BC INTL", e)
+            return respuesta
         }
     }
-    
+
+    private void addBitacoraBuroCredito(String request, String response, SolicitudDeCredito solicitud, Constants.TipoConsulta tipoConsulta, Usuario usuario) throws BusinessException {
+        BitacoraBuroCredito bitacora = new BitacoraBuroCredito()
+        bitacora.peticion = request
+        bitacora.respuesta = response
+        bitacora.fechaRespuesta = new GregorianCalendar().getTime()
+        bitacora.solicitud = solicitud
+        bitacora.tipoConsulta = tipoConsulta
+
+        if(bitacora.save(flush:Boolean.TRUE)) {
+            if(usuario != null){
+                Usuario u = Usuario.get(usuario.id)
+
+                def bitacoraUsuario = BitacoraUsuarioConsultabc.create(bitacora, u)
+                if(bitacoraUsuario.usuario == null) {
+                    throw new BusinessException("Ocurrió un error al guardar la bitacora del usuario")
+                }
+            }
+        } else {
+            throw new BusinessException("Ocurrió un error al guardar la bitacora de la consulta")
+        }
+    }
+
     def analizarReporte(String xml,SolicitudDeCredito solicitud,int reintentos,String referenciaOperador) {
         def respuesta = [:]
         println "Parseo de XML"
@@ -491,6 +404,9 @@ class BuroDeCreditoService {
                                 respuesta.problemasBuro << mapa
                             }
                         }
+                    } else if (peticiones > reintentos ){
+                       respuesta.errorDesc = "Se han superado los reintentos disponibles"
+                        
                     }
                 }
                 //NO SE PUDO AUTENTICAR AL USUARIO.
@@ -520,8 +436,66 @@ class BuroDeCreditoService {
         return respuesta
     }
     
-    def analizarReporteINTL(String xml,SolicitudDeCredito solicitud,int reintentos,String referenciaOperador) {
-        
+    def analizarReporteINTL(String intlResponse, SolicitudDeCredito solicitud, Integer reintentos, String referenciaOperador) {
+        def respuesta = [:]
+        if(solicitud.reporteBuroCredito != null){
+            ReporteBuroCredito reporteDel = solicitud.reporteBuroCredito
+            def segmentosErrores = ReporteBuroSegmentoError.findAllByReporteBuroCredito(reporteDel)
+            segmentosErrores.each { ReporteBuroSegmentoError segmentoError ->
+                segmentoError.delete(flush:Boolean.TRUE)
+            }
+            solicitud.reporteBuroCredito = null
+            solicitud.save(flush:Boolean.TRUE)
+            reporteDel.delete(flush:Boolean.TRUE)
+        }
+
+        ReporteBuroCredito reporteBuroCredito = obtenerDatosPersonales(intlResponse)
+        reporteBuroCredito.referenciaOperadorAR = referenciaOperador
+        reporteBuroCredito.referenciaOperadorUR = referenciaOperador
+
+        if(reporteBuroCredito != null && reporteBuroCredito.errorConsulta == null){
+            solicitud.reporteBuroCredito = reporteBuroCredito
+            solicitud.save(flush:Boolean.TRUE)
+            
+            respuesta.folio = getFolioConsultaTradicional(reporteBuroCredito)
+            respuesta.status = 200
+        } else {
+            respuesta.error = 500
+            if(reporteBuroCredito != null){
+                solicitud.reporteBuroCredito = reporteBuroCredito
+                solicitud.save(flush:Boolean.TRUE)
+            } else {
+                ReporteBuroCredito reporteBuro = new ReporteBuroCredito()
+                reporteBuro.errorConsulta = "ERRR error al consumir el servicio"
+                reporteBuro.save(flush:Boolean.TRUE)
+                solicitud.reporteBuroCredito = reporteBuro
+                solicitud.save(flush:Boolean.TRUE)
+            }
+
+            //SE PUEDE DETECTAR EL SEGMENTO DE ERROR
+            def segmentos = ReporteBuroSegmentoError.findAllByReporteBuroCredito(reporteBuroCredito)
+
+            if(segmentos != null) {
+                Integer peticiones = BitacoraBuroCredito.countBySolicitudAndTipoConsulta(solicitud, Constants.TipoConsulta.TRADICIONAL)
+                if(peticiones <= reintentos) {
+                    if(segmentos && (segmentos?.size() > 0)) {
+                        respuesta.problemasBuro  = []
+                        segmentos.each { segmento ->
+                            def mapa = [:]
+                            mapa.segmento = segmento.segmentoError.descripcion
+                            mapa.pasoError = [:]
+                            mapa.pasoError.numeroDePaso = segmento.segmentoError.pasoSolicitud?.numeroDePaso
+                            mapa.pasoError.tituloPaso = segmento.segmentoError.pasoSolicitud?.titulo
+                            respuesta.problemasBuro << mapa
+                        }
+                    }
+                } else if (peticiones > reintentos ){
+                       respuesta.errorDesc = "Se han superado los reintentos disponibles"
+                        
+                }
+            }
+        }
+        return respuesta
     }
 	
     def obtenerScore(String reporte){
@@ -616,7 +590,7 @@ class BuroDeCreditoService {
         ScoreBuroCredito score = null
         SegFinBuroCredito segfinal = new SegFinBuroCredito()
         ResumenBuroCredito resumen = new ResumenBuroCredito()
-        println "REPORTE INGRESADO::"+ reporte
+
         try{
             if (reporte.contains('INTL')){
                 int indiceInicial = reporte.indexOf(etiqueta)
@@ -625,22 +599,19 @@ class BuroDeCreditoService {
                 int saltoNumeroCampo = 2
                 datosPersonales = ""
                 indiceInicial=0
-                while(indiceInicial <= subreporte.length() && etiqueta != "ES"){
+                while(indiceInicial < subreporte.length() && (indiceInicial + saltoNumeroCampo) < subreporte.length()) {
                     numeroCampo = subreporte.substring(indiceInicial ,indiceInicial + saltoNumeroCampo)
 					
                     if(numeroCampo.equalsIgnoreCase("PN") || numeroCampo.equalsIgnoreCase("PA") || numeroCampo.equalsIgnoreCase("PE") || numeroCampo.equalsIgnoreCase("PI") || numeroCampo.equalsIgnoreCase("CL")
                         || numeroCampo.equalsIgnoreCase("TL") || numeroCampo.equalsIgnoreCase("IQ") || numeroCampo.equalsIgnoreCase("RS") || numeroCampo.equalsIgnoreCase("HI")
                         || numeroCampo.equalsIgnoreCase("HR") || numeroCampo.equalsIgnoreCase("CR") || numeroCampo.equalsIgnoreCase("SC") || numeroCampo.equalsIgnoreCase("ES")){
                         etiqueta = numeroCampo
-                        //println "ETIQUETA::"+ etiqueta
                     }
 					
 					
-                    //println "NumeroDeCampo:"+numeroCampo
                     int longitud = Integer.parseInt(subreporte.substring(indiceInicial + saltoNumeroCampo,indiceInicial+saltoNumeroCampo + saltoNumeroCampo))
-                    //println "Longitud:"+longitud
                     datosPersonales = subreporte.substring(indiceInicial + saltoNumeroCampo + saltoNumeroCampo ,indiceInicial + saltoNumeroCampo + saltoNumeroCampo+  longitud ) +" "
-                    //println "DATOS:"+subreporte.substring(indiceInicial + saltoNumeroCampo + saltoNumeroCampo ,indiceInicial + saltoNumeroCampo + saltoNumeroCampo+  longitud )					
+
                     switch(etiqueta){
                     case "PN":
                         if(numeroCampo.equals("PN")){
@@ -690,6 +661,8 @@ class BuroDeCreditoService {
                         if(numeroCampo.equals("09")){direccion.numeroFax = datosPersonales }
                         if(numeroCampo.equals("10")){direccion.tipoDomicilio = datosPersonales }
                         if(numeroCampo.equals("11")){direccion.indicadorEspecialDomicilio = datosPersonales }
+                        if(numeroCampo.equals("12")){direccion.fechaDeReporteDireccion = datosPersonales }
+                        if(numeroCampo.equals("13")){direccion.origenDomicilio = datosPersonales }
                         break;
                     case "PE":
                         if(numeroCampo.equals("PE")){
@@ -719,6 +692,7 @@ class BuroDeCreditoService {
                         if(numeroCampo.equals("14")){empleo.periodoDePago = datosPersonales }
                         if(numeroCampo.equals("15")){empleo.numeroEmpleado = datosPersonales }
                         if(numeroCampo.equals("16")){empleo.fechaUltimoDiaEmpleo = datosPersonales }
+                        if(numeroCampo.equals("20")){empleo.origenRazonSocialDomicilio = datosPersonales }
                         break;
                     case "PI":
                         if(numeroCampo.equals("PI")){
@@ -968,18 +942,13 @@ class BuroDeCreditoService {
                 resumen.save(flush:true)
                 declarativa.save(flush:true)
                 segfinal.save(flush:true)
-                /*println "RESUMEN :" +reporteBuro.toString()+ " DIRECCIONES: " +direcciones.size() +" EMPLEOS:"+ empleos.size() + " CREDITOS: "+ creditos.size()
-                println "RERENCIAS: " +referencias.size()+ " consultas: " +consultas.size() + "RESUMEN-BURO: "+ resumen.toString() + "ALERTAS:"+alertas.size()
-                println "ALERTAS HI : " +alertasHr.size()+ " declarativa: " +declarativa.toString() + " SCORE: "+ score.toString() + "FINAL: "+segfinal.toString()*/
-				
             }else{
                 reporteBuro.errorConsulta = reporte
                 reporteBuro.save(flush:true)
                 obtenerTipoError(reporteBuro, reporte)
             }	
         }catch(Exception e){
-            println "Exception obtenerDatosPersonales: "+ e
-            e.printStackTrace()
+            log.error("Exception obtenerDatosPersonales: ", e)
         }
         return reporteBuro
     }
@@ -1041,21 +1010,33 @@ class BuroDeCreditoService {
         return response.replace("\$","N").replace("&","N")
     }
 		
-    def generarCadenaBC(def xml){
+    def generarCadenaBC(BitacoraBuroCredito bitacoraDeBuro){
+        String response = bitacoraDeBuro?.respuesta
+        Constants.TipoConsulta tipoConsulta = bitacoraDeBuro?.tipoConsulta
+        
         def cadenaBuro
         try {
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+            switch(tipoConsulta.ordinal()) {
+            case Constants.TipoConsulta.AUTENTICADOR.ordinal():
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(response)));
             NodeList reporteImpreso = doc.getElementsByTagName("ReporteImpreso");
             if (reporteImpreso.getLength() > 0) {
                 Element  reporte = (Element)reporteImpreso.item(0);
                 cadenaBuro = reporte.getTextContent()
-                cadenaBuro = cadenaBuro.replaceAll(/\$/,"N").replaceAll('&','N').replaceAll('@','N').replaceAll('ñ','N').replaceAll('Ñ','N')
+                }
+                break;
+                
+            case Constants.TipoConsulta.TRADICIONAL.ordinal():
+                cadenaBuro = response
+                break;
             }
+            
+            cadenaBuro = cadenaBuro.replaceAll(/\$/,"N").replaceAll('&','N').replaceAll('@','N').replaceAll('ñ','N').replaceAll('Ñ','N')
         } catch(Exception e){
             cadenaBuro = ""
-            println "Ocurrio un error al parsear la respuesta del buró..."
-            println "Respuesta a parsear: " + xml
-            println "Excepcion: " + e.getMessage() + "  - " + e.toString()
+            log.error("Ocurrio un error al parsear la respuesta del buró...")
+            log.error("Respuesta a parsear: " + response)
+            log.error("Excepcion: " + e.getMessage() + "  - " + e.toString())
         }
         return cadenaBuro
     }
@@ -1119,5 +1100,188 @@ class BuroDeCreditoService {
             }
         }
         return montoAPagar
+    }
+
+    private String buildINTLRequest(def datosPersonales, def direccion, SolicitudDeCredito solicitud, ConfiguracionBuroCredito configuracion, String referenciaOperador) {
+        // SEGMENTO INTL - INICIO
+
+        //etiqueta: Etiqueta del segmento
+        String cadenaINTL = "INTL"
+        //etiqueta: Version
+        cadenaINTL += configuracion.encabezadoVersion
+        //etiqueta: Numero de referencia del operador. Si se envía otro dato diferente de 25 espacios no se realizará la petición
+        cadenaINTL += referenciaOperador
+        //etiqueta: Clave del producto requerido
+        cadenaINTL += configuracion.encabezadoProductoRequerido
+        //etiqueta: Clave del pais
+        cadenaINTL += configuracion.encabezadoClavePais
+        //etiqueta: Reservado
+        cadenaINTL += configuracion.encabezadoIdentificadorBuro
+        //etiqueta: Clave de usuario
+        cadenaINTL += configuracion.encabezadoClaveUsuario
+        //etiqueta: Contraseña
+        cadenaINTL += configuracion.encabezadoPassword
+        //etiqueta: Tipo de resposabilidad
+        cadenaINTL += configuracion.encabezadoTipoConsulta
+        //etiqueta: Tipo de contrato o producto
+        cadenaINTL += configuracion.encabezadoTipoContrato
+        //etiqueta: Moneda del credito
+        cadenaINTL += configuracion.encabezadoClaveUnidadMonetaria
+        //etiqueta: Importe del contrato
+        cadenaINTL += "000000000"
+        //etiqueta: Idioma
+        cadenaINTL += configuracion.encabezadoIdioma
+        //etiqueta: Tipo de salida
+        cadenaINTL += configuracion.encabezadoTipoSalida
+        //etiqueta: Tamaño del bloque de respuesta
+        cadenaINTL += " "
+        //etiqueta: Identifiacion de la impresora
+        cadenaINTL += "    "
+        //etiqueta: Reservado para uso futuro
+        cadenaINTL += "0000000"
+
+
+        //SEGMENTO PN - NOMBRE DEL CLIENTE
+        String apellidoPaterno = datosPersonales.apellidoPaterno.trim()
+        String apellidoMaterno = (datosPersonales.apellidoMaterno) ? datosPersonales.apellidoMaterno.trim(): "NO PROPORCIONADO"
+        String nombre = datosPersonales.nombre.trim()
+        String [] nombres = (nombre).tokenize(" ")
+        nombre = (nombres.length > 1) ? nombres[1] : nombre
+
+        if(apellidoPaterno.size() > 26 || apellidoMaterno.size()> 26 || nombre.size() > 26){
+            throw new BusinessException("Segmento PN. Longitud inválida");
+        }
+
+        //etiqueta PN: Apellido paterno
+        cadenaINTL += "PN"
+        cadenaINTL += getStringSize(apellidoPaterno.size().toString(), 2)
+        cadenaINTL += (cambiarCaracteresEspeciales(apellidoPaterno)).toUpperCase()
+        //etiqueta 00: Apellido materno
+        cadenaINTL += "00"
+        cadenaINTL += getStringSize(apellidoMaterno.size().toString(), 2)
+        cadenaINTL += (cambiarCaracteresEspeciales(apellidoMaterno)).toUpperCase()
+        //etiqueta 01: Apellido adicional. Se omite por ser opcional
+        //etiqueta 02: Nombre
+        cadenaINTL += "02"
+        cadenaINTL += getStringSize(nombre.size().toString(), 2)
+        cadenaINTL += (cambiarCaracteresEspeciales(nombre)).toUpperCase()
+        //etiqueta 03: Segundo nombre. Se omite por ser opcional
+        //etiqueta 04: Fecha de nacimiento. Se omite por ser opcional. Si se agrega no reportar fecha para menores de 18 años
+        //etiqueta 05: RFC
+        cadenaINTL += "05"
+        cadenaINTL += "13"
+        cadenaINTL += datosPersonales.rfc
+        //etiqueta 06: Prefijo personal o profesional. Se omite por ser opcional
+        //etiqueta 07: Sufijo personal del cliente. Se omite por ser opcional
+        //etiqueta 08: Nacionalidad. Se omite por ser opcional
+        //etiqueta 09: Tipo de residencia. Se omite por ser opcional
+        //etiqueta 10: Numero de licencia de conducir. Se omite por ser opcional
+        //etiqueta 11: Estado civil. Se omite por ser opcional
+        //etiqueta 12: Genero. Se omite por ser opcional
+        //etiqueta 13: Numero de cedula profesional. Se omite por ser opcional
+        //etiqueta 14: Numero de registro electoral. Se omite por ser opcional
+        //etiqueta 15: CURP. Se omite por ser opcional
+        //etiqueta 16: Clave de pais. Se omite por ser opcional
+        //etiqueta 17: Numero de dependientes. Se omite por ser opcional
+        //etiqueta 18: Edades de los dependientes. Se omite por ser opcional
+
+
+        //SEGMENTO PA - DIRECCION DEL CLIENTE
+
+        String domicilio = direccion.calle.trim().toUpperCase()+" "+direccion.numeroExterior.trim().toUpperCase()
+        Municipio municipio = Municipio.findById(direccion.delegacion)
+        Integer municipioSize = (municipio) ? municipio.nombre.trim().size() : null
+        String ciudad = (direccion.ciudad) ? direccion.ciudad.trim() : null
+        Estado estado = Estado.findById(direccion.estado)
+        String est = estado.siglasrenapo.trim().toUpperCase()
+        String codigoPostal = direccion.codigoPostal.trim()
+        String pais = "MX"
+
+        if(domicilio.size() > 40 || (municipio && municipioSize > 40) || (!municipio && ciudad && ciudad.size() > 40)){
+            throw new BusinessException("Segmento PA. Longitud inválida");
+        }
+
+        cadenaINTL += "PA"
+        cadenaINTL += domicilio.size().toString()
+        cadenaINTL += domicilio
+        //etiqueta 00: segunda linea de direccion.
+        //etiqueta 01: Colonia o poblacion. Se omite por ser opcional
+        //etiqueta 02: Delegación o municipio. Si no se cuenta con la inf. La etiqueta 03 se hace requerida
+        if (municipio) {
+            cadenaINTL += "02"
+            cadenaINTL += getStringSize(municipioSize.toString(), 2)
+            cadenaINTL += municipio.nombre.toUpperCase()
+        } else {
+            //etiqueta 03: Ciudad. Si no se cuenta con inf. La etiqueta 02 se hace requerida
+            cadenaINTL += "03"
+            cadenaINTL += getStringSize(ciudad.size().toString(), 2)
+            cadenaINTL += ciudad.toUpperCase()
+        }
+        //etiqueta 04: Estado
+        cadenaINTL += "04"
+        cadenaINTL += getStringSize(est.size().toString(), 2)
+        cadenaINTL += est
+        //etiqueta 05: Codigo postal
+        cadenaINTL += "05"
+        cadenaINTL += getStringSize(codigoPostal.size().toString(), 2)
+        cadenaINTL += codigoPostal
+        //etiqueta 06: Fecha de residencia. Se omite por ser opcional
+        //etiqueta 07: Numero de telefono. Se omite por ser opcional
+        //etiqueta 08: Extension telefonica. Se omite por ser opcional
+        //etiqueta 09: Numero de fax. Se omite por ser opcional
+        //etiqueta 10: Tipo de domicilio. Se omite por ser opcional
+        //etiqueta 11: Indicador especial de domicilio. Se omite por ser opcional
+        //etiqueta 12: Fecha de reporte de la direccion. Se omite por ser opcional
+        //etiqueta 13: Origen del domicilio
+        cadenaINTL += "13"
+        cadenaINTL += getStringSize(pais.size().toString(), 2)
+        cadenaINTL += pais
+
+
+        //SEGMENTO PE - EMPLEO DEL CLIENTE. SE OMITE POR SER OPCIONAL
+        //SEGMENTO PI - REFERENCIAS CREDITICIAS. SE OMITE POR SER OPCIONAL
+        //SEGMENTO CL - GENERA CRITERIOS ADICIONALES Y PERSONALIZADOS. SI ES REQUERIDO SE DEBE SOLICITAR EL SERVICIO
+        //SEGMENTO ES - CIERRE TRADICIONAL
+
+        Integer tamanoCadenaIntl = cadenaINTL.size() + 15
+        String intlLengthString = getStringSize(tamanoCadenaIntl.toString(), 5)
+
+        String cierre = getIntlLength(intlLengthString)
+        return cadenaINTL + cierre
+    }
+
+    private String getStringSize(String data, Integer s){
+        Integer d = Integer.parseInt(data)
+        String size = "%0"+s+"d"
+        return String.format(size, d)
+    }
+
+    private String getIntlLength(String length){
+        def cierre = ""
+        //etiqueta ES: Longitud de registro
+        cierre += "ES"
+        cierre += "05"
+        cierre += length
+        //etiqueta 00: Marca de fin
+        cierre += "00"
+        cierre += "02"
+        cierre += "**"
+
+        return cierre
+    }
+    
+    private String getFolioConsultaTradicional(ReporteBuroCredito reporteBuro){
+        def criteria = SegFinBuroCredito.createCriteria()
+        SegFinBuroCredito segmento = criteria.get {
+            eq ('reporteBuroCredito', reporteBuro)
+            
+            projections {
+                property('numeroControlConsulta', 'numeroControlConsulta')
+            }
+            
+            resultTransformer(Transformers.aliasToBean(SegFinBuroCredito.class))
+        }
+        
+        return segmento.numeroControlConsulta
     }
 }

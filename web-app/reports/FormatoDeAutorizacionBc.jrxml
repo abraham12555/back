@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FormatoDeAutorizacionBc" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f2e00c04-0db8-4b75-b11c-1831a8590e8f">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="34"/>
+	<property name="ireport.y" value="0"/>
+	<field name="razonSocial" class="java.lang.String"/>
+	<field name="nombreCliente" class="java.lang.String"/>
+	<field name="rfc" class="java.lang.String"/>
+	<field name="colonia" class="java.lang.String"/>
+	<field name="municipioDelegacion" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="codigoPostal" class="java.lang.String"/>
+	<field name="telefono" class="java.lang.String"/>
+	<field name="lugar" class="java.lang.String"/>
+	<field name="rutaLogotipoFormatoBuro" class="java.lang.String"/>
+	<field name="nombreEntidadFinancieraFormatoBuro" class="java.lang.String"/>
+	<field name="calle" class="java.lang.String"/>
+	<field name="numeroInterior" class="java.lang.String"/>
+	<field name="numeroExterior" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="41" splitType="Stretch">
+			<staticText>
+				<reportElement x="187" y="0" width="277" height="20" uuid="14426eaf-33c3-485c-822f-58c56f8df53e"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Autorización para Solicitar Reportes de Crédito]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="213" y="20" width="241" height="15" uuid="b8548e9f-722f-4ff4-b2b8-4691b1a1f78f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Personas Físicas / Personas Morales]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="137" height="35" uuid="3cb71c88-24e7-4c39-a9b1-0892ea4d8354"/>
+				<imageExpression><![CDATA[$F{rutaLogotipoFormatoBuro}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="259" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="54" width="555" height="65" uuid="cad47f94-934e-4ceb-a229-625eb4a8b575"/>
+				<textElement textAlignment="Justified"/>
+				<textFieldExpression><![CDATA["Así mismo declaro que conozco la naturaleza y alcance de la información que se solicitará, del uso que "+$F{razonSocial}+", hará de tal información y de que ésta podrá realizar consultas periódicas sobre mi historial o de la empresa que represento, consintiendo que esta autorización se encuentre vigente por un período de 3 años contados a partir de su expedición y en todo caso durante el tiempo que se mantenga la relación jurídica entre "+$F{nombreEntidadFinancieraFormatoBuro}.toUpperCase()+" y el que suscribe."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="133" width="555" height="48" uuid="c850a7d4-845f-4766-83c4-3326545f1903"/>
+				<textElement textAlignment="Justified"/>
+				<textFieldExpression><![CDATA["En caso de que la solicitante sea una Persona Moral, declaro bajo protestad de decir verdad Ser Representante Legal de la empresa mencionada en esta autorización; manifestando que a la fecha de firma de la presente autorización los poderes no me han sido revocados, limitados, ni modificados en forma alguna."]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="181" width="555" height="73" uuid="a2480236-e375-4c71-9d65-3cf7597b0f24"/>
+				<textFieldExpression><![CDATA["Se hizo de mi pleno conocimiento, que en caso de que me sea otorgado el crédito como resultado de la presente solicitud , "+$F{nombreEntidadFinancieraFormatoBuro}.toUpperCase()+" en cumplimiento a la Ley para Regular las Sociedades de Información Crediticia reportará el comportamiento del crédito hasta su total liquidación, por lo que en caso de que éste se encuentre en cartera vencida o se determine como operación crediticia fraudulenta, se integrará y reportará en la Base Primaria de Datos en cumplimiento al penúltimo párrafo del Artículo 40   de la mencionada  Ley para Regular las Sociedades de Información Crediticia"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="9" width="555" height="35" uuid="48a05371-4154-4c55-8a51-8c05bdd5cadc"/>
+				<textElement textAlignment="Justified">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Por este conducto autorizo expresamente a "+$F{razonSocial}+", para que por conducto de sus funcionarios facultados lleve a cabo investigaciones, sobre mi comportamiento crediticio o el de la Empresa que represento en Trans Union de México, S.A. SIC y/o Dun & Bradstreet, S.A. SIC."]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="346" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="60" width="555" height="17" uuid="31c278e4-8565-4389-b62c-a967efd50dc9"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="8b67b068-58d0-425a-a53e-73f96037a24d"/>
+				<text><![CDATA[Autorización para:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="555" height="20" uuid="6b7df0fc-16f4-4900-95ec-cf1751010ec8"/>
+				<textElement textAlignment="Left"/>
+				<text><![CDATA[Persona Física (PF)             Persona Física con Actividad Empresarial (PFAE)            Persona Moral (PM)           ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="555" height="20" uuid="dfa8db93-cf05-4139-b735-24ace22a83ad"/>
+				<text><![CDATA[Nombre del solicitante (Persona Física o Razón Social de la Persona Moral):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="77" width="555" height="20" uuid="ba1f5aa5-a8d4-41e7-8a1a-5a24076d9544"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Para el caso de Persona Moral, nombre del Representante Legal:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="97" width="555" height="17" uuid="d5902d46-dd5e-4a0c-8b2a-4381a807721e"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="114" width="223" height="39" uuid="96796845-ceab-45ea-8981-1acd2c21843d"/>
+				<box topPadding="4"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Registro Federal de Causantes (RFC):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="153" width="100" height="25" uuid="aebb8f9f-3a04-4de3-8553-b5501cc3dacd"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Domicilio:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="178" width="100" height="25" uuid="52d92ede-ad1b-42f0-b036-a69c8925a75b"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Colonia:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="203" width="137" height="25" uuid="907ebf73-197e-41e7-8302-ef7d71c7bdc8"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Municipio/Delegación:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="228" width="100" height="25" uuid="d3913a92-c429-40dc-aacf-fbb0b81e040a"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Código Postal:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="253" width="245" height="25" uuid="ede7d324-98ba-44e5-9bac-c1982336e24f"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Lugar y fecha en que se firma la autorización:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="76" width="555" height="1" uuid="d461cbfb-d980-48f0-9ad5-4d4ab6afc545"/>
+			</line>
+			<line>
+				<reportElement x="100" y="30" width="17" height="1" uuid="27680fc9-05ae-462a-9e9b-318d3597cfbf"/>
+			</line>
+			<line>
+				<reportElement x="353" y="31" width="17" height="1" uuid="ac0e3abc-508c-4a33-b781-90d2f198d438"/>
+			</line>
+			<line>
+				<reportElement x="475" y="29" width="19" height="1" uuid="a0e9c179-bfa8-471e-a2c6-b7c556767664"/>
+			</line>
+			<line>
+				<reportElement x="0" y="113" width="555" height="1" uuid="a55cd31f-d94d-4fa9-bdcf-9981578a8694"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="287" width="555" height="59" uuid="3976edd3-44d6-46e1-9d6c-5a6f7edba752"/>
+				<textElement textAlignment="Justified">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Estoy de acuerdo y acepto que este documento quede bajo propiedad de "+$F{razonSocial}+", para efectos de control y cumplimiento del artículo 28 de la Ley para Regular a Las Sociedades de Información Crediticia; mismo que señala que las Sociedades sólo podrán proporcionar información a un Usuario, cuando éste cuente con la autorización expresa del Cliente mediante su firma autógrafa."]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="222" y="114" width="299" height="39" uuid="f936891c-8367-4220-8e21-09e53ecd565a"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rfc}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="223" y="140" width="332" height="1" uuid="5cd4d437-a752-4eaa-9161-47969a832dc8"/>
+			</line>
+			<line>
+				<reportElement x="100" y="170" width="455" height="1" uuid="faf7feb8-bcc3-485e-940b-d39ac424c577"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="100" y="153" width="455" height="25" uuid="8f59d6c1-4b00-44c7-9f34-bef45166e5f0"/>
+				<box topPadding="4"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{calle}.toUpperCase()+" "+$F{numeroExterior}+ " "+$F{numeroInterior}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="178" width="455" height="25" uuid="ce8629db-1d23-47d1-9709-010dd78e3d5e"/>
+				<box topPadding="4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{colonia}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="137" y="203" width="189" height="25" uuid="bfe6ce5a-7d83-4edb-91c7-45a79a2cd3db"/>
+				<box topPadding="4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{municipioDelegacion}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="326" y="203" width="51" height="25" uuid="d408f318-48d0-43ea-a70c-f84afaa0f19d"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Estado:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="377" y="203" width="178" height="25" uuid="d1a300f7-1c4b-44c4-ae5e-170b7e60afb3"/>
+				<box topPadding="4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="228" width="122" height="25" uuid="ec2f168c-1dcc-4dd8-855b-74ac7687fe7b"/>
+				<box topPadding="4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigoPostal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="222" y="228" width="172" height="25" uuid="858fa9d9-3702-485b-a5a0-64750460628e"/>
+				<box topPadding="4"/>
+				<text><![CDATA[Clave Lada y número Teléfonico: ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="228" width="91" height="25" uuid="5cddc008-16b1-4f8d-bedb-548135db7ea3"/>
+				<box topPadding="4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telefono}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="245" y="253" width="310" height="25" uuid="5d4aedc5-e807-4759-881d-37650db6382a"/>
+				<box topPadding="4"/>
+				<textElement>
+					<font isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lugar}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="57" width="555" height="20" uuid="f5d01b86-2219-4d98-96b7-8afd2313ef4f"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreCliente}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="137" y="220" width="177" height="1" uuid="77c72938-181a-41b5-96cd-60ad8197818b"/>
+			</line>
+			<line>
+				<reportElement x="377" y="220" width="178" height="1" uuid="2520b495-04f6-4769-9ba5-25da2f697fd3"/>
+			</line>
+			<line>
+				<reportElement x="100" y="244" width="87" height="1" uuid="1e707b71-7ce9-4796-85e3-ca7e53bc6618"/>
+			</line>
+			<line>
+				<reportElement x="394" y="244" width="161" height="1" uuid="e049977f-cfa6-4a9f-be9d-2c9ea1993243"/>
+			</line>
+			<line>
+				<reportElement x="245" y="270" width="310" height="1" uuid="8f1bba70-967f-4796-9d68-28c576c50b50"/>
+			</line>
+			<line>
+				<reportElement x="100" y="195" width="455" height="1" uuid="9e66432b-143b-4346-b805-ed905b64a9ca"/>
+			</line>
+			<staticText>
+				<reportElement x="100" y="10" width="17" height="19" uuid="64abfd58-0aba-48f8-8810-4c9246f1cf8a"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
+				<text><![CDATA[x]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="139" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="29" width="555" height="60" backcolor="#BDBDBD" uuid="bee1e068-acaf-4096-a10a-7ae4ecfa0dbe"/>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="29" width="555" height="20" uuid="5befb552-3622-4263-bc0d-86255c62f053"/>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Justified">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Para uso exclusivo de "+$F{razonSocial}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="97" width="555" height="42" uuid="556576bc-c251-4273-853a-0038fb111b98"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[IMPORTANTE:  Este formato debe ser llenado individualmente, para una sola Persona Física o para para una sola  Persona Moral. En caso de requerir el Historial Crediticio del Representante Legal, favor de llenar un formato adicional.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="49" width="161" height="20" uuid="fa612e3c-4c43-4efd-a046-720f1b39beed"/>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Justified">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de consulta en BC.:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="69" width="222" height="20" uuid="a7b85f34-9b64-4d47-b8a2-12679405dfe5"/>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Justified">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Folio obtenido de la consulta en BC.: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="13" width="555" height="20" uuid="2b4f766f-0c12-42a8-863f-5ab161c0e04e"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre y Firma de PF, PFAE, Representante Legal de la Empresa]]></text>
+			</staticText>
+			<line>
+				<reportElement x="88" y="9" width="376" height="1" uuid="a86f594c-ae9e-4835-b64b-4e2c381b4b30"/>
+			</line>
+			<line>
+				<reportElement x="161" y="58" width="394" height="1" uuid="b57a1f59-4d5d-4f63-a44d-5f0c11c78bde"/>
+			</line>
+			<line>
+				<reportElement x="222" y="78" width="333" height="1" uuid="10bffa54-babe-43b2-9eab-d7c5804947a9"/>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

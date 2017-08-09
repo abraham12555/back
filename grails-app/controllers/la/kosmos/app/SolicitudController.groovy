@@ -36,18 +36,19 @@ class SolicitudController {
     def emailSenderService
     def perfiladorService
     def dataSource
+    def springSecurityService
 
     int timeWait = 500
     def maximumAttempts = 100
     def formatoFecha = "dd-MM-yyyy"
     def razonSocial = "Kosmos Soluciones Digitales JS, SA de CV"
-		                       
+
     def jsonSlurper = new JsonSlurper()
     grails.gsp.PageRenderer groovyPageRenderer
-    Random rand = new Random() 
+    Random rand = new Random()
 
-	
-	
+
+
     def index() {
         if(session.cotizador) {
             session.respuestaEphesoft = null
@@ -72,7 +73,7 @@ class SolicitudController {
             redirect controller: "cotizador", action: "index"
         }
     }
-	
+
     def login(){
         session["datosPaso1"] = null
         session["datosPaso2"] = null
@@ -87,7 +88,7 @@ class SolicitudController {
         session.yaUsoLogin = null
     }
 
-	
+
     def authenticate() {
         SolicitudDeCredito solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
         if(solicitud.vinculacionBanco != null){
@@ -112,11 +113,11 @@ class SolicitudController {
                 response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
                 render response as JSON
             }
-	
+
             def login = fixJson(saltEdgeService.findLogin(request.customer_id))
             def credentials = [:]
             request.provider_code = request.provider_code + "_mx"
-				
+
             println "PARAMETROS:"+request
             switch (request.provider_code) {
             case "bancomer_mx":
@@ -128,7 +129,7 @@ class SolicitudController {
                 credentials.password = request.password
                 credentials.login_method = request.login_method
                 if(request.login_method == "Sin OTP"){
-                    credentials.memorable = request.memorable	
+                    credentials.memorable = request.memorable
                 }
                 break;
             default:
@@ -136,9 +137,9 @@ class SolicitudController {
                 credentials.password = request.password
                 break;
             }
-			
+
             //println "CREDENCIALES-------"+credentials
-			
+
             if (login.data == null) {
                 println "Creando Login"
                 login = saltEdgeService.createLogin(request.customer_id, request.provider_code, credentials)
@@ -146,7 +147,7 @@ class SolicitudController {
                     def deleteUser = saltEdgeService.deleteUser(request.customer_id)
                     response.error_class = "Existe un problema de Comunicacion, Favor de Volver a intentarlo."
                     borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
-						
+
                     render response as JSON
                 }
             }
@@ -156,8 +157,8 @@ class SolicitudController {
             vinculacion.secuenciaSe = session["secuenciaSe"]
             vinculacion.login_id_SE = login.data.id
             vinculacion.status = StatusSaltEdge.findByNombre("success")
-				
-				
+
+
             println "Esperando a conectar con la cuenta"
             login = requestWait("connect_account",request.customer_id)
             println "Cuenta Conectada... Interactive:" + login.data.last_attempt.interactive + " Name:" + login.data.last_attempt.last_stage.name
@@ -207,7 +208,7 @@ class SolicitudController {
             render response as JSON
         }
     }
-	
+
     def loginInteractive() {
         println "LOGIN INTERACTIVE"
         def request = JSON.parse(params.data)
@@ -229,12 +230,12 @@ class SolicitudController {
             borrarVinculacion(SolicitudDeCredito.get(session.identificadores.idSolicitud))
             response.error_class = login.data.last_attempt.fail_message
         }
-		
+
         //println response as JSON
         render response as JSON
     }
-	
-	
+
+
     def borrarVinculacion(SolicitudDeCredito solicitud){
         if(solicitud?.vinculacionBanco != null){
             List<CuentaSaltEdge> cuentas= CuentaSaltEdge.findAllByVinculacion(solicitud.vinculacionBanco)
@@ -255,8 +256,8 @@ class SolicitudController {
             vinculacionBanco.delete(flush:true)
         }
     }
-	
-	
+
+
     def accountsResume(def login_id){
         SolicitudDeCredito solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud)
         def accounts_resume = []
@@ -283,7 +284,7 @@ class SolicitudController {
             //account_resume.saldoPromedio = account_temp.saldoPromedio
             account_resume.saldoPromedio = account.balance
             account_resume.nature = account.nature
-            if(account.balance != 0 && (account.nature == "account" || account.nature == "checking") ){ 
+            if(account.balance != 0 && (account.nature == "account" || account.nature == "checking") ){
                 //println "SEL CUENTA::"+ account.balance + " TIPO " + account.nature
                 datosPaso.depositoPromedio = account_resume.depositoPromedio
                 datosPaso.retiroPromedio = account_resume.retiroPromedio
@@ -294,7 +295,7 @@ class SolicitudController {
             }
             accounts_resume.add(account_resume)
             index++
-			
+
             /*if(account_temp.depositoPromedio != 0){  //Verificar Al Momento solo es una cuenta que no este en 0
             datosPaso.depositoPromedio = account_resume.depositoPromedio
             datosPaso.retiroPromedio = account_resume.retiroPromedio
@@ -305,7 +306,7 @@ class SolicitudController {
         }
         return accounts_resume
     }
-	
+
     def requestWait(def tipo, def customer_id){
         int attempt = 0
         def login = fixJson(saltEdgeService.findLogin(customer_id))
@@ -315,7 +316,7 @@ class SolicitudController {
                 Thread.sleep(timeWait)
                 login = fixJson(saltEdgeService.findLogin(customer_id))
                 attempt++
-            }	
+            }
             break;
         case "login_interactive":
             while (login.data.last_attempt.last_stage.name != "interactive" && attempt <= maximumAttempts) {
@@ -334,14 +335,14 @@ class SolicitudController {
         }
         return login
     }
-		
+
     def fixJson(def json) {
         def element = [:]
         element.data = null
         json.data.collect { component -> element.data = component }
         return element
     }
-		
+
     def transactions(def account_id,CuentaSaltEdge cuenta) {
         def formatDate = "yyyy-MM-dd"
         def today = new Date()
@@ -377,7 +378,7 @@ class SolicitudController {
             transaccion.account = cuenta
             println "TRANSACCION A GUARDAR " + transaccion.toString()
             transaccion.save(flush:true)
-			
+
             def transactionDate  = new Date().parse('yyyy-MM-dd', "${component.made_on}")
             switch(transactionDate[Calendar.MONTH]){
             case 0:
@@ -442,7 +443,7 @@ class SolicitudController {
         def saldoPromedio = new BigDecimal("0.0")
         int noElementosDepositos=0
         int noElementosRetiros=0
-		
+
         monthsList.collect { mes ->
             BigDecimal depositosPromedio = new BigDecimal("0.0")
             BigDecimal retirosPromedio = new BigDecimal("0.0")
@@ -461,22 +462,22 @@ class SolicitudController {
                     }
                 }
             }
-	
+
             if(depositosPromedio< 0){
                 depositosPromedio = depositosPromedio * -1
             }
             if(retirosPromedio< 0){
                 retirosPromedio = retirosPromedio * -1
             }
-	
+
             dataList.depositosPromedio = depositosPromedio
             dataList.retirosPromedio = retirosPromedio
             saldosPromedio = dataList.depositosPromedio - dataList.retirosPromedio
-			
+
             depositoPromedio +=  depositosPromedio
             retiroPromedio +=  retirosPromedio
             saldoPromedio += depositosPromedio - retirosPromedio
-				
+
             saldoPromedioList.add(saldosPromedio)
             depositosPromedioList.add(dataList.depositosPromedio)
             retirosPromedioList.add(dataList.retirosPromedio)
@@ -498,9 +499,9 @@ class SolicitudController {
         }
         accountResume.saldoPromedio= saldoPromedio
         println "accountResume:::>" +accountResume
-        return accountResume 
+        return accountResume
     }
-	
+
     def test() {
         println params
         def tipoLogin;
@@ -757,7 +758,7 @@ class SolicitudController {
                             statusDeSolicitud = StatusDeSolicitud.get(3)
                             modelo = [configuracion: configuracion,
                                 pasosDeSolicitud: pasosDeSolicitud,
-                                pasoActual:pasoActual, 
+                                pasoActual:pasoActual,
                                 generales: session["consultaBancaria"]]
                         } else if(pasoActual.tipoDePaso.nombre == "consultaBuro"){
                             def municipio = null
@@ -789,7 +790,7 @@ class SolicitudController {
                                 session.perfil = respuesta.perfil
                                 clienteExistente = "SI"
                             }
-                            propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil) 
+                            propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil)
                             println "Propuestas Obtenidas: " + propuestas*.producto
                             session.ofertas = propuestas
                             modelo = [configuracion: configuracion,
@@ -861,15 +862,15 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def cargarControlDefault(){
         render(template: "/templates/solicitud/paso4/consultaBancariaDefault")
     }
-    
+
     def consultaBancos(){
         println params
         def respuesta = [:]
-        int max = 10  
+        int max = 10
         def test = rand.nextInt(max+1)
         sleep(3000)
         if(test % 2 == 0){
@@ -885,11 +886,11 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def subirDocumento(){
 
     }
-    
+
     def consultarOCR(){
         println params
         def fileNames = request.getFileNames()
@@ -961,7 +962,7 @@ class SolicitudController {
                     session["pasoFormulario"].telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
                 }
             }
-            //} 
+            //}
             session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
             if(session.identificadores?.idSolicitud){
                 if(ocr){
@@ -976,19 +977,14 @@ class SolicitudController {
         println respuesta
         render respuesta as JSON
     }
-    
+
     def consultarBuroDeCredito(){
-        if(session.ef){
-            //println URLDecoder.decode(params.cadenaDeBuro, "UTF-8")
-            ConfiguracionBuroCredito configuracion =  ConfiguracionEntidadFinanciera.get(session.configuracion.id).configuracionBuroCredito
-            println "CONSULTA DE BURO DE CREDITO EF...."+ configuracion
-            println "session.identificadores: " + session.identificadores
-            def respuesta
-            if(params.intl && params.intl == "true") {
-                respuesta = buroDeCreditoService.consultaINTL(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
-            } else {
-                respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud),configuracion)
-            }
+        if(session.ef || session.configuracion){
+            def idEntidadFinanciera = session.configuracion.id
+            Usuario usuario = springSecurityService.currentUser
+
+            def respuesta = buroDeCreditoService.callWebServicePersonasFisicas(params,session["pasoFormulario"]?.cliente,session["pasoFormulario"]?.direccionCliente,SolicitudDeCredito.get(session.identificadores.idSolicitud), idEntidadFinanciera, usuario)
+
             render respuesta as JSON
         } else {
             session.invalidate()
@@ -998,11 +994,11 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def cargaDeArchivos(){
         render(template: "/templates/solicitud/paso4/cargaDeIdentificaciones")
     }
-    
+
     def guardarFoto(){
         //println params
         def respuesta = [:]
@@ -1010,7 +1006,7 @@ class SolicitudController {
         println "Longitud de la cadena: " + params.img_data.length()
         def tokens = imagenOrigen.split(",");
         String cadenaBase64 = URLEncoder.encode(tokens[1], "UTF-8");
-        int max = 1000  
+        int max = 1000
         def test = rand.nextInt(max+1)
         BufferedImage imagen = null;
         byte[] imagenEnBytes;
@@ -1036,7 +1032,7 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def buscarCodigoPostal(){
         println params
         def respuesta = []
@@ -1056,11 +1052,11 @@ class SolicitudController {
         println respuesta
         render respuesta as JSON
     }
-    
+
     def consultarCodigoPostal(){
         println params
         def respuesta = [:]
-        if(session.ef){
+        if(session.ef || session.configuracion){
             if(params.idCodigoPostal){
                 def cp = params.idCodigoPostal?.replaceFirst('^0+(?!$)', '')
                 def codigo = CodigoPostal.findAllWhere(codigo: cp)
@@ -1103,7 +1099,7 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def obtenerOpciones(){
         println params
         def respuesta = [:]
@@ -1120,7 +1116,7 @@ class SolicitudController {
         }
         render respuesta as JSON
     }
-    
+
     def formulario(){
         if(session.cotizador){
             def tipoLogin;
@@ -1152,7 +1148,7 @@ class SolicitudController {
             def ponderaciones = [:]
             def parrafos
             def configuracion = session.configuracion//ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
-			
+
             if(!session.shortUrl) {
                 def resultadoShortener = urlShortenerService.acortarUrl((entidadFinanciera.nombre + session.id), configuracion)
                 if(resultadoShortener.statusCode == 200){
@@ -1172,13 +1168,13 @@ class SolicitudController {
             } else {
                 siguientePaso = 1
             }
-            
+
             println "Test: " + session.estadoRecuperacion
             if(session["pasoFormulario"] && session.estadoRecuperacion){
                 println ("---->" + "paso$siguientePaso" + " = " + session.estadoRecuperacion."paso$siguientePaso" )
                 session["pasoFormulario"].llenadoPrevio = session.estadoRecuperacion."paso$siguientePaso"
             }
-            
+
             pasosDeSolicitud.each { paso ->
                 if(paso.numeroDePaso == siguientePaso){
                     pasoActual = paso
@@ -1299,7 +1295,7 @@ class SolicitudController {
         def solicitud
         def temporal
         def respuesta = [:]
-        def query 
+        def query
         def sql = new Sql(dataSource)
         def resultados
         if (params.telefonoCelular){
@@ -1330,18 +1326,18 @@ class SolicitudController {
                     respuesta.mensaje = "No existe solicitud relacionada al telefono proporcionado, o la solicitud ya no esta Vigente"
                 }
             }
-        } 
+        }
         else{
             respuesta.error = true
             respuesta.mensaje = "Por favor Ingrese un Número Valido"
         }
         render respuesta as JSON
-        
+
     }
-    
+
     def verificacion (){
         if(params.token){
-            [token:params.token]        
+            [token:params.token]
         }else{
             def entidadFinanciera = EntidadFinanciera.get(6)
             def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
@@ -1357,14 +1353,14 @@ class SolicitudController {
         if(params.token){
             def solicitud
             if(params.fechaDeNacimiento){
-                Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00") 
+                Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00")
                 criteria = SolicitudDeCredito.createCriteria()
                 results = criteria.list{
                     createAlias('cliente', 'cef')
                     eq("token", params.token)
                     eq("cef.fechaDeNacimiento",fechaDeNacimiento)
                 }
-                solicitud = results[0]        
+                solicitud = results[0]
             }else if (params.correoElectronico){
                 cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
                 if(cliente){
@@ -1419,7 +1415,7 @@ class SolicitudController {
             }
         }
     }
-    
+
     def obtenerSucursales(){
         println params
         def respuesta = [:]
@@ -1455,12 +1451,12 @@ class SolicitudController {
         }
         render respuesta as JSON
     }
-    
+
     def enviarShortUrl() {
         def respuesta = [:]
         def toPhone = (session.cotizador?.telefonoCliente ?: session["pasoFormulario"]?.telefonoCliente?.telefonoCelular)
         if(toPhone){
-            toPhone = toPhone.replaceAll('-', '') 
+            toPhone = toPhone.replaceAll('-', '')
             if(smsService.sendShortUrl(toPhone, session.shortUrl, session.configuracion)){
                 respuesta.mensajeEnviado = true
                 def solicitud = SolicitudTemporal.get(session.identificadores.idSolicitudTemporal)
@@ -1476,7 +1472,7 @@ class SolicitudController {
         }
         render respuesta as JSON
     }
-    
+
     def recalcularOferta() {
         println params
         def respuesta = [:]
@@ -1490,7 +1486,7 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def seleccionarOferta() {
         println params
         def respuesta = [:]
@@ -1505,7 +1501,7 @@ class SolicitudController {
             render respuesta as JSON
         }
     }
-    
+
     def printReport(){
         println params
         def mapa = []
@@ -1519,7 +1515,7 @@ class SolicitudController {
         respuesta.nomenclatura = productoSolicitud.periodicidad.nomenclatura
         respuesta.montoDelSeguroDeDeuda = productoSolicitud.montoDelSeguroDeDeuda
         respuesta.nombreDelProducto = productoSolicitud.producto?.nombreDelProducto
-        respuesta.cat =  (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 
+        respuesta.cat =  (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0
         respuesta.sucursal = productoSolicitud?.solicitud?.sucursal
         respuesta.ubicacion = productoSolicitud?.solicitud?.sucursal.ubicacion
         respuesta.documentoElegidoCantidad = productoSolicitud?.documentoElegido?.cantidadSolicitada
@@ -1541,8 +1537,17 @@ class SolicitudController {
         params._format= "PDF"
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
-    
-    def encuesta(){        
+
+    def encuesta(){
         render(template: "/solicitud/encuesta")
+    }
+    
+    def consultaBCTradicional() {
+        def idEntidadFinanciera = session.configuracion.id
+        Usuario usuario = springSecurityService.currentUser
+        
+        def respuesta = buroDeCreditoService.consultaINTL(request.JSON, session["pasoFormulario"]?.cliente, session["pasoFormulario"]?.direccionCliente, SolicitudDeCredito.get(session.identificadores.idSolicitud), idEntidadFinanciera, usuario)
+        
+        render respuesta as JSON
     }
 }
