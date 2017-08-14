@@ -1977,7 +1977,7 @@ class SolicitudService {
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
-                break;    
+                break; 
         }
         BufferedImage bf = null
         try {

@@ -37,7 +37,7 @@ class CotizadorController {
         def respuesta = cotizadorService.cargarCatalogos(params)
         session.ef = respuesta.entidadFinanciera
         session.configuracion = respuesta.configuracion
-        
+
         respuesta
         //}
     }

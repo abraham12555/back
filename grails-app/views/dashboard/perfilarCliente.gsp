@@ -587,19 +587,17 @@
                                                 <div id="" class="col12 folderContainer center span_2_of_4">
                                                     <img class="folderImage" src="${resource(dir:'images', file:'identification.png')}" alt="folder"/>
                                                     <p class="center letterspacing1.4 gray">Descargar Formato de Autorización</p>
-                                                    <div class="colorGreen colorWhite radius100 marginTop17 marginLeft60  marginBottom20 marginRight20"><strong>
-                                                            <g:jasperReport
+                                                   <div class="colorGreen colorWhite radius100 marginTop17 marginLeft30  marginBottom20 marginRight20"><strong>
+                                                            <g:jasperForm 
                                                                 controller="dashboard"
-                                                                jasper="FormatoDeAutorizacionBc"
                                                                 action="printBcFormat"
-                                                                format="PDF"
-                                                                name="FormatoDeAutorizacionBC "
-                                                                description="Descargar"
-                                                                delimiter=" ">
+                                                                jasper="FormatoDeAutorizacionBc"  
+                                                                name="FormatoDeAutorizaci&oacute;nBC">
                                                                 <input type="hidden" name="idClienteBc" value="${session?.identificadores?.idCliente}"/> 
                                                                 <input type="hidden" name="idDireccionBc" value="${session?.identificadores?.idDireccion}"/> 
-                                                                <input type="hidden" name="idSolicitudBc" value="${session?.identificadores?.idSolicitud}"/> 
-                                                            </g:jasperReport>
+                                                                <input type="hidden" name="idSolicitudBc" value="${session?.identificadores?.idSolicitud}"/>                                                                
+                                                               <g:jasperButton format="pdf" jasper="jasper-test" class="colorWhite marginBottom15 center" text="DESCARGAR"  /> </center>
+                                                            </g:jasperForm>        
                                                         </strong>
                                                     </div>
                                                     <input type="hidden" name="consentimientoConsulta" id="consentimientoConsulta">
@@ -722,19 +720,17 @@
                                                 <div id="" class="col folderContainer center span_2_of_4">
                                                     <img class="folderImage" src="${resource(dir:'images', file:'identification.png')}" alt="folder"/>
                                                     <p class="center letterspacing1.4 gray">Descargar Formato de Autorización</p>
-                                                    <div class="colorGreen colorWhite radius100 marginTop17 marginLeft60  marginBottom20 marginRight20"><strong>
-                                                            <g:jasperReport
+                                                    <div class="colorGreen colorWhite radius100 marginTop17 marginLeft30  marginBottom20 marginRight20"><strong>
+                                                            <g:jasperForm 
                                                                 controller="dashboard"
-                                                                jasper="FormatoDeAutorizacionBc"
                                                                 action="printBcFormat"
-                                                                format="PDF"
-                                                                name="FormatoDeAutorizacionBC "
-                                                                description="Descargar"
-                                                                delimiter=" ">
+                                                                jasper="FormatoDeAutorizacionBc" 
+                                                                name="FormatoDeAutorizaci&oacute;nBC">
                                                                 <input type="hidden" name="idClienteBc" value="${session?.identificadores?.idCliente}"/> 
                                                                 <input type="hidden" name="idDireccionBc" value="${session?.identificadores?.idDireccion}"/> 
-                                                                <input type="hidden" name="idSolicitudBc" value="${session?.identificadores?.idSolicitud}"/> 
-                                                            </g:jasperReport>
+                                                                <input type="hidden" name="idSolicitudBc" value="${session?.identificadores?.idSolicitud}"/>                                                                
+                                                               <g:jasperButton format="pdf" jasper="jasper-test" class="colorWhite marginBottom15 center" text="DESCARGAR"  /> </center>
+                                                            </g:jasperForm>        
                                                         </strong>
                                                     </div>
                                                     <input type="hidden" name="consentimientoConsulta" id="consentimientoConsulta">

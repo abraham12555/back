@@ -12,7 +12,8 @@ class SucursalEntidadFinanciera implements Serializable{
     Double latitud
     Double longitud
     RiesgoGeografico riesgoGeografico
-    
+    Municipio municipio
+
     boolean activo = true
     
     static constraints = {
@@ -26,6 +27,8 @@ class SucursalEntidadFinanciera implements Serializable{
         latitud (nullable: true)
         longitud (nullable: true)
         riesgoGeografico (nullable: true)
+        municipio (nullable: true)
+
     }
     
     static mapping = {

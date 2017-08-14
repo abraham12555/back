@@ -2461,8 +2461,7 @@ class DashboardController {
 
         def mapa = []
         def respuesta = [:]
-        SimpleDateFormat formato = 
-        new SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy", new Locale("es", "ES")); 
+        SimpleDateFormat formato = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es", "ES")); 
         String fecha = formato.format(new Date());
         respuesta.razonSocial = configuracion?.razonSocial
         respuesta.nombreCliente = cliente
@@ -2475,12 +2474,12 @@ class DashboardController {
         respuesta.estado = direccion?.codigoPostal?.municipio?.estado?.nombre
         respuesta.codigoPostal = direccion?.codigoPostal
         respuesta.telefono = telefonoCliente?.numeroTelefonico
-        respuesta.lugar = "${solicitud?.sucursal?.estado?.nombre}, ${fecha.toUpperCase()}"
+        respuesta.lugar = "${(solicitud?.sucursal?.municipio?.nombre ? solicitud?.sucursal?.municipio?.nombre : "N/A")}, ${solicitud?.sucursal?.estado?.siglasrenapo} A ${fecha.toUpperCase()}"
         respuesta.rutaLogotipoFormatoBuro = configuracion?.rutaLogotipoFormatoBuro
         respuesta.nombreEntidadFinancieraFormatoBuro = configuracion?.nombreEntidadFinancieraFormatoBuro
+        respuesta.codigoCalidad = configuracion?.codigoCalidad
         mapa << respuesta
         params._format= "PDF"
-
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
 }
