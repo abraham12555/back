@@ -35,6 +35,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import la.kosmos.app.vo.Constants
 @Transactional
 class SolicitudService {
     
@@ -1000,10 +1001,9 @@ class SolicitudService {
                 try{
                     def mapaDocto = [:]
                     mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
-                    def nombreTipoDocumento = documento.tipoDeDocumento.nombre
                     byte[] data = Files.readAllBytes(Paths.get(documento.rutaDelArchivo))
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(redimensionar(documento.rutaDelArchivo, nombreTipoDocumento), "jpg", baos) 
+                    ImageIO.write(redimensionar(documento), "jpg", baos) 
                     mapaDocto.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())  
                     solicitudRest.solicitud.documentos << mapaDocto
                 }catch(Exception e){
@@ -1937,47 +1937,81 @@ class SolicitudService {
             }
             respuesta
 }
-    public BufferedImage redimensionar (def archivo, def tipoDeDocumento){
-        def ruta = archivo
-        def arc = new File (archivo)
+    public BufferedImage redimensionar (def archivo){
+        def ruta = archivo.rutaDelArchivo
+        def arc = new File (archivo.rutaDelArchivo)
         def fileLabel = ".${arc.name.split("\\.")[-1]}"
         if(fileLabel == '.pdf'){
-            ruta = convertPDFtoImage(ruta , tipoDeDocumento )
+            try {
+                ruta = convertPDFtoImage(ruta , archivo.tipoDeDocumento )
+            } catch (IOException ex) {
+                log.error( "Fallo Cambio de formato  " + ruta ,ex )
+            }
         } 
         def width = 0 as int
         def height = 0 as int
         def imagenTamMax 
-        switch (tipoDeDocumento) {
-            case "Pasaporte": 
-                width = 322
-                height = 662
-                imagenTamMax = 307200
-                break;
-            case "Credencial de Elector":
-                width = 322
-                height = 205
-                imagenTamMax = 307200
-                break;
-            case "Recibo de Luz": 
+        switch (archivo.tipoDeDocumento.id) {
+            case Constants.TipoDocumento.RECIBOLUZ.value: 
                 width = 817
                 height = 1059
                 imagenTamMax = 115382
                 break;
-            case "Recibo Telefonico":
+            case Constants.TipoDocumento.INE.value:
+                width = 322
+                height = 205
+                imagenTamMax = 307200
+                break;
+            case Constants.TipoDocumento.ESTADODECUENTA.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break; 
+            case Constants.TipoDocumento.RECIBONOMINA.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break;  
+            case Constants.TipoDocumento.DECLARACIONSAT.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break;    
+            case Constants.TipoDocumento.RECIBOHONORARIOS.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break; 
+            case Constants.TipoDocumento.NOTA.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break;           
+            case Constants.TipoDocumento.TICKET.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break;  
+            case Constants.TipoDocumento.REMISION.value: 
+                width = 817
+                height= 1059
+                imagenTamMax = 307200
+                break;    
+            case Constants.TipoDocumento.RECIBOTELEFONICO.value:
                 width = 817
                 height = 1059
                 imagenTamMax = 307200
                 break;
-            case " Estados de Cuenta ": 
-                width = 817
-                height= 1059
+            case Constants.TipoDocumento.PASAPORTE.value: 
+                width = 322
+                height = 662
                 imagenTamMax = 307200
-                break; 
-            case "Recibo de Honorarios": 
+                break;
+            case Constants.TipoDocumento.FORMATOACBC.value: 
                 width = 817
-                height= 1059
+                height = 1059
                 imagenTamMax = 307200
-                break; 
+                break;    
         }
         BufferedImage bf = null
         try {
