@@ -1121,11 +1121,13 @@ function operacionesBuro() {
         if ($(this).hasClass('colorGreen') || $(this).hasClass('buttonOrange')) {
 
             var currentStep = $('#pasoAnterior').val();
-            if ($('#circuloPaso' + (parseInt(currentStep) + 1)).hasClass("grayCircle")) {
+            if ($('#circuloPaso' + (parseInt(currentStep) + 1)).hasClass("grayCircle") || $('#circuloPaso' + (parseInt(currentStep) + 1)).hasClass("grayrectangle")) {
+                console.log("Si entraaaaaaaaaaaaaaa: " + (parseInt(currentStep) + 1));
                 $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
+                $('#circuloPaso' + (parseInt(currentStep) + 1) + '.mobileChange').addClass('sendBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').addClass('paddingTop10');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').removeClass('paddingTop5');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
@@ -2569,6 +2571,7 @@ function mostrarOfertas() {
     }
     if (respuesta.length > 0) {
         if (isMobile) {
+            html = "<div class=\"swiper-button-next\"></div><div class=\"swiper-button-prev\"></div>";
             html += "<div class=\"credit-proposals-wrapper swiper-wrapper\">";
         }
         for (var i = 0; i < respuesta.length; i++) {
@@ -2582,13 +2585,13 @@ function mostrarOfertas() {
             html += "<ul class=\"features\">";
             html += "<li class=\"brief\"><i class=\"fa fa-male\"></i></li>";
             html += "<li class=\"price\"> <span id=\"monto_" + respuesta[i].producto.id + "\">" + formatCurrency(respuesta[i].listaDeOpciones[0].montoMaximo, "$") + "</span> ";
-            html += "<div class=\"flat-slider\" id=\"flat-slider-" + respuesta[i].producto.id + "\"></div>";
+            html += "<div class=\"flat-slider swiper-no-swiping\" id=\"flat-slider-" + respuesta[i].producto.id + "\"></div>";
             html += "<p class=\"floatLeft marginLeft12 font14 fontWeight500 gray opacity05 paddingTop5\">MIN</p>";
             html += "<p class=\"floatRight marginRight12 font14 fontWeight500 gray opacity05 paddingTop5\">MAX</p>";
             html += "</li>";
             html += "<li>";
-            html += "<h6>PLAZO</h6> <span id=\"plazo_" + respuesta[i].producto.id + "\">";
-            html += "<select class=\"browser-default\" style=\"border-bottom: 0px;\" onchange= \"cambiarPlazo(" + i + ", this.value)\">";
+            html += "<h6>PLAZO<br>(Despliegue la lista para más opciones)</h6> <span id=\"plazo_" + respuesta[i].producto.id + "\">";
+            html += "<select class=\"browser-default\" style=\"border-bottom: 0px; width: 60%;\" onchange= \"cambiarPlazo(" + i + ", this.value)\">";
             html += "<option value=\"0\" selected>" + respuesta[i].listaDePlazos[0].plazos + " " + respuesta[i].listaDePlazos[0].periodicidad.toUpperCase() + "</option>";
             for (var j = 1; j < respuesta[i].listaDePlazos.length; j++) {
                 html += "<option value=\"" + j + "\">" + respuesta[i].listaDePlazos[j].plazos + " " + respuesta[i].listaDePlazos[j].periodicidad.toUpperCase() + "</option>";
@@ -2640,9 +2643,20 @@ function mostrarOfertas() {
         inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 1000);
     }
     if (isMobile) {
-        swiper = new Swiper('.swiper-container');
+        swiper = new Swiper('.swiper-container', {
+            direction: 'horizontal',
+            pagination: '.swiper-pagination',
+            nextButton: '.swiper-button-next',
+            prevButton: '.swiper-button-prev',
+            centeredSlides: true,
+            paginationClickable: true,
+            spaceBetween: 0,
+            freeMode: true,
+            noSwiping: true,
+            noSwipingClass: 'swiper-no-swiping'
+        });
         $('.swiper-wrapper').width('' + (respuesta.length * 105) + '%');
-        $('.swiper-slide').width('300px');
+        $('.swiper-slide').width('320px');
     } else {
         Conclave = (function () {
             var buArr = [], arlen;
