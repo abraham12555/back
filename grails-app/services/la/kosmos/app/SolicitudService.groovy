@@ -35,7 +35,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import la.kosmos.app.vo.Constants
+
 @Transactional
 class SolicitudService {
     
@@ -1952,62 +1952,62 @@ class SolicitudService {
         def height = 0 as int
         def imagenTamMax 
         switch (archivo.tipoDeDocumento.id) {
-            case Constants.TipoDocumento.RECIBOLUZ.value: 
+            case TipoDeDocumento.RECIBOLUZ:
                 width = 817
                 height = 1059
                 imagenTamMax = 115382
                 break;
-            case Constants.TipoDocumento.INE.value:
+            case TipoDeDocumento.INE:
                 width = 322
                 height = 205
                 imagenTamMax = 307200
                 break;
-            case Constants.TipoDocumento.ESTADODECUENTA.value: 
+            case TipoDeDocumento.ESTADODECUENTA:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break; 
-            case Constants.TipoDocumento.RECIBONOMINA.value: 
+            case TipoDeDocumento.RECIBONOMINA:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break;  
-            case Constants.TipoDocumento.DECLARACIONSAT.value: 
+            case TipoDeDocumento.DECLARACIONSAT:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break;    
-            case Constants.TipoDocumento.RECIBOHONORARIOS.value: 
+            case TipoDeDocumento.RECIBOHONORARIOS:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break; 
-            case Constants.TipoDocumento.NOTA.value: 
+            case TipoDeDocumento.NOTA:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break;           
-            case Constants.TipoDocumento.TICKET.value: 
+            case TipoDeDocumento.TICKET:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break;  
-            case Constants.TipoDocumento.REMISION.value: 
+            case TipoDeDocumento.REMISION:
                 width = 817
                 height= 1059
                 imagenTamMax = 307200
                 break;    
-            case Constants.TipoDocumento.RECIBOTELEFONICO.value:
+            case TipoDeDocumento.RECIBOTELEFONICO:
                 width = 817
                 height = 1059
                 imagenTamMax = 307200
                 break;
-            case Constants.TipoDocumento.PASAPORTE.value: 
+            case TipoDeDocumento.PASAPORTE:
                 width = 322
                 height = 662
                 imagenTamMax = 307200
                 break;
-            case Constants.TipoDocumento.FORMATOACBC.value: 
+            case TipoDeDocumento.FORMATOACBC:
                 width = 817
                 height = 1059
                 imagenTamMax = 307200
@@ -2017,7 +2017,7 @@ class SolicitudService {
         try {
             bf = ImageIO.read(new File(ruta)) 
         } catch (IOException ex) {
-            log.error( "Fallo carga de imagen para redimencionar con el archivo en  " + ruta ,ex )
+            log.error( "Fallo carga de imagen para redimensionar con el archivo en  " + ruta ,ex )
         }
         int ancho = bf.getWidth() 
         int alto = bf.getHeight()
@@ -2045,7 +2045,7 @@ class SolicitudService {
         	    ImageIO.write(image, "jpg", outputfile)
         	    ruta  = (destinationDir + "imagenG.jpg")
                     return ruta
-        	}
+            } 
         	document.close()
             } 
         } catch (Exception e) {

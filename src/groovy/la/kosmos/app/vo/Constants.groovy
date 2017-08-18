@@ -34,19 +34,7 @@ class Constants {
             value
 	}
     }
-    enum TipoDocumento {
-        RECIBOLUZ(1), INE(2), ESTADODECUENTA(3), RECIBONOMINA(4), DECLARACIONSAT(5), RECIBOHONORARIOS(6), NOTA(7), TICKET(8), REMISION(9), RECIBOTELEFONICO(10), PASAPORTE(11), FORMATOACBC(12)
 
-        private final long value
-
-        TipoDocumento(long value) {
-            this.value = value
-	}
-
-        long getValue() {
-            value
-	}
-    }
     enum CronConfig {
         MINUTO, HORA, DIA, SEMANA, MES
     }

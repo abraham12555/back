@@ -780,6 +780,7 @@ class PerfiladorService {
                 ResultadoMotorDeDecision.executeUpdate("Delete From ResultadoMotorDeDecision r Where r.solicitud.id = :solicitudId", [solicitudId: solicitud.id])
                 if(resultadoMotorDeDecision.save(flush: true)) {
                     solicitud.statusDeSolicitud = StatusDeSolicitud.get(4)
+                    solicitud.ultimoPaso = SolicitudDeCredito.ULTIMO_PASO
                     solicitud.save(flush: true)
                     respuesta.oferta = oferta
                     respuesta.productoSolicitud = productoSolicitud

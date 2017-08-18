@@ -141,8 +141,6 @@ class UserService {
     def getUsers(EntidadFinanciera entidadFinanciera, Pager pager){
         pager.rowsPerPage = Constants.TOTAL_ROWS
         def userList = []
-        println pager.rowsPerPage
-        println pager.firstRow
         def criteria = Usuario.createCriteria()
         def results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
             eq ('entidadFinanciera', entidadFinanciera)

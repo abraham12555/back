@@ -28,4 +28,17 @@ class TipoDeDocumento implements Serializable{
     String toString () {
         "${nombre}"
     }
+    
+    static final Integer RECIBOLUZ = 1
+    static final Integer INE = 2
+    static final Integer ESTADODECUENTA = 3 
+    static final Integer RECIBONOMINA = 4 
+    static final Integer DECLARACIONSAT = 5
+    static final Integer RECIBOHONORARIOS = 6
+    static final Integer NOTA = 7
+    static final Integer TICKET = 8
+    static final Integer REMISION = 9
+    static final Integer RECIBOTELEFONICO = 10
+    static final Integer PASAPORTE = 11
+    static final Integer FORMATOACBC = 12
 }
