@@ -46,4 +46,5 @@
     <g:external dir="js" file="jasny-bootstrap.min.js" />
     <g:external dir="js" file="jquery.mloading.js" />
     <g:external dir="js" file="googleanalytics.js" />
+    <g:external dir="js" file="mask.js" />
 </html>

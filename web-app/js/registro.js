@@ -2,7 +2,7 @@ function iniciarFormularioRegistro() {
 // animacion de fadeIn
     $('.register').addClass('animated fadeIn');
 
-// elimino la clase para poder animar nuevamente
+    // elimino la clase para poder animar nuevamente
     setTimeout(function () {
         $('.register').removeClass('fadeIn');
     }, 3000);
@@ -51,7 +51,8 @@ function iniciarFormularioRegistro() {
             }
         }
     });
-
+    
+    $("#phone").mask("99-99-99-99-99");
     $('#first_name').on('keyup', function (e) {
         if (e.keyCode === 13) {
             submitFirstName();

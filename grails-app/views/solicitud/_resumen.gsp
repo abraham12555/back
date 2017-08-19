@@ -27,7 +27,7 @@
                     <center>
                         <div class="col5 col6-tab col12-mob">
                             <div class="paddingAside15">
-                                    <div id="paso6Docto" class="colorWhite darkGray radius100 buttonM mobileAuto greenClick pointer">SUBE TU ${productoSolicitud?.documentoElegido?.nombre?.toUpperCase()}</div>
+                                <div id="paso6Docto" class="colorWhite <g:if test="${documentosSubidos?."$productoSolicitud.documentoElegido.nombreMapeo"}">  colorGreen </g:if> <g:else> darkGray </g:else> radius100 buttonM mobileAuto greenClick pointer">SUBE TU ${productoSolicitud?.documentoElegido?.nombre?.toUpperCase()}</div>
                         </div>
                     </div>
                 </center>

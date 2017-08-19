@@ -142,11 +142,11 @@
                      <div id="telefonoCelular" class="col6 col10-tab col12-mob autoMargin marginTop80 marginBottom80 hide">
                          <div class="paddingTop20 paddingBottom20">
                              <div class="padding20 clearFix">
-                                 <div  class="col6 register">
+                                 <div  class="col12 register">
                                      <div class="row">
                                          <div id="first_name_form" class="input-field col12">
                                              <label for="first_name" class="darkBluetitle"><span><strong style="color:#fb5e48;">*</strong></span>¿Cuál Número de celular?</label>
-                                             <input id="phoneVerificacion" name="telefonoCelular" type="text" class="datoShortUrl mat-input" data-mask="99-99-99-99-99" maxlength="14" onkeypress="return event.keyCode != 13;" >
+                                             <input id="phoneVerificacion" name="telefonoCelular" style="width:100%;" type="tel" class="datoShortUrl"  maxlength="14" onkeypress="return event.keyCode != 13;" >
                                               <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
                                                  <span class="">ATRAS</span>
                                              </p>
@@ -164,11 +164,11 @@
                      <div id="codigoConfirmacion" class="col6 col10-tab col12-mob autoMargin marginTop80 marginBottom80 hide">
                          <div class="paddingTop20 paddingBottom20">
                              <div class="padding20 clearFix">
-                                 <div  class="col6 register">
+                                 <div  class="col12 register">
                                      <div class="row">
                                          <div id="codigo_form" class="input-field col12 ">
                                              <label for="codigo" class="darkBluetitle">Ingresa el código que acabas de recibir por SMS</label>
-                                             <input id="codigoVerificacion" type="text" name="codigoConfirmacion" class="datoShortUrl mat-input" maxlength="5" onkeypress="return event.keyCode != 13;">
+                                             <input id="codigoVerificacion" style="width:100%;" type="text" name="codigoConfirmacion" class="datoShortUrl" maxlength="5" onkeypress="return event.keyCode != 13;">
                                              <div style="text-align: center;">
                                                 <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
                                                  <span class="">ATRAS</span>

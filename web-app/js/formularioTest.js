@@ -2372,10 +2372,10 @@ function inicializarDropzone(elemento, boton) {
 
                     var cantidadRequerida = $('#cantidadSolicitada').val();
 
-                    var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
+                    var html = '<svg class="checkmark2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle2" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check2" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
                     html += '<p class="center letterspacing1.4 gray">Cargada Correctamente</p>';
                     $('#uploadDocto' + posicion).html(html);
-                    if ($('.checkmark').length === Number(cantidadRequerida)) {
+                    if ($('.checkmark2').length === Number(cantidadRequerida)) {
                         closeModal('documento_solicitud');
                         $('#paso6Docto').removeClass('darkGray');
                         $('#paso6Docto').addClass('colorGreen');
@@ -2982,6 +2982,7 @@ function verificarCodigo() {
 }
 
 function operacionesShortUrl() {
+    $("#phoneVerificacion").mask("99-99-99-99-99");
     $(".mat-input").focus(function () {
         $(this).parent().addClass("is-active is-completed");
     });

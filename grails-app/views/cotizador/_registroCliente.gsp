@@ -25,7 +25,7 @@
 
         <div id="phone_form" class="input-field col12 hide">
             <label for="phone" class="darkBluetitle">¿Cuál es tu celular con clave lada?</label>
-            <input id="phone" type="text" name="telefonoCelular" class="validate" data-mask="99-99-99-99-99" maxlength="14" onkeypress="return event.keyCode != 13;">
+            <input id="phone" type="tel" name="telefonoCelular" class="validate"  maxlength="14" >
             <div style="text-align: center;">
                 <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
                     <span class="backBtn">Anterior</span>
