@@ -146,7 +146,7 @@
               </sec:ifAnyGranted>
           </li>
           <li>
-              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR'>
                   <a href="${createLink(controller:'dashboard', action:'reportes')}">
                       <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
                   </a>
@@ -209,7 +209,7 @@
                         </a>
                     </li>
                 </sec:ifAnyGranted>  
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR'>
                     <li class="floatLeft">
                         <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'reportes')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"></span>
