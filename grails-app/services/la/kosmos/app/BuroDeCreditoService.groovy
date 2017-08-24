@@ -1150,16 +1150,16 @@ class BuroDeCreditoService {
         //etiqueta PN: Apellido paterno
         cadenaINTL += "PN"
         cadenaINTL += getStringSize(apellidoPaterno.size().toString(), 2)
-        cadenaINTL += (cambiarCaracteresEspeciales(apellidoPaterno)).toUpperCase()
+        cadenaINTL += cambiarCaracteresEspeciales(apellidoPaterno.toUpperCase())
         //etiqueta 00: Apellido materno
         cadenaINTL += "00"
         cadenaINTL += getStringSize(apellidoMaterno.size().toString(), 2)
-        cadenaINTL += (cambiarCaracteresEspeciales(apellidoMaterno)).toUpperCase()
+        cadenaINTL += cambiarCaracteresEspeciales(apellidoMaterno.toUpperCase())
         //etiqueta 01: Apellido adicional. Se omite por ser opcional
         //etiqueta 02: Nombre
         cadenaINTL += "02"
         cadenaINTL += getStringSize(nombre.size().toString(), 2)
-        cadenaINTL += (cambiarCaracteresEspeciales(nombre)).toUpperCase()
+        cadenaINTL += cambiarCaracteresEspeciales(nombre.toUpperCase())
         //etiqueta 03: Segundo nombre. Se omite por ser opcional
         //etiqueta 04: Fecha de nacimiento. Se omite por ser opcional. Si se agrega no reportar fecha para menores de 18 años
         //etiqueta 05: RFC
@@ -1183,7 +1183,8 @@ class BuroDeCreditoService {
 
         //SEGMENTO PA - DIRECCION DEL CLIENTE
 
-        String domicilio = direccion.calle.trim().toUpperCase()+" "+direccion.numeroExterior.trim().toUpperCase()
+        String calle = cambiarCaracteresEspeciales(direccion.calle.trim().toUpperCase())
+        String domicilio = calle + " " + direccion.numeroExterior.trim().toUpperCase()
         Municipio municipio = Municipio.findById(direccion.delegacion)
         Integer municipioSize = (municipio) ? municipio.nombre.trim().size() : null
         String ciudad = (direccion.ciudad) ? direccion.ciudad.trim() : null
@@ -1197,7 +1198,7 @@ class BuroDeCreditoService {
         }
 
         cadenaINTL += "PA"
-        cadenaINTL += domicilio.size().toString()
+        cadenaINTL += getStringSize(domicilio.size().toString(), 2)
         cadenaINTL += domicilio
         //etiqueta 00: segunda linea de direccion.
         //etiqueta 01: Colonia o poblacion. Se omite por ser opcional
@@ -1205,7 +1206,7 @@ class BuroDeCreditoService {
         if (municipio) {
             cadenaINTL += "02"
             cadenaINTL += getStringSize(municipioSize.toString(), 2)
-            cadenaINTL += municipio.nombre.toUpperCase()
+            cadenaINTL += cambiarCaracteresEspeciales(municipio.nombre.toUpperCase())
         } else {
             //etiqueta 03: Ciudad. Si no se cuenta con inf. La etiqueta 02 se hace requerida
             cadenaINTL += "03"

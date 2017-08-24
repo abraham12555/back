@@ -1323,7 +1323,7 @@ function seleccionarOferta(posicion, producto) {
             $("body").mLoading('hide');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            sweetAlert("Oops...", "Hubo un problema al seleccionar la oferta, intenta nuevamente en unos minutos.", "error");
             $("body").mLoading('hide');
         }
     });
@@ -1540,7 +1540,7 @@ function consultarBuroTradicional() {
             $("body").mLoading('hide');
             restartLoadBar('intl');
             $('.loadingBarintl').fadeOut();
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            sweetAlert("Oops...", "Algo salió mal en la consulta, intenta nuevamente en unos minutos.", "error");
         }
     });
 }

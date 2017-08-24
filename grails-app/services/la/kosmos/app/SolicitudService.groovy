@@ -8,33 +8,25 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils
 import org.apache.commons.lang.StringUtils
 import java.time.*
-
 import grails.gorm.DetachedCriteria
 import java.util.Calendar
 import org.hibernate.transform.Transformers
-import java.util.HashSet
-import javax.xml.bind.DatatypeConverter
 import groovy.sql.Sql
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage
+import java.awt.image.BufferedImage
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import java.util.List;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage
 import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.PDPageTree
+import org.apache.pdfbox.rendering.ImageType
+import org.apache.pdfbox.rendering.PDFRenderer
+import org.apache.pdfbox.tools.imageio.ImageIOUtil
 
 @Transactional
 class SolicitudService {
@@ -998,17 +990,26 @@ class SolicitudService {
             //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
             
             datosSolicitud.documentosSolicitud?.each { documento ->
-                try{
-                    def mapaDocto = [:]
-                    mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
-                    byte[] data = Files.readAllBytes(Paths.get(documento.rutaDelArchivo))
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(redimensionar(documento), "jpg", baos) 
-                    mapaDocto.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())  
-                    solicitudRest.solicitud.documentos << mapaDocto
-                }catch(Exception e){
-                    println ("[REST] Excepción ocurrida: " + e.getMessage())
-                    println "[REST] Ocurrio un problema con el archivo con ruta $documento.rutaDelArchivo, verifiquelo por favor..."
+                String filePath = documento.rutaDelArchivo
+                File sourceFile = new File(filePath)
+                if (sourceFile.exists()) {
+                    def finalFile = this.redimensionar(documento)
+                    if (finalFile != null) {
+                        try {
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            ImageIO.write(finalFile, "jpg", baos)
+                            
+                            def mapaDocto = [:]
+                            mapaDocto.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())
+                            mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
+                            
+                            solicitudRest.solicitud.documentos << mapaDocto
+                        } catch (Exception e) {
+                            log.error("Ocurrio un error al convertir el documento a base64: " + filePath, e)
+                        }
+                    }
+                } else {
+                    log.error("El archivo con ruta $documento.rutaDelArchivo no existe")
                 }
             }
             
@@ -1560,7 +1561,7 @@ class SolicitudService {
             datosSolicitud.pasoFormulario.empleoCliente.periodo = empleoCliente.antiguedad
             datosSolicitud.pasoFormulario.empleoCliente.plazo = (empleoCliente.temporalidad ? empleoCliente.temporalidad.id : null)
             datosSolicitud.pasoFormulario.empleoCliente.telefono = empleoCliente.telefono
-            datosSolicitud.pasoFormulario.empleoCliente.calle = empleoCliente.calle = 
+            datosSolicitud.pasoFormulario.empleoCliente.calle = empleoCliente.calle
             datosSolicitud.pasoFormulario.empleoCliente.noExterior = empleoCliente.numeroExterior
             datosSolicitud.pasoFormulario.empleoCliente.noInterior = empleoCliente.numeroInterior
             datosSolicitud.pasoFormulario.empleoCliente.codigoPostal = empleoCliente.codigoPostal?.codigo
@@ -1937,120 +1938,128 @@ class SolicitudService {
             }
             respuesta
 }
-    public BufferedImage redimensionar (def archivo){
+private BufferedImage redimensionar (def archivo){
         def ruta = archivo.rutaDelArchivo
-        def arc = new File (archivo.rutaDelArchivo)
+
+        //Conversion del archivo PDF a JPG
+        def arc = new File (ruta)
         def fileLabel = ".${arc.name.split("\\.")[-1]}"
         if(fileLabel == '.pdf'){
             try {
-                ruta = convertPDFtoImage(ruta , archivo.tipoDeDocumento )
-            } catch (IOException ex) {
-                log.error( "Fallo Cambio de formato  " + ruta ,ex )
+                ruta = this.convertPDFtoImage(ruta)
+            } catch (Exception ex) {
+                log.error("Ocurrio un error al convertir el documento pdf. Ruta: " + ruta, ex)
+                return null
             }
-        } 
-        def width = 0 as int
-        def height = 0 as int
-        def imagenTamMax 
+        }
+
+        int width = 0
+        int height = 0
+        def imagenTamMax
         switch (archivo.tipoDeDocumento.id) {
-            case TipoDeDocumento.RECIBOLUZ:
-                width = 817
-                height = 1059
-                imagenTamMax = 115382
-                break;
-            case TipoDeDocumento.INE:
-                width = 322
-                height = 205
-                imagenTamMax = 307200
-                break;
-            case TipoDeDocumento.ESTADODECUENTA:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break; 
-            case TipoDeDocumento.RECIBONOMINA:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break;  
-            case TipoDeDocumento.DECLARACIONSAT:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break;    
-            case TipoDeDocumento.RECIBOHONORARIOS:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break; 
-            case TipoDeDocumento.NOTA:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break;           
-            case TipoDeDocumento.TICKET:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break;  
-            case TipoDeDocumento.REMISION:
-                width = 817
-                height= 1059
-                imagenTamMax = 307200
-                break;    
-            case TipoDeDocumento.RECIBOTELEFONICO:
-                width = 817
-                height = 1059
-                imagenTamMax = 307200
-                break;
-            case TipoDeDocumento.PASAPORTE:
-                width = 322
-                height = 662
-                imagenTamMax = 307200
-                break;
-            case TipoDeDocumento.FORMATOACBC:
-                width = 817
-                height = 1059
-                imagenTamMax = 307200
-                break;    
+        case TipoDeDocumento.RECIBOLUZ:
+            width = 817
+            height = 1059
+            imagenTamMax = 115382
+            break;
+        case TipoDeDocumento.INE:
+            width = 322
+            height = 205
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.ESTADODECUENTA:
+            width = 812
+            height= 1051
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.RECIBONOMINA:
+            width = 548
+            height= 812
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.DECLARACIONSAT:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.RECIBOHONORARIOS:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.NOTA:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.TICKET:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.REMISION:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.RECIBOTELEFONICO:
+            width = 817
+            height = 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.PASAPORTE:
+            width = 472
+            height = 662
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.FORMATOACBC:
+            width = 817
+            height = 1059
+            imagenTamMax = 307200
+            break;
+        default:
+            width = 817
+            height = 1059
+            imagenTamMax = 307200
+            break;
         }
-        BufferedImage bf = null
+
         try {
-            bf = ImageIO.read(new File(ruta)) 
-        } catch (IOException ex) {
-            log.error( "Fallo carga de imagen para redimensionar con el archivo en  " + ruta ,ex )
-        }
-        int ancho = bf.getWidth() 
-        int alto = bf.getHeight()
-        BufferedImage bufim = new BufferedImage(width, height, bf.getType())
-        Graphics2D g = bufim.createGraphics()
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-        g.drawImage(bf, 0,0, width,height, 0,0,ancho,alto, null) 
-        g.dispose()
-        return bufim  
-    }
-    
-    def convertPDFtoImage(def ruta, def tipoDeDocumento ){
-        try {
-            def sourceDir = ruta  
-            def destinationDir = "/tmp/" 
-            File sourceFile = new File(sourceDir)
-            File destinationFile = new File(destinationDir)
-            if (sourceFile.exists()) {
-                PDDocument document = PDDocument.load(sourceDir)
-        	List<PDPage> list = document.getDocumentCatalog().getAllPages()
-                int pageNumber = 1 
-                for (PDPage page : list) {
-        	    BufferedImage image = page.convertToImage()
-        	    File outputfile = new File(destinationDir + "imagenG.jpg");
-        	    ImageIO.write(image, "jpg", outputfile)
-        	    ruta  = (destinationDir + "imagenG.jpg")
-                    return ruta
-            } 
-        	document.close()
-            } 
-        } catch (Exception e) {
-	    log.error( "Error al coonvertir archivo PDF -> JPG  en el archivo: " + ruta ,e )
+            BufferedImage bf = ImageIO.read(new File(ruta))
+            if(bf == null) {
+                log.error("El archivo con ruta $ruta esta corrupto")
+                return null
+            }
+
+            int ancho = bf.getWidth()
+            int alto = bf.getHeight()
+
+            BufferedImage bufim = new BufferedImage(width, height, bf.getType())
+            Graphics2D g = bufim.createGraphics()
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+            g.drawImage(bf, 0, 0, width, height, 0, 0, ancho, alto, null)
+            g.dispose()
+
+            return bufim
+        } catch (Exception ex) {
+            log.error("Ocurrio un error al redimensionar el archivo " + ruta, ex)
+            return null
         }
     }
-    
+
+    private String convertPDFtoImage(String ruta) {
+        def destinationDir = "/tmp/"
+        PDDocument document = PDDocument.load(new File(ruta))
+        PDFRenderer pdfRenderer = new PDFRenderer(document)
+
+        int currentPage = 0
+        BufferedImage bim = pdfRenderer.renderImage(currentPage)
+
+        String newPath = destinationDir + "imagenG.jpg"
+        OutputStream outputStream = new FileOutputStream(newPath)
+        ImageIOUtil.writeImage(bim, "jpg", outputStream)
+        document.close()
+
+        return newPath
+    }
 }
