@@ -786,13 +786,13 @@ class SolicitudService {
     def consultaSolicitudes (def auth, def opcion, def tipoDeConsulta, def fechaInicio, def fechaFinal, def folio){
         def respuesta = []
         def folioSolicitud
-        def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
+        def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth//.entidadFinanciera.id
         def query2
         if(tipoDeConsulta && (tipoDeConsulta as int) == 0) {
             query += " AND s.statusDeSolicitud.id NOT IN (1,2,3)"
         } else if (tipoDeConsulta && (tipoDeConsulta as int) == 1) {
             query += " AND s.statusDeSolicitud.id IN (1,2,3)" 
-            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth//.entidadFinanciera.id
         }
         
         try {
@@ -813,7 +813,7 @@ class SolicitudService {
             break
         case 3: //obtenerSolicitudPorFolio / show
             query += " AND s.folio = '" + folioSolicitud + "' "
-            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id + " AND s.folio = '" + folioSolicitud + "' "
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth/*.entidadFinanciera.id*/ + " AND s.folio = '" + folioSolicitud + "' "
             break
         default:
             break
@@ -990,24 +990,62 @@ class SolicitudService {
             //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
             
             datosSolicitud.documentosSolicitud?.each { documento ->
+                Instant instant = Instant.now()
+                long timeStampSeconds = instant.getEpochSecond();
+                def carpeta = "/tmp/PDFtoIMAGE"+timeStampSeconds+"/" //Carpeta Temporal
+                File destinationFile = new File(carpeta)
+                destinationFile.mkdir()
                 String filePath = documento.rutaDelArchivo
                 File sourceFile = new File(filePath)
                 if (sourceFile.exists()) {
-                    def finalFile = this.redimensionar(documento)
-                    if (finalFile != null) {
-                        try {
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            ImageIO.write(finalFile, "jpg", baos)
-                            
-                            def mapaDocto = [:]
-                            mapaDocto.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())
-                            mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
-                            
-                            solicitudRest.solicitud.documentos << mapaDocto
-                        } catch (Exception e) {
-                            log.error("Ocurrio un error al convertir el documento a base64: " + filePath, e)
+                    def fileLabel = ".${sourceFile.name.split("\\.")[-1]}"
+                    if(fileLabel == '.pdf'){
+                        def mapaDocto = []
+                        def ruta = (convertPDFtoImage(documento.rutaDelArchivo , carpeta )) as int
+                        def pag = 1 
+                        def pagina = [:]
+                        for (int x=0;x<ruta;x++){
+                            documento.rutaDelArchivo = carpeta+"imagenG"+ pag+".jpg"
+                            def finalFile = redimensionar(documento)
+                            if (finalFile != null) {
+                                try {
+                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                    ImageIO.write(finalFile, "jpg", baos)
+                                    pagina.tipoDeDocumento = documento.tipoDeDocumento.codigo
+                                    pagina.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())
+                                    mapaDocto << pagina
+                                } catch (Exception e) {
+                                    log.error("Ocurrio un error al convertir el documento a base64: " + filePath)
+                                }
+                            }
+                            pag++
+                        }
+                        solicitudRest.solicitud.documentos << mapaDocto
+                    }else{ 
+                        def mapaDocto = [:]
+                        def finalFile = redimensionar(documento)
+                        if (finalFile != null) {
+                            try {
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                ImageIO.write(finalFile, "jpg", baos)
+                                mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
+                                mapaDocto.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())
+                                solicitudRest.solicitud.documentos << mapaDocto
+                            } catch (Exception e) {
+                                log.error("Ocurrio un error al convertir el documento a base64: " + filePath)
+                            }
                         }
                     }
+                    //Borado de archivos y Carpetas temporales
+                    File[] ficheros = destinationFile.listFiles();
+                    File f = null
+                    if(ficheros.length >  0){
+                        for (int x=0;x<ficheros.length;x++){
+                            f= new File(carpeta+(ficheros[x].getName()))
+                            f.delete()
+                        }
+                    }
+                    destinationFile.delete()
                 } else {
                     log.error("El archivo con ruta $documento.rutaDelArchivo no existe")
                 }
@@ -1941,18 +1979,6 @@ class SolicitudService {
 private BufferedImage redimensionar (def archivo){
         def ruta = archivo.rutaDelArchivo
 
-        //Conversion del archivo PDF a JPG
-        def arc = new File (ruta)
-        def fileLabel = ".${arc.name.split("\\.")[-1]}"
-        if(fileLabel == '.pdf'){
-            try {
-                ruta = this.convertPDFtoImage(ruta)
-            } catch (Exception ex) {
-                log.error("Ocurrio un error al convertir el documento pdf. Ruta: " + ruta, ex)
-                return null
-            }
-        }
-
         int width = 0
         int height = 0
         def imagenTamMax
@@ -2047,19 +2073,25 @@ private BufferedImage redimensionar (def archivo){
         }
     }
 
-    private String convertPDFtoImage(String ruta) {
-        def destinationDir = "/tmp/"
+    private String convertPDFtoImage(String ruta , String destinationDir) {
+       File destinationFile = new File(destinationDir)
+        
         PDDocument document = PDDocument.load(new File(ruta))
         PDFRenderer pdfRenderer = new PDFRenderer(document)
-
-        int currentPage = 0
-        BufferedImage bim = pdfRenderer.renderImage(currentPage)
-
-        String newPath = destinationDir + "imagenG.jpg"
-        OutputStream outputStream = new FileOutputStream(newPath)
-        ImageIOUtil.writeImage(bim, "jpg", outputStream)
+        PDPageTree pages = document.getPages()
+        int pageNumber = 1
+        for (PDPage page : pages) {
+            int currentPage = (pages.indexOf(page))
+            BufferedImage bim = pdfRenderer.renderImage(currentPage)
+            String newPath = destinationDir + "imagenG"+pageNumber+".jpg"
+            OutputStream outputStream = new FileOutputStream(newPath)
+            ImageIOUtil.writeImage(bim, "jpg", outputStream)
+            pageNumber++
+        }
         document.close()
-
-        return newPath
+        def archivo = [:]
+        File[] ficherosn = destinationFile.listFiles()
+        ficherosn.length 
+        return  ficherosn.length 
     }
 }

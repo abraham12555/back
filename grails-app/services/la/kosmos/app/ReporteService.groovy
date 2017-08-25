@@ -22,13 +22,12 @@ class ReporteService {
     def dashboardService
     
     def obtenerReporte(def tipo, def entidad, def finicio, def ffin ) {
-        println "entro 22 " +tipo + entidad
         
         def db = new Sql(dataSource)
         def datosReporte = []
         
         if( tipo == 'solicitudes'){
-            def query = "select *from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + "','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +"','dd/mm/yyyy hh24:mi') "
+            def query = "select *from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') "
             def result = db.rows(query)
             result?.each{
                 def datos =[:]
@@ -108,7 +107,7 @@ class ReporteService {
                 datos.montoPagoBuro = it.monto_pago_buro
                 datosReporte << datos
             }
-            if(datosReporte.size() > 1 ){
+            if(datosReporte.size() > 0 ){
                 def workbook
                 def builder = new ExcelBuilder()
                 def plataforma = System.properties['os.name'].toLowerCase()
@@ -330,7 +329,7 @@ class ReporteService {
                 datos.dossierSummaryFechaDeRespuesta = it.dossier_summary_fecha_de_respuesta
                 datosReporte << datos 
             }
-            if(datosReporte.size() > 1 ){
+            if(datosReporte.size() > 0 ){
                 def workbook
                 def builder = new ExcelBuilder()
                 def plataforma = System.properties['os.name'].toLowerCase()
@@ -447,7 +446,7 @@ class ReporteService {
                 datos.folio = it.folio
                 datosReporte << datos
             }
-            if(datosReporte.size() > 1 ){
+            if(datosReporte.size() > 0 ){
                 def workbook
                 def builder = new ExcelBuilder()
                 def plataforma = System.properties['os.name'].toLowerCase()

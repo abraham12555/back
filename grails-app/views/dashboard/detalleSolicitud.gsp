@@ -537,26 +537,6 @@
             <section class="container">
                 <div class="col12 clearFix">
                     <div class="autoMargin radius2 solicitudWhiteBox">
-                        <div class="solicitudDetailHeader">
-                            <ul class="clearFix">
-                                <li class="floatLeft paddingTop7 paddingLeft5 paddingRight5">
-                                    <a title="SOLICITUDES" class="displayInline font24 fontWeight700 darkBluetitle paddingTop17 paddingBottom17 paddingLeft20">SOLICITUD ${datosSolicitud.solicitud?.folio}</a>
-                                </li>
-                                <li class="floatLeft paddingLeft5 paddingRight5">
-                                    <span class="slash">/</span>
-                                    <a title="Usuario" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.cliente}</a>
-                                </li>
-                                <li class="floatLeft paddingLeft5 paddingRight5">
-                                    <span class="slash">/</span>
-                                    <a title="Valor" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.colorModelo?.modelo?.producto?.toString()} - <g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.##"/></a>
-                                </li>
-                                <li class="floatLeft paddingLeft5 paddingRight5">
-                                    <span class="slash">/</span>
-                                    <a title="Producto" class="displayInline font20 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto?.nombreDelProducto}</a>
-
-                                </li>
-                            </ul>
-                        </div>
                         <div class="radius2 lightGrayBG autoMargin" style='position: static;'>
                             <ul class="clearFix marginLeft10 solicitude_submenu">
                                 <li class="floatLeft marginLeft8">
@@ -594,61 +574,69 @@
                             <h1 class="darkBluetitle font18 fontWeight600 letterspacing2">1. PRODUCTO SOLICITADO </h1>
                         </div>
                         <div class="col12 clearFix">
+                            <div class="navyBg radius2">
+                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DETALLE DEL PRODUCTO</p>
+                            </div>
                             <div class="col12 col12-mob floatLeft">
-                                <div class="mobileAside10 solicitudWhiteBox radius2 paddingBottom12">
-                                    <div class="navyBg radius2 ">
-                                        <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">DETALLE DEL PRODUCTO </p>
-                                    </div>
-
+                                <div class="marginLeft32 ">
+                                    <p class="font12 fontWeight500 gray paddingTop10">FOLIO DE SOLICITUD</p>
+                                    <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.solicitud?.folio}</p>
                                 </div>
                                 <div class="col6 col12-mob floatLeft">
-                                    <div class="mobileAside10 solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom1">
-                                        <div class="paddingLeft30 lightGrayBG">
+                                    
+                                    <div class="mobileAside10 solicitudWhiteBox height300 radius2 paddingBottom12 marginTop10 marginBottom1">
+                                        
+                                        <div class="paddingLeft30 ">
                                             <p class="font12 fontWeight500 gray paddingTop10">CLAVE DEL PRODUCTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto.claveDeProducto}</p>
                                         </div>
-                                        <div class="marginLeft32 ">
+                                        <div class="marginLeft32 lightGrayBG">
                                             <p class="font12 fontWeight500 gray paddingTop10">PRODUCTO</p>
                                             <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto}</p>
                                         </div>
-                                        <div class="marginLeft32 lightGrayBG">
+                                        <div class="marginLeft32 ">
                                             <p class="font12 fontWeight500 gray paddingTop10">MONTO DEL CRÉDITO</p>
-                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.##"/></p>
+                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.00"/></p>
                                         </div>
-                                        <div class="marginLeft32  ">
-                                            <p class="font12 fontWeight500 gray paddingTop10">PLAZOS</p>
-                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.plazos} ${datosSolicitud.productoSolicitud?.periodicidad.nomenclatura}</p>
+                                        <div class="marginLeft32 lightGrayBG ">
+                                            <p class="font12 fontWeight500 gray paddingTop10">PERIODOS</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.plazos}</p>
                                         </div>
-                                         <div class="marginLeft32 lightGrayBG">
+                                        <div class="marginLeft32 ">
+                                            <p class="font12 fontWeight500 gray paddingTop10">  PERIODICIDAD</p>
+                                            <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.periodicidad.nombre.toUpperCase()}</p>
+                                        </div>
+                                        
+                                    </div>
+                                </div>    
+                                <div class="col6 col12-mob floatLeft">
+                                    <div class="mobileAside10 solicitudWhiteBox height300 radius2 paddingBottom12 marginTop10 marginBottom1">
+                                        <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">PAGO ${datosSolicitud.productoSolicitud?.periodicidad.nombre.toUpperCase()}</p>
                                             <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelPago}" format="\044###,###,###.##"/></p>
                                         </div>
+                                        <div class="marginLeft32 lightGrayBG">
+                                            <p class="font12 fontWeight500 gray paddingTop10"> ${datosSolicitud.productoSolicitud?.producto.tipoDeTasa.nombre.toUpperCase()}</p>
+                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.producto.tasaDeInteres}" format="0.## %"/> </p>
+                                        </div>
+                                        <div class="marginLeft32">
+                                            <p class="font12 fontWeight500 gray paddingTop10">TASA DE INTERES ANUAL</p>
+                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.producto.tasaDeInteresAnual}" format="0.## %"/></p>
+                                        </div>
+                                        <div class="marginLeft32 lightGrayBG">
+                                            <p class="font12 fontWeight500 gray paddingTop10">MONTO DE SEGURO DE DEUDA</p>
+                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.00"/></p> 
+                                        </div>
+                                        <div class="paddingLeft30 ">
+                                            <p class="font12 fontWeight500 gray paddingTop10">MONTO SERVICIO DE ASISTENCIA</p>
+                                            <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia}" format="\044###,###,###.##"/></p>
+                                        </div>
                                     </div>
                                 </div>
-                                    <div class="col6 col12-mob floatLeft">
-                                        <div class="mobileAside10 solicitudWhiteBox height251 radius2 paddingBottom12 marginTop10 marginBottom1">
-                                            <div class="marginLeft32 lightGrayBG">
-                                                <p class="font12 fontWeight500 gray paddingTop10"> ${datosSolicitud.productoSolicitud?.producto.tipoDeTasa.nombre.toUpperCase()}</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto.tasaDeInteres} </p>
-                                            </div>
-                                            <div class="marginLeft32">
-                                                <p class="font12 fontWeight500 gray paddingTop10">TASA DE INTERES ANUAL</p>
-                                                <p class="font18 fontWeight500 darkBluetitle">${datosSolicitud.productoSolicitud?.producto.tasaDeInteresAnual}</p>
-                                            </div>
-                                            <div class="marginLeft32 lightGrayBG">
-                                                <p class="font12 fontWeight500 gray paddingTop10">MONTO DE SEGURO DE DEUDA</p>
-                                                <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##"/></p> 
-                                            </div>
-                                            <div class="paddingLeft30 ">
-                                                <p class="font12 fontWeight500 gray paddingTop10">MONTO SERVICIO DE ASISTENCIA</p>
-                                                <p class="font18 fontWeight500 darkBluetitle"><g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia}" format="\044###,###,###.##"/></p>
-                                            </div>
-                                       </div>
-                                    </div>
                             </div>
                         </div>
                     </section>
-                </div>    
+                </div>       
                 <div id='datosGenerales'>
                     <section class="container width990">
                         <div class="padding20">
