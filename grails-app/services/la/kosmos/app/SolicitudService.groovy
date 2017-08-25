@@ -786,13 +786,13 @@ class SolicitudService {
     def consultaSolicitudes (def auth, def opcion, def tipoDeConsulta, def fechaInicio, def fechaFinal, def folio){
         def respuesta = []
         def folioSolicitud
-        def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth//.entidadFinanciera.id
+        def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
         def query2
         if(tipoDeConsulta && (tipoDeConsulta as int) == 0) {
             query += " AND s.statusDeSolicitud.id NOT IN (1,2,3)"
         } else if (tipoDeConsulta && (tipoDeConsulta as int) == 1) {
             query += " AND s.statusDeSolicitud.id IN (1,2,3)" 
-            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth//.entidadFinanciera.id
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
         }
         
         try {
@@ -813,7 +813,7 @@ class SolicitudService {
             break
         case 3: //obtenerSolicitudPorFolio / show
             query += " AND s.folio = '" + folioSolicitud + "' "
-            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth/*.entidadFinanciera.id*/ + " AND s.folio = '" + folioSolicitud + "' "
+            query2 = "SELECT s FROM SolicitudTemporal s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id + " AND s.folio = '" + folioSolicitud + "' "
             break
         default:
             break
