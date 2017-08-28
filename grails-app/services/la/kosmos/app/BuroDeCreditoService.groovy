@@ -992,11 +992,12 @@ class BuroDeCreditoService {
             if(ascii ==214 || ascii == 205){ascii=73} //I
             if(ascii ==224 || ascii == 211){ascii=79} //O
             if(ascii ==233 || ascii == 218){ascii=85} //U
+            if(ascii ==209 || ascii == 241){ascii=78} //ENIE
+            if(ascii ==220 || ascii == 252){ascii=85} //ü
             if(ascii ==36){ascii=78} //$
             if(ascii ==64){ascii=78} //@
             if(ascii ==37){ascii=78} //%
             if(ascii ==35){ascii=78} //#
-            if(ascii ==209 || ascii == 241){ascii=78} //ENIE
             sb.append((char)ascii)
         }
         return sb.toString()
