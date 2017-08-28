@@ -996,6 +996,7 @@ class BuroDeCreditoService {
             if(ascii ==64){ascii=78} //@
             if(ascii ==37){ascii=78} //%
             if(ascii ==35){ascii=78} //#
+            if(ascii ==209 || ascii == 241){ascii=78} //ENIE
             sb.append((char)ascii)
         }
         return sb.toString()

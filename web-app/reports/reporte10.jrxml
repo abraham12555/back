@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c04e1347-252e-447b-9570-cfdae918e0ab">
-	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="229"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#FEFEFE"/>
@@ -51,11 +51,12 @@
 	<title>
 		<band height="42" splitType="Stretch">
 			<image>
-				<reportElement x="2" y="0" width="237" height="42" uuid="cc68346e-dae5-4735-8161-dd5b01fc8249"/>
+				<reportElement x="2" y="0" width="176" height="42" uuid="cc68346e-dae5-4735-8161-dd5b01fc8249"/>
 				<imageExpression><![CDATA[$F{rutaLogotipoFormatoBuro}]]></imageExpression>
 			</image>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="237" y="0" width="316" height="42" forecolor="#013F7F" uuid="653e26d9-3576-44cb-ad17-be8b3aff0939"/>
+				<reportElement x="4" y="0" width="549" height="42" forecolor="#013F7F" uuid="653e26d9-3576-44cb-ad17-be8b3aff0939"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{nombreCliente}.toUpperCase()]]></textFieldExpression>
 			</textField>
 		</band>
@@ -76,7 +77,7 @@
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="46" y="29" width="491" height="41" forecolor="#013F7F" uuid="04c10efe-b16a-44de-ae77-f2f44e9d44be">
-					<printWhenExpression><![CDATA[$F{dictamenFinal}.equals("A")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{dictamenFinal}.equals("A")&&$F{origen}.equals( "solicitud" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[¡FELICIDADES!
