@@ -6,6 +6,7 @@ class BitacoraMovimientos {
 
     static Integer AGREGAR_PERFIL = 1
     static Integer ELIMINAR_PERFIL = 2
+    static Integer CAMBIAR_PASSWORD = 3
 
     BitacoraMovimientos(){
 

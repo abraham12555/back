@@ -6,6 +6,7 @@
 $.getUsers = $.contextAwarePathJS + "dashboard/getUsers";
 $.getUserDetails = $.contextAwarePathJS + "dashboard/getUserDetails";
 $.validNoEmpleado = $.contextAwarePathJS + "dashboard/validNoEmpleado";
+$.validNewPassword = $.contextAwarePathJS + "dashboard/validNewPassword";
 $.userAuthentication = false;
 $.currentValue;
 
@@ -22,6 +23,8 @@ $(document).ready(function () {
         $("#password-div").css("display", "block");
         $("#lock-div").css("display", "none");
         $("#enabled-div").css("display", "none");
+        $("#resetPassword-div").css("display", "none");
+        $("#newPassword-div").css("display", "none");
         $("#operation-title").html("registro de usuario");
         openModal('modalAltaDeUsuario');
     });
@@ -63,6 +66,10 @@ $(document).ready(function () {
 
     $('#username').keyup(function () {
         this.value = this.value.toLowerCase();
+    });
+
+    $('input[name="resetPassword"]').click(function () {
+        $("#newPassword-div").toggle($("input[name='resetPassword']:checked").val());
     });
 
     getUsers(1);
@@ -202,6 +209,15 @@ function validateUserInfoForm() {
         errorMessage('rol', "El campo es obligatorio");
     }
 
+    if ($("#userId").val() !== "0" && $("input[name='resetPassword']:checked").val() === 'true') {
+        if ($("#newPassword").val().trim() === "") {
+            errors++;
+            errorMessage('newPassword', "El campo es obligatorio");
+        } else if (!validatePassword($("#newPassword").val().trim())) {
+            errors++;
+            errorMessage('newPassword', "La contraseña debe contener mínimo 8 y máximo 12 caracteres, al menos una letra mayúscula, una letra minúscula, un número y un caracter especial");
+        }
+    }
 
     if (errors === 0) {
         validUsername(function (response) {
@@ -222,7 +238,15 @@ function validateUserInfoForm() {
                             } else if (response.estatus === "ERROR") {
                                 errorMessage('noEmpleado', "Ocurrió un error al validar el número de empleado");
                             } else {
-                                submitUserForm();
+                                validNewPassword(function (response) {
+                                    if (response.error === true) {
+                                        errorMessage('newPassword', response.mensaje);
+                                    } else if (response.estatus === "ERROR") {
+                                        errorMessage('newPassword', "Ocurrió un error al validar la contraseña");
+                                    } else {
+                                        submitUserForm();
+                                    }
+                                });
                             }
                         });
                     }
@@ -273,6 +297,8 @@ function viewUserDetails(idUser) {
 
             $("#lock-div").css("display", "block");
             $("#enabled-div").css("display", "block");
+            $("#resetPassword-div").css("display", "block");
+            $("#newPassword-div").css("display", "none");
             $("#operation-title").html("datos del usuario");
 
             $.userAuthentication = false;
@@ -363,6 +389,33 @@ function userAuthentication() {
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            }
+        });
+    }
+}
+
+function validNewPassword(callback) {
+    if ($("#userId").val() === "0" || $("input[name='resetPassword']:checked").val() === 'false') {
+        var response = {error: false};
+        callback(response);
+    } else {
+        var usuario = new Object();
+        usuario.id = $("#userId").val().trim();
+        usuario.password = $("#newPassword").val().trim();
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: $.validNewPassword,
+            data: JSON.stringify(usuario),
+            contentType: "application/json",
+            cache: false,
+            success: function (response) {
+                callback(response);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                var response = {estatus: "ERROR"};
+                callback(response);
             }
         });
     }

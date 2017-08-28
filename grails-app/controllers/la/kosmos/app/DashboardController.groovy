@@ -2324,6 +2324,13 @@ class DashboardController {
         render response as JSON
     }
 
+    def validNewPassword(){
+        User usuario = new User(request.JSON)
+        
+        def response = userService.validNewPassword(usuario)
+        render response as JSON
+    }
+
     def reportes () {
         def reporteSolicitudes = reporteService.obtenerReporte(null,null,null,null)
         def reporteMitek = reporteService.obtenerReporte(null,null,null,null)

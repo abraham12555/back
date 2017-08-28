@@ -208,6 +208,38 @@
                         </div>
                     </div>
                 </div>
+                <div class="col12 col12-mob floatLeft paddingTop15" id="resetPassword-div">
+                    <div class="col5 col5-mob floatLeft">
+                        <div class="paddingTop7"></div>
+                        <div class="marginLeft20">
+                            <p class="gray font14 fontWeight500 letterspacing1">Restablecer contraseña</p>
+                        </div>
+                    </div>
+                    <div class="col7 col7-mob floatLeft">
+                        <div class="paddingTop5">
+                            <g:radio name="resetPassword" value="true"/> <span class="marginRight20">Sí</span>
+                            <g:radio name="resetPassword" value="false" checked="true"/> <span class="marginRight20">No</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col12 col12-mob floatLeft" id="newPassword-div">
+                    <div class="col5 col5-mob floatLeft paddingTop15">
+                    </div>
+                    <div class="col7 col7-mob floatLeft paddingTop15">
+                        <div id="newPassword-control" class="marginRight25 letterspacing1"></div>
+                    </div>
+                    <div class="col5 col5-mob floatLeft">
+                        <div class="paddingTop7"></div>
+                        <div class="marginLeft20">
+                            <p class="gray font14 fontWeight500 letterspacing1">Nueva contraseña</p>
+                        </div>
+                    </div>
+                    <div class="col7 col7-mob floatLeft">
+                        <div class="paddingTop5">
+                            <input class="block cameraBox col11 height30" type="password" name="newPassword" id="newPassword">
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="formContainer">
                 <button type="button" class="loginButton blueButton letterspacing2 font14 pointer textUpper" id="saveUser-btn">GUARDAR</button>

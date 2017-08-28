@@ -25,23 +25,18 @@ class User {
     def accountLocked
     def sucursal
     def noEmpleado
-    
+    def password
+
     User(){
-        
+
     }
-    
+
     User(Usuario usuario){
         this.id = usuario.id
         this.username = usuario.username
         this.email = usuario.email
-        this.authorities = usuario.authorities
-        this.nombre = usuario.nombre
-        this.apellidoPaterno = usuario.apellidoPaterno
-        this.apellidoMaterno = usuario.apellidoMaterno
-        this.enabled = usuario.enabled
-        this.accountLocked = usuario.accountLocked
-        this.sucursal = usuario.sucursal
         this.noEmpleado = usuario.numeroDeEmpleado
+        this.password = usuario.password
     }
 }
 

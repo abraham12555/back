@@ -1186,7 +1186,15 @@ class DashboardService {
     def guardarUsuario(params, EntidadFinanciera entidadFinanciera){
         def respuesta = [:]
         def id = (params.id).toBigInteger()
-        
+        def paramsRol = params.roles
+        def roles = null
+
+        //Los roles se convierten explicitamente en una lista cuando contiene un solo elemento con un valor de dos digitos de lo contrario se toma cada digito como un elemento de la lista
+        if(!(paramsRol.class.isArray())){
+            def valueList = []
+            roles = valueList + paramsRol
+        }
+
         if(id == 0) {
             def usuario = new Usuario();
             usuario.username = params.username
@@ -1203,7 +1211,7 @@ class DashboardService {
             usuario.apellidoMaterno = params.apellidoMaterno
             usuario.email = params.email
             usuario.fechaPassword = Calendar.getInstance().getTime()
-            
+
             if(!usuario.save()){
                 if (usuario.hasErrors()) {
                     usuario.errors.allErrors.each {
@@ -1214,8 +1222,8 @@ class DashboardService {
                 respuesta.mensaje = "Ocurrió un problema al registrar al usuario. Intente nuevamente más tarde."
                 return respuesta
             }
-            
-            params.roles.each {
+
+            roles.each {
                 Rol rol = Rol.get(it)
                 UsuarioRol.create(usuario, rol)
             }
@@ -1230,7 +1238,7 @@ class DashboardService {
                 respuesta.mensaje = "Ocurrió un problema. No tiene permisos para modificar la información del usuario"
                 return respuesta
             }
-            
+
             usuario.nombre = params.nombre
             usuario.apellidoPaterno = params.apellidoPaterno
             usuario.apellidoMaterno = params.apellidoMaterno
@@ -1240,26 +1248,28 @@ class DashboardService {
             usuario.enabled = params.enabled.toBoolean()
             usuario.sucursal = SucursalEntidadFinanciera.get(params.sucursal.id)
             usuario.numeroDeEmpleado = params.numeroDeEmpleado
-            
+
+            boolean resetPassword = params.resetPassword.toBoolean()
+            String password = params.newPassword
             def deletedRoles = []
             def exists
             usuario.authorities.each {
                 def authority = it
                 exists = Boolean.FALSE
-                params.roles.each {
+                roles.each {
                     def newRol = (it).toBigInteger()
                     if (BigInteger.valueOf(authority.id).compareTo(newRol) == 0) {
                         exists = Boolean.TRUE
                     }
                 }
-                
+
                 if(!exists) {
                     deletedRoles << authority
                 }
             }
-            
+
             def valueAddedRole = []
-            params.roles.each {
+            roles.each {
                 def newRol = (it).toBigInteger()
                 exists = Boolean.FALSE
                 usuario.authorities.each {
@@ -1267,42 +1277,56 @@ class DashboardService {
                         exists = Boolean.TRUE
                     }
                 }
-                
+
                 if(!exists){
                     valueAddedRole << newRol
                 }
             }
-            
+
             //Add changes to log
             Usuario currentUser = springSecurityService.currentUser
             deletedRoles.each {
                 userService.addUserInformationLog(currentUser, usuario, BitacoraMovimientos.ELIMINAR_PERFIL, it.authority)
             }
-            
+
             valueAddedRole.each {
                 Rol rol = Rol.get(it)
                 userService.addUserInformationLog(currentUser, usuario, BitacoraMovimientos.AGREGAR_PERFIL, rol.authority)
             }
-            
+
             //Remove all user roles
             deletedRoles.each {
                 Rol rol = Rol.get(it.id)
                 UsuarioRol.remove(usuario, rol)
             }
-            
+
             //Add new roles
             valueAddedRole.each {
                 Rol rol = Rol.get(it)
                 UsuarioRol.create(usuario, rol)
             }
-            
+
+            if(resetPassword) {
+                //Saving current password
+                UsuarioPasswords userPassword = new UsuarioPasswords(usuario, Calendar.getInstance().getTime())
+
+                //Updating password
+                usuario.password = password
+                usuario.fechaPassword = Calendar.getInstance().getTime()
+                usuario.addToUserPasswords(userPassword)
+                usuario.passwordExpired = Boolean.TRUE
+
+                //Add changes to log
+                userService.addUserInformationLog(currentUser, usuario, BitacoraMovimientos.CAMBIAR_PASSWORD, null)
+            }
+
             if(!usuario.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
                 respuesta.error = Boolean.TRUE
                 respuesta.mensaje = "Ocurrió un problema al guardar los datos del usuario. Intente nuevamente más tarde."
                 return respuesta
             }
         }
-        
+
         return respuesta
     }
 

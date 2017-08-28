@@ -163,8 +163,21 @@ class UserService {
     }
 
     def getUserDetails(id){
-        Usuario user = Usuario.get(id)
-        return new User(user)
+        Usuario usuario = Usuario.get(id)
+        User user = new User()
+        user.id = usuario.id
+        user.username = usuario.username
+        user.email = usuario.email
+        user.authorities = usuario.authorities
+        user.nombre = usuario.nombre
+        user.apellidoPaterno = usuario.apellidoPaterno
+        user.apellidoMaterno = usuario.apellidoMaterno
+        user.enabled = usuario.enabled
+        user.accountLocked = usuario.accountLocked
+        user.sucursal = usuario.sucursal
+        user.noEmpleado = usuario.numeroDeEmpleado
+
+        return user
     }
 
     def validEmail(params){
@@ -265,10 +278,10 @@ class UserService {
         bitacora.usuario = usuario
         bitacora.fechaHora = Calendar.getInstance().getTime()
         bitacora.targetUser = targetUser
-        bitacora.bitacoraMovimientos = new BitacoraMovimientos(movimiento, null)
+        bitacora.bitacoraMovimientos = BitacoraMovimientos.get(movimiento)
         bitacora.descripcion = descripcion
 
-        bitacora.save(insert:Boolean.TRUE)
+        bitacora.save(insert:Boolean.TRUE, failOnError: Boolean.TRUE)
     }
 
     def getEntidadesFinancieras(){
@@ -431,6 +444,8 @@ class UserService {
         if(!user.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
             throw new BusinessException("Ocurrió un error. Inténtalo más tarde")
         }
+
+        return respuesta
     }
 
     def exportUserList(EntidadFinanciera entidadFinanciera){
@@ -504,7 +519,7 @@ class UserService {
 
         Usuario u = Usuario.get(usuario.id)
         String rutaFotoPerfilUsuario = this.rutaFotoPerfilUsuario(u.entidadFinanciera)
-        
+
         if(rutaFotoPerfilUsuario == null) {
             respuesta.error = Boolean.TRUE
             respuesta.message = "Error. No se ha configurado el almacenamiento de fotos de perfil de usuarios"
@@ -593,7 +608,7 @@ class UserService {
     def deleteProfilePicture(Usuario usuario){
         Usuario u = Usuario.get(usuario.id)
         String rutaFotoPerfilUsuario = this.rutaFotoPerfilUsuario(u.entidadFinanciera)
-        
+
         def relativePath = u.fotoPerfilUsuario.path
         def name = u.fotoPerfilUsuario.nombre
         def path = rutaFotoPerfilUsuario + relativePath
@@ -616,15 +631,33 @@ class UserService {
 
             resultTransformer(Transformers.aliasToBean(ConfiguracionEntidadFinanciera.class))
         }
-        
+
         return ce.rutaFotoPerfilUsuario
     }
-    
+
     def getProfilePictureSize(){
         return grailsApplication.config.profilePicture.size
     }
 
     def getProfilePictureContentTypes(){
         return grailsApplication.config.profilePicture.contentTypes
+    }
+
+    def validNewPassword (User user) {
+        def respuesta = [:]
+        String password = user.password
+
+        def id = (user.id).toBigInteger()
+        Usuario usuario = Usuario.get(id)
+
+        try {
+            checkPasswordRecord(usuario, password)
+        } catch (BusinessException ex){
+            respuesta.error = Boolean.TRUE
+            respuesta.mensaje = ex.getMessage()
+            return respuesta
+        }
+
+        return respuesta
     }
 }
