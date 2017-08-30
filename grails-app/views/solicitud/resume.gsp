@@ -6,6 +6,7 @@
         <title>Kosmos - Formulario</title>
     </head>
     <body>
+        <g:urlContextAware value="/" var="urlHome"/>
         <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
             <p class="filledColor font35 letterspacing1" style="padding: 20px 15px 0 15px;">Solicitud no encontrada</p>
         </section>
@@ -13,7 +14,7 @@
             <div class="step1 formStep" style="padding: 0px 15px;">
                 <div class="font35 marginTop30 letterspacing1 formTitleColor lineHeight60">
                     <span class="showOnFill">
-                        La solicitud especificada no está registrada,o la solicitud ya no está Vigente. Verifique la URL que le fue proporcionada e intente nuevamente por favor.
+                        La solicitud especificada no está registrada, o bien la solicitud ya no está Vigente. Verifique la URL que le fue proporcionada e intente nuevamente por favor.
                     </span>
                 </div>
             </div>
@@ -23,7 +24,7 @@
                 </div>
                 <div class="clearFloat mobile"></div>
                 <div class="buttonM mobileAuto lightBlueBg floatLeft colorWhite textUpper letterspacing0.8 radius100">
-                    Ir a la página principal
+                    <a class="colorWhite textUpper letterspacing0.8" href="${urlHome}">Ir a la página principal</a>
                 </div>
             </div>
         </section>

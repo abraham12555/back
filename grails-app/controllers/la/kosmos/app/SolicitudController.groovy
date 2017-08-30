@@ -1336,15 +1336,21 @@ class SolicitudController {
 
     }
 
-    def verificacion (){
-        if(params.token){
-            [token:params.token,check:true]
-        }else{
-            def entidadFinanciera = EntidadFinanciera.get(6)
-            def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
-            [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+    def verificacion () {
+        def configuracionGlobal = ConfiguracionKosmos.get(1)
+        if(configuracionGlobal.seguridadShortUrlActiva) {
+            if(params.token){
+                [token:params.token, check:true]
+            }else{
+                def entidadFinanciera = EntidadFinanciera.get(6)
+                def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+                [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+            }
+        } else {
+            redirect(action: "resume", params: [token:params.token, check:true])
         }
     }
+    
     def resume(){
         println params
         def cliente
@@ -1354,72 +1360,81 @@ class SolicitudController {
         if(params.token){
             if(!params.check){
                 forward action:'verificacion', params: [token: params.token]
-            }else {
-            def solicitud
-            if(params.fechaDeNacimiento){
-                Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00")
-                criteria = SolicitudDeCredito.createCriteria()
-                results = criteria.list{
-                    createAlias('cliente', 'cef')
-                    eq("token", params.token)
-                        eq("solicitudVigente",true)
-                    eq("cef.fechaDeNacimiento",fechaDeNacimiento)
-                }
-                solicitud = results[0]
-            }else if (params.correoElectronico){
-                cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
-                if(cliente){
-                    solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token,solicitudVigente:true)
-                }
-            }
-            else if ((params.telefonoCelular && params.solicitudId) && params.tipo=="credito"){
-                solicitud = SolicitudDeCredito.findWhere(id:params.solicitudId as long,token:params.token)
-            }
-            if(solicitud){
-                def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
-                def ultimoPaso = datosRecuperados.ultimoPaso
-                session.yaUsoLogin = true
-                session.ef = datosRecuperados.entidadFinanciera
-                session.configuracion = datosRecuperados.configuracion
-                session.cotizador = datosRecuperados.cotizador
-                session.identificadores = datosRecuperados.identificadores
-                session.tiposDeDocumento = datosRecuperados.tiposDeDocumento
-                session["pasoFormulario"] = datosRecuperados.pasoFormulario
-                session.token = datosRecuperados.token
-                session.shortUrl = datosRecuperados.shortUrl
-                session.estadoRecuperacion = datosRecuperados.llenado
-                println "Estado: " + session.estadoRecuperacion
-                params.keySet().asList().each { params.remove(it) }
-                forward action:'formulario', params: [paso: ultimoPaso]
             } else {
-                def temporal
-                if((params.telefonoCelular && params.solicitudId) && params.tipo=="temporal"){
-                    temporal = SolicitudTemporal.findWhere(token: params.token,id:params.solicitudId as long )
-                }else if (params.correoElectronico){
-                    temporal = SolicitudTemporal.findWhere(token: params.token,emailCliente:params.correoElectronico,solicitudVigente:true )
+                def solicitud
+                def configuracionGlobal = ConfiguracionKosmos.get(1)
+                if(configuracionGlobal.seguridadShortUrlActiva) {
+                    if(params.fechaDeNacimiento){
+                        Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00")
+                        criteria = SolicitudDeCredito.createCriteria()
+                        results = criteria.list{
+                            createAlias('cliente', 'cef')
+                            eq("token", params.token)
+                            eq("solicitudVigente",true)
+                            eq("cef.fechaDeNacimiento",fechaDeNacimiento)
+                        }
+                        solicitud = results[0]
+                    }else if (params.correoElectronico){
+                        cliente = EmailCliente.findWhere(direccionDeCorreo : params.correoElectronico,vigente : true)
+                        if(cliente){
+                            solicitud = SolicitudDeCredito.findWhere(cliente : cliente.cliente,token: params.token,solicitudVigente:true)
+                        }
+                    }
+                    else if ((params.telefonoCelular && params.solicitudId) && params.tipo=="credito"){
+                        solicitud = SolicitudDeCredito.findWhere(id:params.solicitudId as long,token:params.token)
+                    }
+                } else {
+                    solicitud = SolicitudDeCredito.findWhere(token: params.token, solicitudVigente: true)
                 }
-                if(temporal){
-                    def datosRecuperados = solicitudService.armarDatosTemporales(temporal)
-                    println datosRecuperados
-                    session.yaUsoLogin = false
-                    session.ef = datosRecuperados.ef
+                if(solicitud){
+                    def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
+                    def ultimoPaso = datosRecuperados.ultimoPaso
+                    session.yaUsoLogin = true
+                    session.ef = datosRecuperados.entidadFinanciera
+                    session.configuracion = datosRecuperados.configuracion
                     session.cotizador = datosRecuperados.cotizador
                     session.identificadores = datosRecuperados.identificadores
-                    session.configuracion = datosRecuperados.configuracion
+                    session.tiposDeDocumento = datosRecuperados.tiposDeDocumento
+                    session["pasoFormulario"] = datosRecuperados.pasoFormulario
                     session.token = datosRecuperados.token
                     session.shortUrl = datosRecuperados.shortUrl
-                    session.cargarImagen = datosRecuperados.cargarImagen
-                    session.respuestaEphesoft = datosRecuperados.prefilled
+                    session.estadoRecuperacion = datosRecuperados.llenado
+                    println "Estado: " + session.estadoRecuperacion
                     params.keySet().asList().each { params.remove(it) }
-                    forward action:'formulario', params: [paso: datosRecuperados.ultimoPaso]
+                    forward action:'formulario', params: [paso: ultimoPaso]
                 } else {
-                    def entidadFinanciera = EntidadFinanciera.get(6)
-                    def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
-                    [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+                    def temporal
+                    if(configuracionGlobal.seguridadShortUrlActiva) {
+                        if((params.telefonoCelular && params.solicitudId) && params.tipo=="temporal"){
+                            temporal = SolicitudTemporal.findWhere(token: params.token,id:params.solicitudId as long )
+                        }else if (params.correoElectronico){
+                            temporal = SolicitudTemporal.findWhere(token: params.token,emailCliente:params.correoElectronico,solicitudVigente:true )
+                        }
+                    } else {
+                        temporal = SolicitudTemporal.findWhere(token: params.token, solicitudVigente:true )
+                    }
+                    if(temporal){
+                        def datosRecuperados = solicitudService.armarDatosTemporales(temporal)
+                        println datosRecuperados
+                        session.yaUsoLogin = false
+                        session.ef = datosRecuperados.ef
+                        session.cotizador = datosRecuperados.cotizador
+                        session.identificadores = datosRecuperados.identificadores
+                        session.configuracion = datosRecuperados.configuracion
+                        session.token = datosRecuperados.token
+                        session.shortUrl = datosRecuperados.shortUrl
+                        session.cargarImagen = datosRecuperados.cargarImagen
+                        session.respuestaEphesoft = datosRecuperados.prefilled
+                        params.keySet().asList().each { params.remove(it) }
+                        forward action:'formulario', params: [paso: datosRecuperados.ultimoPaso]
+                    } else {
+                        def entidadFinanciera = EntidadFinanciera.get(6)
+                        def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
+                        [entidadFinanciera: entidadFinanciera, configuracion: configuracion]
+                    }
                 }
             }
         }
-    }
     }
 
     def obtenerSucursales(){

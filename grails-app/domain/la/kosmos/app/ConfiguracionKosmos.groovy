@@ -31,6 +31,7 @@ class ConfiguracionKosmos implements Serializable{
     
     boolean habilitarMockBuroCredito
     boolean habilitarMockBuroCreditoSuccess
+    boolean seguridadShortUrlActiva
 	
     static constraints = {
         urlEphesoft (nullable: false)
