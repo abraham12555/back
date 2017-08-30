@@ -73,9 +73,9 @@ class CotizadorService {
         respuesta = solicitudService.verificarSolicitudExistente(telefono, nombreCompleto, email)
         respuesta
     }
-     def verificarSolicitudExistenteCotizador(def telefono) {
+     def verificarSolicitudExistenteCotizador(def telefono, def session) {
         def respuesta = [:]
-        respuesta = solicitudService.verificarSolicitudExistenteCotizador(telefono)
+        respuesta = solicitudService.verificarSolicitudExistenteCotizador(telefono, session)
         respuesta
     }
 

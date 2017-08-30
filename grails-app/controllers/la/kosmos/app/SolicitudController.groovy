@@ -1277,12 +1277,14 @@ class SolicitudController {
                     sucursal.nombre = solicitud.sucursal.nombre
                 }
                 def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                def resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud:solicitud)
                 modelo = [configuracion: configuracion,
                     productoSolicitud: productoSolicitud,
                     avance: avance as JSON,
                     ponderaciones: ponderaciones as JSON,
                     sucursal: sucursal as JSON,
-                    pasoActual:pasoActual]
+                    pasoActual:pasoActual,
+                    resultadoMotorDeDecision:resultadoMotorDeDecision]
             }
             modelo
         } else{
@@ -1302,8 +1304,7 @@ class SolicitudController {
             query = "select solicitud_de_credito.id_solicitud_de_credito \
             from solicitud_de_credito,cliente, telefono_cliente \
             where solicitud_de_credito.cliente_id = cliente.id_cliente \
-            and solicitud_de_credito.status_de_solicitud_id in (1,2,3) \
-            and solicitud_de_credito.ultimo_paso != 6 and solicitud_de_credito.solicitud_vigente=true \
+            and solicitud_de_credito.solicitud_vigente=true \
             and  solicitud_de_credito.token ='"+params.token+"' \
             and cliente.id_cliente = telefono_cliente.cliente_id \
             and telefono_cliente.numero_telefonico ='"+params.telefonoCelular+"' \
@@ -1337,7 +1338,7 @@ class SolicitudController {
 
     def verificacion (){
         if(params.token){
-            [token:params.token]
+            [token:params.token,check:true]
         }else{
             def entidadFinanciera = EntidadFinanciera.get(6)
             def configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
@@ -1351,6 +1352,9 @@ class SolicitudController {
         def results
         def criteria
         if(params.token){
+            if(!params.check){
+                forward action:'verificacion', params: [token: params.token]
+            }else {
             def solicitud
             if(params.fechaDeNacimiento){
                 Date fechaDeNacimiento =new Date().parse("dd/MM/yyyy HH:mm:ss", params.fechaDeNacimiento+" 00:00:00")
@@ -1358,6 +1362,7 @@ class SolicitudController {
                 results = criteria.list{
                     createAlias('cliente', 'cef')
                     eq("token", params.token)
+                        eq("solicitudVigente",true)
                     eq("cef.fechaDeNacimiento",fechaDeNacimiento)
                 }
                 solicitud = results[0]
@@ -1414,6 +1419,7 @@ class SolicitudController {
                 }
             }
         }
+    }
     }
 
     def obtenerSucursales(){
@@ -1531,7 +1537,7 @@ class SolicitudController {
         respuesta.origen= "solicitud"
         respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
         respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
-        respuesta.email = session.cotizador.emailCliente
+        respuesta.email = session["pasoFormulario"].emailCliente.emailPersonal
         respuesta.rutaLogotipoFormatoBuro = configuracion?.rutaLogotipoFormatoBuro
         respuesta.claveDeProducto = productoSolicitud.producto?.claveDeProducto
         mapa << respuesta

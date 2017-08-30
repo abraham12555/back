@@ -191,7 +191,7 @@ class SolicitudService {
                            }
                         }
                     }
-                    if(datosPaso.emailCliente) {
+                    if(clienteNuevo && datosPaso.emailCliente) {
                         def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
                         EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
                         if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
@@ -205,29 +205,36 @@ class SolicitudService {
                                 emailPersonal.save(flush: true)
                             }
                             if(correoExistente){
-                             println "EL CORREO QUE ESTAS INTENTANDO UTILIZAR YA TIENE UNA SOLICITUD RELACIONADA"
-                            //correoExistente.vigente = false
-                            //correoExistente.save(flush: true)
+                            mensaje = "EL CORREO INGRESADO YA HA SIDO UTILIZADO"
+                            guardadoCorrecto = false
                             }
                         } else if (correoExistente) {
                             correoExistente.vigente = true
                             correoExistente.save(flush: true)
                         }
-                    } /*else if(!clienteNuevo && datosPaso.emailCliente) {
-                    def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
-                    if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
-                    EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
-                    def emailPersonal = new EmailCliente()
-                    emailPersonal.cliente = cliente
-                    emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
-                    emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
-                    emailPersonal.vigente = true
-                    emailPersonal.save(flush: true)
-                    } else if (correoExistente) {
-                    correoExistente.vigente = true
-                    correoExistente.save(flush: true)
+                    } else if(!clienteNuevo && datosPaso.emailCliente) {
+                        def correoExistente = EmailCliente.findWhere(cliente: cliente, direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                        if(datosPaso.emailCliente?.emailPersonal && !correoExistente) {
+                            EmailCliente.executeUpdate("update EmailCliente set vigente = false where cliente.id = :idCliente",[idCliente: cliente.id])
+                            correoExistente = EmailCliente.findWhere(direccionDeCorreo: datosPaso.emailCliente.emailPersonal.toLowerCase())
+                            if(!correoExistente){
+                                def emailPersonal = new EmailCliente()
+                                emailPersonal.cliente = cliente
+                                emailPersonal.direccionDeCorreo = datosPaso.emailCliente.emailPersonal.toLowerCase()
+                                emailPersonal.tipoDeEmail = TipoDeEmail.get(1);
+                                emailPersonal.vigente = true
+                                emailPersonal.save(flush: true)
+                            }
+                            if(correoExistente){
+                                  guardadoCorrecto = false
+                                  mensaje = "EL CORREO INGRESADO YA HA SIDO UTILIZADO"
+                            }
+                            
+                        } else if (correoExistente) {
+                            correoExistente.vigente = true
+                            correoExistente.save(flush: true)
+                        }
                     }
-                    }*/
                     if(identificadores?.idSolicitud) {
                         println "El cliente " + cliente.id + " ya tiene asociada la solicitud " + identificadores?.idSolicitud
                         def solicitud = SolicitudDeCredito.get(identificadores?.idSolicitud as long)
@@ -1926,7 +1933,7 @@ class SolicitudService {
         
     }
     
-     def verificarSolicitudExistenteCotizador(def telefono){
+    def verificarSolicitudExistenteCotizador(def telefono, def session){
     def respuesta = [:]
         def query 
         def resultados
@@ -1944,17 +1951,17 @@ class SolicitudService {
                 respuesta.multiplesClientes = true   
             }
             else if (resultados.size == 1){
-                  respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
+                  respuesta.shortUrl = session.urlDominio+"solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
                   respuesta.encontrado = true
             }else if(resultados.size == 0){
                       //respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
-                      respuesta = verificarSolicitudInformalExistenteCotizador(telefono)
+                      respuesta = verificarSolicitudInformalExistenteCotizador(telefono, session)
                 
             }
            println ("Regresando: " + respuesta)
            respuesta
     }
-    def verificarSolicitudInformalExistenteCotizador(def telefono){
+    def verificarSolicitudInformalExistenteCotizador(def telefono, def session){
          def respuesta = [:]
         def query 
         def resultados
@@ -1968,7 +1975,7 @@ class SolicitudService {
                 respuesta.multiplesClientes = true   
             }
             else if (resultados.size == 1){
-                  respuesta.shortUrl = "https://micreditolibertad.com/solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
+                  respuesta.shortUrl = session.urlDominio+"solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
                   respuesta.encontrado = true
             }else if(resultados.size == 0){
                       //respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)

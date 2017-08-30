@@ -67,6 +67,7 @@
             <div class="col12 col10-tab col12-mob autoMargin marginTop80 marginBottom80">
                 <div class="paddingTop20 paddingBottom20">
                      <input type="hidden" id="token" name="token" value="${token}">
+                     <input type="hidden" id="check" name="check" value="${check}">
                      <input type="hidden" id="solicitudId" name="solicitudId">
                      <input type="hidden" id="tipo" name="tipo">
                     <div id="seleccionMedioDeVerificacion" class="docStep">

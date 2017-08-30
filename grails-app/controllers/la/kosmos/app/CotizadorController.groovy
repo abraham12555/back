@@ -254,7 +254,7 @@ class CotizadorController {
         if(params.telefonoCelular){
             def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
             //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
-            respuesta = cotizadorService.verificarSolicitudExistenteCotizador(params.telefonoCelular)
+            respuesta = cotizadorService.verificarSolicitudExistenteCotizador(params.telefonoCelular,session.configuracion)
 
             println  "encontrado " + respuesta
             if(!respuesta.encontrado && !respuesta.multiplesClientes) {
