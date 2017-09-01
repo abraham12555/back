@@ -25,7 +25,7 @@
 
         <div id="phone_form" class="input-field col12 hide">
             <label for="phone" class="darkBluetitle">¿Cuál es tu celular con clave lada?</label>
-            <input id="phone" type="tel" name="telefonoCelular" class="validate"  maxlength="14" >
+            <input id="phone" type="text" name="telefonoCelular" class="validate" data-mask="99-99-99-99-99" maxlength="14" onkeypress="return event.keyCode != 13;">
             <div style="text-align: center;">
                 <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
                     <span class="backBtn">Anterior</span>
@@ -35,6 +35,8 @@
                 </p>
             </div>
             <p style="margin-top: 10px;" id="leyendaTel"><small class="darkBluetitle">* Enviaremos un código de confirmación al número ingresado.</small></p>
+            <p style="margin-top: 10px;" id="leyendaTelError"></p>
+
         </div>
         <div id="codigo_form" class="input-field col12 hide">
             <label for="codigo" class="darkBluetitle">Ingresa el código que acabas de recibir por SMS</label>

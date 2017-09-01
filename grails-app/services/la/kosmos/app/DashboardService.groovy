@@ -206,7 +206,7 @@ class DashboardService {
         def solicitudesLista = []
         def criteria = ProductoSolicitud.createCriteria()
         def results 
-        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
+        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -225,7 +225,7 @@ class DashboardService {
                 }
             }
         }
-        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_DIRECTOR"}){
+        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL"}){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -280,7 +280,7 @@ class DashboardService {
         pager.rowsPerPage = 25
         def criteria = ProductoSolicitud.createCriteria()
         def results
-        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
+        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR"  }){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -317,7 +317,7 @@ class DashboardService {
             }
                     
         }
-              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_DIRECTOR" }){
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL"}){
             
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
@@ -497,7 +497,7 @@ class DashboardService {
         if (opcion == "noDictaminadas"){
             def ids = [5 as long, 6 as long, 7 as long]
             criteria = ProductoSolicitud.createCriteria()
-            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
+            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
 
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
@@ -531,7 +531,7 @@ class DashboardService {
                 } 
                 
             }
-             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL"|| it.authority == "ROLE_DIRECTOR" }){
+             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL"}){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)

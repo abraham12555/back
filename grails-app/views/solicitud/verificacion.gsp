@@ -147,7 +147,7 @@
                                      <div class="row">
                                          <div id="first_name_form" class="input-field col12">
                                              <label for="first_name" class="darkBluetitle"><span><strong style="color:#fb5e48;">*</strong></span>¿Cuál Número de celular?</label>
-                                             <input id="phoneVerificacion" name="telefonoCelular" style="width:100%;" type="tel" class="datoShortUrl"  maxlength="14" onkeypress="return event.keyCode != 13;" >
+                                             <input id="phoneVerificacion" name="telefonoCelular" style="width:100%;" type="text" class="datoShortUrl"  data-mask="99-99-99-99-99" maxlength="14" onkeypress="return event.keyCode != 13;" >
                                               <p class="antPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
                                                  <span class="">ATRAS</span>
                                              </p>

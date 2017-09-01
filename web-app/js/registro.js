@@ -52,7 +52,6 @@ function iniciarFormularioRegistro() {
         }
     });
     
-    $("#phone").mask("99-99-99-99-99");
     $('#first_name').on('keyup', function (e) {
         if (e.keyCode === 13) {
             submitFirstName();
@@ -156,11 +155,20 @@ function submitEmail() {
 }
 
 function submitPhone() {
+   var phone = $('#phone').val();
+   phone= phone.replace(/\-/g,"");
     if ($('#phone').val() === '') {
         $('.register').addClass('shake');
         setTimeout(function () {
             $('.register').removeClass('shake');
         }, 3000);
+    }
+    if ((phone.length < 10 || phone.length > 10) || validarSiNumero(phone) === true ) {
+        $('.register').addClass('shake');
+        setTimeout(function () {
+            $('.register').removeClass('shake');
+        }, 3000);
+        $('#leyendaTelError').html("<small style='color: red;'>El teléfono debe contener 10 caracteres numéricos</small>");
     } else {
         if ($('#phone').hasClass('invalid')) {
             $('.register').addClass('shake');
@@ -168,6 +176,7 @@ function submitPhone() {
                 $('.register').removeClass('shake');
             }, 3000);
         } else {
+            $('#leyendaTelError').html("");
             $('#phone').prop('disabled', true);
             $('.sigPaso').addClass('locked');
             $.ajax({
@@ -307,3 +316,11 @@ function validateName(nombre) {
     var re = /^([a-zA-Z \. \- \@ ñáéíóúüÑÁÉÍÓÚÜ])+$/;
     return re.test(nombre);
 }
+function validarSiNumero(numero){
+    if (!/^([0-9])*$/.test(numero)){
+        return true;
+    }
+    else{
+        return false;
+    }
+  }

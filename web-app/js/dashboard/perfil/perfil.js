@@ -213,25 +213,15 @@ function validateNewPassword() {
 
 function updatePassword() {
     var form = $("#updatePassword-form");
-    var postData = new FormData($(form)[0]);
     var formURL = $(form).attr('action');
-    $.ajax({
-        url: formURL,
-        type: 'POST',
-        data: postData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function (response) {
-            if (response.error) {
-                errorProfileMessage($('#password'), response.mensaje);
-            } else {
-                sweetAlert({html: false, title: "¡Excelente!", text: "La contraseña se ha guardado correctamente.", type: "success"});
-                cerrarModal('updatePassword');
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+    $.post(formURL, $("#updatePassword-form").serialize(), function (response) {
+        if (response.error) {
+            errorProfileMessage($('#password'), response.mensaje);
+        } else {
+            sweetAlert({html: false, title: "¡Excelente!", text: "La contraseña se ha guardado correctamente.", type: "success"});
+            cerrarModal('updatePassword');
         }
+    }).fail(function () {
+        sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
     });
 }

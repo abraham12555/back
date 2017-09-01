@@ -12,15 +12,18 @@ import grails.gorm.DetachedCriteria
 import java.util.Calendar
 import org.hibernate.transform.Transformers
 import groovy.sql.Sql
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.Graphics2D
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.io.File;
-import javax.imageio.ImageIO;
+import java.io.File
 import java.util.List;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import javax.imageio.ImageIO
+import la.kosmos.app.bo.Document
+import la.kosmos.app.bo.PageDocument
+import la.kosmos.app.exception.BusinessException
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageTree
@@ -995,69 +998,43 @@ class SolicitudService {
             solicitudRest.solicitud.empleo.gastosMensuales = ((datosSolicitud.empleoCliente?.gastos) ? datosSolicitud.empleoCliente?.gastos : 0)
             
             //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
-            
+
             datosSolicitud.documentosSolicitud?.each { documento ->
-                Instant instant = Instant.now()
-                long timeStampSeconds = instant.getEpochSecond();
-                def carpeta = "/tmp/PDFtoIMAGE"+timeStampSeconds+"/" //Carpeta Temporal
-                File destinationFile = new File(carpeta)
-                destinationFile.mkdir()
-                String filePath = documento.rutaDelArchivo
-                File sourceFile = new File(filePath)
+                File sourceFile = new File(documento.rutaDelArchivo)
                 if (sourceFile.exists()) {
-                    def fileLabel = ".${sourceFile.name.split("\\.")[-1]}"
-                    if(fileLabel == '.pdf'){
-                        def mapaDocto = []
-                        def ruta = (convertPDFtoImage(documento.rutaDelArchivo , carpeta )) as int
-                        def pag = 1 
-                        def pagina = [:]
-                        for (int x=0;x<ruta;x++){
-                            documento.rutaDelArchivo = carpeta+"imagenG"+ pag+".jpg"
-                            def finalFile = redimensionar(documento)
-                            if (finalFile != null) {
-                                try {
-                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                    ImageIO.write(finalFile, "jpg", baos)
-                                    pagina.tipoDeDocumento = documento.tipoDeDocumento.codigo
-                                    pagina.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())
-                                    mapaDocto << pagina
-                                } catch (Exception e) {
-                                    log.error("Ocurrio un error al convertir el documento a base64: " + filePath)
-                                }
+                    try {
+                        String fileLabel = ".${sourceFile.name.split("\\.")[-1]}"
+
+                        Document document = new Document()
+                        document.tipoDeDocumento = documento.tipoDeDocumento.codigo
+
+                        //Transform PDF files
+                        if(fileLabel.equalsIgnoreCase(".pdf")){
+                            document.paginas = this.convertPDFtoImage(documento)
+                        } else {
+                            BufferedImage bufferedImage = ImageIO.read(new File(documento.rutaDelArchivo))
+
+                            if (bufferedImage == null) {
+                                throw new BusinessException("El documento con ruta $documento.rutaDelArchivo esta corrupto")
                             }
-                            pag++
+
+                            byte[] bf = this.redimensionar(documento, bufferedImage)
+                            String content = this.generarBase64(bf)
+
+                            PageDocument pagina = new PageDocument(1, content)
+                            document.paginas = []
+                            document.paginas << pagina
                         }
-                        solicitudRest.solicitud.documentos << mapaDocto
-                    }else{ 
-                        def mapaDocto = [:]
-                        def finalFile = redimensionar(documento)
-                        if (finalFile != null) {
-                            try {
-                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                ImageIO.write(finalFile, "jpg", baos)
-                                mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
-                                mapaDocto.contenidoBase64 = Base64.encodeBase64String(baos.toByteArray())
-                                solicitudRest.solicitud.documentos << mapaDocto
-                            } catch (Exception e) {
-                                log.error("Ocurrio un error al convertir el documento a base64: " + filePath)
-                            }
-                        }
+
+                        solicitudRest.solicitud.documentos << document
+                    } catch(Exception e){
+                        log.error("Ocurrio un error al convertir el documento: " + documento.rutaDelArchivo, e)
                     }
-                    //Borado de archivos y Carpetas temporales
-                    File[] ficheros = destinationFile.listFiles();
-                    File f = null
-                    if(ficheros.length >  0){
-                        for (int x=0;x<ficheros.length;x++){
-                            f= new File(carpeta+(ficheros[x].getName()))
-                            f.delete()
-                        }
-                    }
-                    destinationFile.delete()
                 } else {
                     log.error("El archivo con ruta $documento.rutaDelArchivo no existe")
                 }
             }
-            
+
             if(!datosBuroDeCredito?.reporte || datosBuroDeCredito?.reporte?.tipoErrorBuroCredito) {
                 solicitudRest.solicitud.buroDeCredito = ""
             } else {
@@ -1415,11 +1392,8 @@ class SolicitudService {
         respuesta
     }
     
-    def generarBase64(def newFile) {
-        def base64
-        byte[] array = Files.readAllBytes((newFile).toPath()); 
-        base64 = Base64.encodeBase64String(array)
-        return base64
+    private String generarBase64(byte[] buf) {
+        return Base64.encodeBase64String(buf)
     }
     
     def construirDatosMotorDeDecision(def identificadores){
@@ -1983,13 +1957,13 @@ class SolicitudService {
             }
             respuesta
 }
-private BufferedImage redimensionar (def archivo){
-        def ruta = archivo.rutaDelArchivo
 
+    private byte[] redimensionar (DocumentoSolicitud documento, BufferedImage bufferedImage){
         int width = 0
         int height = 0
         def imagenTamMax
-        switch (archivo.tipoDeDocumento.id) {
+
+        switch (documento.tipoDeDocumento.id) {
         case TipoDeDocumento.RECIBOLUZ:
             width = 817
             height = 1059
@@ -2057,48 +2031,54 @@ private BufferedImage redimensionar (def archivo){
             break;
         }
 
-        try {
-            BufferedImage bf = ImageIO.read(new File(ruta))
-            if(bf == null) {
-                log.error("El archivo con ruta $ruta esta corrupto")
-                return null
-            }
+        //Resize image
+        int w = bufferedImage.getWidth()
+        int h = bufferedImage.getHeight()
+        BufferedImage bufim = new BufferedImage(width, height, bufferedImage.getType())
+        Graphics2D g = bufim.createGraphics()
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+        g.drawImage(bufferedImage, 0, 0, width, height, 0, 0, w, h, null)
+        g.dispose()
 
-            int ancho = bf.getWidth()
-            int alto = bf.getHeight()
+        //New image to bytes
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        ImageIO.write( bufim, "jpg", baos)
+        baos.flush()
+        byte[] imageInByte = baos.toByteArray()
+        baos.close()
 
-            BufferedImage bufim = new BufferedImage(width, height, bf.getType())
-            Graphics2D g = bufim.createGraphics()
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-            g.drawImage(bf, 0, 0, width, height, 0, 0, ancho, alto, null)
-            g.dispose()
-
-            return bufim
-        } catch (Exception ex) {
-            log.error("Ocurrio un error al redimensionar el archivo " + ruta, ex)
-            return null
-        }
+        return imageInByte
     }
 
-    private String convertPDFtoImage(String ruta , String destinationDir) {
-       File destinationFile = new File(destinationDir)
-        
-        PDDocument document = PDDocument.load(new File(ruta))
+    private List<PageDocument> convertPDFtoImage(DocumentoSolicitud documento) {
+        PDDocument document = PDDocument.load(new File(documento.rutaDelArchivo))
         PDFRenderer pdfRenderer = new PDFRenderer(document)
         PDPageTree pages = document.getPages()
-        int pageNumber = 1
+        List<PageDocument> listPages = []
+
         for (PDPage page : pages) {
             int currentPage = (pages.indexOf(page))
-            BufferedImage bim = pdfRenderer.renderImage(currentPage)
-            String newPath = destinationDir + "imagenG"+pageNumber+".jpg"
-            OutputStream outputStream = new FileOutputStream(newPath)
-            ImageIOUtil.writeImage(bim, "jpg", outputStream)
-            pageNumber++
+            int noPagina = currentPage + 1
+
+            if(currentPage < 10){
+                BufferedImage bim = pdfRenderer.renderImage(currentPage)
+
+                if (bim == null) {
+                    throw new BusinessException("Error al extraer contenido del documento $documento.rutaDelArchivo. Pagina: " + noPagina)
+                }
+
+                byte[] bf = this.redimensionar(documento, bim)
+                String content = this.generarBase64(bf)
+
+                PageDocument pagina = new PageDocument(noPagina, content)
+                listPages << pagina
+            } else {
+                log.error("El documento $documento.rutaDelArchivo excede del numero de paginas permitidas. Total: " + document.getPages().size())
+                break
+            }
         }
         document.close()
-        def archivo = [:]
-        File[] ficherosn = destinationFile.listFiles()
-        ficherosn.length 
-        return  ficherosn.length 
+
+        return listPages
     }
 }

@@ -2982,7 +2982,6 @@ function verificarCodigo() {
 }
 
 function operacionesShortUrl() {
-    $("#phoneVerificacion").mask("99-99-99-99-99");
     $(".mat-input").focus(function () {
         $(this).parent().addClass("is-active is-completed");
     });
@@ -3063,9 +3062,15 @@ function validateDefaultAddress(email) {
     }
 }
 function verificarSms() {
+    var phone = $('#phoneVerificacion').val();
+    phone = phone.replace(/\-/g, "");
     if ($('#phoneVerificacion').val() === '') {
         sweetAlert("Oops...", "El campo no puede ir vacio", "error");
-    } else {
+    }
+    if ((phone.length < 10 || phone.length > 10) || validarSiNumero(phone) === true) {
+        sweetAlert("Oops...", "El teléfono debe contener 10 números", "error");
+    }
+    else {
         var telefonoCelular = $('#phoneVerificacion').val();
         $("body").mLoading({
             text: "Verificando Solicitud, espere por favor...",
@@ -3165,6 +3170,14 @@ function resultadoVerificacion(codigoConfirmacion) {
     });
 }
 
+function validarSiNumero(numero){
+    if (!/^([0-9])*$/.test(numero)){
+        return true;
+    }
+    else{
+        return false;
+    }
+  }
 
 
 
