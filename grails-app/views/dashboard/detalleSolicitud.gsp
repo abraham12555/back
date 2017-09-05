@@ -1327,6 +1327,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA'>
                                     <g:if test="${!datosSolicitud.temporal}">
                                         <g:if test="${datosSolicitud.solicitud?.statusDeSolicitud?.id != 5 && datosSolicitud.solicitud?.statusDeSolicitud?.id != 7}">
                                             <div id="opcionesScore" class="col6 col12-mob floatRight">
@@ -1357,6 +1358,7 @@
                                             </div>
                                         </g:if>
                                     </g:if>
+                              </sec:ifAnyGranted>
                                 </div>
                                 <div class="col12 clearFix">
                                     <div class="col6 col12-mob floatLeft">

@@ -13,7 +13,7 @@
         <script type="text/javascript">
             $.contextAwarePathJS = "${urlContextAware}";
         </script>
-    <sec:ifAnyGranted roles='ROLE_ADMIN'>
+    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
         <g:external dir="js" file="dashboard/notificaciones/notificaciones.min.js" />
         <g:external dir="js" file="dashboard/notificaciones/notificacionesEmail.min.js" />
         <g:external dir="js" file="dashboard/notificaciones/envioNotificaciones.min.js" />
@@ -42,7 +42,7 @@
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
             <div>
                 <li id="notificacionesButton" class="opcConfiguracion floatLeft paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','notificaciones');" title="NOTIFICACIONES" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">Notificaciones</a>
@@ -394,7 +394,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
             <div id="notificacionesSubMenu" class="configuracionSubMenu lightGrayBG" style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -458,7 +458,7 @@
         <g:render template="productos"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN'>
+<sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
     <div class="configuracionTab" id="notificaciones" style="display: none;">
         <g:render template="configuracion/notificaciones/notificaciones"/>
     </div>

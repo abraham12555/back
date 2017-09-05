@@ -48,6 +48,7 @@
                 </p>
             </div>
             <p style="margin-top: 10px;" id="leyendaCodigo"><small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código..</strong></small></p>
+            <p style="margin-top: 10px;" id="leyendaCodigoError"></p>
         </div>
         <div id="resume_form" class="input-field col12 hide">
             <label for="codigo" class="darkBluetitle">Hemos notado que ya tienes una solicitud en proceso, da click en el siguiente botón para complementarla</label>

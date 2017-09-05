@@ -2,7 +2,7 @@
 
     <table id="listaDeSolicitudesDictaminadas" class="applicationContainers solicitudes_table width990 autoMargin">
         <thead>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA,ROLE_CAJERO'>
             <th colspan="9" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes dictaminadas</h1></th>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_EJECUTIVO, ROLE_SUCURSAL'>

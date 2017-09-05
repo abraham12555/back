@@ -161,7 +161,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':  ['permitAll'],
     	'/dashboard/**':    ['isFullyAuthenticated()'],
         '/dashboard/reportes': ['ROLE_ADMIN','ROLE_DIRECTOR'],
-        '/notificaciones/**':  ['ROLE_ADMIN'],
+        '/notificaciones/**':  ['ROLE_ADMIN','ROLE_DIRECTOR'],
         '/entidadFinanciera/**':    ['ROLE_ADMIN'],
         '/configuracionBuroCredito/**':    ['ROLE_ADMIN'],
         '/configuracionEntidadFinanciera/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],

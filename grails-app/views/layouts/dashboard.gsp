@@ -80,7 +80,7 @@
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
-                        <sec:ifAnyGranted roles='ROLE_ADMIN,,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,,ROLE_SUCURSAL'>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_CAJERO'>
                             <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
                                 <div class="searchBox autoMargin clearFix">
                                     <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
@@ -104,9 +104,9 @@
               </a>
           </li>
           <li>
-              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL, ROLE_CAJERO'>
                   <a href="${createLink(controller:'dashboard', action:'solicitudes')}">
-                      <img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"> SOLICTUDES
+                      <img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"> SOLICITUDES
                   </a>
               </sec:ifAnyGranted>
           </li>
@@ -125,7 +125,7 @@
               </sec:ifAnyGranted>
           </li>
           <li>
-              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR'>
+              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_ANALISTA'>
                   <a href="${createLink(controller:'dashboard', action:'verificaciones')}">
                       <img class="menuIcon" src="${resource(dir:'images', file:'verification.png')}" alt="verificacion" title="verificaciones"> VERIFICACIONES
                   </a>
@@ -134,14 +134,14 @@
           <li>
               <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR'>
                   <a href="${createLink(controller:'dashboard', action:'configuracion')}">
-                      <img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"> CONFIGURACIÓN
+                      <img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configuración" title="configuración"> CONFIGURACIÓN
                   </a>
               </sec:ifAnyGranted>
           </li>
           <li>
               <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
                   <a href="${createLink(controller:'dashboard', action:'administracion')}">
-                      <img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administracion"> ADMINISTRACIÓN
+                      <img class="menuIcon" src="${resource(dir:'images', file:'key.png')}" alt="administracion" title="administración"> ADMINISTRACIÓN
                   </a>
               </sec:ifAnyGranted>
           </li>
@@ -161,7 +161,7 @@
                         <span>DASHBOARD</span>
                     </a>
                 </li>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CAJERO'>
                     <li class="floatLeft">
                         <a id="principalOpc2" href="${createLink(controller:'dashboard', action:'solicitudes')}" class="elementoMenuPrincipal font12 ">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"></span>
@@ -185,7 +185,7 @@
                         </a>
                     </li>
                 </sec:ifAnyGranted>
-                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR'>
+                <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_VERIFICADOR,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_ANALISTA'>
                     <li class="floatLeft">
                         <a id="principalOpc5" href="${createLink(controller:'dashboard', action:'verificaciones')}" class="elementoMenuPrincipal font12">
                             <span><img class="menuIcon" src="${resource(dir:'images', file:'verification.png')}" alt="verificacion" title="verificaciones"></span>
@@ -196,7 +196,7 @@
                 <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR'>
                     <li class="floatLeft">
                         <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
-                            <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configration" title="configration"></span>
+                            <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configuración" title="configuración"></span>
                             <span>CONFIGURACIÓN</span>
                         </a>
                     </li>

@@ -264,18 +264,28 @@ function submitPhone() {
 }
 
 function submitCodigo() {
+    var codigo = $('#codigo').val();
     if ($('#codigo').val() === '') {
         $('.register').addClass('shake');
         setTimeout(function () {
             $('.register').removeClass('shake');
         }, 3000);
-    } else {
+    } 
+    if ((codigo.length < 5 || codigo.length > 5) || validarSiNumero(codigo) === true ) {
+        $('.register').addClass('shake');
+        setTimeout(function () {
+            $('.register').removeClass('shake');
+        }, 3000);
+        $('#leyendaCodigoError').html("<small style='color: red;'>El código debe contener 5 caracteres numéricos</small>");
+    }
+    else {
         if ($('#codigo').hasClass('invalid')) {
             $('.register').addClass('shake');
             setTimeout(function () {
                 $('.register').removeClass('shake');
             }, 3000);
         } else {
+            $('#leyendaCodigoError').html("");
             $.ajax({
                 type: 'POST',
                 data: {

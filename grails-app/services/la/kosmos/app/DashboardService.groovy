@@ -225,7 +225,7 @@ class DashboardService {
                 }
             }
         }
-        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL"}){
+        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO"}){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -236,7 +236,6 @@ class DashboardService {
             }
         }
         pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
-        println pager.totalRows
         results.each{
             def solicitudes = [:]
             solicitudes.id = it.solicitud.id
@@ -304,33 +303,33 @@ class DashboardService {
                     eq("sucursal",sucursal)
                     eq("registradaPor",usuario)
 
-                    like("folio","%"+folio+"%")
+                    ilike("folio","%"+folio+"%")
                     order("fechaDeSolicitud", "desc")
 
                     cliente{
-                        like("nombre","%"+nombre+"%")
-                        like("rfc","%"+rfc+"%")
-                        like("apellidoPaterno","%"+apellidoPaterno+"%")
-                        like("apellidoMaterno","%"+apellidoMaterno+"%")
+                        ilike("nombre","%"+nombre+"%")
+                        ilike("rfc","%"+rfc+"%")
+                        ilike("apellidoPaterno","%"+apellidoPaterno+"%")
+                        ilike("apellidoMaterno","%"+apellidoMaterno+"%")
                     }
                 }
             }
                     
         }
-              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL"}){
-            
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO"}){
+
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
                     eq("sucursal",sucursal)
-                    like("folio","%"+folio+"%")
+                    ilike("folio","%"+folio+"%")
                     order("fechaDeSolicitud", "desc")
 
                     cliente{
-                        like("nombre","%"+nombre+"%")
-                        like("rfc","%"+rfc+"%")
-                        like("apellidoPaterno","%"+apellidoPaterno+"%")
-                        like("apellidoMaterno","%"+apellidoMaterno+"%")
+                        ilike("nombre","%"+nombre+"%")
+                        ilike("rfc","%"+rfc+"%")
+                        ilike("apellidoPaterno","%"+apellidoPaterno+"%")
+                        ilike("apellidoMaterno","%"+apellidoMaterno+"%")
                     }
                 }
             }
@@ -341,7 +340,6 @@ class DashboardService {
         
    
         pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
-        println "total de rows"+pager.totalRows
         results.each {
             def solicitudes = [:]
             solicitudes.id = it.solicitud.id
@@ -531,7 +529,7 @@ class DashboardService {
                 } 
                 
             }
-             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL"}){
+             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO"}){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
@@ -548,13 +546,12 @@ class DashboardService {
                 
             }
             pager.totalRows = (results?.totalCount ?  results?.totalCount : 0)
-            println "total solicitudes No DICTAMINADAS "+pager.totalRows
         }
         else if (opcion == "dictaminadas"){
             
             def ids2 = [5 as long,7 as long]
             criteria = ProductoSolicitud.createCriteria()
-            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
+            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
 
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
@@ -586,13 +583,11 @@ class DashboardService {
                     }
                 }
             }
-            else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL " || it.authority == "ROLE_DIRECTOR" }){
+            else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL " || it.authority == "ROLE_CAJERO" }){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
                         eq("sucursal",sucursal)
-                        eq("registradaPor",usuario)
-
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
@@ -608,7 +603,7 @@ class DashboardService {
         } else if (opcion == "complementoSolicitado"){
             def ids3 = [6 as long]
             criteria = ProductoSolicitud.createCriteria()
-            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" }){
+            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
 
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
@@ -640,13 +635,11 @@ class DashboardService {
                     }
                 }
             }
-              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_DIRECTOR" }){
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO" }){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
                         eq("sucursal",sucursal)
-                        eq("registradaPor",usuario)
-
                         and{
                             between("fechaDeSolicitud", from,toDate)
                         }
