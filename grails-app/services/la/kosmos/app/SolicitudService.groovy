@@ -301,10 +301,11 @@ class SolicitudService {
                         }
                     }
                 } else {
+                    log.error("ERRCDT. Ocurrio un error al guardar los datos del cliente")
                     //guardadoCorrecto = false
                     if (cliente.hasErrors()) {
                         cliente.errors.allErrors.each {
-                            println it
+                            log.error("DESC-DATOSCLIENTE. " + it)
                         }
                     }
                 }
@@ -340,10 +341,11 @@ class SolicitudService {
                         println("La dirección se ha registrado correctamente")
                         datosPaso.direccionCliente.idDireccion = direccionCliente.id
                     } else {
+                        log.error("ERRCDT. Ocurrio un error al guardar los datos de direccion del cliente")
                         guardadoCorrecto = false
                         if (direccionCliente.hasErrors()) {
                             direccionCliente.errors.allErrors.each {
-                                println it
+                                log.error("DESC-DIRECCIONCLIENTE. " + it)
                             }
                         }
                     }
@@ -392,10 +394,11 @@ class SolicitudService {
                         println("El empleo se ha registrado correctamente")
                         datosPaso.empleoCliente.idEmpleo = empleoCliente.id
                     } else {
+                        log.error("ERRCDT. Ocurrio un error al guardar los datos del empleo del cliente")
                         guardadoCorrecto = false
                         if (empleoCliente.hasErrors()) {
                             empleoCliente.errors.allErrors.each {
-                                println it
+                                log.error("DESC-EMPLEOCLIENTE. " + it)
                             }
                         }
                     }
@@ -2034,7 +2037,7 @@ class SolicitudService {
         //Resize image
         int w = bufferedImage.getWidth()
         int h = bufferedImage.getHeight()
-        BufferedImage bufim = new BufferedImage(width, height, bufferedImage.getType())
+        BufferedImage bufim = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
         Graphics2D g = bufim.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
         g.drawImage(bufferedImage, 0, 0, width, height, 0, 0, w, h, null)

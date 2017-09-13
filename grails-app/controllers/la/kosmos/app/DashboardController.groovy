@@ -2190,7 +2190,9 @@ class DashboardController {
         ultimoPaso.tipoDePaso = [:]
         ultimoPaso.tipoDePaso.nombre = "pasoFormulario"
         session["pasoFormulario"] = solicitudService.construirDatosTemporales(session["pasoFormulario"], params, ultimoPaso, session.identificadores, entidadFinanciera, null, null, springSecurityService.currentUser)
-        if(session["pasoFormulario"]?.cliente?.clienteGuardado){
+        if(session["pasoFormulario"]?.cliente?.clienteGuardado && 
+            session["pasoFormulario"].direccionCliente && 
+            session["pasoFormulario"].empleoCliente){
             if(!session.identificadores){
                 session.identificadores = [:]
             }
@@ -2200,6 +2202,8 @@ class DashboardController {
                 session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
                 session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
             }
+        } else {
+            respuesta.error = Boolean.TRUE
         }
         println session.identificadores
         render respuesta as JSON

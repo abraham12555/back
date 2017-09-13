@@ -517,16 +517,21 @@ function goConsultaBuro() {
         data: $('#perfiladorForm').serialize(),
         url: $.contextAwarePathJS + 'dashboard/estructurarSolicitud',
         success: function (data, textStatus) {
-            $('#step5').hide();
-            $('#buro').removeClass('hide');
-            $('#tabs').removeClass('hide');
-            $('.step2').removeClass('active');
-            $('.step2 .step').removeClass('active');
-            $('.step2').addClass('completed');
-            $('.step3').addClass('active');
-            $('.step3 .step').addClass('active');
-            $('#menuEmpleo').removeClass('active');
-            $("body").mLoading('hide');
+            if (data.error === true) {
+                $("body").mLoading('hide');
+                sweetAlert("Oops...", "Algo salió mal con los datos proporcionados, intenta nuevamente en unos minutos.", "error");
+            } else {
+                $('#step5').hide();
+                $('#buro').removeClass('hide');
+                $('#tabs').removeClass('hide');
+                $('.step2').removeClass('active');
+                $('.step2 .step').removeClass('active');
+                $('.step2').addClass('completed');
+                $('.step3').addClass('active');
+                $('.step3 .step').addClass('active');
+                $('#menuEmpleo').removeClass('active');
+                $("body").mLoading('hide');
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("body").mLoading('hide');
@@ -918,7 +923,15 @@ function consultarBuro() {
                 type: 'POST',
                 data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz, cadenaDeBuro: cadenaDeBuro},
                 url: $.contextAwarePathJS + 'solicitud/consultarBuroDeCredito',
+                beforeSend: function (XMLHttpRequest, settings) {
+                    $("body").mLoading({
+                        text: "Obteniendo resultado del Buró de Crédito... Espere un momento por favor...",
+                        icon: $.contextAwarePathJS + "images/spinner.gif",
+                        mask: true
+                    });
+                },
                 success: function (data, textStatus) {
+                    $("body").mLoading('hide');
                     loadBar("100%",'autenticador');
                     var respuesta = checkIfJson(data);
                         $('.loadingBarautenticador').fadeOut();
@@ -958,6 +971,7 @@ function consultarBuro() {
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("body").mLoading('hide');
                     restartLoadBar('autenticador');
                     $('.loadingBarautenticador').fadeOut();
                     sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -1468,7 +1482,7 @@ function openTab(tabOpen,tabClose) {
 
 function consultarBuroTradicional() {
     $("body").mLoading({
-        text: "Obteniendo Resultado del Buró de Crédito... Espere un momento por favor...",
+        text: "Obteniendo resultado del Buró de Crédito... Espere un momento por favor...",
         icon: $.contextAwarePathJS + "images/spinner.gif",
         mask: true
     });

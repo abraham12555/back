@@ -56,7 +56,7 @@ class BuroDeCreditoService {
 	
     def callWebServicePersonasFisicas(def datosBancarios, def datosPersonales, def direccion, SolicitudDeCredito solicitud, idEntidadFinanciera, Usuario usuario){
         def respuesta = [:]
-        
+
         def criteria = ConfiguracionBuroCredito.createCriteria()
         ConfiguracionBuroCredito configuracion = criteria.get {
             createAlias('configuracionEntidadFinanciera', 'ef')
@@ -70,7 +70,7 @@ class BuroDeCreditoService {
             log.error("Error. No se ha configurado el servicio web de la entidad financiera para la consulta a BC")
             return respuesta
         }
-        
+
         if(solicitud.reporteBuroCredito != null) {
             def bitacoraBC = this.getRequestBC(solicitud)
             //Valida que no se haya ejecutado una consulta TRADICIONAL anteriormente
@@ -155,8 +155,19 @@ class BuroDeCreditoService {
         soap.append("</Nombre>")
         soap.append("<Domicilios>")
         soap.append("<Domicilio>")
-        soap.append("<Direccion1>"+direccion?.calle.toUpperCase()+" "+direccion?.numeroExterior.toUpperCase()+" "+direccion?.numeroInterior?.toUpperCase()+"</Direccion1>")
-        soap.append("<Direccion2></Direccion2>")
+
+        String numeroInterior = (direccion.numeroInterior) ? " " + direccion.numeroInterior.trim().toUpperCase() : ""
+        String domicilio = direccion?.calle.toUpperCase() + " " + direccion?.numeroExterior.toUpperCase() + numeroInterior
+
+        String direccion2 = ""
+        if (domicilio.size() > 40) {
+            String direccion1 = domicilio.substring(0, 40)
+            direccion2 = domicilio.substring(40)
+            domicilio = direccion1
+        }
+
+        soap.append("<Direccion1>" + domicilio + "</Direccion1>")
+        soap.append("<Direccion2>" + direccion2 + "</Direccion2>")
         soap.append("<ColoniaPoblacion>"+direccion?.colonia.toUpperCase()+"</ColoniaPoblacion>")
         Municipio municipio = Municipio.findById(direccion?.delegacion)
         soap.append("<DelegacionMunicipio>"+municipio.nombre.toUpperCase()+"</DelegacionMunicipio>")
@@ -292,7 +303,7 @@ class BuroDeCreditoService {
         }catch(Exception e){
             respuesta.error = 500
             respuesta.errorDesc = "No se pudo obtener el reporte de buró de crédito en el primer intento. En breve recibirás ayuda."
-        log.error("Error consulta BC WS. Solicitud: " + solicitud.id, e)
+            log.error("Error consulta BC WS. Solicitud: " + solicitud.id, e)
             return respuesta
         }
     }
@@ -326,7 +337,7 @@ class BuroDeCreditoService {
                     respuesta.folio = this.getFolioConsultaTradicional(solicitud.reporteBuroCredito)
                     respuesta.status = 200
                 }
-                
+
                 return respuesta
             } else if(!solicitud.reporteBuroCredito.errorConsulta.contains("ERRR")){
                 //Valida si hubo una consulta previa que haya generado un error fatal
@@ -373,7 +384,12 @@ class BuroDeCreditoService {
                 }
             }
         } else {
-            throw new BusinessException("Ocurrió un error al guardar la bitacora de la consulta")
+            if (bitacora.hasErrors()) {
+                bitacora.errors.allErrors.each {
+                    log.error("DESC" + solicitud.id + ". " + it)
+                }
+            }
+            throw new BusinessException("ERR" + solicitud.id + ". Ocurrió un error al guardar la bitacora de la consulta")
         }
     }
 
@@ -493,7 +509,7 @@ class BuroDeCreditoService {
             respuesta.error = 500
             respuesta.errorDesc = "Error al procesar la información"
             log.error("Error al procesar la información. Solicitud: " + solicitud.id)
-            
+
             if(reporteBuroCredito != null){
                 solicitud.reporteBuroCredito = reporteBuroCredito
                 solicitud.save(flush:Boolean.TRUE)
@@ -1222,9 +1238,10 @@ class BuroDeCreditoService {
 
 
         //SEGMENTO PA - DIRECCION DEL CLIENTE
-
+        String numeroInterior = (direccion.numeroInterior) ? " " + direccion.numeroInterior.trim().toUpperCase() : ""
+        String numeroExterior = direccion.numeroExterior.trim().toUpperCase()
         String calle = cambiarCaracteresEspeciales(direccion.calle.trim().toUpperCase())
-        String domicilio = calle + " " + direccion.numeroExterior.trim().toUpperCase()
+        String domicilio = calle + " " + numeroExterior + numeroInterior
         Municipio municipio = Municipio.findById(direccion.delegacion)
         Integer municipioSize = (municipio) ? municipio.nombre.trim().size() : null
         String ciudad = (direccion.ciudad) ? direccion.ciudad.trim() : null
@@ -1233,14 +1250,26 @@ class BuroDeCreditoService {
         String codigoPostal = direccion.codigoPostal.trim()
         String pais = "MX"
 
-        if(domicilio.size() > 40 || (municipio && municipioSize > 40) || (!municipio && ciudad && ciudad.size() > 40)){
+        if((municipio && municipioSize > 40) || (!municipio && ciudad && ciudad.size() > 40)){
             throw new BusinessException("Segmento PA. Longitud inválida");
+        }
+
+        String direccion2 = null
+        if (domicilio.size() > 40) {
+            String direccion1 = domicilio.substring(0, 40)
+            direccion2 = domicilio.substring(40)
+            domicilio = direccion1
         }
 
         cadenaINTL += "PA"
         cadenaINTL += getStringSize(domicilio.size().toString(), 2)
         cadenaINTL += domicilio
         //etiqueta 00: segunda linea de direccion.
+        if (direccion2) {
+            cadenaINTL += "00"
+            cadenaINTL += getStringSize(direccion2.size().toString(), 2)
+            cadenaINTL += direccion2
+        }
         //etiqueta 01: Colonia o poblacion. Se omite por ser opcional
         //etiqueta 02: Delegación o municipio. Si no se cuenta con la inf. La etiqueta 03 se hace requerida
         if (municipio) {
@@ -1329,7 +1358,7 @@ class BuroDeCreditoService {
             }
             add(Subqueries.propertyEq('id', subquery))
         }
-        
+
         return bitacora
     }
 }
