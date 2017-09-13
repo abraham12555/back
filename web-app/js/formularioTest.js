@@ -1912,7 +1912,15 @@ function consultarBuro() {
                 type: 'POST',
                 data: {tarjeta: tarjeta, numeroTarjeta: numeroTarjeta, hipoteca: hipoteca, creditoAutomotriz: creditoAutomotriz, cadenaDeBuro: cadenaDeBuro},
                 url: $.contextAwarePathJS + 'solicitud/consultarBuroDeCredito',
+                beforeSend: function (XMLHttpRequest, settings) {
+                    $("body").mLoading({
+                        text: "Obteniendo resultado del Buró de Crédito... Espere un momento por favor...",
+                        icon: $.contextAwarePathJS + "images/spinner.gif",
+                        mask: true
+                    });
+                },
                 success: function (data, textStatus) {
+                    $("body").mLoading('hide');
                     loadBar("100%");
                     var respuesta = checkIfJson(data);
                     $('.loadingBar').fadeOut();
@@ -1943,6 +1951,7 @@ function consultarBuro() {
                     $('.nextBtn').addClass('sendBtn');
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("body").mLoading('hide');
                     restartLoadBar();
                     $('.loadingBar').fadeOut();
                     sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");

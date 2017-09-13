@@ -931,8 +931,8 @@ function consultarBuro() {
                         $('#divAutorizacionBuro').fadeOut();
                         $('.consultarB').fadeIn();
                         $('.correctaBox').unbind('click');
-                        $('#buttonconsultaINTL').attr('disabled', true);
-                        $('#buttonconsultaAutenticador').attr('disabled', true);
+                        $('#buttonconsultaINTL').prop('disabled', true);
+                        $('#buttonconsultaAutenticador').prop('disabled', true);
                         $('#goBackStep5').addClass('hide');
                         $('#goBackStep5').fadeOut();
                     } else if (respuesta.problemasBuro) {
@@ -954,7 +954,7 @@ function consultarBuro() {
                         $('#goBackStep5').addClass('hide');
                         $('#goBackStep5').fadeOut();
                         consultaAutenticador = false;
-                        sweetAlert("Oops...", "Algo salió mal, la consulta con autenticador falló."+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
+                        sweetAlert("Oops...", "Algo salió mal. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1494,8 +1494,8 @@ function consultarBuroTradicional() {
             $('.creditBtnsintl').fadeOut();
             $('.loadingContainerintl .buttonM').delay(1000).fadeIn();
             if (respuesta.status === 200) {
-                $('#buttonconsultaAutenticador').attr('disabled', true);
-                $('#buttonconsultaINTL').attr('disabled', true);
+                $('#buttonconsultaAutenticador').prop('disabled', true);
+                $('#buttonconsultaINTL').prop('disabled', true);
                 $('#accionesNormalesIntl').fadeOut();
                 $('#accionesSuccessIntl').fadeIn();
                 $('#divAutorizacionBuro').fadeOut();
@@ -1503,7 +1503,7 @@ function consultarBuroTradicional() {
                 $('.correctaBox').unbind('click');
                 $('#goBackStep5').addClass('hide');
                 $('#goBackStep5').fadeOut();
-                $('#buttonconsultaAutenticador').attr('disabled', true);
+                $('#buttonconsultaAutenticador').prop('disabled', true);
                 sweetAlert("Consulta exitosa", "Folio: "+respuesta.folio, "success");
             }
              else if (respuesta.problemasBuro) {
@@ -1517,12 +1517,12 @@ function consultarBuroTradicional() {
                         $('#divAutorizacionBuro').fadeOut();
                         $('#goBackStep5').removeClass('hide');
                         $('#goBackStep5').fadeIn();
-                        $('#buttonconsultaAutenticador').attr('disabled', true);
+                        $('#buttonconsultaAutenticador').prop('disabled', true);
                         sweetAlert({html: true, title: "¡Oops!", text: mensaje, type: "warning"});
 
              }
             else if (respuesta.error){
-                $('#buttonconsultaAutenticador').attr('disabled', true);
+                $('#buttonconsultaAutenticador').prop('disabled', true);
                 $('#accionesNormalesIntl').fadeOut();
                 $('#accionesErrorIntl').fadeIn();
                 $('#divAutorizacionBuro').fadeOut();
@@ -1531,7 +1531,7 @@ function consultarBuroTradicional() {
                 $('#goBackStep5').addClass('hide');
                 $('#goBackStep5').fadeOut();
                 consultaTradicional = false;
-                $('#buttonconsultaINTL').attr('disabled', true);
+                $('#buttonconsultaINTL').prop('disabled', true);
                 sweetAlert("Oops...", "Algo salió mal. La consulta tradicional falló. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
 
             }
