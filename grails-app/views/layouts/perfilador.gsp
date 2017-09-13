@@ -67,6 +67,7 @@
     <body>
         <g:urlContextAware value="/dashboard/editarPerfil" var="urlEditarPerfil"/>
         <g:urlContextAware value="/logout" var="urlLogout"/>
+        <g:render template="session"/>
         <header class="appHeader" style="border-top: solid 5px ${session.configuracion?.colorBordeSuperior}; background-color: ${session.configuracion?.colorEncabezado};">
             <div class="container clearFix">
                 <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file: session.configuracion?.rutaLogotipo )}" alt="Logo" title="Logo" />

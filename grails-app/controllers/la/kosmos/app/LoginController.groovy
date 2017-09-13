@@ -112,4 +112,10 @@ class LoginController extends grails.plugin.springsecurity.LoginController {
             redirect action: 'auth'
         }
     }
+
+    def keepSessionAlive(){
+        def response = [:]
+        response.confirm = Boolean.TRUE
+        render response as JSON
+    }
 }
