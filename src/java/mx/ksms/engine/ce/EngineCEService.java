@@ -77,6 +77,9 @@ public interface EngineCEService {
      * 
      * @param servicios
      * @param solicitudId
+     * @param experienciaCrediticia
+     * @param creditosLiquidados
+     * @param edad
      * @return
      *     returns java.lang.String
      */
@@ -88,7 +91,13 @@ public interface EngineCEService {
         @WebParam(name = "solicitudId", targetNamespace = "")
         String solicitudId,
         @WebParam(name = "servicios", targetNamespace = "")
-        String servicios);
+        String servicios,
+        @WebParam(name = "EDAD", targetNamespace = "")
+        Integer edad,
+        @WebParam(name = "experiencia_crediticia", targetNamespace = "")
+        boolean experienciaCrediticia,
+        @WebParam(name = "creditos_liquidados", targetNamespace = "")
+        int creditosLiquidados);
 
     /**
      * 
@@ -98,6 +107,7 @@ public interface EngineCEService {
      * @param solicitudId
      * @param ingresosFijosMensuales
      * @param gastosDeAlquiler
+     * @param creditosLiquidados
      * @param rDIFMSPWULTCPT12
      * @param fecantigclicred
      * @param tipoDeVivienda
@@ -110,6 +120,7 @@ public interface EngineCEService {
      * @param riesgogeografico
      * @param rCOBSLDPAS12
      * @param asalariado
+     * @param experienciaCrediticia
      * @param rEVOPAGOS3
      * @param agEstadocivil
      * @param agServicio
@@ -164,6 +175,10 @@ public interface EngineCEService {
         Integer tipoDeVivienda,
         @WebParam(name = "asalariado", targetNamespace = "")
         boolean asalariado,
+        @WebParam(name = "experiencia_crediticia", targetNamespace = "")
+        boolean experienciaCrediticia,
+        @WebParam(name = "creditos_liquidados", targetNamespace = "")
+        int creditosLiquidados,
         @WebParam(name = "cadena_bc", targetNamespace = "")
         String cadenaBc);
 

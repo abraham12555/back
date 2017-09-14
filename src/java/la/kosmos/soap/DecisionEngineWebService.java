@@ -87,7 +87,7 @@ public class DecisionEngineWebService {
         }
     }
 
-    public List<HashMap> getDictamenteDePoliticas(Long solicitudId, String listaDeServicios) {
+    public List<HashMap> getDictamenteDePoliticas(Long solicitudId, String listaDeServicios, Integer edad) {
         String URL = getURL();
         List<HashMap> respuesta = new ArrayList();
         try {
@@ -96,7 +96,7 @@ public class DecisionEngineWebService {
             EngineServiceService service = new EngineServiceService(url, qname1);
             EngineService port = service.getEngineServicePort();
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
-            String resultado = port.calculateDictamenDePoliticas(solicitudId.toString(), listaDeServicios);
+            String resultado = port.calculateDictamenDePoliticas(solicitudId.toString(), listaDeServicios, edad);
             StringTokenizer servicios = new StringTokenizer(resultado, ",");
             while (servicios.hasMoreElements()) {
                 StringTokenizer dictamen = new StringTokenizer(servicios.nextElement().toString(), "=");

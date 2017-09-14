@@ -109,6 +109,7 @@ public interface EngineService {
      * 
      * @param servicios
      * @param solicitudId
+     * @param edad
      * @return
      *     returns java.lang.String
      */
@@ -120,7 +121,9 @@ public interface EngineService {
         @WebParam(name = "solicitudId", targetNamespace = "")
         String solicitudId,
         @WebParam(name = "servicios", targetNamespace = "")
-        String servicios);
+        String servicios,
+        @WebParam(name = "EDAD", targetNamespace = "")
+        Integer edad);
 
     /**
      * 

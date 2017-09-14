@@ -3,6 +3,7 @@ package mx.ksms.engine.cl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="solicitudId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="servicios" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="EDAD" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,12 +31,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "calculateDictamenDePoliticas", propOrder = {
     "solicitudId",
-    "servicios"
+    "servicios",
+    "edad"
 })
 public class CalculateDictamenDePoliticas {
 
     protected String solicitudId;
     protected String servicios;
+    @XmlElement(name = "EDAD")
+    protected Integer edad;
 
     /**
      * Obtiene el valor de la propiedad solicitudId.
@@ -82,6 +87,30 @@ public class CalculateDictamenDePoliticas {
      */
     public void setServicios(String value) {
         this.servicios = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad edad.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getEDAD() {
+        return edad;
+    }
+
+    /**
+     * Define el valor de la propiedad edad.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setEDAD(Integer value) {
+        this.edad = value;
     }
 
 }

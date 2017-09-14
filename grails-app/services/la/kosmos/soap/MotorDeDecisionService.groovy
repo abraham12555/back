@@ -35,7 +35,7 @@ class MotorDeDecisionService {
         println("Entrando a obtenerDictamenteDePoliticas... Configurando servicio...")
         proxy.setURL(ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecision)
         println("Invoncando servicio...")
-        def result= proxy.getDictamenteDePoliticas(datos.solicitudId, datos.listaDeServicios)
+        def result= proxy.getDictamenteDePoliticas(datos.solicitudId, datos.listaDeServicios, datos.edad)
         println "Respuesta Recibida: " + result
         return result
     }
@@ -59,7 +59,7 @@ class MotorDeDecisionService {
         println("Entrando a obtenerScoreClienteExistente... Configurando servicio...")
         proxy.setURL(ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE)
         println("Invoncando servicio...")
-        def result= proxy.doGetScore(datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.rcobsldpas12, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cantidadIntegrantesFamilia, datos.gastosDeAlquiler, datos.cuotaCredito, datos.tipoDeVivienda, datos.asalariado, datos.cadenaBuroDeCredito)
+        def result= proxy.doGetScore(datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.rcobsldpas12, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cantidadIntegrantesFamilia, datos.gastosDeAlquiler, datos.cuotaCredito, datos.tipoDeVivienda, datos.asalariado, datos.experienciaCrediticia, datos.creditosLiquidados, datos.cadenaBuroDeCredito)
         println "Respuesta Recibida: " + result
         return result
     }
@@ -79,7 +79,7 @@ class MotorDeDecisionService {
         println("Entrando a obtenerDictamenteDePoliticasClienteExistente... Configurando servicio...")
         proxy.setURL(ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE)
         println("Invoncando servicio...")
-        def result= proxy.getDictamenteDePoliticas(datos.solicitudId, datos.listaDeServicios)
+        def result= proxy.getDictamenteDePoliticas(datos.solicitudId, datos.listaDeServicios, datos.edad, datos.experienciaCrediticia, datos.creditosLiquidados)
         println "Respuesta Recibida: " + result
         return result
     }

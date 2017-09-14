@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="cuota_credito" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *         &lt;element name="tipo_de_vivienda" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="asalariado" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         &lt;element name="experiencia_crediticia" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         &lt;element name="creditos_liquidados" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="cadena_bc" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -70,6 +72,8 @@ import javax.xml.bind.annotation.XmlType;
     "cuotaCredito",
     "tipoDeVivienda",
     "asalariado",
+    "experienciaCrediticia",
+    "creditosLiquidados",
     "cadenaBc"
 })
 public class CalculateProb {
@@ -112,6 +116,10 @@ public class CalculateProb {
     @XmlElement(name = "tipo_de_vivienda")
     protected Integer tipoDeVivienda;
     protected boolean asalariado;
+    @XmlElement(name = "experiencia_crediticia")
+    protected boolean experienciaCrediticia;
+    @XmlElement(name = "creditos_liquidados")
+    protected int creditosLiquidados;
     @XmlElement(name = "cadena_bc")
     protected String cadenaBc;
 
@@ -609,6 +617,38 @@ public class CalculateProb {
      */
     public void setAsalariado(boolean value) {
         this.asalariado = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad experienciaCrediticia.
+     * 
+     */
+    public boolean isExperienciaCrediticia() {
+        return experienciaCrediticia;
+    }
+
+    /**
+     * Define el valor de la propiedad experienciaCrediticia.
+     * 
+     */
+    public void setExperienciaCrediticia(boolean value) {
+        this.experienciaCrediticia = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad creditosLiquidados.
+     * 
+     */
+    public int getCreditosLiquidados() {
+        return creditosLiquidados;
+    }
+
+    /**
+     * Define el valor de la propiedad creditosLiquidados.
+     * 
+     */
+    public void setCreditosLiquidados(int value) {
+        this.creditosLiquidados = value;
     }
 
     /**

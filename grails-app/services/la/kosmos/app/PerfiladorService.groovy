@@ -400,6 +400,7 @@ class PerfiladorService {
             def datos = [:]
             datos.solicitudId = identificadores.idSolicitud
             datos.listaDeServicios = (productosAplicables*.claveDeProducto)?.join(',')
+            datos.edad = datosSolicitud.edad 
             if(bitacoraDeBuro){
                 datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
             } else {
@@ -409,6 +410,8 @@ class PerfiladorService {
             def respuestaDictameneDePoliticas
             if(datos.cadenaBuroDeCredito) {
                 if(clienteExistente == "SI") {
+                    datos.experienciaCrediticia = (perfil?.experienciaCrediticia == "EP" ? true : false)
+                    datos.creditosLiquidados = (perfil?.numCredLiqdExp ?: 0)
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuroClienteExistente(entidadFinanciera,datos)
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
@@ -852,6 +855,8 @@ class PerfiladorService {
         datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.replaceAll("\\s+", "").toUpperCase()
         datos.renovacion = perfil.renovacion.toString()
         datos.productoServicio = producto.claveDeProducto
+        datos.experienciaCrediticia = (perfil.experienciaCrediticia == "EP" ? true : false)
+        datos.creditosLiquidados = (perfil.numCredLiqdExp ?: 0)
         def mesesTranscurridos = (((perfil.ultimaFechaCaptura != null && perfil.ultimaFechaCaptura.length() == 8)) ? calcularMesesTranscurridos(new Date().parse("yyyyMMdd", (perfil.ultimaFechaCaptura))) : 0 )
         datos.rdifmspwultcpt12 = new Double( (mesesTranscurridos > 0) ? ( (oferta.montoMaximo - perfil.ultimoMontoLiberado)/mesesTranscurridos) : 0 )
         def sumatoriaUltimosPagos = (perfil.ultimoPago1 + perfil.ultimoPago2 + perfil.ultimoPago3)
