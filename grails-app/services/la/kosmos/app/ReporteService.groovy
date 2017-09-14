@@ -27,7 +27,7 @@ class ReporteService {
         def datosReporte = []
         
         if( tipo == 'solicitudes'){
-            def query = "select * from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') "
+            def query = "select * from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi')  order by to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') asc "
             def result = db.rows(query)
             result?.each{
                 def datos =[:]
@@ -496,7 +496,7 @@ class ReporteService {
         //
         }
         else if( tipo == 'operaciones'){
-            def query = "select * from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') "
+            def query = "select * from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') order by to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') asc "
             def result = db.rows(query)
             result?.each{
                 def datos =[:]

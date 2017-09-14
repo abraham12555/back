@@ -225,7 +225,7 @@ class DashboardService {
                 }
             }
         }
-        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO"}){
+        else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO" || it.authority == "ROLE_ANALISTA"}){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -316,7 +316,7 @@ class DashboardService {
             }
                     
         }
-              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO"}){
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO" || it.authority == "ROLE_ANALISTA"}){
 
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
@@ -529,7 +529,7 @@ class DashboardService {
                 } 
                 
             }
-             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO"}){
+             else if (usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO" || it.authority == "ROLE_ANALISTA"}){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
@@ -583,7 +583,7 @@ class DashboardService {
                     }
                 }
             }
-            else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL " || it.authority == "ROLE_CAJERO" }){
+            else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL " || it.authority == "ROLE_CAJERO" || it.authority == "ROLE_ANALISTA" }){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)
@@ -635,7 +635,7 @@ class DashboardService {
                     }
                 }
             }
-              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO" }){
+              else if(usuario.authorities.any { it.authority == "ROLE_SUCURSAL" || it.authority == "ROLE_CAJERO" || it.authority == "ROLE_ANALISTA"}){
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
                         eq("entidadFinanciera", entidadFinanciera)

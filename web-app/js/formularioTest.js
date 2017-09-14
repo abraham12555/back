@@ -1193,6 +1193,7 @@ function operacionesResumen() {
     $('#paso6IdOf').unbind('click');
     $('#paso6IdOf').click(function () {
         if ($(this).hasClass("darkGray")) {
+            $('#tipoDeDocumento').val('Identicaciones');
             openModal('identification_oficial');
         }
     });
@@ -2234,6 +2235,7 @@ function operacionesModal() {
 
     $('#paso1Ids').unbind('click');
     $('#paso1Ids').click(function () {
+        $('#tipoDeDocumento').val('Identicaciones');
         $('#label1Ids').addClass('active_blue');
         $('#label2Ids').removeClass('active_blue');
         $('#label3Ids').removeClass('active_blue');
@@ -2253,6 +2255,7 @@ function operacionesModal() {
 
     $('#paso2Ids').unbind('click');
     $('#paso2Ids').click(function () {
+        $('#tipoDeDocumento').val('Identicaciones');
         if ($('#tipoDeDocumento').val()) {
             $('#label2Ids').addClass('active_blue');
             $('#label1Ids').removeClass('active_blue');
