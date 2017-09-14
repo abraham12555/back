@@ -1,6 +1,7 @@
 <section class="container paddingTop20 paddingBottom20 clearFix contentHeight serializeForm">
     <input type="hidden" id="pasoPrellenado" value="${generales?.llenadoPrevio}"/>
     <input type="hidden" id="tituloDelPaso" value="${pasoActual?.titulo}"/>
+    <input type="hidden" id="generoCliente" value="${generales?.cliente?.genero}"/>
     <g:if test="${session.noChecarCamposLlenos}">
         <input type="hidden" id="revisionInicial" value="false"/>
     </g:if>

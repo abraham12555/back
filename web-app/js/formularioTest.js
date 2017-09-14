@@ -192,6 +192,11 @@ function operacionesFormulario() {
     $('.overlay').click(function () {
         return false;
     });
+    if ($('#generoCliente').val() === '1') {
+        generoConyugue = '2';
+    } else if ($('#generoCliente').val() === '2') {
+        generoConyugue = '1';
+    }
 
     $('.showOnFill').change(function (index) {
         var thisStep = $(this);
@@ -1726,8 +1731,8 @@ function generarClaves(persona) {
         });
         if ($('#cliente_genero').val() === '1') {
             generoConyugue = '2';
-        } else {
-            conyugue = '1';
+        } else if ($('#cliente_genero').val() === '2') {
+            generoConyugue = '1';
         }
         var rfc = generarHomoclave($('#cliente_nombre').val(), $('#cliente_apellidoPaterno').val(), $('#cliente_apellidoMaterno').val(), curp.substring(0, 10));
         $('#cliente_curp').val(curp);
