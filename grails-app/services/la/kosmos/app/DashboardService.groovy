@@ -206,7 +206,7 @@ class DashboardService {
         def solicitudesLista = []
         def criteria = ProductoSolicitud.createCriteria()
         def results 
-        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
+        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" ||  it.authority == "ROLE_MERCADOTECNIA" ||  it.authority == "ROLE_CENTRO_DE_CONTACTO"}){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -279,7 +279,7 @@ class DashboardService {
         pager.rowsPerPage = 25
         def criteria = ProductoSolicitud.createCriteria()
         def results
-        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR"  }){
+        if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" ||  it.authority == "ROLE_MERCADOTECNIA" ||  it.authority == "ROLE_CENTRO_DE_CONTACTO" }){
             results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                 solicitud{
                     eq("entidadFinanciera", entidadFinanciera)
@@ -495,7 +495,7 @@ class DashboardService {
         if (opcion == "noDictaminadas"){
             def ids = [5 as long, 6 as long, 7 as long]
             criteria = ProductoSolicitud.createCriteria()
-            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
+            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR"  ||  it.authority == "ROLE_MERCADOTECNIA" ||  it.authority == "ROLE_CENTRO_DE_CONTACTO"}){
 
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
@@ -551,7 +551,7 @@ class DashboardService {
             
             def ids2 = [5 as long,7 as long]
             criteria = ProductoSolicitud.createCriteria()
-            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
+            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" ||  it.authority == "ROLE_MERCADOTECNIA" ||  it.authority == "ROLE_CENTRO_DE_CONTACTO"}){
 
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{
@@ -603,7 +603,7 @@ class DashboardService {
         } else if (opcion == "complementoSolicitado"){
             def ids3 = [6 as long]
             criteria = ProductoSolicitud.createCriteria()
-            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" }){
+            if(usuario.authorities.any { it.authority == "ROLE_ADMIN" || it.authority == "ROLE_DIRECTOR" ||  it.authority == "ROLE_MERCADOTECNIA" ||  it.authority == "ROLE_CENTRO_DE_CONTACTO" }){
 
                 results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
                     solicitud{

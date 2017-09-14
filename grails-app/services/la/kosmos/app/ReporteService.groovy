@@ -27,7 +27,7 @@ class ReporteService {
         def datosReporte = []
         
         if( tipo == 'solicitudes'){
-            def query = "select *from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') "
+            def query = "select * from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') "
             def result = db.rows(query)
             result?.each{
                 def datos =[:]
@@ -38,7 +38,7 @@ class ReporteService {
                 datos.status = it.status
                 datos.medioDeContacto  = it.medio_de_contacto 
                 datos.opcionDeContacto = it.opcion_de_contacto
-                datos.nombreCliente = it.nombre_cliente
+                datos.nombreCliente = (it.nombre_cliente) ? String.valueOf(it.nombre_cliente) : ""
                 datos.ultimoPaso = it.ultimo_paso
                 datos.shortUrl = it.short_url
                 datos.sucursal = it.sucursal
@@ -51,11 +51,12 @@ class ReporteService {
                 }else if(it.ha_tenido_atrasos == true){
                     datos.haTenidoAtrasos = "SI"
                 }
-                datos.montoDelCredito = it.monto_del_credito
-                datos.montoDelPago = it.monto_del_pago
-                datos.montoDelSeguroDeDeuda = it.monto_del_seguro_de_deuda
-                datos.plazos = it.plazos
-                datos.periodicidad = it.periodicidad
+                datos.montoDelCredito = (it.monto_del_credito) ?: "" 
+                datos.montoDelPago = (it.monto_del_pago) ?: "" 
+                datos.montoDelSeguroDeDeuda = (it.monto_del_seguro_de_deuda) ?: "" 
+                datos.montoPagoBuro = (it.monto_pago_buro)
+                datos.plazos = (it.plazos) ?: ""
+                datos.periodicidad = (it.periodicidad) ?: ""
                 datos.fechaDeNacimiento = it.fecha_de_nacimiento
                 datos.dependientesEconomicos = it.dependientes_economicos
                 datos.estadoCivil = it.estado_civil
@@ -76,7 +77,7 @@ class ReporteService {
                 datos.celular = it.celular
                 datos.telefonoFijo = it.telefono_fijo
                 datos.direccionDeCorreo = it.direccion_de_correo
-                datos.calle = it.calle
+                datos.calle = (it.calle) ?: ""
                 datos.numeroExterior = it.numero_exterior
                 datos.numeroInterior = it.numero_interior
                 datos.municipio = it.municipio
@@ -101,10 +102,6 @@ class ReporteService {
                 datos.dictamenFinal = it.dictamen_final
                 datos.probabilidadDeMora = it.probabilidad_de_mora
                 datos.razonDeCobertura = it.razon_de_cobertura
-                datos.log = it.log
-                datos.respuesta = it.respuesta
-                datos.usuario = it.usuario
-                datos.montoPagoBuro = it.monto_pago_buro
                 datosReporte << datos
             }
             if(datosReporte.size() > 0 ){
@@ -134,7 +131,7 @@ class ReporteService {
                     }
                 }
                 workbook = builder.build {
-                    sheet(name: "ReporteSolicitudesGeneradas", widthColumns: [20,20,20,25,20,20,20,30,40,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20]) {
+                    sheet(name: "ReporteCentroDeContacto", widthColumns: [20,20,20,25,20,20,20,30,40,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,30,30,30,30,30,30,30,30,30,30,30,30]) {
                         row (style: 'titulo') {
                             cell { "FOLIO" }
                             cell { "FECHA DE SOLICITUD" }
@@ -146,7 +143,7 @@ class ReporteService {
                             cell { "ULTIMO PASO" }
                             cell { "SHORT URL" }
                             cell { "SUCURSAL" }
-                            cell { "EJECUTIVO QUE REGISTRÒ" }
+                            cell { "EJECUTIVO QUE REGISTRÓ" }
                             cell { "NOMBRE DEL PRODUCTO" }
                             cell { "RUBRO" }
                             cell { "TIPO DE DOCUMENTO" }
@@ -203,16 +200,14 @@ class ReporteService {
                             cell { "DICTAMEN FINAL" }
                             cell { "PROBABILIDAD DE MORA" }
                             cell { "RAZON DE COBERTURA" }
-                            cell { "LOG" }
-			    cell { "RESPUESTA" }
                                 
                         }
                         datosReporte.each { fila ->
                             row (style: 'contenido') {
-                                cell { fila.id ?: "-" }
+                                cell { fila.id.trim() ?: "-" }
                                 cell { fila.fechaDeSolicitud }
-                                cell { fila.origen }
-                                cell { fila.status } 
+                                cell { fila.origen ?: ""}
+                                cell { fila.status ?: ""} 
                                 cell { fila.medioDeContacto ?: "" }
                                 cell { fila.opcionDeContacto ?: ""} 
                                 cell { fila.nombreCliente?.toUpperCase() } 
@@ -226,11 +221,11 @@ class ReporteService {
                                 cell { fila.enganche ?: ""} 
                                 cell { fila.haTenidoAtrasos ?: ""} 
                                 cell { fila.montoDelCredito }
-                                cell { fila.montoDelPago } 
-                                cell { fila.montoDelSeguroDeDeuda } 
-                                cell { fila.montoPagoBuro } 
-                                cell { fila.plazos }
-                                cell { fila.periodicidad } 
+                                cell { fila.montoDelPago ?: ""} 
+                                cell { fila.montoDelSeguroDeDeuda ?: ""} 
+                                cell { fila.montoPagoBuro ?: "" } 
+                                cell { fila.plazos ?: "" }
+                                cell { fila.periodicidad ?: ""} 
                                 cell { fila.fechaDeNacimiento ?: "" } 
                                 cell { fila.dependientesEconomicos ?: "" } 
 				cell { fila.genero ?: ""}
@@ -251,7 +246,7 @@ class ReporteService {
                                 cell { fila.celular ? fila.celular.replaceAll("[^\\d]", "") : "" } 
                                 cell { fila.telefonoFijo ? fila.telefonoFijo.replaceAll("[^\\d]", ""): "" }
                                 cell { fila.direccionDeCorreo ?: ""}
-                                cell { fila.calle } 
+                                cell { fila.calle ?: ""} 
                                 cell { fila.numeroExterior ?: ""} 
                                 cell { fila.numeroInterior ?: "" }
                                 cell { fila.municipio ?: ""} 
@@ -276,8 +271,6 @@ class ReporteService {
                                 cell { fila.dictamenFinal ?: "" }
                                 cell { fila.probabilidadDeMora ?: ""} 
                                 cell { fila.razonDeCobertura ?: ""}
-                                cell { fila.log ?: ""} 
-                                cell { fila.respuesta ?: "" }
                             }
                         }
                     }
@@ -501,6 +494,227 @@ class ReporteService {
             return archivoDelReporte
             }
         //
+        }
+        else if( tipo == 'operaciones'){
+            def query = "select * from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')  between to_timestamp('"+ finicio + " 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ ffin +" 23:59','dd/mm/yyyy hh24:mi') "
+            def result = db.rows(query)
+            result?.each{
+                def datos =[:]
+                datos.id = it.folio
+                datos.fechaDeSolicitud = it.fecha_de_solicitud
+                datos.tipo = it.tipo
+                datos.origen = it.origen
+                datos.status = it.status
+                datos.medioDeContacto  = it.medio_de_contacto 
+                datos.opcionDeContacto = it.opcion_de_contacto
+                datos.nombreCliente = String.valueOf(it.nombre_cliente)
+                datos.ultimoPaso = it.ultimo_paso
+                datos.sucursal = it.sucursal
+                datos.nombreDelProducto = it.nombre_del_producto
+                datos.rubro = it.rubro
+                datos.tipoDeDocumento = it.tipo_de_documento
+                datos.enganche = it.enganche
+                if(it.ha_tenido_atrasos == false){
+                    datos.haTenidoAtrasos = "NO"
+                }else if(it.ha_tenido_atrasos == true){
+                    datos.haTenidoAtrasos = "SI"
+                }
+                datos.montoDelCredito = it.monto_del_credito
+                datos.montoDelPago = it.monto_del_pago
+                datos.montoDelSeguroDeDeuda = it.monto_del_seguro_de_deuda
+                datos.plazos = it.plazos
+                datos.periodicidad = it.periodicidad
+                datos.fechaDeNacimiento = it.fecha_de_nacimiento
+                datos.dependientesEconomicos = it.dependientes_economicos
+                datos.genero = it.genero
+                datos.lugarDeNacimiento = it.lugar_de_nacimiento
+                datos.estadoCivil = it.estado_civil
+                datos.nacionalidad = it.nacionalidad
+                datos.regimenMatrimonial = it.regimen_matrimonial
+                datos.fechaDeNacimientoDelConyugue = it.fecha_de_nacimiento_del_conyugue
+                datos.lugarDeNacimientoDelConyugue = it.lugar_de_nacimiento_del_conyugue
+                datos.nacionalidadDelConyugue = it.nacionalidad_del_conyugue
+                datos.municipio = it.municipio
+                datos.estado = it.estado
+                datos.codigoPostal = it.codigo_postal
+                datos.colonia = it.colonia
+                datos.tiempoDeEstadia = it.tiempo_de_estadia
+                datos.tiempoDeVivienda = it.tiempo_de_vivienda
+                datos.montoDeLaRenta = it.monto_de_la_renta
+                datos.nombreDeLaEmpresa = it.nombre_de_la_empresa
+                datos.ocupacion = it.ocupacion
+                datos.profesion = it.profesion
+                datos.fechaIngreso = it.fecha_ingreso
+                datos.ingresosFijos = it.ingresos_fijos
+                datos.ingresosVariables = it.ingresos_variables
+                datos.consultaABuroEjecutada = it.consulta_a_buro_ejecutada
+                datos.errorConsultaBuro = it.error_consulta_buro
+                datos.dictamenCapacidadDePago = it.dictamen_capacidad_de_pago
+                datos.dictamenConjunto = it.dictamen_conjunto
+                datos.dictamenDePerfil = it.dictamen_de_perfil
+                datos.dictamenDePoliticas = it.dictamen_de_politicas
+                datos.dictamenFinal = it.dictamen_final
+                datos.probabilidadDeMora = it.probabilidad_de_mora
+                datos.razonDeCobertura = it.razon_de_cobertura
+                datos.log = it.log
+                datos.respuesta = it.respuesta
+                datosReporte << datos
+            }
+            if(datosReporte.size() > 0 ){
+                def workbook
+                def builder = new ExcelBuilder()
+                def plataforma = System.properties['os.name'].toLowerCase()
+                def contenidoReporte = []
+                def archivoDelReporte
+                if(plataforma.contains('windows')){
+                    archivoDelReporte = new File("C:/tmp/reporteGenerado_Operaciones.xlsx")
+                } else {
+                    archivoDelReporte = new File("/tmp/reporteGenerado_Operaciones.xlsx")
+                }
+                archivoDelReporte.createNewFile() 
+                builder.config {
+                    font('negrita') { font ->
+                        font.bold = true
+                    }
+                    style('titulo') { cellStyle ->
+                        cellStyle.font = font('negrita')
+                        cellStyle.alignment = CellStyle.ALIGN_LEFT
+                        cellStyle.verticalAlignment = CellStyle.VERTICAL_CENTER
+                    }
+                    style('contenido') { cellStyle ->
+                        cellStyle.alignment = CellStyle.ALIGN_LEFT
+                        cellStyle.verticalAlignment = CellStyle.VERTICAL_CENTER
+                    }
+                }
+                workbook = builder.build {
+                    sheet(name: "ReporteOperaciones", widthColumns: [20,20,20,25,20,20,30,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,50]) {
+                        row (style: 'titulo') {
+                            cell { "FOLIO" }
+                            cell { "FECHA DE SOLICITUD" }
+                            cell { "ORIGEN DE SOLICITUD" } 
+                            cell { "STATUS" }
+                            cell { "MEDIO DE CONTACTO" }
+                            cell { "OPCION DE CONTACTO" }
+                            cell { "NOMBRE DEL CLIENTE" }
+                            cell { "ULTIMO PASO" }
+                            cell { "SUCURSAL" }
+                            cell { "EJECUTIVO QUE REGISTRÓ" }
+                            cell { "NOMBRE DEL PRODUCTO" }
+                            cell { "RUBRO" }
+                            cell { "TIPO DE DOCUMENTO" }
+                            cell { "ENGANCHE" }
+                            cell { "HA TENIDO ATRASOS" }
+                            cell { "MONTO DEL CREDITO" }
+                            cell { "MONTO DEL PAGO" }
+                            cell { "MONTO DEL SEGURO DE DEUDA" }
+                            cell { "MONTO DEL PAGO DE BC" }
+                            cell { "PLAZOS" }
+                            cell { "PERIODICIDAD" }
+                            cell { "FECHA DE NACIMIENTO" }
+                            cell { "DEPENDIENTES ECONOMICOS" }
+                            cell { "GENERO" }
+                            cell { "LUGAR DE NACIMIENTO" }
+                            cell { "ESTADO CIVIL" }
+			    cell { "NACIONALIDAD" }
+                            cell { "REGIMEN MATRIMONIAL" }
+                            cell { "FECHA DE NACIMIENTO DEL CONYUGUE" }
+                            cell { "LUGAR DE NACIMIENTO DEL CONYUGUE" }
+                            cell { "NACIONALIDAD DEL CONYUGUE" }
+			    cell { "MUNICIPIO" }
+                            cell { "ESTADO" }
+                            cell { "CODIGO POSTAL" }
+                            cell { "COLONIA" }
+                            cell { "TIEMPO DE ESTADIA" }
+                            cell { "TIEMPO DE VIVIENDA" }
+                            cell { "MONTO DE LA RENTA" }
+                            cell { "NOMBRE DE LA EMPRESA" }
+                            cell { "OCUPACION" }
+                            cell { "PROFESION" }
+                            cell { "FECHA INGRESO" }
+                            cell { "INGRESOS FIJOS" }
+                            cell { "INGRESOS VARIABLES" }
+                            cell { "CONSULTA A BURO EJECUTADA" }
+                            cell { "ERROR CONSULTA BURO" }
+                            cell { "DICTAMEN CAPACIDAD DE PAGO" }
+                            cell { "DICTAMEN CONJUNTO" }
+                            cell { "DICTAMEN DE PERFIL" }
+                            cell { "DICTAMEN DE POLITICAS" }
+                            cell { "DICTAMEN FINAL" }
+                            cell { "PROBABILIDAD DE MORA" }
+                            cell { "RAZON DE COBERTURA" }
+                            cell { "LOG" }
+			    cell { "RESPUESTA" }
+                                
+                        }
+                        datosReporte.each { fila ->
+                            row (style: 'contenido') {
+                                cell { fila.id.trim() ?: "-" }
+                                cell { fila.fechaDeSolicitud }
+                                cell { fila.origen }
+                                cell { fila.status } 
+                                cell { fila.medioDeContacto ?: "" }
+                                cell { fila.opcionDeContacto ?: ""} 
+                                cell { fila.nombreCliente?.toUpperCase() } 
+                                cell { fila.ultimoPaso } 
+                                cell { fila.sucursal ?: ""} 
+                                cell { fila.usuario ?: ""} 
+                                cell { fila.nombreDelProducto ?: ""} 
+                                cell { fila.rubro ?: "" } 
+                                cell { fila.tipoDeDocumento ?: ""}
+                                cell { fila.enganche ?: ""} 
+                                cell { fila.haTenidoAtrasos ?: ""} 
+                                cell { fila.montoDelCredito ?: ""}
+                                cell { fila.montoDelPago ?: ""} 
+                                cell { fila.montoDelSeguroDeDeuda ?: ""} 
+                                cell { fila.montoPagoBuro ?: ""} 
+                                cell { fila.plazos ?: ""}
+                                cell { fila.periodicidad ?: ""} 
+                                cell { fila.fechaDeNacimiento ?: "" } 
+                                cell { fila.dependientesEconomicos ?: "" } 
+				cell { fila.genero ?: ""}
+                                cell { fila.lugarDeNacimiento ?: ""}
+				cell { fila.estadoCivil ?: ""}
+                                cell { fila.nacionalidad ?: ""} 
+                                cell { fila.regimenMatrimonial ?: ""} 
+                                cell { fila.fechaDeNacimientoDelConyugue ?: ""} 
+                                cell { fila.lugarDeNacimientoDelConyugue ?: ""} 
+                                cell { fila.nacionalidadDelConyugue ?: "" }
+                                cell { fila.municipio ?: ""} 
+                                cell { fila.estado ?: ""}
+                                cell { fila.codigoPostal ?: ""}
+                                cell { fila.colonia ?: ""} 
+                                cell { fila.tiempoDeEstadia ?: ""} 
+                                cell { fila.tiempoDeVivienda ?: ""} 
+                                cell { fila.montoDeLaRenta ?: ""} 
+                                cell { fila.nombreDeLaEmpresa ?: ""} 
+                                cell { fila.ocupacion ?: ""} 
+                                cell { fila.profesion ?: ""} 
+                                cell { fila.fechaIngreso ?: "" } 
+                                cell { fila.ingresosFijos ?: "" } 
+                                cell { fila.ingresosVariables ?: ""} 
+                                cell { fila.consultaABuroEjecutada ?: ""}
+                                cell { fila.errorConsultaBuro ?: "" } 
+                                cell { fila.dictamenCapacidadDePago ?: "" } 
+                                cell { fila.dictamenConjunto ?: ""} 
+                                cell { fila.dictamenDePerfil ?: ""} 
+                                cell { fila.dictamenDePoliticas ?: ""} 
+                                cell { fila.dictamenFinal ?: "" }
+                                cell { fila.probabilidadDeMora ?: ""} 
+                                cell { fila.razonDeCobertura ?: ""}
+                                cell { fila.log ?: ""} 
+                                cell { fila.respuesta ?: "" }
+                            }
+                        }
+                    }
+                }
+                workbook.write(new FileOutputStream(archivoDelReporte))
+                builder = null
+                workbook.dispose();
+                workbook = null
+                return archivoDelReporte
+            }
+            
+
         }
        
     }

@@ -87,14 +87,14 @@
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
-                   <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_CAJERO'>
-                            <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
-                                <div class="searchBox autoMargin clearFix">
-                                    <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
-                                        <i class="fa fa-search" aria-hidden="true"></i>
-                                    </a>
-                                </div>
+                    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,,ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
+                        <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
+                            <div class="searchBox autoMargin clearFix">
+                                <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </a>
                             </div>
+                        </div>
                     </sec:ifAnyGranted>
                     <div class="floatRight notificationBox dashboardHeader marginTop15 paddingTop5 paddingRight5 paddingLeft5">
                         <img class="floatLeft paddingLeft10 paddingTop5" src="${resource(dir:'images', file:'bell.png')}" alt="bell" title="bell">
@@ -110,9 +110,9 @@
                 </a>
             </li>
             <li>
-            <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CAJERO'>
+            <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL, ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
                 <a href="${createLink(controller:'dashboard', action:'solicitudes')}">
-                    <img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"> SOLICITUDES
+                    <img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"> SOLICTUDES
                 </a>
             </sec:ifAnyGranted>
         </li>
@@ -124,7 +124,7 @@
         </sec:ifAnyGranted>
     </li>
     <li>
-    <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+    <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CENTRO_DE_CONTACTO,ROLE_MERCADOTECNIA'>
         <a href="${createLink(controller:'dashboard', action:'analiticas')}">
             <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"> ANALITICAS
         </a>
@@ -138,7 +138,7 @@
 </sec:ifAnyGranted>
 </li>
 <li>
-<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR'>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
     <a href="${createLink(controller:'dashboard', action:'configuracion')}">
         <img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configuración" title="configration"> CONFIGURACIÓN
     </a>
@@ -151,13 +151,13 @@
     </a>
 </sec:ifAnyGranted>
 </li>
-     <li>
-              <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR'>
-                  <a href="${createLink(controller:'dashboard', action:'reportes')}">
-                      <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
-                  </a>
-              </sec:ifAnyGranted>
-          </li>
+<li>
+<sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR,ROLE_RIESGOS,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
+    <a href="${createLink(controller:'dashboard', action:'reportes')}">
+        <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
+    </a>
+</sec:ifAnyGranted>
+</li>
 </ul>
 <nav id="dashboardMenu" class="container menuBox marginBottom28">
     <ul class="clearFix">
@@ -167,7 +167,7 @@
                 <span>DASHBOARD</span>
             </a>
         </li>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CAJERO'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
             <li class="floatLeft">
                 <a id="principalOpc2" href="${createLink(controller:'dashboard', action:'solicitudes')}" class="elementoMenuPrincipal font12 ">
                     <span><img class="menuIcon" src="${resource(dir:'images', file:'solicitudes.png')}" alt="solicitudes" title="solicitudes"></span>
@@ -183,7 +183,7 @@
                 </a>
             </li>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CENTRO_DE_CONTACTO,ROLE_MERCADOTECNIA'>
             <li class="floatLeft">
                 <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'analiticas')}" class="elementoMenuPrincipal font12">
                     <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="analiticas" title="analiticas"></span>
@@ -199,7 +199,7 @@
                 </a>
             </li>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_RIESGOS, ROLE_DISENO, ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
             <li class="floatLeft">
                 <a id="principalOpc6" href="${createLink(controller:'dashboard', action:'configuracion')}" class="elementoMenuPrincipal font12">
                     <span><img class="menuIcon" src="${resource(dir:'images', file:'configration.png')}" alt="configuración" title="configuración"></span>
@@ -215,14 +215,14 @@
                 </a>
             </li>
         </sec:ifAnyGranted>  
-             <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR'>
-                    <li class="floatLeft">
-                        <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'reportes')}" class="elementoMenuPrincipal font12">
-                            <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"></span>
-                            <span>REPORTES</span>
-                        </a>
-                    </li>
-                </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR,ROLE_RIESGOS,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
+            <li class="floatLeft">
+                <a id="principalOpc4" href="${createLink(controller:'dashboard', action:'reportes')}" class="elementoMenuPrincipal font12">
+                    <span><img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"></span>
+                    <span>REPORTES</span>
+                </a>
+            </li>
+        </sec:ifAnyGranted>
     </ul>
 </nav>
 

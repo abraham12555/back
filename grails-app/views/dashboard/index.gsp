@@ -148,7 +148,7 @@
                         </a>
                     </th>
                 </sec:ifAnyGranted>
-                <sec:ifAnyGranted roles='ROLE_ADMINISTRADOR, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CAJERO'>
+                <sec:ifAnyGranted roles='ROLE_ADMINISTRADOR, ROLE_EJECUTIVO, ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
                     <th colspan="9" class="left navyBg">
                         <h1 class="graphHeading colorWhite letterspacing2 textUpper">Solicitudes </h1>
                     </th>

@@ -35,19 +35,19 @@
                 <div class="lightGrayBG">
                     <ul class="clearFix paddingLeft30 solicitude_submenu">
                         <li class="floatLeft">
-                            <a id="subMenuOpc1" onclick="listarSolicitudesPor(1);" title="Día" class="elementoSubMenu displayInline blueButton font16 fontweight300  paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Día</a>
+                            <a id="subMenuOpc1" onclick="listarSolicitudesPor(1,'rangoDeFechas',null,null);" title="Día" class="elementoSubMenu displayInline blueButton font16 fontweight300  paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Día</a>
                         </li>
                         <li class="floatLeft">
-                            <a id="subMenuOpc7" onclick="listarSolicitudesPor(7);" title="Semana" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Semana</a>
+                            <a id="subMenuOpc7" onclick="listarSolicitudesPor(7,'rangoDeFechas',null,null);" title="Semana" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Semana</a>
                         </li>
                         <li class="floatLeft">
-                            <a id="subMenuOpc31" onclick="listarSolicitudesPor(31);" title="Mes" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Mes</a>
+                            <a id="subMenuOpc31" onclick="listarSolicitudesPor(31,'rangoDeFechas',null,null);" title="Mes" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Mes</a>
                         </li>
                         <li class="floatLeft">
-                            <a id="subMenuOpc365" onclick="listarSolicitudesPor(365);" title="Año" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Año</a>
+                            <a id="subMenuOpc365" onclick="listarSolicitudesPor(365,'rangoDeFechas',null,null);" title="Año" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Año</a>
                         </li>
                         <li class="floatLeft">
-                            <a id="subMenuOpc5" onclick="listarSolicitudesPor(5);" title="Por Fecha" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Por Fecha</a>
+                            <a id="subMenuOpc5" onclick="listarSolicitudesPor(5,'rangoDeFechas','from','to');" title="Por Fecha" class="elementoSubMenu displayInline gray font16 fontweight300 paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Por Fecha</a>
                         </li>
                     </ul>
                 </div>
@@ -76,7 +76,7 @@
                         <div class="col4 floatLeft">
                             <center>
                                 <li>
-                                    <a onclick="listarSolicitudesPor(0);" title="Buscar" class="displayInline blueButton font16 fontweight300  paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Buscar</a>
+                                    <a onclick="listarSolicitudesPor(0,null,null,null);" title="Buscar" class="displayInline blueButton font16 fontweight300  paddingTop10 paddingBottom10 paddingLeft20 paddingRight20 pointer">Buscar</a>
                                 </li>
                             </center>
                         </div>

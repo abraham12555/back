@@ -13,7 +13,7 @@
         <script type="text/javascript">
             $.contextAwarePathJS = "${urlContextAware}";
         </script>
-    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
+    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
         <g:external dir="js" file="dashboard/notificaciones/notificaciones.min.js" />
         <g:external dir="js" file="dashboard/notificaciones/notificacionesEmail.min.js" />
         <g:external dir="js" file="dashboard/notificaciones/envioNotificaciones.min.js" />
@@ -42,7 +42,7 @@
                 </li>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
             <div>
                 <li id="notificacionesButton" class="opcConfiguracion floatLeft paddingLeft5 paddingRight5">
                     <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','notificaciones');" title="NOTIFICACIONES" class="displayInline font20 fontWeight500 darkBluetitle padding20 opacity05 pointer">Notificaciones</a>
@@ -52,14 +52,14 @@
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="configuracionPasosSolicitudButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionPasosSolicitud');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Solicitud</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionPasosSolicitud');" title="SOLICITUD" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Solicitud</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="usuariosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionPasosCotizador');" title="USUARIOS" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Cotizador </a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','configuracionPasosCotizador');" title="COTIZADOR" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">Cotizador </a>
                 </li>
             </div>
         </sec:ifAnyGranted>
@@ -108,14 +108,14 @@
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DIRECTOR'>
             <div>
                 <li id="rubroDeAplicacionDeCreditoButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','rubroDeAplicacionDeCredito');"  title="Rubro de Aplicacion de Credito" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Rubro de Aplicación de Crédito</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','rubroDeAplicacionDeCredito');"  title="RUBRO DE APLICACIÓN DE CRÉDITO" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Rubro de Aplicación de Crédito</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_ADMINISTRADOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeAsentamiento');"  title="PRODUCTOS" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Asentamiento</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeAsentamiento');"  title="TIPO DE ASENTAMIENTO" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Asentamiento</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
@@ -143,35 +143,35 @@
         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_ADMINISTRADOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeCampo');"  title="TIPO DE TASA DE INTERES" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo Campo</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeCampo');"  title="TIPO DE CAMPO" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo Campo</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_ADMINISTRADOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeContrato');"  title="TIPO DE TASA DE INTERES" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Contrato</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeContrato');"  title="TIPO DE CONTRATO" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Contrato</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_ADMINISTRADOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeFotografia');"  title="TIPO DE TASA DE INTERES" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo Fotografía</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeFotografia');"  title="TIPO DE FOTOGRAFÍA" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo Fotografía</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_ADMINISTRADOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeGarantia');"  title="TIPO DE TASA DE INTERES" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Garantía</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeGarantia');"  title="TIPO DE GARANTÍA" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Garantía</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_ADMINISTRADOR'>
             <div>
                 <li id="productosButton" class="opcConfiguracion floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeIngreso');"  title="TIPO DE TASA DE INTERES" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Ingresos</a>
+                    <a onclick="mostrarApartado('opcConfiguracion','configuracionTab','tipoDeIngreso');"  title="TIPO DE INGRESOS" class="displayInline font20 fontWeight500 darkBluetitle padding20  pointer">Tipo de Ingresos</a>
                 </li>
             </div>
         </sec:ifAnyGranted>
@@ -192,7 +192,7 @@
                     </ul>
                 </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR, ROLE_DISENO'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR,ROLE_DISENO,ROLE_DIRECTOR'>
             <div id="perfilDeMarcaSubMenu" class="configuracionSubMenu lightGrayBG" style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -394,7 +394,7 @@
                 </ul>
             </div>
         </sec:ifAnyGranted>
-        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
+        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
             <div id="notificacionesSubMenu" class="configuracionSubMenu lightGrayBG" style="display: none;">
                 <ul class="clearFix paddingLeft30">
                     <li class="floatLeft">
@@ -458,7 +458,7 @@
         <g:render template="productos"/>
     </div>
 </sec:ifAnyGranted>
-<sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
+<sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
     <div class="configuracionTab" id="notificaciones" style="display: none;">
         <g:render template="configuracion/notificaciones/notificaciones"/>
     </div>

@@ -21,17 +21,26 @@
                         <li class="floatLeft paddingLeft5 paddingRight5">
                             <a href="#" title="REPORTES" class="displayInline font24 fontWeight700 darkBluetitle paddingTop20 paddingBottom15 paddingLeft20 paddingRight20">REPORTES</a>
                         </li>
-                        <li id="reporteSolicitudesButton" class="opcReportes floatLeft lightGrayBG paddingLeft5 paddingRight5">
-                            <a onclick="mostrarApartado('opcReportes','reportesTab','reporteSolicitudes');" title="Ver Solicitudes Formales y Temporales"  class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">SOLICITUDES</a>
-                        </li>
-                        <sec:ifAnyGranted roles='ROLE_ADMIN'>
-                            <li id="reporteMitekButton" class="opcReportes floatLeft paddingLeft5 paddingRight5">
-                                <a onclick="mostrarApartado('opcReportes','reportesTab','reporteMitek');" title="Ver Reporte Mitek " class="displayInline font20 fontWeight500 darkBluetitle opacity05 padding20 pointer">MITEK</a>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_CENTRO_DE_CONTACTO,ROLE_DIRECTOR'>
+                            <li id="reporteSolicitudesButton" class="opcReportes floatLeft lightGrayBG paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcReportes','reportesTab','reporteSolicitudes');" title="Ver Reporte Centro de Contacto"  class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">CENTRO DE CONTACTO</a>
                             </li>
                         </sec:ifAnyGranted>
-                        <li id="contactoClientesButton" class="opcReportes floatLeft paddingLeft5 paddingRight5">
-                            <a onclick="mostrarApartado('opcReportes','reportesTab','contactoClientes');" title="Ver Contacto de Clientes" class="displayInline font20 fontWeight500 darkBluetitle opacity05 padding20 pointer">CONTACTO CLIENTES</a>
-                        </li>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN'>
+                            <li id="reporteMitekButton" class="opcReportes floatLeft paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcReportes','reportesTab','reporteMitek');" title="Ver Reporte Mitek " class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">MITEK</a>
+                            </li>
+                        </sec:ifAnyGranted>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
+                            <!--<li id="contactoClientesButton" class="opcReportes floatLeft paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcReportes','reportesTab','contactoClientes');" title="Ver Contacto de Clientes" class="displayInline font20 fontWeight500 darkBluetitle opacity05 padding20 pointer">CONTACTO CLIENTES</a>
+                            </li>-->
+                        </sec:ifAnyGranted>
+                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA'>
+                            <li id="operacionesButton" class="opcReportes floatLeft lightGrayBG paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcReportes','reportesTab','operaciones');" title="Ver Operaciones" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">OPERACIONES</a>
+                            </li>
+                        </sec:ifAnyGranted>
                     </ul>
                 </div>
 
@@ -52,16 +61,29 @@
             </div>
         </center>
     </g:if> 
-    <div class="reportesTab" id="reporteSolicitudes" style="display: none;">
-        <g:render template="reporteSolicitudes"/>
-    </div>
+    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_CENTRO_DE_CONTACTO,ROLE_DIRECTOR'>
+        <div class="reportesTab" id="reporteSolicitudes" style="display: none;">
+            <g:render template="reporteSolicitudes"/>
+        </div>
+    </sec:ifAnyGranted>
+    
     <sec:ifAnyGranted roles='ROLE_ADMIN'>
         <div class="reportesTab" id="reporteMitek" style="display: none;">
             <g:render template="reporteMitek"/>
         </div>
     </sec:ifAnyGranted>
-    <div class="reportesTab" id="contactoClientes" style="display: none;" >
-        <g:render template="contactoClientes"/>
-    </div>
+    
+    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
+        <!--<div class="reportesTab" id="contactoClientes" style="display: none;" >
+            <g:render template="contactoClientes"/>
+        </div>-->
+    </sec:ifAnyGranted>
+    
+    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA'>
+        <div class="reportesTab" id="operaciones" style="display: none;" >
+            <g:render template="operaciones"/>
+        </div>
+    </sec:ifAnyGranted>
+
 </body>
 </html>

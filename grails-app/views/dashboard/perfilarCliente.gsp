@@ -106,7 +106,7 @@
                                     <div class="col6 floatLeft">
                                         <div class="mat-div">
                                             <label for="nombre" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Nombre</label>
-                                            <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_nombre" name="cliente_nombre">
+                                            <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_nombre" name="cliente_nombre" maxlength="26">
                                         </div>
                                     </div>
                                     <div class="col6 floatLeft">
@@ -118,13 +118,13 @@
                                     <div class="col6 floatLeft">
                                         <div class="mat-div">
                                             <label for="apellidoPaterno" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Apellido paterno</label>
-                                            <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoPaterno" name="cliente_apellidoPaterno">
+                                            <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoPaterno" name="cliente_apellidoPaterno" maxlength="26">
                                         </div>
                                     </div>
                                     <div class="col6 floatLeft">
                                         <div class="mat-div">
                                             <label for="apellidoMaterno" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Apellido materno</label>
-                                            <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoMaterno" name="cliente_apellidoMaterno">
+                                            <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoMaterno" name="cliente_apellidoMaterno" maxlength="26">
                                         </div>
                                     </div>
                                     <div class="col6 floatLeft">
@@ -771,7 +771,7 @@
                                    
                            
                                     <div class="col12 floatLeft paddingTop20">
-                                        <button id='goBackStep5' class="greenBox colorWhite hide" type="button" onclick="goBackStep5()">ATRAS</button>
+                                        <button id='goBackStep5' class="greenBox colorWhite hide" type="button" onclick="goBackStep5()">Anterior</button>
                                     </div>
                                 <div class="col12 floatLeft paddingTop20">
                                     <button class="greenBox colorWhite hide consultarB" type="button" onclick="verOfertas()">Siguiente</button>

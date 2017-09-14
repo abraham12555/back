@@ -1009,16 +1009,16 @@ function confirmarAccion(boton, respuesta) {
     validarPasoCompletado();
 }
 
-function listarSolicitudesPor(criterio) {
+function listarSolicitudesPor(criterio,idDiv,from,to) {
     seleccionarTemporalidad(criterio);
     if (criterio !== 5 && criterio !== 0) {
-        $('#rangoDeFechas').fadeOut();
+        $('#'+idDiv).fadeOut();
         consultarSolicitudesPorTiempo(criterio, "dictaminadas", null, null, "listaDeSolicitudesDictaminadas", "paginationSolicitudesDictaminadas", "temporalidadSolicitudesDictaminadas", 1);
         consultarSolicitudesPorTiempo(criterio, "noDictaminadas", null, null, "listaDeSolicitudesNoDictaminadas", "paginationSolicitudesNoDictaminadas", "temporalidadSolicitudesNoDictaminadas", 1);
         consultarSolicitudesPorTiempo(criterio, "complementoSolicitado", null, null, "listaSolicitudesConComplementoSolicitado", "paginationComplementoSolicitado", "temporalidadComplementoSolicitado", 1);
     } else if (criterio === 5) {
-        $('#rangoDeFechas').fadeIn();
-        habilitarDatepicker();
+        $('#'+idDiv).fadeIn();
+        habilitarDatepicker(from,to);
     } else if (criterio === 0) {
         if ($('#from').val() && $('#to').val()) {
             consultarSolicitudesPorTiempo(5, "noDictaminadas", $('#from').val(), $('#to').val(), "listaDeSolicitudesNoDictaminadas", "paginationSolicitudesNoDictaminadas", "temporalidadSolicitudesNoDictaminadas", 1);
@@ -1030,11 +1030,11 @@ function listarSolicitudesPor(criterio) {
     }
 }
 
-function habilitarDatepicker() {
+function habilitarDatepicker(desde,hasta) {
     $(function () {
         $.datepicker.setDefaults($.datepicker.regional["es"]);
         var dateFormat = "dd/mm/yy",
-                from = $("#from")
+                from = $('#'+desde)
                 .datepicker({
                     changeMonth: true,
                     changeYear: true
@@ -1042,7 +1042,7 @@ function habilitarDatepicker() {
                 .on("change", function () {
                     to.datepicker("option", "minDate", getDate(this));
                 }),
-                to = $("#to").datepicker({
+                to = $('#'+hasta).datepicker({
             changeMonth: true,
             changeYear: true
         })
@@ -1118,13 +1118,14 @@ function consultarSolicitudesPorTiempo(temporalidad, idDiv, fechaInicio, fechaFi
     });
 }
 
-function genererarEstadisticasPor(criterio) {
+function genererarEstadisticasPor(criterio,idDiv,from,to) {
     seleccionarTemporalidad(criterio);
     if (criterio !== 5 && criterio !== 0) {
+        $('#'+idDiv).fadeOut();
         cargarGraficas(criterio, null, null);
     } else if (criterio === 5) {
-        $('#rangoDeFechas').fadeIn();
-        habilitarDatepicker();
+        $('#'+idDiv).fadeIn();
+        habilitarDatepicker(from,to);
     } else if (criterio === 0) {
         if ($('#from').val() && $('#to').val()) {
             cargarGraficas(criterio, $('#from').val(), $('#to').val());
