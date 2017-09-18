@@ -208,7 +208,7 @@ class SolicitudService {
                                 emailPersonal.save(flush: true)
                             }
                             if(correoExistente){
-                            mensaje = "EL CORREO INGRESADO YA HA SIDO UTILIZADO"
+                            mensaje = "EL CORREO ELECTRÓNICO YA HA SIDO REGISTRADO, PORFAVOR CAPTURA UN NUEVO CORREO ELECTRONICO"
                             guardadoCorrecto = false
                             }
                         } else if (correoExistente) {
@@ -230,7 +230,7 @@ class SolicitudService {
                             }
                             if(correoExistente){
                                   guardadoCorrecto = false
-                                  mensaje = "EL CORREO INGRESADO YA HA SIDO UTILIZADO"
+                                  mensaje = "EL CORREO ELECTRÓNICO YA HA SIDO REGISTRADO, PORFAVOR CAPTURA UN NUEVO CORREO ELECTRONICO"
                             }
                             
                         } else if (correoExistente) {
