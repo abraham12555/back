@@ -1,9 +1,9 @@
-<div class=" <g:if test="${pasoActual?.ultimoPaso}"> width850 </g:if><g:else> width600 </g:else> clearFix desktop tablet" <g:if test="${ofertas != null}"> style="width: 490px;"</g:if>>
+<div class=" <g:if test="${pasoActual?.ultimoPaso}"> width850 </g:if><g:else> width600 </g:else> clearFix desktop tablet" <g:if test="${ofertas != null || motivoRechazo}"> style="width: 490px;"</g:if>>
     <g:each status="i" in="${pasosDeSolicitud}" var="paso">
         <g:if test="${paso.mostrarEnBarra}">
-            <g:if test="${ofertas != null}">
+            <g:if test="${ofertas != null || motivoRechazo}">
                 <div data-numero-de-paso="${paso.numeroDePaso}" id="circuloPaso${paso.numeroDePaso}" class="botonCambioDePaso <g:if test="${paso.numeroDePaso <= pasoActual.numeroDePaso}"> blueCircle colorWhite </g:if><g:elseif test="${paso.numeroDePaso == pasoActual.pasoSiguiente}"> grayCircle sendBtn nextBtn </g:elseif><g:else>grayCircle</g:else> center floatLeft" <g:if test="${paso.numeroDePaso == pasoActual.numeroDePaso}"> disabled </g:if><g:elseif test="${paso.numeroDePaso == pasoActual.pasoSiguiente}"> style="width: 250px; height: 45px; marginTop: 0px" </g:elseif> >
-                    <p id="pPaso${paso.numeroDePaso}" class="<g:if test="${paso.numeroDePaso <= pasoActual.numeroDePaso}"> paddingTop10 </g:if><g:else> paddingTop5 footerTextColor </g:else> font18">${ ((paso.numeroDePaso == pasoActual.pasoSiguiente) ? "IR AL PASO " : "") + paso.numeroDePaso}</p>
+                    <p id="pPaso${paso.numeroDePaso}" class="<g:if test="${paso.numeroDePaso <= pasoActual.numeroDePaso}"> paddingTop10 </g:if><g:else> paddingTop5 footerTextColor </g:else>" style="font-size:17px;">${ ((paso.numeroDePaso == pasoActual.pasoSiguiente) ? "IR AL PASO " : "") + paso.numeroDePaso}</p>
                     </div>
             </g:if>
             <g:else>

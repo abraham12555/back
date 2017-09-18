@@ -368,7 +368,6 @@ class PerfiladorService {
 
     def obtenerPropuestas(def origen, def identificadores, def idTipoDeDocumento, def clienteExistente, def perfil){
         def ofertas = []
-        def listado = [:]
         def ratio_menor = 0
         def oferta
         def datosSolicitud = consultarSolicitud(origen, identificadores.idSolicitud)
@@ -389,14 +388,18 @@ class PerfiladorService {
             def tipoDeDocumento = (datosSolicitud.documento ?: TipoDeDocumento.get(idTipoDeDocumento as long)) //Falta tomar en cuenta clienteExistente
             //Primer Filtro
             def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
-            if(productosAplicables.size() == 0){ //listado 1
-                listado.productosAplicables = " No hay productos que apliquen para este perfil "
+            if (productosAplicables.size() == 0) {
+                log.error("ERRPROD" + (aleatorio()) + ". No hay productos que apliquen para este perfil. Solicitud: " + datosSolicitud.idSolicitud)
+                throw new BusinessException("No hay productos que apliquen para este perfil");
             }
+
             //Segundo Filtro
             def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
-            if(bitacoraDeBuro == null || bitacoraDeBuro.empty){ //listado 2
-                listado.bitacoraBuro = " No se generaron resultados por parte del Buró de Crédito"
+            if(bitacoraDeBuro == null || bitacoraDeBuro.empty) {
+                log.error("ERRBC" + (aleatorio()) + ". No se generaron resultados por parte del Buró de Crédito. Solicitud: " + datosSolicitud.idSolicitud)
+                throw new BusinessException("No se generaron resultados por parte del Buró de Crédito");
             }
+
             def datos = [:]
             datos.solicitudId = identificadores.idSolicitud
             datos.listaDeServicios = (productosAplicables*.claveDeProducto)?.join(',')
@@ -416,22 +419,22 @@ class PerfiladorService {
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
                     } else {
-                        listado.bitacoraBuro = "Se detectaron errores en la respuesta de buró de crédito"
                         log.error("ERRCLEX" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
+                        throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
                     }
                 } else {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuro(entidadFinanciera, datos)
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticas(entidadFinanciera, datos)
                     } else {
-                        listado.bitacoraBuro = "Se detectaron errores en la respuesta de buró de crédito"
                         log.error("ERRCLN" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
+                        throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
                     }
                 }
 
                 if(respuestaDictameneDePoliticas != null && respuestaDictameneDePoliticas.empty) {
-                    listado.politicas = "Se detectaron errores al obtener el dictamen de políticas"
                     log.error("ERRDP" + (aleatorio()) + ". Se detectaron errores al obtener el dictamen de políticas. Solicitud: " + datos.solicitudId)
+                    throw new BusinessException("Se detectaron errores al obtener el dictamen de políticas");
                 }
             }
 
@@ -449,7 +452,7 @@ class PerfiladorService {
                 if(respuestaDictameneDePoliticas) {
                     def dictamen = respuestaDictameneDePoliticas.find { (it."$rechazo.claveDeProducto" == "R" ) }
                     if(dictamen) {
-                       listado.politicas = "El historial crediticio no cumple las políticas"
+                       throw new BusinessException("El historial crediticio no cumple las políticas");
                     }
                 }
             } /* BUSCA  R*/
@@ -480,9 +483,9 @@ class PerfiladorService {
                             datos = construirDatosMotorDeDecisionClienteExistente(identificadores, producto, perfil, oferta)
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
                             if(respuestaDictamenDePerfil == null){
-                                listado.dictamenPerfil = "Se detectaron errores al obtener el dictamen de perfil del cliente"
+                                throw new BusinessException("Se detectaron errores al obtener el dictamen de perfil del cliente");
                             } else if(respuestaDictamenDePerfil.dictamen == 'R') { /*BUSCA R */
-                                listado.dictamenPerfil = ' No cumple con el dictamen de perfil  '
+                                throw new BusinessException("No cumple con el dictamen de perfil");
                             }/* BUSCA  R*/
 
                         } else {
@@ -490,9 +493,9 @@ class PerfiladorService {
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
 
                             if(respuestaDictamenDePerfil == null){
-                                listado.dictamenPerfil = "Se detectaron errores al obtener el dictamen de perfil"
+                                throw new BusinessException("Se detectaron errores al obtener el dictamen de perfil");
                             } else if(respuestaDictamenDePerfil.dictamen == 'R') { /*BUSCA R */
-                                listado.dictamenPerfil = ' No cumple con el dictamen de perfil  '
+                                throw new BusinessException("No cumple con el dictamen de perfil");
                             } /* BUSCA  R*/
                         }
                         if(respuestaDictamenDePerfil?.dictamen == 'A') {
@@ -520,18 +523,18 @@ class PerfiladorService {
                     ofertas << ofertaProducto
                 }
             }
+
+            if (ratio_menor == 1) {
+                throw new BusinessException("Falta de capacidad de pago");
+            } 
         }
 
-        if(ofertas.size() > 0 ){
+        if (ofertas.size() > 0) {
             return ofertas
-        }else{
-            if (ratio_menor == 1 ){
-                listado.ratio = ' Falta de capacidad de pago '
-            }
-
-            return listado
-
-       }
+        } else {
+            log.error("ERROP. No se generaron ofertas. Solicitud: " + datos.solicitudId);
+            throw new BusinessException("Error desconocido. Favor de reportar al administrador del sistema");
+        }
     }
 
     def aleatorio (){

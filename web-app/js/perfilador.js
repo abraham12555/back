@@ -549,8 +549,8 @@ function verOfertas() {
     $.ajax({
         type: 'POST',
         url: $.contextAwarePathJS + 'dashboard/obtenerOfertas',
-        success: function (data, textStatus) {
-            mostrarOfertas(data);
+        success: function (response, textStatus) {
+            mostrarOfertas(response);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("body").mLoading('hide');
@@ -1014,14 +1014,18 @@ function formatCurrency(n, currency) {
 }
 
 function mostrarOfertas(data) {
-    var respuesta = eval(data);
+    var respuesta = null;
+    if(typeof data.ofertas !== "undefined") {
+        respuesta = data.ofertas;
+        ofertasCalculadas = respuesta;
+    }
+
     var html = "";
     var productos = [];
-    ofertasCalculadas = respuesta;
     html += "<h2>Ofertas disponibles</h2>";
     html += "<div class=\"promos\">";
     html += "<div id=\"wrapper_bu\">";
-    if (respuesta.length > 0) {
+    if (respuesta !== null) {
         for (var i = 0; i < respuesta.length; i++) {
             html += "<div id=\"bu" + (i + 1) + "\">";
             html += "<div class=\"promo\">";
@@ -1069,36 +1073,12 @@ function mostrarOfertas(data) {
             html += "</ul></div></div>";
             productos.push(respuesta[i].producto.id);
         }
-    } else {
-        
-        var respuestaListado = eval(data);
+    } else if (typeof data.motivoRechazo !== "undefined") {
         html += "<div>No se encontraron ofertas que se ajusten al perfil del cliente.</div>";
         html += "<div>Por el siguiente motivo: </div> ";
-        if(respuestaListado.productosAplicables != null ){
-            
-            html += "<h2><b><strong> - " + respuestaListado.productosAplicables + " </strong></b></p>";
-        }else {
-            if(respuestaListado.politicas != null ){
-                html += "<h2><b><strong> - " + respuestaListado.politicas + "</strong> </b></p>";
-            }else{
-                if(respuestaListado.dictamenPerfil != null ){
-                    html += "<h2><b><strong> - " + respuestaListado.dictamenPerfil + "</strong> </b></p>";
-                }else  {
-                    if(respuestaListado.bitacoraBuro != null ){
-                        html += "<h2><b><strong> -    " + respuestaListado.bitacoraBuro + "</strong></b></p>";
-                    }else {
-                         if(respuestaListado.ratio != null ){
-                            html += "<h2><b><strong> - " + respuestaListado.ratio + "</strong> </b></p>";
-                        }
-                    }
-                }
-            }
-        }
-        
-        
-        
-        
+        html += "<h2><b><strong>" + data.motivoRechazo + "</strong></b></p>"; 
     }
+    
     html += "</div></div>";
     $('#ofertas').html(html);
     $('#buro').hide();
@@ -1110,11 +1090,14 @@ function mostrarOfertas(data) {
     $('.step4').addClass('active');
     $('.step4 .step').addClass('active');
     $("body").mLoading('hide');
-    for (var i = 0; i < respuesta.length; i++) {
-        $(('#plazoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].plazos);
-        $(('#periodicidadSeleccionada_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].periodicidad.id);
-        $(('#pagoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].cuota);
-        inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 1000);
+    
+    if(respuesta !== null) {
+        for (var i = 0; i < respuesta.length; i++) {
+            $(('#plazoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].plazos);
+            $(('#periodicidadSeleccionada_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].periodicidad.id);
+            $(('#pagoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].cuota);
+            inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 1000);
+        }
     }
 
     var Conclave = (function () {

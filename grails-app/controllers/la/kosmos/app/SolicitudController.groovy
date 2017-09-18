@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Random
 import org.apache.commons.codec.binary.Base64
 import javax.xml.bind.DatatypeConverter
+import la.kosmos.app.exception.BusinessException
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.client.ClientProtocolException;
@@ -781,24 +782,31 @@ class SolicitudController {
                         } else if (pasoActual.tipoDePaso.nombre == "ofertas") {
                             println "Si entraaaaa a evaluar la vista del perfilador!!!!!"
                             def respuesta
-                            def propuestas
+                            def propuestas = null
                             def clienteExistente = "NO"
                             session.ofertas = null
                             session.perfil = null
+                            String motivoRechazo
                             respuesta = perfiladorService.buscarPerfilExistente(session["pasoFormulario"]?.cliente?.rfc)
                             if(respuesta.encontrado){
                                 session.perfil = respuesta.perfil
                                 clienteExistente = "SI"
                             }
-                            propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil)
-                            println "Propuestas Obtenidas: " + propuestas*.producto
-                            session.ofertas = propuestas
+
+                            try {
+                                propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil)
+                                session.ofertas = propuestas
+                            } catch(BusinessException ex) {
+                                motivoRechazo = ex.message
+                            }
+
                             modelo = [configuracion: configuracion,
                                 logueado: session.yaUsoLogin,
                                 pasosDeSolicitud: pasosDeSolicitud,
                                 pasoActual:pasoActual,
                                 nombreTemplate: (pasoActual.rutaTemplate + pasoActual.tipoDePaso.nombre),
-                                ofertas: propuestas]
+                                ofertas: propuestas,
+                                motivoRechazo: motivoRechazo]
                         } else if(pasoActual.tipoDePaso.nombre == "resumen"){
                             statusDeSolicitud = StatusDeSolicitud.get(2)
                             def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
