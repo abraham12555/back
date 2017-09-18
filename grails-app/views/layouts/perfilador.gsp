@@ -87,7 +87,7 @@
                         </div>
                         <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
-                    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,,ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
+                    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
                         <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
                             <div class="searchBox autoMargin clearFix">
                                 <a href="#" style="width:100%;" class="show-pop-async btn  center-block" data-placement="vertical">Buscar 

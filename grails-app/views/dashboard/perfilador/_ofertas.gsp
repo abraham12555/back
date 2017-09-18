@@ -3,18 +3,22 @@
 <g:external dir="js" file="swiper.min.js" />
 <br />
 <h2>Ofertas disponibles</h2>
-<g:if test="${ofertas.size() > 1}">
+
+<g:if test="${ofertas && ofertas.size() > 1}">
+    <input type="hidden" id="ofertasJSON" value="${ofertas as grails.converters.JSON}">
     <div class="col12 floatLeft stepsContainer" style="height: 1100px;">
 </g:if>
 <g:else>
+    <g:if test= "${motivoRechazo}">
+        <input type="hidden" id="motivoRechazo" value="${motivoRechazo}">
+    </g:if>
     <div class="col12 floatLeft stepsContainer" style="height: 500px;">
-    </g:else>
+</g:else>
     <div id="wrapper_bu">
         <div id="listaDeOfertasDiv" class="credit-proposals swiper-container"></div>
     </div>
 </div>
-<input type="hidden" id="ofertasJSON" value="${ofertas as grails.converters.JSON}">
-<g:if test="${ofertas.size() < 1}">
+<g:if test="${!ofertas || (ofertas && ofertas.size() == 0)}">
     <footer class="footerContainer">
         <g:render template="stepBarTest" />
         <div class="mobile">
@@ -27,7 +31,7 @@
                 <g:else>
                     <div class="paddingAside15 clearFix">
                         <div class="grayrectangle floatLeft marginRight10">Atras</div>
-                        <div data-numero-de-paso="${pasoActual.numeroDePaso + 1}" id="circuloPaso${pasoActual.numeroDePaso + 1}" class="botonCambioDePaso grayrectangle floatLeft nextBtn">Ir al paso ${pasoActual?.numeroDePaso + 1}</div>
+                        <div data-numero-de-paso="${pasoActual.numeroDePaso}" id="circuloPaso${pasoActual.numeroDePaso}" class="botonCambioDePaso grayrectangle floatLeft nextBtn mobileChange">Ir al paso ${pasoActual?.numeroDePaso}</div>
                     </div>
                 </g:else>
             </g:if>

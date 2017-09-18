@@ -9,6 +9,7 @@ import static java.util.Calendar.*
 import java.text.SimpleDateFormat
 import la.kosmos.app.bo.Pager
 import la.kosmos.app.bo.User
+import la.kosmos.app.exception.BusinessException
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 
@@ -2211,13 +2212,17 @@ class DashboardController {
 
     def obtenerOfertas(){
         println params
-        def respuesta
+        def respuesta = [:]
         session.ofertas = null
-        respuesta = perfiladorService.obtenerPropuestas("perfilador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, session["pasoFormulario"]?.cliente?.clienteExistente, session.perfil)
-        println "Propuestas Obtenidas: " + respuesta
-        session.ofertas = respuesta
+        try {
+            def ofertas = perfiladorService.obtenerPropuestas("perfilador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, session["pasoFormulario"]?.cliente?.clienteExistente, session.perfil)
+            session.ofertas = ofertas
+            respuesta.ofertas = ofertas
+        } catch (BusinessException ex) {
+            respuesta.motivoRechazo = ex.message
+        }
+
         render respuesta as JSON
-        //render(template: "perfilador/ofertas", model: [ofertas: respuesta])
     }
 
     def recalcularOferta() {
