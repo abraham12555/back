@@ -593,7 +593,7 @@ class SolicitudController {
 
     def cambiarPaso(){
 	println params
-        if(session.ef){
+        if (session.ef && session.cotizador) {
             if(params.siguientePaso){
                 def modelo = [:]
                 def siguientePaso =  params.siguientePaso as int
@@ -901,93 +901,101 @@ class SolicitudController {
 
     def consultarOCR(){
         println params
-        def fileNames = request.getFileNames()
-        def listaDeArchivos = []
-        def mapa
         def respuesta
-        def ephesoft = false
-        def ocr = true
-        fileNames.each{ fileName ->
-            def uploadedFile = request.getFile(fileName)
-            def fileLabel = ".${uploadedFile.originalFilename.split("\\.")[-1]}"
-            println uploadedFile
-            println "File name :"+ uploadedFile.originalFilename
-            println "File size :"+ uploadedFile.size
-            println "File label :"+ fileLabel
-            InputStream inputStream = uploadedFile.inputStream
-            mapa = [:]
-            mapa.archivo = inputStream
-            mapa.nombreDelArchivo = uploadedFile.originalFilename
-            mapa.extension = fileLabel.toLowerCase()
-            listaDeArchivos << mapa
-        }
-        if(!session.yaUsoLogin){
-            session.yaUsoLogin = true
-        }
-        if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
-            if(params.cara == "frente") {
-                if(session.contadorOcr == 0) {
-                    def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
-                    respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId)
-                    session.contadorOcr++
-                } else {
+        if (session.identificadores) {
+            def fileNames = request.getFileNames()
+            def listaDeArchivos = []
+            def mapa 
+            def ephesoft = false
+            def ocr = true
+            fileNames.each{ fileName ->
+                def uploadedFile = request.getFile(fileName)
+                def fileLabel = ".${uploadedFile.originalFilename.split("\\.")[-1]}"
+                println uploadedFile
+                println "File name :"+ uploadedFile.originalFilename
+                println "File size :"+ uploadedFile.size
+                println "File label :"+ fileLabel
+                InputStream inputStream = uploadedFile.inputStream
+                mapa = [:]
+                mapa.archivo = inputStream
+                mapa.nombreDelArchivo = uploadedFile.originalFilename
+                mapa.extension = fileLabel.toLowerCase()
+                listaDeArchivos << mapa
+            }
+            if(!session.yaUsoLogin){
+                session.yaUsoLogin = true
+            }
+            if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
+                if(params.cara == "frente") {
+                    if(session.contadorOcr == 0) {
+                        def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
+                        respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId)
+                        session.contadorOcr++
+                    } else {
+                        respuesta = [:]
+                        respuesta.vigente = true
+                        respuesta.exito = true
+                        respuesta.llenadoPrevio = false
+                        ocr = true
+                    }
+                } else if (params.cara == "vuelta") {
                     respuesta = [:]
                     respuesta.vigente = true
                     respuesta.exito = true
-                    respuesta.llenadoPrevio = false
-                    ocr = true
+                    ocr = false
                 }
-            } else if (params.cara == "vuelta") {
+            }else if (params.docType == "reciboCfe" || params.docType == "reciboTelmex"){
+                respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos, session.identificadores?.idSolicitud, "UtilityBill");
+                ephesoft = true
+            } else if (params.docType == "ComprobanteDeIngresos"){
+                def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
+                def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
+                params.docType = productoSolicitud.documentoElegido.nombreMapeo
                 respuesta = [:]
-                respuesta.vigente = true
-                respuesta.exito = true
+                respuesta.error = false
+                ocr = false
+            } else if (params.docType == "consentimientoConsultaBC") {
+                respuesta = [:]
+                respuesta.error = false
                 ocr = false
             }
-        }else if (params.docType == "reciboCfe" || params.docType == "reciboTelmex"){
-            respuesta = ephesoftService.ocrClassifyExtract(listaDeArchivos, session.identificadores?.idSolicitud, "UtilityBill");
-            ephesoft = true
-        } else if (params.docType == "ComprobanteDeIngresos"){
-            def solicitud = ((session.identificadores?.idSolicitud) ? SolicitudDeCredito.get(session.identificadores?.idSolicitud) : null)
-            def productoSolicitud = ProductoSolicitud.findWhere(solicitud: solicitud);
-            params.docType = productoSolicitud.documentoElegido.nombreMapeo
-            respuesta = [:]
-            respuesta.error = false
-            ocr = false
-        } else if (params.docType == "consentimientoConsultaBC") {
-            respuesta = [:]
-            respuesta.error = false
-            ocr = false
-        }
-        if((!respuesta?.error || respuesta?.vigente == true) && !respuesta?.motivosRechazo) {
-            if(ocr && respuesta.llenadoPrevio){
-                session["pasoFormulario"] = respuesta
-                if(session.cotizador?.emailCliente && session["pasoFormulario"]){
-                    session["pasoFormulario"].emailCliente = [:]
-                    session["pasoFormulario"].emailCliente.emailPersonal = session.cotizador.emailCliente
+            if((!respuesta?.error || respuesta?.vigente == true) && !respuesta?.motivosRechazo) {
+                if(ocr && respuesta.llenadoPrevio){
+                    session["pasoFormulario"] = respuesta
+                    if(session.cotizador?.emailCliente && session["pasoFormulario"]){
+                        session["pasoFormulario"].emailCliente = [:]
+                        session["pasoFormulario"].emailCliente.emailPersonal = session.cotizador.emailCliente
+                    }
+                    if(session.cotizador?.telefonoCliente && session["pasoFormulario"]){
+                        session["pasoFormulario"].telefonoCliente = [:]
+                        session["pasoFormulario"].telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
+                    }
                 }
-                if(session.cotizador?.telefonoCliente && session["pasoFormulario"]){
-                    session["pasoFormulario"].telefonoCliente = [:]
-                    session["pasoFormulario"].telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
-                }
-            }
-            //}
-            session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
-            if(session.identificadores?.idSolicitud){
-                if(ocr){
-                    solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                //}
+                session.tiposDeDocumento = solicitudService.controlDeDocumentos(session.tiposDeDocumento, params.docType)
+                if(session.identificadores?.idSolicitud){
+                    if(ocr){
+                        solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                    } else {
+                        respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                    }
                 } else {
-                    respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
+                    session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
                 }
-            } else {
-                session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
             }
+        } else {
+            session.invalidate()
+            respuesta = [:]
+            respuesta.sesionExpirada = true
+            respuesta.mensaje = "Tu sesión ha expirado. Para continuar con tu solicitud da click en el siguiente botón."
         }
+
         println respuesta
         render respuesta as JSON
     }
 
     def consultarBuroDeCredito(){
-        if(session.ef || session.configuracion){
+        if ((session.ef || session.configuracion) && session.identificadores) {
             def idEntidadFinanciera = session.configuracion.id
             Usuario usuario = springSecurityService.currentUser
 
