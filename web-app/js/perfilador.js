@@ -1381,48 +1381,6 @@ function fechaValida(year, month, day) {
     }
 }
 
-Dropzone.autoDiscover = false;
-
-function inicializarDropzone(elemento, boton, tipoDeDocumento) {
-    //Dropzone.autoDiscover = false;
-    kosmosDropzone = new Dropzone(elemento, {
-        url: $.contextAwarePathJS + "solicitud/consultarOCR",
-        uploadMultiple: true,
-        parallelUploads: 1,
-        paramName: "archivo",
-        params: {'docType': tipoDeDocumento},
-        maxFiles: 1,
-        maxFilesize: 10,
-        acceptedFiles: ".png, .jpg, .jpeg",
-        autoQueue: true,
-        createImageThumbnails: false,
-        clickable: boton
-    });
-    kosmosDropzone.on("addedfile", function (file) {
-        console.log("Archivo enviado: " + file);
-        $('.dz-preview').hide();
-    });
-    kosmosDropzone.on("success", function (file, response) {
-        var respuesta = eval(response);
-        console.log("Respuesta recibida: " + respuesta);
-        if (respuesta.exito) {
-            sweetAlert("¡Excelente!", respuesta.mensaje, "success");
-            var html = '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>';
-            html += '<p class="center letterspacing1.4 gray">Subido Correctamente</p>';
-            $('#uploadFormato').html(html);
-            $('#consentimientoConsulta').val('true');
-        } else {
-            sweetAlert("Oops...", respuesta.mensaje, "error");
-            this.removeAllFiles();
-        }
-    });
-    kosmosDropzone.on("error", function (file, response) {
-        console.log(response);
-        sweetAlert("Oops...", "Ocurrio un problema al consultar los datos del documento", "error");
-    });
-}
-
-
 function getProfilePicture() {   
   $.post($.getProfilePicture, function(response) {
       if(!response.empty) {

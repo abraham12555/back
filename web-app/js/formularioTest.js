@@ -1487,7 +1487,7 @@ function verificacionSubPaso5() {
 
 function verificacionSubPaso4() {
 
-    if ($("#login_id").val() != "") {
+    if ($("#login_id").val() !== "") {
         $('.loadingActive').hide();
         $('#consultarInfo').hide();
         $('.defaultBubble').fadeOut();
@@ -1953,6 +1953,9 @@ function consultarBuro() {
                         $('#accionesError').fadeIn();
                         $('#divAutorizacionBuro').fadeOut();
                         $('.avanzaBtn').click();
+                    }  else if (respuesta.sesionExpirada) {
+                        var mensaje = "<p style='text-align: justifiy;'>" + respuesta.mensaje + "</p>";
+                        continuarSolicitudExpirada(mensaje);
                     }
                     showValues();
                     $('.nextBtn').addClass('sendBtn');
@@ -2361,7 +2364,10 @@ function inicializarDropzone(elemento, boton) {
         $(".dz-hidden-input").prop("disabled", false);
         var respuesta = eval(response);
 
-        if (respuesta.vigente === true || respuesta.exito === true) {
+        if (respuesta.sesionExpirada) {
+            var mensaje = "<p style='text-align: justifiy;'>" + respuesta.mensaje + "</p>";
+            continuarSolicitudExpirada(mensaje);
+        } else if (respuesta.vigente === true || respuesta.exito === true) {
             var pasoActual = $('#pasoInicial').val();
             if (pasoActual === "0") {
                 $('#formLogin').submit();
@@ -2472,7 +2478,7 @@ function inicializarDropzone(elemento, boton) {
             sweetAlert("Oops...", "El documento envíado no está vigente. Por favor, suba un documento vigente.", "error");
         } else {
             //To Do Cerrar modal, deshabilitar boton de envio
-            sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga border blancos.", "warning");
+            sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga bordes blancos. Por favor intente de nuevo.", "warning");
         }
         this.removeAllFiles();
         $('.barraProgresoComp').fadeOut();
