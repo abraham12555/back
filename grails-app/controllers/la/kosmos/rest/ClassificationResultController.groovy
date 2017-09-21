@@ -16,9 +16,7 @@ import org.apache.http.client.ClientProtocolException
 @Transactional(readOnly = false)
 class ClassificationResultController {
     
-    def save(){
-        println "prueba: " + params + " - request: " + request?.JSON
-        
+    def save(){        
         def mapaRespuesta = [:]
         
         if(request?.JSON?.DocumentType == "Passport"){

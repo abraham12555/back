@@ -4,7 +4,7 @@
 <br />
 <h2>Ofertas disponibles</h2>
 
-<g:if test="${ofertas && ofertas.size() > 1}">
+<g:if test="${ofertas && ofertas.size() > 0}">
     <input type="hidden" id="ofertasJSON" value="${ofertas as grails.converters.JSON}">
     <div class="col12 floatLeft stepsContainer" style="height: 1100px;">
 </g:if>

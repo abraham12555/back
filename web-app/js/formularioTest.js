@@ -91,6 +91,26 @@ function inicializarFormulario() {
     });
 
     $('.select2').select2();
+
+    $("#cliente_curpDelConyugue").on('focus', function() {
+        $('body').off('click');
+    });
+
+    $("#cliente_curpDelConyugue").focusout(function () {
+        $('body').on('click', function (e) {
+            $('body').off('click');
+            if (!$(e.target).hasClass('notEmpty') && !$(e.target).hasClass('inputsFormulario') && !$(e.target).parent().hasClass('notEmpty')) {
+                changeSubForm();
+            }
+        });
+    });
+
+    $('#cliente_curpDelConyugue').on('keydown', function(e) {
+        if (e.keyCode === 9) {
+            e.preventDefault();
+            changeSubForm();
+        }
+    });
 }
 
 function habilitarBotonesAvance() {
@@ -419,10 +439,14 @@ function operacionesFormulario() {
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
                 }
             } else {
-                $(this).parent().parent().slideUp();
-                $(this).parent().parent().next('.formStep').slideDown();
-                $('.slideStep').fadeIn();
-                slideIndex++;
+                if ($('#cliente_curpDelConyugue').val() !== 'undefined' && $('#cliente_curpDelConyugue').val() !== '' && $('#cliente_curpDelConyugue').is(":visible") && !$("#cliente_curpDelConyugue").hasClass("continue")) {
+                    $('#cliente_curpDelConyugue').focus();
+                } else {
+                    $(this).parent().parent().slideUp();
+                    $(this).parent().parent().next('.formStep').slideDown();
+                    $('.slideStep').fadeIn();
+                    slideIndex++;
+                }
             }
             $('.successBubble').fadeOut();
         }
@@ -2506,6 +2530,13 @@ function addCloseModalEvent() {
     $('.closeModal').click(function () {
         $(this).parent().parent().fadeOut();
     });
+}
+
+function changeSubForm(){
+    $("#cliente_curpDelConyugue").addClass("continue");
+    var select = $('fieldset:visible');
+    $(select).children(".confirmDiv").children(".buttonM").click();
+    $("#cliente_curpDelConyugue").removeClass("continue");
 }
 // ***************************** Fin de Funciones Auxiliares
 
