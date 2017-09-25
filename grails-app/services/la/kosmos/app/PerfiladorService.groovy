@@ -397,7 +397,7 @@ class PerfiladorService {
             def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
             if(bitacoraDeBuro == null || bitacoraDeBuro.empty) {
                 log.error("ERRBC" + (aleatorio()) + ". No se generaron resultados por parte del Buró de Crédito. Solicitud: " + datosSolicitud.idSolicitud)
-                throw new BusinessException("No se generaron resultados por parte del Buró de Crédito");
+                throw new BusinessException("No se pudo recuperar la información. Inténtelo más tarde.");
             }
 
             def datos = [:]
@@ -420,7 +420,7 @@ class PerfiladorService {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
                     } else {
                         log.error("ERRCLEX" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
-                        throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
+                        throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
                     }
                 } else {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuro(entidadFinanciera, datos)
@@ -428,13 +428,13 @@ class PerfiladorService {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticas(entidadFinanciera, datos)
                     } else {
                         log.error("ERRCLN" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
-                        throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
+                        throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
                     }
                 }
 
                 if(respuestaDictameneDePoliticas != null && respuestaDictameneDePoliticas.empty) {
                     log.error("ERRDP" + (aleatorio()) + ". Se detectaron errores al obtener el dictamen de políticas. Solicitud: " + datos.solicitudId)
-                    throw new BusinessException("Se detectaron errores al obtener el dictamen de políticas");
+                    throw new BusinessException("No se pudo obtener el dictamen de políticas. Inténtelo más tarde.");
                 }
             }
 
@@ -551,13 +551,13 @@ class PerfiladorService {
             datosSolicitud.dependientesEconomicos = solicitudDeCredito.cliente.dependientesEconomicos
             datosSolicitud.entidadFinancieraId = solicitudDeCredito.entidadFinanciera.id
             datosSolicitud.edad = calcularTiempoTranscurrido(solicitudDeCredito.cliente.fechaDeNacimiento)
-            def empleoCliente = EmpleoCliente.findWhere(cliente: solicitudDeCredito.cliente)
+            def empleoCliente = EmpleoCliente.findWhere(cliente: solicitudDeCredito.cliente, vigente: Boolean.TRUE)
             if(empleoCliente) {
                 datosSolicitud.gastos = empleoCliente.gastos
                 datosSolicitud.ingresosFijos = empleoCliente.ingresosFijos
                 datosSolicitud.ingresosVariables = empleoCliente.ingresosVariables
             }
-            def direccionCliente = DireccionCliente.findWhere(cliente: solicitudDeCredito.cliente)
+            def direccionCliente = DireccionCliente.findWhere(cliente: solicitudDeCredito.cliente, vigente: Boolean.TRUE)
             if(direccionCliente) {
                 datosSolicitud.tipoDeVivienda = direccionCliente.tipoDeVivienda
                 datosSolicitud.montoDeLaRenta = direccionCliente.montoDeLaRenta
@@ -622,7 +622,7 @@ class PerfiladorService {
         def montoAPagar = buroDeCreditoService.calcularMontoAPagar(solicitudId, asalariado)
         gastos = montoAPagar
         if(tipov == 'Rentada') {
-            if((ing_ssmm * porc_alq) < egresorenta){
+            if((ing_ssmm * porc_alq) < egresorenta){ 
                 alq = montoDeLaRenta
             } else {
                 alq = (ing_ssmm * porc_alq)
@@ -640,7 +640,7 @@ class PerfiladorService {
             gast_flia = (ing_ssmm * (val_max_g_fliar - corr_ing_g_fliar * ing_ssmm) * Math.exp(corr_sum_gastfliar * grupofam))
         }
         def gastos_totales = (alq + gast_flia + gast_fij + gastos1)
-        def balcaj = (ing_ssmm - gastos_totales )//- montoAPagar)
+        def balcaj = (ing_ssmm - gastos_totales ) - montoAPagar
         def max_cap_pag = (balcaj * ssmm) //.round(2)
         respuesta.montoAPagar = montoAPagar
         respuesta.maximaCapacidadDePago = max_cap_pag
@@ -659,10 +659,12 @@ class PerfiladorService {
 
     def calcularRatio(def cuota, def balanceDeCaja, def periodicidadId){
         def cuotaSSMM = (mensualizarCuota(cuota, periodicidadId))/ssmm
-        //println "Cuota: " + cuota
-        //println "Balance: " + balanceDeCaja
-        //println "cuotaSSMM: " + cuotaSSMM
-        def ratio = (balanceDeCaja/cuotaSSMM).round(3)
+        def ratio
+        if (cuotaSSMM > 0) {
+            (balanceDeCaja/cuotaSSMM).round(3)
+        } else {
+            ratio = 0
+        }
         return ratio
     }
 
@@ -931,7 +933,7 @@ class PerfiladorService {
             factor = 2.03
         } else if (periodicidad == 3) {
             factor = 4.35
-        }
+        } 
         def cuotaMensualizada = cuota * factor
         cuotaMensualizada
     }
