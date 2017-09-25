@@ -148,7 +148,7 @@
                                     <div class="col6 floatLeft">
                                         <div class="mat-div">
                                             <label for="mail" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Correo Electrónico</label>
-                                            <input type="email" class="datoPerfilador mat-input requerido validarEmail" id="emailCliente_emailPersonal" name="emailCliente_emailPersonal">
+                                            <input type="text" style='box-shadow:none;' class="datoPerfilador mat-input requerido validarEmail" id="emailCliente_emailPersonal" name="emailCliente_emailPersonal">
                                         </div>
                                     </div>
                                     <div class="col6 floatLeft">

@@ -15,6 +15,7 @@ function operacionesPerfilador() {
     });
 
     $(".mat-input").focusout(function () {
+        $(this).val($(this).val().trim());
         if ($(this).val() === "")
             $(this).parent().removeClass("is-completed");
         $(this).parent().removeClass("is-active");
@@ -75,6 +76,7 @@ function operacionesPerfilador() {
                     vNotify.error({text: 'Los nombres y apellidos deben contener letras únicamente.', title: 'Error de Validación.'});
                 }
             } else if ($(this).hasClass('validarEmail')) {
+                $(this).val($(this).val().trim());
                 if (validateEmail($(this).val())) {
                     if (validateDefaultAddress($(this).val())) {
                         $(this).removeClass('mat-input-error');
