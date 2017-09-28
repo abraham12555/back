@@ -10,7 +10,6 @@ import static org.springframework.http.HttpMethod.*
 class DossierSummaryController {
     
     def save(){
-        print "prueba: " + params + " - request: " + request?.JSON
         def respuestaMitek = [status:request?.JSON?.Status, 
             value:request?.JSON.DocumentValidations?.Value, 
             source:request?.JSON.DocumentValidations?.Source,
@@ -51,7 +50,7 @@ class DossierSummaryController {
         } else {
             println ("[DossierSummary] No se registró la respuesta.")
         }       
-                
+ 
         def respuesta = [statusCode:'200', success:'true']
         render respuesta as JSON
     }

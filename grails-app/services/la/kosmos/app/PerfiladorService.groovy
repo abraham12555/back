@@ -623,7 +623,7 @@ class PerfiladorService {
         gastos = montoAPagar
         if(tipov == 'Rentada') {
             if((ing_ssmm * porc_alq) < egresorenta){ 
-                alq = montoDeLaRenta
+                alq = egresorenta
             } else {
                 alq = (ing_ssmm * porc_alq)
             }
@@ -640,8 +640,8 @@ class PerfiladorService {
             gast_flia = (ing_ssmm * (val_max_g_fliar - corr_ing_g_fliar * ing_ssmm) * Math.exp(corr_sum_gastfliar * grupofam))
         }
         def gastos_totales = (alq + gast_flia + gast_fij + gastos1)
-        def balcaj = (ing_ssmm - gastos_totales ) - montoAPagar
-        def max_cap_pag = (balcaj * ssmm) //.round(2)
+        def balcaj = (ing_ssmm - gastos_totales )
+        def max_cap_pag = (balcaj * ssmm)
         respuesta.montoAPagar = montoAPagar
         respuesta.maximaCapacidadDePago = max_cap_pag
         respuesta.balanceDeCaja = balcaj
@@ -659,12 +659,7 @@ class PerfiladorService {
 
     def calcularRatio(def cuota, def balanceDeCaja, def periodicidadId){
         def cuotaSSMM = (mensualizarCuota(cuota, periodicidadId))/ssmm
-        def ratio
-        if (cuotaSSMM > 0) {
-            (balanceDeCaja/cuotaSSMM).round(3)
-        } else {
-            ratio = 0
-        }
+        def ratio = (balanceDeCaja/cuotaSSMM).round(3)
         return ratio
     }
 
