@@ -368,7 +368,6 @@ class PerfiladorService {
 
     def obtenerPropuestas(def origen, def identificadores, def idTipoDeDocumento, def clienteExistente, def perfil){
         def ofertas = []
-        def ratio_menor = 0
         def oferta
         def datosSolicitud = consultarSolicitud(origen, identificadores.idSolicitud)
         def entidadFinanciera
@@ -396,7 +395,7 @@ class PerfiladorService {
             //Segundo Filtro
             def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
             if(bitacoraDeBuro == null || bitacoraDeBuro.empty) {
-                log.error("ERRBC" + (aleatorio()) + ". No se generaron resultados por parte del Buró de Crédito. Solicitud: " + datosSolicitud.idSolicitud)
+                log.error("ERRBC" + (aleatorio()) + ". No hay informacion de buro de credito. Solicitud: " + datosSolicitud.idSolicitud)
                 throw new BusinessException("No se pudo recuperar la información. Inténtelo más tarde.");
             }
 
@@ -404,11 +403,8 @@ class PerfiladorService {
             datos.solicitudId = identificadores.idSolicitud
             datos.listaDeServicios = (productosAplicables*.claveDeProducto)?.join(',')
             datos.edad = datosSolicitud.edad 
-            if(bitacoraDeBuro){
-                datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
-            } else {
-                datos.cadenaBuroDeCredito = ""
-            }
+            datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
+
             boolean respuestaEnvioCadenaBC
             def respuestaDictameneDePoliticas
             if(datos.cadenaBuroDeCredito) {
@@ -420,7 +416,7 @@ class PerfiladorService {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
                     } else {
                         log.error("ERRCLEX" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
-                        throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
+                        throw new BusinessException("No se pudo enviar la información de buró de crédito. Inténtelo más tarde.");
                     }
                 } else {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuro(entidadFinanciera, datos)
@@ -428,7 +424,7 @@ class PerfiladorService {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticas(entidadFinanciera, datos)
                     } else {
                         log.error("ERRCLN" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
-                        throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
+                        throw new BusinessException("No se pudo enviar la información de buró de crédito. Inténtelo más tarde.");
                     }
                 }
 
@@ -447,16 +443,16 @@ class PerfiladorService {
                     }
                 }
             }
-            /*BUSCA R */
-            productosAplicables?.each { rechazo ->
-                if(respuestaDictameneDePoliticas) {
-                    def dictamen = respuestaDictameneDePoliticas.find { (it."$rechazo.claveDeProducto" == "R" ) }
-                    if(dictamen) {
-                       throw new BusinessException("El historial crediticio no cumple las políticas");
-                    }
-                }
-            } /* BUSCA  R*/
+
+            if (listaTemporal.empty) {
+                log.error("ERRDPR" + (aleatorio()) + ". El historial crediticio no cumple las politicas. Solicitud: " + datos.solicitudId)
+                throw new BusinessException("El historial crediticio no cumple las políticas");
+            }
+
             productosAplicables = listaTemporal
+            boolean errorCapacidadPago = Boolean.TRUE
+            boolean errorDictamenPerfil = Boolean.TRUE
+            boolean errorDictamenPerfilRechazado = Boolean.TRUE
             //Revisión de plazos por producto
             productosAplicables?.each { producto ->
                 def ofertaProducto = [:]
@@ -478,45 +474,40 @@ class PerfiladorService {
                     datosSolicitud.montoMaximo = producto.montoMaximo
                     oferta = calcularOferta(datosSolicitud)
                     if(oferta.ratio > 1){
+                        errorCapacidadPago = Boolean.FALSE
+
                         def respuestaDictamenDePerfil
                         if(clienteExistente == "SI") {
                             datos = construirDatosMotorDeDecisionClienteExistente(identificadores, producto, perfil, oferta)
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
-                            if(respuestaDictamenDePerfil == null){
-                                throw new BusinessException("Se detectaron errores al obtener el dictamen de perfil del cliente");
-                            } else if(respuestaDictamenDePerfil.dictamen == 'R') { /*BUSCA R */
-                                throw new BusinessException("No cumple con el dictamen de perfil");
-                            }/* BUSCA  R*/
-
                         } else {
                             datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, producto, oferta)
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                        }
 
-                            if(respuestaDictamenDePerfil == null){
-                                throw new BusinessException("Se detectaron errores al obtener el dictamen de perfil");
-                            } else if(respuestaDictamenDePerfil.dictamen == 'R') { /*BUSCA R */
-                                throw new BusinessException("No cumple con el dictamen de perfil");
-                            } /* BUSCA  R*/
-                        }
-                        if(respuestaDictamenDePerfil?.dictamen == 'A') {
-                            def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
-                            if(tasaAplicable) {
-                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                oferta = calcularOferta(datosSolicitud)
+                        if (respuestaDictamenDePerfil != null) {
+                            errorDictamenPerfil = Boolean.FALSE
+                            
+                            if(respuestaDictamenDePerfil?.dictamen == 'A') {
+                                errorDictamenPerfilRechazado = Boolean.FALSE
+                                
+                                def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
+                                if(tasaAplicable) {
+                                    datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                    oferta = calcularOferta(datosSolicitud)
+                                }
+                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                oferta.dictamenDePoliticas = ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
+                                println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
+                                ofertaProducto.listaDeOpciones << oferta
+                                def mapaPlazo = [:]
+                                mapaPlazo.plazos = (plazo as int)
+                                mapaPlazo.periodicidadId = plazosPosibles.periodicidad.id
+                                mapaPlazo.periodicidad = plazosPosibles.periodicidad.nomenclatura
+                                ofertaProducto.listaDePlazos << mapaPlazo
                             }
-                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
-                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                            oferta.dictamenDePoliticas = ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
-                            println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
-                            ofertaProducto.listaDeOpciones << oferta
-                            def mapaPlazo = [:]
-                            mapaPlazo.plazos = (plazo as int)
-                            mapaPlazo.periodicidadId = plazosPosibles.periodicidad.id
-                            mapaPlazo.periodicidad = plazosPosibles.periodicidad.nomenclatura
-                            ofertaProducto.listaDePlazos << mapaPlazo
                         }
-                    }else{
-                        ratio_menor = 1
                     }
                 }
                 if(ofertaProducto.listaDeOpciones?.size() > 0) {
@@ -524,9 +515,14 @@ class PerfiladorService {
                 }
             }
 
-            if (ratio_menor == 1) {
+            if (errorCapacidadPago) {
                 throw new BusinessException("Falta de capacidad de pago");
-            } 
+            } else if (errorDictamenPerfil) {
+                log.error("ERRDPER" + (aleatorio()) + ". No se pudo obtener el dictamen de perfil. Solicitud: " + datos.solicitudId)
+                throw new BusinessException("No se pudo obtener el dictamen de perfil. Inténtelo más tarde.");
+            } else if (errorDictamenPerfilRechazado) {
+                throw new BusinessException("No cumple con el dictamen de perfil");
+            }
         }
 
         if (ofertas.size() > 0) {
