@@ -65,7 +65,7 @@
                                     <h2>Perfilador del cliente</h2>
                                     <div class="perfilador padding20">
                                         <div class="col6 floatLeft">
-                                            <p class="correctaBoxLabel">¿CLIENTE EXISTENTE?</p>
+                                            <p class="correctaBoxLabel">¿Cliente ha tenido Créditos con Libertad?</p>
                                             <div id="cliente_si" class="correctaBox floatLeft">
                                                 <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
                                             </div>

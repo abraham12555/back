@@ -388,8 +388,8 @@ class PerfiladorService {
             //Primer Filtro
             def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
             if (productosAplicables.size() == 0) {
-                log.error("ERRPROD" + (aleatorio()) + ". No hay productos que apliquen para este perfil. Solicitud: " + datosSolicitud.idSolicitud)
-                throw new BusinessException("No hay productos que apliquen para este perfil");
+                log.error("ERRPROD" + (aleatorio()) + ". No hay productos que apliquen al perfil del prospecto. Solicitud: " + datosSolicitud.idSolicitud)
+                throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
             }
 
             //Segundo Filtro
@@ -445,8 +445,8 @@ class PerfiladorService {
             }
 
             if (listaTemporal.empty) {
-                log.error("ERRDPR" + (aleatorio()) + ". El historial crediticio no cumple las politicas. Solicitud: " + datos.solicitudId)
-                throw new BusinessException("El historial crediticio no cumple las políticas");
+                log.error("ERRDPR" + (aleatorio()) + ". El prospecto obtuvo como resultado \"Rechazado\" en el dictamen de políticas. Solicitud: " + datos.solicitudId)
+                throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Políticas");
             }
 
             productosAplicables = listaTemporal
@@ -516,12 +516,12 @@ class PerfiladorService {
             }
 
             if (errorCapacidadPago) {
-                throw new BusinessException("Falta de capacidad de pago");
+                throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago");
             } else if (errorDictamenPerfil) {
                 log.error("ERRDPER" + (aleatorio()) + ". No se pudo obtener el dictamen de perfil. Solicitud: " + datos.solicitudId)
                 throw new BusinessException("No se pudo obtener el dictamen de perfil. Inténtelo más tarde.");
             } else if (errorDictamenPerfilRechazado) {
-                throw new BusinessException("No cumple con el dictamen de perfil");
+                throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil");
             }
         }
 

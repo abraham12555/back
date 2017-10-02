@@ -2377,7 +2377,6 @@ class DashboardController {
             response.setContentType("application/octet-stream")
             response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Centro_de_Contacto" + ".xlsx\"")
             response.outputStream << reporte.bytes
-            response.outputStream << reporte.bytes
         } else {
             flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
             redirect action: "reportes"
@@ -2498,12 +2497,12 @@ class DashboardController {
         params._format= "PDF"
         chain(controller: "jasper", action: "index", model: [data: mapa], params:params)
     }
+
     def descargarReporteOperaciones(){
         def reporte  = reporteService.obtenerReporte("operaciones",session.usuario.entidadFinanciera,params.from2,params.to2)
         if(reporte) {
             response.setContentType("application/octet-stream")
             response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Operaciones" + ".xlsx\"")
-            response.outputStream << reporte.bytes
             response.outputStream << reporte.bytes
         } else {
             flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."

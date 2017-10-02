@@ -102,6 +102,7 @@ class ReporteService {
                 datos.dictamenFinal = it.dictamen_final
                 datos.probabilidadDeMora = it.probabilidad_de_mora
                 datos.razonDeCobertura = it.razon_de_cobertura
+                datos.usuario = it.usuario
                 datosReporte << datos
             }
             if(datosReporte.size() > 0 ){
@@ -556,6 +557,7 @@ class ReporteService {
                 datos.dictamenFinal = it.dictamen_final
                 datos.probabilidadDeMora = it.probabilidad_de_mora
                 datos.razonDeCobertura = it.razon_de_cobertura
+                datos.usuario = it.usuario
                 datos.log = it.log
                 datos.respuesta = it.respuesta
                 datosReporte << datos
