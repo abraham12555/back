@@ -58,6 +58,17 @@ function operacionesPerfilador() {
         $('#inputNoCliente').addClass('hide');
         $('#inputNoCliente').val('');
     });
+    $('#cliente_fechaDeNacimiento_dia').keydown(function (e) {
+        return false;
+    });
+
+    $('#cliente_fechaDeNacimiento_mes').keydown(function (e) {
+        return false;
+    });
+
+    $('#cliente_fechaDeNacimiento_anio').keydown(function (e) {
+        return false;
+    });
 
     $('.datoPerfilador').change(function (index) {
         console.log("--->" + $(this).attr('id') + " = " + $(this).val());
@@ -391,6 +402,7 @@ function goStep2() {
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 if (respuesta.encontrado === true) {
+                    sendRequestForm('datosGenerales');
                     $('#step1').hide();
                     $('#step2').removeClass('hide');
                     $('.step1 .step').removeClass('active');
@@ -417,6 +429,7 @@ function goStep2() {
             }
         });
     } else {
+        sendRequestForm('datosGenerales');
         $('#step1').hide();
         $('#step2').removeClass('hide');
         $('.step1 .step').removeClass('active');
@@ -523,6 +536,7 @@ function goConsultaBuro() {
                 $("body").mLoading('hide');
                 sweetAlert("Oops...", "Algo salió mal con los datos proporcionados, intenta nuevamente en unos minutos.", "error");
             } else {
+                sendRequestForm('buroDeCredito');
                 $('#step5').hide();
                 $('#buro').removeClass('hide');
                 $('#tabs').removeClass('hide');
@@ -1319,6 +1333,7 @@ function seleccionarOferta(posicion, producto) {
             $('#ofertas').hide();
             $('#confirmacion').removeClass('hide');
             $("body").mLoading('hide');
+            sendRequestForm('confirmacion');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Hubo un problema al seleccionar la oferta, intenta nuevamente en unos minutos.", "error");
@@ -1499,4 +1514,8 @@ function consultarBuroTradicional() {
             sweetAlert("Oops...", "Algo salió mal en la consulta, intenta nuevamente en unos minutos.", "error");
         }
     });
+}
+function sendRequestForm(pag) {
+    ga('set', 'page', '/dashboard/perfilarCliente/' + pag);
+    ga('send', 'pageview');
 }
