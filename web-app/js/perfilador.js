@@ -391,6 +391,7 @@ function goStep2() {
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 if (respuesta.encontrado === true) {
+                    sendRequestForm('datosGenerales');
                     $('#step1').hide();
                     $('#step2').removeClass('hide');
                     $('.step1 .step').removeClass('active');
@@ -417,6 +418,7 @@ function goStep2() {
             }
         });
     } else {
+        sendRequestForm('datosGenerales');
         $('#step1').hide();
         $('#step2').removeClass('hide');
         $('.step1 .step').removeClass('active');
@@ -455,6 +457,7 @@ function goStep3() {
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.resultado === true) {
+                sendRequestForm('datosVivienda');
                 $('#step2').hide();
                 $('#step3').removeClass('hide');
                 $('#menuPersonales').removeClass('active');
@@ -481,6 +484,7 @@ function goStep4() {
     $('#step4').removeClass('hide');
     $('#menuVivienda').removeClass('active');
     $('#menuFamilia').addClass('active');
+    sendRequestForm('datosFamiliares');
 }
 
 function goBackStep4() {
@@ -495,6 +499,7 @@ function goStep5() {
     $('#step5').removeClass('hide');
     $('#menuFamilia').removeClass('active');
     $('#menuEmpleo').addClass('active');
+    sendRequestForm('datosEmpleo');
 }
 function goBackStep5() {
     $('#step5').show();
@@ -523,6 +528,7 @@ function goConsultaBuro() {
                 $("body").mLoading('hide');
                 sweetAlert("Oops...", "Algo salió mal con los datos proporcionados, intenta nuevamente en unos minutos.", "error");
             } else {
+                sendRequestForm('buroDeCredito');
                 $('#step5').hide();
                 $('#buro').removeClass('hide');
                 $('#tabs').removeClass('hide');
@@ -555,6 +561,7 @@ function verOfertas() {
             mostrarOfertas(response);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sendRequestForm('confirmacionSinOfertas');
             $("body").mLoading('hide');
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
         }
@@ -969,7 +976,11 @@ function consultarBuro() {
                         $('#goBackStep5').addClass('hide');
                         $('#goBackStep5').fadeOut();
                         consultaAutenticador = false;
-                        sweetAlert("Oops...", "Algo salió mal. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
+                        if (respuesta.error === -1) {
+                            $('#buttonconsultaINTL').prop('disabled', true);
+                        }
+                        var mensaje = (respuesta.segmento ) ? " Motivo: "+respuesta.segmento : " ";
+                        sweetAlert("Oops...", (respuesta.errorDesc ? respuesta.errorDesc : " ") + "  " + mensaje, "error");
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1075,9 +1086,11 @@ function mostrarOfertas(data) {
             html += "</ul></div></div>";
             productos.push(respuesta[i].producto.id);
         }
+        sendRequestForm('ofertas');
     } else if (typeof data.motivoRechazo !== "undefined") {
         html += "<div>No se encontraron ofertas que se ajusten al perfil del cliente por el siguiente motivo:</div>";
         html += "<h2><b><strong>" + data.motivoRechazo + "</strong></b></p>"; 
+        sendRequestForm('confirmacionSinOfertas');
     }
     
     html += "</div></div>";
@@ -1319,6 +1332,7 @@ function seleccionarOferta(posicion, producto) {
             $('#ofertas').hide();
             $('#confirmacion').removeClass('hide');
             $("body").mLoading('hide');
+            sendRequestForm('confirmacion');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Hubo un problema al seleccionar la oferta, intenta nuevamente en unos minutos.", "error");
@@ -1482,14 +1496,13 @@ function consultarBuroTradicional() {
                 $('#accionesNormalesIntl').fadeOut();
                 $('#accionesErrorIntl').fadeIn();
                 $('#divAutorizacionBuro').fadeOut();
-                $('.consultarB').fadeIn();
                 $('.correctaBox').unbind('click');
                 $('#goBackStep5').addClass('hide');
                 $('#goBackStep5').fadeOut();
                 consultaTradicional = false;
                 $('#buttonconsultaINTL').prop('disabled', true);
-                sweetAlert("Oops...", "Algo salió mal. La consulta tradicional falló. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
-
+                var mensaje = (respuesta.segmento ) ? " Motivo: "+respuesta.segmento : " ";
+                sweetAlert("Oops...", (respuesta.errorDesc ? respuesta.errorDesc : " ") + " " + mensaje, "error");
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1499,4 +1512,9 @@ function consultarBuroTradicional() {
             sweetAlert("Oops...", "Algo salió mal en la consulta, intenta nuevamente en unos minutos.", "error");
         }
     });
+}
+
+function sendRequestForm(pag) {
+    ga('set', 'page', '/dashboard/perfilarCliente/' + pag);
+    ga('send', 'pageview');
 }

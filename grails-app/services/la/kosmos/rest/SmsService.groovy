@@ -12,8 +12,8 @@ import la.kosmos.app.vo.Constants.StatusResponseCalixta
 import org.apache.commons.lang.RandomStringUtils
 import java.security.MessageDigest
 import org.apache.commons.lang.RandomStringUtils
-
 import java.sql.Timestamp
+import org.springframework.transaction.annotation.Propagation
 
 //MIKE Agregar este servicio, no requiere cambios
 @Transactional
@@ -25,53 +25,56 @@ public class SmsService {
 
     public String sendSMS(String to, def configuracion) {
         def respuesta
+        def message
         try{
             if(configuracion && to) {
                 String randomCode = getRandomCode()
                 String mensajeArmado = (configuracion.mensajeConfirmacionCelular + randomCode)
                 if(configuracion?.usarTwilio) {
                     Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-                    Message message = Message.creator(
+                    message = Message.creator(
                         new PhoneNumber("+52" + to),
                         new PhoneNumber(PHONE_NUMBER),
                         mensajeArmado?.toUpperCase())
-                    .create()
-
-                    if(persistSms(message, randomCode, configuracion?.usarTwilio)){
-                        println(message)
-                        respuesta = message.getSid()
-                    } else {
-                        respuesta = null
-                    }
+                    .create()                    
+                    // ACTUALMENTE EL REGISTRO EN BD DE MENSAJES SOLO APLICA CON CALIXTA
+                    // PARA GUARDAR EL REGISTRO DE MENSAJES ENVIADOS CON TWILIO SE DEBERÁ DIFERENCIAR EL TIPO DE ENVIO CALIXTA O TWILIO
                 } else {
+                    message = [:]
+                    message.bodyMessage = mensajeArmado
+                    message.dateCreated = new Date()
+                    message.fromPhone = "unknown"
+                    message.toPhone = to
+
                     SMSGateway smsGateway = new SMSGateway();
 
                     int idEnvio = smsGateway.sendMessageOL(to, mensajeArmado);
                     println("Estados Calixta -> [ 3 - Enviado al carrier | 6 - No móvil | 10 - Inválido | 101 - Falta de saldo | -1 - Error general ]")
                     println("Resultado del envio de SMS al " + to + " mediante Calixta: " + idEnvio)
-                    if(idEnvio == 3) {
-                        def message = [:]
-                        message.bodyMessage = mensajeArmado
-                        message.dateCreated = new Date()
+                    if (idEnvio == StatusResponseCalixta.ENVIADO.value) {
                         message.errorCode = null
                         message.errorMessage = null
-                        message.fromPhone = "unknown"
                         message.sid = ("SM" + generarToken(randomCode + generarCadenaAleatoria(32) + "|" + (new Date().toString())))
                         message.status = "complete"
-                        message.toPhone = to
-                        if(persistSms(message, randomCode, configuracion?.usarTwilio)){
-                            println(message)
-                            respuesta = message.sid
-                        } else  {
-                            respuesta = null
-                        }
                     } else {
-                        respuesta = null
+                        message.errorCode = idEnvio
+                        message.status = "error"
+                    }
+
+                    if(persistSms(message, randomCode, configuracion?.usarTwilio)){
+                        println(message)
+                        if (message.sid) {
+                            respuesta = message.sid
+                        }
                     }
                 }
             }
-        }catch(ApiException e){
-            respuesta = null
+        } catch (ApiException | Exception e) {
+            message.errorCode = StatusResponseCalixta.ERROR_INTERNO.value
+            message.status = "error"
+            persistSms(message, randomCode, configuracion?.usarTwilio)
+
+            respuesta = null            
         } finally{
             respuesta
         }
@@ -86,30 +89,57 @@ public class SmsService {
     }
 
     public boolean sendSMS (String to, String contentMsg, ConfiguracionEntidadFinanciera configuracion) throws Exception {
+        def message
+        boolean saveError = Boolean.TRUE
         try {
             if(configuracion?.usarTwilio) {
                 Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-                Message message = Message.creator(
+                message = Message.creator(
                     new PhoneNumber("+52" + to),
                     new PhoneNumber(PHONE_NUMBER),
                     contentMsg)
                 .create()
+                // ACTUALMENTE EL REGISTRO EN BD DE MENSAJES SOLO APLICA CON CALIXTA
+                // PARA GUARDAR EL REGISTRO DE MENSAJES ENVIADOS CON TWILIO SE DEBERÁ DIFERENCIAR EL TIPO DE ENVIO CALIXTA O TWILIO
                 return Boolean.TRUE
             } else {
+                message = [:]
+                message.bodyMessage = contentMsg
+                message.dateCreated = new Date()
+                message.fromPhone = "unknown"
+                message.toPhone = to
+
                 SMSGateway smsGateway = new SMSGateway();
-                int idEnvio = smsGateway.sendMessageOL(to, (contentMsg));
-                
+                int idEnvio = smsGateway.sendMessageOL(to, (contentMsg));                
+
+                if(idEnvio == StatusResponseCalixta.ENVIADO.value) {
+                    message.errorCode = null
+                    message.errorMessage = null
+                    message.sid = ("SM" + generarToken(randomCode + generarCadenaAleatoria(32) + "|" + (new Date().toString())))
+                    message.status = "complete"
+                } else {
+                    message.errorCode = idEnvio
+                    message.status = "error"
+                }
+
+                persistSms(message, randomCode, configuracion?.usarTwilio)
+
                 if(idEnvio == StatusResponseCalixta.ENVIADO.value) {
                     return Boolean.TRUE
                 } else if (idEnvio == StatusResponseCalixta.NO_SALDO.value){
+                    saveError = Boolean.FALSE
                     throw new Exception("Error. No hay saldo para el envío de mensajes")
                 } else if (idEnvio == StatusResponseCalixta.ERROR.value){
+                    saveError = Boolean.FALSE
                     throw new Exception("Error desconocido")
                 } else {
                     return Boolean.FALSE
                 }
             }
         } catch(Exception e) {
+            if (saveError) {
+                persistSmsException(message, randomCode, configuracion)
+            }
             throw e
         }
     }
@@ -170,5 +200,12 @@ public class SmsService {
         String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
         String randomString = RandomStringUtils.random(randomStringLength, charset.toCharArray())
         randomString
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private void persistSmsException(message, randomCode, configuracion) {
+        message.errorCode = StatusResponseCalixta.ERROR_INTERNO.value
+        message.status = "error"
+        persistSms(message, randomCode, configuracion?.usarTwilio)
     }
 }

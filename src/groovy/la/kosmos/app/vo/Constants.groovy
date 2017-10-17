@@ -68,7 +68,7 @@ class Constants {
     }
 
     enum StatusResponseCalixta {
-        ENVIADO(3), NO_MOVIL(6), INVALIDO(10), NO_SALDO(101), ERROR(-1)
+        ENVIADO(3), NO_MOVIL(6), INVALIDO(10), NO_SALDO(101), ERROR(-1), ERROR_INTERNO(500)
 
         private final int value
 

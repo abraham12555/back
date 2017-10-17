@@ -91,26 +91,6 @@ function inicializarFormulario() {
     });
 
     $('.select2').select2();
-
-    $("#cliente_curpDelConyugue").on('focus', function() {
-        $('body').off('click');
-    });
-
-    $("#cliente_curpDelConyugue").focusout(function () {
-        $('body').on('click', function (e) {
-            $('body').off('click');
-            if (!$(e.target).hasClass('notEmpty') && !$(e.target).hasClass('inputsFormulario') && !$(e.target).parent().hasClass('notEmpty')) {
-                changeSubForm();
-            }
-        });
-    });
-
-    $('#cliente_curpDelConyugue').on('keydown', function(e) {
-        if (e.keyCode === 9) {
-            e.preventDefault();
-            changeSubForm();
-        }
-    });
 }
 
 function habilitarBotonesAvance() {
@@ -144,6 +124,8 @@ function habilitarBotonesAvance() {
 }
 
 function plusSlides(n) {
+    $(".next").mouseleave();
+    $(".next").removeClass("hoverPlus");
     showSlides(slideIndex += n);
 }
 
@@ -439,8 +421,10 @@ function operacionesFormulario() {
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
                 }
             } else {
-                if ($('#cliente_curpDelConyugue').val() !== 'undefined' && $('#cliente_curpDelConyugue').val() !== '' && $('#cliente_curpDelConyugue').is(":visible") && !$("#cliente_curpDelConyugue").hasClass("continue")) {
-                    $('#cliente_curpDelConyugue').focus();
+                if ($('#cliente_curpDelConyugue').val() !== '' && $('#cliente_curpDelConyugue').val() !== undefined && $('#cliente_curpDelConyugue').is(":visible")) {
+                    $('.next').addClass("hoverPlus");
+                    $(".next").mouseover();
+                    $('html, body').animate({scrollTop:$('#pasoActual').position().top}, 'slow');
                 } else {
                     $(this).parent().parent().slideUp();
                     $(this).parent().parent().next('.formStep').slideDown();
@@ -3261,7 +3245,7 @@ function validarSiNumero(numero){
         return false;
     }
   }
-
-
+  
+  
 
 // ***************************** Fin de Funciones Short Url

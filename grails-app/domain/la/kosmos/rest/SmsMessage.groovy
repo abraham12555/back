@@ -20,7 +20,7 @@ class SmsMessage {
         errorCode nullable: true
         errorMessage nullable: true
         fromPhone nullable: false
-        sid nullable: false
+        sid nullable: true
         status nullable: true
         toPhone nullable: false
         randomCode nullable: false
