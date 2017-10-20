@@ -16,14 +16,11 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO;
 import java.util.List;
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import javax.imageio.ImageIO
-import la.kosmos.app.bo.Document
-import la.kosmos.app.bo.PageDocument
-import la.kosmos.app.exception.BusinessException
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageTree
@@ -208,8 +205,8 @@ class SolicitudService {
                                 emailPersonal.save(flush: true)
                             }
                             if(correoExistente){
-                            mensaje = "EL CORREO ELECTRÓNICO YA HA SIDO REGISTRADO, POR FAVOR CAPTURA UN NUEVO CORREO ELECTRONICO"
-                            guardadoCorrecto = false
+                                mensaje = "EL CORREO ELECTRÓNICO YA HA SIDO REGISTRADO, POR FAVOR CAPTURA UN NUEVO CORREO ELECTRONICO"
+                                guardadoCorrecto = false
                             }
                         } else if (correoExistente) {
                             correoExistente.vigente = true
@@ -229,8 +226,8 @@ class SolicitudService {
                                 emailPersonal.save(flush: true)
                             }
                             if(correoExistente){
-                                  guardadoCorrecto = false
-                                  mensaje = "EL CORREO ELECTRÓNICO YA HA SIDO REGISTRADO, POR FAVOR CAPTURA UN NUEVO CORREO ELECTRONICO"
+                                guardadoCorrecto = false
+                                mensaje = "EL CORREO ELECTRÓNICO YA HA SIDO REGISTRADO, POR FAVOR CAPTURA UN NUEVO CORREO ELECTRONICO"
                             }
                             
                         } else if (correoExistente) {
@@ -650,29 +647,27 @@ class SolicitudService {
     
     def moverDocumento(def archivoTemporalId, def solicitudId){
         def respuesta = false
-        archivoTemporalId.each{
-            def documentoTemporal = DocumentoTemporal.get(it as long)
-            if(documentoTemporal){
-                def solicitud =  SolicitudDeCredito.get(solicitudId as long)
-                def documento = new DocumentoSolicitud()
-                def nombreDelArchivo = (documentoTemporal.rutaDelArchivo).replace("/var/uploads/kosmos/temporales/","")
-                documento.fechaDeSubida = new Date()
-                documento.solicitud = solicitud
-                documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + nombreDelArchivo
-                documento.tipoDeDocumento = documentoTemporal.tipoDeDocumento
-                if(documento.save(flush:true)){
-                    def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
-                    subdir.mkdir()
-                    println ("Moviendo el documento de: " + documentoTemporal.rutaDelArchivo + " a: " + documento.rutaDelArchivo)
-                    def fis = new FileInputStream(documentoTemporal.rutaDelArchivo)
-                    def fos = new FileOutputStream(documento.rutaDelArchivo)
-                    fos << fis
-                    fis.close()
-                    fos.close()
-                    respuesta = true
-                } else {
-                    respuesta = false
-                }
+        def documentoTemporal = DocumentoTemporal.get(archivoTemporalId as long)
+        if(documentoTemporal){
+            def solicitud =  SolicitudDeCredito.get(solicitudId as long)
+            def documento = new DocumentoSolicitud()
+            def nombreDelArchivo = (documentoTemporal.rutaDelArchivo).replace("/var/uploads/kosmos/temporales/","")
+            documento.fechaDeSubida = new Date()
+            documento.solicitud = solicitud
+            documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + nombreDelArchivo
+            documento.tipoDeDocumento = documentoTemporal.tipoDeDocumento
+            if(documento.save(flush:true)){
+                def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
+                subdir.mkdir()
+                println ("Moviendo el documento de: " + documentoTemporal.rutaDelArchivo + " a: " + documento.rutaDelArchivo)
+                def fis = new FileInputStream(documentoTemporal.rutaDelArchivo)
+                def fos = new FileOutputStream(documento.rutaDelArchivo)
+                fos << fis
+                fis.close()
+                fos.close()
+                respuesta = true
+            } else {
+                respuesta = false
             }
         }
         return respuesta
@@ -845,7 +840,9 @@ class SolicitudService {
             datosSolicitud.empleoCliente = EmpleoCliente.findWhere(cliente: solicitud.cliente)
             datosSolicitud.telefonosCliente = TelefonoCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
             datosSolicitud.emailCliente = EmailCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
-            datosSolicitud.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
+// *** SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS 
+//            datosSolicitud.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
+// *** SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS - FIN
             datosSolicitud.resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: solicitud)
             
             if(datosSolicitud.telefonosCliente){
@@ -890,7 +887,9 @@ class SolicitudService {
             solicitudRest.solicitud.direccion = [:]
             solicitudRest.solicitud.vivienda = [:]
             solicitudRest.solicitud.empleo = [:]
-            solicitudRest.solicitud.resultadoDelScore = [:]
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL SCORE
+//            solicitudRest.solicitud.resultadoDelScore = [:]
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL SCORE - FIN
             solicitudRest.solicitud.documentos = []
             solicitudRest.solicitud.buroDeCredito = ""
         
@@ -900,9 +899,11 @@ class SolicitudService {
             solicitudRest.solicitud.datosSolicitud.folio = ("" + solicitud.folio).padLeft(6, '0')
             solicitudRest.solicitud.datosSolicitud.puntoDeVenta = (solicitud.sucursal ? solicitud.sucursal.nombre : "")
             solicitudRest.solicitud.datosSolicitud.puntajeScore = (datosBuroDeCredito.score ? (datosBuroDeCredito.score as int) : 0)
-            solicitudRest.solicitud.datosSolicitud.errorConsulta = (datosBuroDeCredito.tipoErrorBuroCredito ?: "")
-            solicitudRest.solicitud.datosSolicitud.consultaBuroEjecutada = ((datosBuroDeCredito.reporte) ? 'SI' : "NO")            
-            if(datosSolicitud.resultadoMotorDeDecision) {
+            solicitudRest.solicitud.datosSolicitud.resultadoDelScore = "" //[:]
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL MOTOR
+//            solicitudRest.solicitud.datosSolicitud.errorConsulta = (datosBuroDeCredito.tipoErrorBuroCredito ?: "")
+//            solicitudRest.solicitud.datosSolicitud.consultaBuroEjecutada = ((datosBuroDeCredito.reporte) ? 'SI' : "NO")            
+            /*if(datosSolicitud.resultadoMotorDeDecision) {
             solicitudRest.solicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
             solicitudRest.solicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
             solicitudRest.solicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
@@ -910,12 +911,14 @@ class SolicitudService {
             solicitudRest.solicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
             solicitudRest.solicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
             solicitudRest.solicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
-            }
+            }*/
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL MOTOR - FIN
             solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ?"Autorizado" : "")
             solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? "Usuario Dictaminador" : "")
             solicitudRest.solicitud.datosSolicitud.fechaDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? (new Date()).format('dd/MM/yyyy HH:mm') : "")
-            solicitudRest.solicitud.datosSolicitud.ultimoPaso = (solicitud.ultimoPaso ?:"")
-
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL ULTIMO PASO
+//            solicitudRest.solicitud.datosSolicitud.ultimoPaso = (solicitud.ultimoPaso ?:"")
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL ULTIMO PASO - FIN      
             solicitudRest.solicitud.productoSeleccionado.producto = datosSolicitud.productoSolicitud?.producto?.claveDeProducto
             solicitudRest.solicitud.productoSeleccionado.modelo = ((datosSolicitud.productoSolicitud?.modelo) ? datosSolicitud.productoSolicitud?.modelo.nombre : "")
             solicitudRest.solicitud.productoSeleccionado.color = ((datosSolicitud.productoSolicitud?.colorModelo) ? datosSolicitud.productoSolicitud.colorModelo?.nombre : "")
@@ -926,8 +929,10 @@ class SolicitudService {
             solicitudRest.solicitud.productoSeleccionado.seguro = datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda
             solicitudRest.solicitud.productoSeleccionado.tasaDeInteres =  datosSolicitud.productoSolicitud?.producto?.tasaDeInteres
             solicitudRest.solicitud.productoSeleccionado.montoDelCredito = datosSolicitud.productoSolicitud?.montoDelCredito
-            solicitudRest.solicitud.productoSeleccionado.liberasistencia = datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia
-
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DE LIBERASISTENCIA
+//            solicitudRest.solicitud.productoSeleccionado.liberasistencia = datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DE LIBERASISTENCIA - FIN
+            
             def primerNombre
             def segundoNombre
             def nombreCompleto = solicitud.cliente.nombre?.split()
@@ -1001,44 +1006,21 @@ class SolicitudService {
             solicitudRest.solicitud.empleo.ingresosVariables = ((datosSolicitud.empleoCliente?.ingresosVariables) ? datosSolicitud.empleoCliente?.ingresosVariables : 0)
             solicitudRest.solicitud.empleo.ingresosTotales = solicitudRest.solicitud.empleo.ingresosFijos + solicitudRest.solicitud.empleo.ingresosVariables
             solicitudRest.solicitud.empleo.gastosMensuales = ((datosSolicitud.empleoCliente?.gastos) ? datosSolicitud.empleoCliente?.gastos : 0)
-            
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS 
             //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
-
-            datosSolicitud.documentosSolicitud?.each { documento ->
-                File sourceFile = new File(documento.rutaDelArchivo)
-                if (sourceFile.exists()) {
-                    try {
-                        String fileLabel = ".${sourceFile.name.split("\\.")[-1]}"
-
-                        Document document = new Document()
-                        document.tipoDeDocumento = documento.tipoDeDocumento.codigo
-
-                        //Transform PDF files
-                        if(fileLabel.equalsIgnoreCase(".pdf")){
-                            document.paginas = this.convertPDFtoImage(documento)
-                        } else {
-                            BufferedImage bufferedImage = ImageIO.read(new File(documento.rutaDelArchivo))
-
-                            if (bufferedImage == null) {
-                                throw new BusinessException("El documento con ruta $documento.rutaDelArchivo esta corrupto")
-                            }
-
-                            byte[] bf = this.redimensionar(documento, bufferedImage)
-                            String content = this.generarBase64(bf)
-
-                            PageDocument pagina = new PageDocument(1, content)
-                            document.paginas = []
-                            document.paginas << pagina
-                        }
-
-                        solicitudRest.solicitud.documentos << document
-                    } catch(Exception e){
-                        log.error("Ocurrio un error al convertir el documento: " + documento.rutaDelArchivo, e)
-                    }
-                } else {
-                    log.error("El archivo con ruta $documento.rutaDelArchivo no existe")
-                }
-            }
+            
+//            datosSolicitud.documentosSolicitud?.each { documento ->
+//                try{
+//                    def mapaDocto = [:]
+//                    mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
+//                    mapaDocto.contenidoBase64 = generarBase64(new File(documento.rutaDelArchivo))
+//                    solicitudRest.solicitud.documentos << mapaDocto
+//                }catch(Exception e){
+//                    println ("[REST] Excepción ocurrida: " + e.getMessage())
+//                    println "[REST] Ocurrio un problema con el archivo con ruta $documento.rutaDelArchivo, verifiquelo por favor..."
+//                }
+//            }
+// SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS FIN
 
             if(!datosBuroDeCredito?.reporte || datosBuroDeCredito?.reporte?.tipoErrorBuroCredito) {
                 solicitudRest.solicitud.buroDeCredito = ""
@@ -1397,8 +1379,11 @@ class SolicitudService {
         respuesta
     }
     
-    private String generarBase64(byte[] buf) {
-        return Base64.encodeBase64String(buf)
+    def generarBase64(def newFile) {
+        def base64
+        byte[] array = Files.readAllBytes((newFile).toPath()); 
+        base64 = Base64.encodeBase64String(array)
+        return base64
     }
     
     def construirDatosMotorDeDecision(def identificadores){
@@ -1961,129 +1946,6 @@ class SolicitudService {
                       respuesta.encontrado = false 
             }
             respuesta
-}
-
-    private byte[] redimensionar (DocumentoSolicitud documento, BufferedImage bufferedImage){
-        int width = 0
-        int height = 0
-        def imagenTamMax
-
-        switch (documento.tipoDeDocumento.id) {
-        case TipoDeDocumento.RECIBOLUZ:
-            width = 817
-            height = 1059
-            imagenTamMax = 115382
-            break;
-        case TipoDeDocumento.INE:
-            width = 322
-            height = 205
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.ESTADODECUENTA:
-            width = 812
-            height= 1051
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.RECIBONOMINA:
-            width = 548
-            height= 812
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.DECLARACIONSAT:
-            width = 817
-            height= 1059
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.RECIBOHONORARIOS:
-            width = 817
-            height= 1059
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.NOTA:
-            width = 817
-            height= 1059
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.TICKET:
-            width = 817
-            height= 1059
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.REMISION:
-            width = 817
-            height= 1059
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.RECIBOTELEFONICO:
-            width = 817
-            height = 1059
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.PASAPORTE:
-            width = 472
-            height = 662
-            imagenTamMax = 307200
-            break;
-        case TipoDeDocumento.FORMATOACBC:
-            width = 817
-            height = 1059
-            imagenTamMax = 307200
-            break;
-        default:
-            width = 817
-            height = 1059
-            imagenTamMax = 307200
-            break;
-        }
-
-        //Resize image
-        int w = bufferedImage.getWidth()
-        int h = bufferedImage.getHeight()
-        BufferedImage bufim = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
-        Graphics2D g = bufim.createGraphics()
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-        g.drawImage(bufferedImage, 0, 0, width, height, 0, 0, w, h, null)
-        g.dispose()
-
-        //New image to bytes
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        ImageIO.write( bufim, "jpg", baos)
-        baos.flush()
-        byte[] imageInByte = baos.toByteArray()
-        baos.close()
-
-        return imageInByte
     }
 
-    private List<PageDocument> convertPDFtoImage(DocumentoSolicitud documento) {
-        PDDocument document = PDDocument.load(new File(documento.rutaDelArchivo))
-        PDFRenderer pdfRenderer = new PDFRenderer(document)
-        PDPageTree pages = document.getPages()
-        List<PageDocument> listPages = []
-
-        for (PDPage page : pages) {
-            int currentPage = (pages.indexOf(page))
-            int noPagina = currentPage + 1
-
-            if(currentPage < 10){
-                BufferedImage bim = pdfRenderer.renderImage(currentPage)
-
-                if (bim == null) {
-                    throw new BusinessException("Error al extraer contenido del documento $documento.rutaDelArchivo. Pagina: " + noPagina)
-                }
-
-                byte[] bf = this.redimensionar(documento, bim)
-                String content = this.generarBase64(bf)
-
-                PageDocument pagina = new PageDocument(noPagina, content)
-                listPages << pagina
-            } else {
-                log.error("El documento $documento.rutaDelArchivo excede del numero de paginas permitidas. Total: " + document.getPages().size())
-                break
-            }
-        }
-        document.close()
-
-        return listPages
-    }
 }

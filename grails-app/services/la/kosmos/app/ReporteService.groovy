@@ -54,7 +54,7 @@ class ReporteService {
                 datos.montoDelCredito = (it.monto_del_credito) ?: "" 
                 datos.montoDelPago = (it.monto_del_pago) ?: "" 
                 datos.montoDelSeguroDeDeuda = (it.monto_del_seguro_de_deuda) ?: "" 
-                datos.montoPagoBuro = (it.monto_pago_buro)
+                datos.montoPagoBuro = (it.monto_pago_buro) ?: "" 
                 datos.plazos = (it.plazos) ?: ""
                 datos.periodicidad = (it.periodicidad) ?: ""
                 datos.fechaDeNacimiento = it.fecha_de_nacimiento
@@ -222,11 +222,11 @@ class ReporteService {
                                 cell { fila.enganche ?: ""} 
                                 cell { fila.haTenidoAtrasos ?: ""} 
                                 cell { fila.montoDelCredito }
-                                cell { fila.montoDelPago ?: ""} 
-                                cell { fila.montoDelSeguroDeDeuda ?: ""} 
-                                cell { fila.montoPagoBuro ?: "" } 
-                                cell { fila.plazos ?: "" }
-                                cell { fila.periodicidad ?: ""} 
+                                cell { fila.montoDelPago } 
+                                cell { fila.montoDelSeguroDeDeuda } 
+                                cell { fila.montoPagoBuro } 
+                                cell { fila.plazos }
+                                cell { fila.periodicidad } 
                                 cell { fila.fechaDeNacimiento ?: "" } 
                                 cell { fila.dependientesEconomicos ?: "" } 
 				cell { fila.genero ?: ""}

@@ -124,8 +124,6 @@ function habilitarBotonesAvance() {
 }
 
 function plusSlides(n) {
-    $(".next").mouseleave();
-    $(".next").removeClass("hoverPlus");
     showSlides(slideIndex += n);
 }
 
@@ -421,16 +419,10 @@ function operacionesFormulario() {
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
                 }
             } else {
-                if ($('#cliente_curpDelConyugue').val() !== '' && $('#cliente_curpDelConyugue').val() !== undefined && $('#cliente_curpDelConyugue').is(":visible")) {
-                    $('.next').addClass("hoverPlus");
-                    $(".next").mouseover();
-                    $('html, body').animate({scrollTop:$('#pasoActual').position().top}, 'slow');
-                } else {
-                    $(this).parent().parent().slideUp();
-                    $(this).parent().parent().next('.formStep').slideDown();
-                    $('.slideStep').fadeIn();
-                    slideIndex++;
-                }
+                $(this).parent().parent().slideUp();
+                $(this).parent().parent().next('.formStep').slideDown();
+                $('.slideStep').fadeIn();
+                slideIndex++;
             }
             $('.successBubble').fadeOut();
         }
@@ -2515,13 +2507,6 @@ function addCloseModalEvent() {
         $(this).parent().parent().fadeOut();
     });
 }
-
-function changeSubForm(){
-    $("#cliente_curpDelConyugue").addClass("continue");
-    var select = $('fieldset:visible');
-    $(select).children(".confirmDiv").children(".buttonM").click();
-    $("#cliente_curpDelConyugue").removeClass("continue");
-}
 // ***************************** Fin de Funciones Auxiliares
 
 // ***************************** Inicio de Validaciones
@@ -3245,7 +3230,7 @@ function validarSiNumero(numero){
         return false;
     }
   }
-  
-  
+
+
 
 // ***************************** Fin de Funciones Short Url

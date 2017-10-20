@@ -47,7 +47,7 @@
                     <span class='goBtn'>Siguiente</span>
                 </p>
             </div>
-            <p style="margin-top: 10px;" id="leyendaCodigo"><small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código..</strong></small></p>
+            <p style="margin-top: 10px;" id="leyendaCodigo"><small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código. Si después de 30 segundos no recibes el código, puedes avanzar capturando 00000.</strong></small></p>
             <p style="margin-top: 10px;" id="leyendaCodigoError"></p>
         </div>
         <div id="resume_form" class="input-field col12 hide">

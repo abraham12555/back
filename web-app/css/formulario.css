@@ -3540,7 +3540,7 @@ margin-top: -10px;
     padding: 5px;
     color: #F1F3FA;
     font-weight: bold;
-    font-size: 10px;
+    font-size: 16px;
     transition: 0.6s ease;
     border-radius: 50%;
     background-color: #9EA1BE;
@@ -3549,7 +3549,7 @@ margin-top: -10px;
 /* Position the "prev button" to the left */
 .prev {
     border-radius: 50%;
-    margin-left: 3%;
+    margin-left: 1%;
 }
 
 /* Position the "next button" to the right */
@@ -3569,7 +3569,7 @@ margin-top: -10px;
 .centerLink {
     margin: auto;
     width: 50%;
-    padding: 15px;
+    padding: 10px;
     text-align: center;
 }
 
@@ -3802,66 +3802,4 @@ div.tab button:hover {
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
   animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
-}
-.hoverPlus{
-    color: white;
-    background-image: linear-gradient(258deg, #59c4fb, #2d91f6);
-    box-shadow: 0 0 7px 0 #298df5;
-}
-
-@media only screen and (max-width: 1125px) {
-.centerLink {
-    margin: auto;
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-}
-.prev {
-    border-radius: 50%;
-    margin-left: 3%;
-}
-
-}
-
-
-@media only screen and (max-width: 784px) {
-.centerLink {
-    margin: auto;
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-}
-.next {
-    border-radius: 50%;
-    margin-left: -10%;
-}
-.prev {
-    border-radius: 50%;
-    margin-left: 1%;
-}
-
-}
-
-@media only screen and (max-width: 500px) {
-.centerLink {
-    margin: auto;
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-}
-.next {
-    border-radius: 50%;
-    margin-left: -12%;
-    font-size: 10px;
-}
-.prev {
-    border-radius: 50%;
-    margin-left: 5%;
-    font-size: 10px;
-}
-.fa {
-    display: inherit;
-    font-size: 10px;
-}
-
 }
