@@ -86,16 +86,22 @@ grails.hibernate.pass.readonly = false
 grails.hibernate.osiv.readonly = false
 
 environments {
-    development {
+        development {
         grails.logging.jul.usebridge = true
         grails.app.context = "/qa"
+        urlDecisionEngine = "http://201.161.66.195:8080/decision-engine-ws/services/engine?wsdl"
+        urlDecisionEngineCE = "http://201.161.66.195:8080/decision-engine-ws/services/engineCE?wsdl"
     }
     test {
         grails.app.context = "/qa"
+        urlDecisionEngine = "http://localhost:8080/decision-engine-ws/services/engine?wsdl"
+        urlDecisionEngineCE = "http://localhost:8080/decision-engine-ws/services/engineCE?wsdl"
     }
     production {
         grails.logging.jul.usebridge = false
         grails.app.context = "/"
+        urlDecisionEngine = "http://201.161.90.70/decision-engine-ws/services/engine?wsdl"
+        urlDecisionEngineCE = "http://201.161.90.70/decision-engine-ws/services/engineCE?wsdl"
     }
 }
 

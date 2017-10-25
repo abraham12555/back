@@ -929,4 +929,14 @@ class PerfiladorService {
         cuotaMensualizada
     }
 
+    def initDecisionEngineServiceService() {
+        motorDeDecisionService.initializeService()
+        def response = [:]
+        response.response = "SUCCESSFUL"
+        return response
+    }
+
+    def getDecisionEngineValues() {
+        return motorDeDecisionService.getValues()
+    }
 }

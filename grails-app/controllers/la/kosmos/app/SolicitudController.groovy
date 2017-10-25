@@ -1588,4 +1588,14 @@ class SolicitudController {
         
         render respuesta as JSON
     }
+    
+    def decisionEngineService() {
+        def response = perfiladorService.initDecisionEngineServiceService()
+        render response as JSON
+    }
+
+    def valuesDecisionEngineService() {
+        def map = perfiladorService.getDecisionEngineValues()
+        render map as JSON
+    }
 }
