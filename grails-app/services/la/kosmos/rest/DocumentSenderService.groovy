@@ -50,41 +50,48 @@ import org.awaitility.groovy.AwaitilityTrait
 import org.awaitility.core.ConditionTimeoutException
 import static org.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
+import org.codehaus.groovy.grails.io.support.IOUtils
 
 @Transactional
 class DocumentSenderService implements AwaitilityTrait{
 
     def generarBase64(def archivo) {
-        def base64
-        byte[] array = Files.readAllBytes((archivo).toPath()); 
-        base64 = Base64.encodeBase64String(array)
+        def base64 = Base64.encodeBase64String(archivo)
         return base64
     }
     
-    def send(def listaDeArchivos) throws ClientProtocolException, IOException,
+    def send(def listaDeArchivos){
+        send(listaDeArchivos, 1, null,null)
+    }
+    
+    def send(def listaDeArchivos, def total, def dossierId, def referencia) throws ClientProtocolException, IOException,
     NoSuchAlgorithmException, KeyManagementException {
         BasicConfigurator.configure();
         def configuracion = ConfiguracionKosmos.get(1)
         def datosArchivo = listaDeArchivos?.getAt(0);
         
-        File archivoDelDocumento = new File("/tmp/" + datosArchivo.nombreDelArchivo)
-        archivoDelDocumento.withOutputStream { fos ->
-            fos << datosArchivo.archivo
-        }
-        
+        def bytesDelDocumento = IOUtils.copyToByteArray(datosArchivo.archivo)
         String API_KEY = configuracion.apiKeyMitek
         String USERNAME = configuracion.usernameMitek
         String URL = configuracion.urlMitek
         String CallBack_URL = configuracion.callbackUrlMitek
+        if(dossierId){
+            URL +="?dossierId=" + dossierId
+            println "Sending reverse of idCard..."
+        }
         
-        def referencia = generarReferencia(datosArchivo.nombreDelArchivo + "-" + (new Date().toString()))
+        Date now = new Date();
+        
+        if(referencia == null){
+            referencia = generarReferencia(datosArchivo.nombreDelArchivo + "-" + (now.toString()))
+        }
         
         def jsonRequest = [:]
         jsonRequest.ClientReference = referencia
         jsonRequest.CallbackUri = CallBack_URL
-        jsonRequest.TotalNumberOfParts = 1
+        jsonRequest.TotalNumberOfParts = total
         jsonRequest.CrossReferenceData = "null"
-        jsonRequest.ImageData =  generarBase64(archivoDelDocumento)
+        jsonRequest.ImageData =  generarBase64(bytesDelDocumento)
         jsonRequest.IncludeImagesInCallback = "true"
         jsonRequest.IncludeAdditionalImagesInCallback = ["Signature"]
         jsonRequest.StrongIDBasic = "true" 
@@ -97,7 +104,7 @@ class DocumentSenderService implements AwaitilityTrait{
         respuesta.referencia = referencia;
         respuesta.dossierId = "";
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date now = new Date();
+        
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         String formattedDate = format.format(now) + "Z";
 
@@ -164,6 +171,7 @@ class DocumentSenderService implements AwaitilityTrait{
             respuesta.dossierId = sb.toString();
         }
         println "Respuesta Preliminar: " + respuesta
+        datosArchivo.archivo = new ByteArrayInputStream(bytesDelDocumento)
         return respuesta;
     }
 
@@ -212,7 +220,7 @@ class DocumentSenderService implements AwaitilityTrait{
                 mapa.cliente.nombre = classificationResult.givenname
                 mapa.cliente.apellidoPaterno = classificationResult.parentNameFather
                 mapa.cliente.apellidoMaterno = classificationResult.parentNameMother
-                if(classificationResult.dateOfBirth) {
+                if(classificationResult.dateOfBirth) {                    
                     mapa.cliente.fechaDeNacimiento = [:]
                     mapa.cliente.fechaDeNacimiento.anio = classificationResult.dateOfBirth.substring(0,4)
                     mapa.cliente.fechaDeNacimiento.mes = classificationResult.dateOfBirth.substring(5,7)
@@ -230,14 +238,17 @@ class DocumentSenderService implements AwaitilityTrait{
                     def cadenas = direccion.tokenize(" ")
                     cadenas.each {
                         if(it ==~ /\d{5}/ ){
+                            if(it.startsWith("0")){
+                                it = it.replaceFirst("0", "")
+                            }
                             mapa.direccionCliente.codigoPostal = it
                             def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
                             if(consulta){
                                 if(!mapa.direccionCliente.colonia){
                                     mapa.direccionCliente.colonia = consulta.asentamiento
                                 }
-                                if(!mapa.direccionCliente.municipio){
-                                    mapa.direccionCliente.municipio = consulta.municipio.id
+                                if(!mapa.direccionCliente.delegacion){
+                                    mapa.direccionCliente.delegacion = consulta.municipio.nombre
                                 }
                                 if(!mapa.direccionCliente.estado){
                                     mapa.direccionCliente.estado = consulta.municipio.estado.id
@@ -249,15 +260,18 @@ class DocumentSenderService implements AwaitilityTrait{
                 } else {
                     def cadenas = direccion?.tokenize(" ")
                     cadenas?.each {
-                        if(it ==~ /\d{5}/ && !mapa.direccionCliente.codigoPostal){
+                        if(it ==~ /\d{5}/ && !mapa.direccionCliente.codigoPostal){                            
+                            if(it.startsWith("0")){
+                                it = it.replaceFirst("0", "")
+                            }
                             mapa.direccionCliente.codigoPostal = it
                             def consulta = CodigoPostal.findByCodigo(mapa.direccionCliente.codigoPostal)
                             if(consulta){
                                 if(!mapa.direccionCliente.colonia){
                                     mapa.direccionCliente.colonia = consulta.asentamiento
                                 }
-                                if(!mapa.direccionCliente.municipio){
-                                    mapa.direccionCliente.municipio = consulta.municipio.id
+                                if(!mapa.direccionCliente.delegacion){
+                                    mapa.direccionCliente.delegacion = consulta.municipio.id
                                 }
                                 if(!mapa.direccionCliente.estado){
                                     mapa.direccionCliente.estado = consulta.municipio.estado.id
@@ -321,14 +335,14 @@ class DocumentSenderService implements AwaitilityTrait{
         println "A punto de comparar [classificationResultRecibido: " + classificationResultRecibido + ", dossierSummaryRecibido: " + dossierSummaryRecibido + "]"
         if(classificationResultRecibido > 0 && dossierSummaryRecibido > 0){
             println ("****************** SI HAY RESPUESTA *******************")
-            return true   
+    return true
         } else if (classificationResultRecibido == 0 && dossierSummaryRecibido > 0) {
             println ("****************** RESPUESTA PARCIAL *******************")
             return true
         } else {
             println ("++++++++++++++++++ AUN NO HAY RESPUESTA ++++++++++++++++++")
             return false
-        }
+    }
     }
     
     def obtenerNumeroExterior(def direccion) {

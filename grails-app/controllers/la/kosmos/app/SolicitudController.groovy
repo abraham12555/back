@@ -980,7 +980,11 @@ class SolicitudController {
                         respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
                     }
                 } else {
-                    session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
+                    if(!session.archivoTemporal){
+                        session.archivoTemporal = []
+                    }
+                    def document = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
+                    session.archivoTemporal << document
                 }
             }
         } else {

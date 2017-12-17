@@ -100,8 +100,8 @@ environments {
     production {
         grails.logging.jul.usebridge = false
         grails.app.context = "/"
-        urlDecisionEngine = "http://201.161.90.70/decision-engine-ws/services/engine?wsdl"
-        urlDecisionEngineCE = "http://201.161.90.70/decision-engine-ws/services/engineCE?wsdl"
+        urlDecisionEngine = "https://micreditolibertad.com/decision-engine-ws/services/engine?wsdl"
+        urlDecisionEngineCE = "https://micreditolibertad.com/decision-engine-ws/services/engineCE?wsdl"
     }
 }
 

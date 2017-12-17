@@ -3,8 +3,8 @@ dataSource {
     jmxExport = true
     driverClassName = "org.postgresql.Driver"
     username = "kuser"
-    //password = "kpasswd"
-    password = "5as50n3J2017"
+    password = "kpasswd"
+    //password = "5as50n3J2017"
     //username = "seisan"
     //password = "K0suMo5u!"
 }
@@ -34,7 +34,7 @@ environments {
     production {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:postgresql://10.1.245.167:5432/kosmosprod"
+            url = "jdbc:postgresql://172.26.210.135:5432/kosmosprod"
             //url = "jdbc:postgresql://localhost:5432/kosmosprod"
             properties {
                // See http://grails.org/doc/latest/guide/conf.html#dataSource for documentation
