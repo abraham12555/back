@@ -30,7 +30,7 @@
                     <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${ofertaSeleccionada?.productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
                     <p>LIBERASISTENCIA: <strong><g:formatNumber number="${ofertaSeleccionada?.oferta?.montoAsistencia}" format="\044###,###,###.##" /></strong></p>
                     <p>MONTO A PAGAR EN BC: <strong><g:formatNumber number="${ofertaSeleccionada?.oferta?.montoAPagar}" format="\044###,###,###.##" /></strong></p>
-                    <p>CAT PROMEDIO: <strong>${ (ofertaSeleccionada?.productoSolicitud?.producto?.cat) ? ((ofertaSeleccionada?.productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
+<!--                <p>CAT PROMEDIO: <strong>${ (ofertaSeleccionada?.productoSolicitud?.producto?.cat) ? ((ofertaSeleccionada?.productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>-->
                 </div>
             </div>
             <div class="col6 col6-tab col12-mob floatLeft">

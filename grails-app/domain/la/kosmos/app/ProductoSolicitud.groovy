@@ -20,7 +20,7 @@ class ProductoSolicitud implements Serializable{
     boolean haTenidoAtrasos
     float tasaDeInteres
     float montoDeServicioDeAsistencia = 0
-    
+    //float cat = 0
     static constraints = {
         colorModelo (nullable: true)
         modelo (nullable: true)
@@ -31,6 +31,7 @@ class ProductoSolicitud implements Serializable{
         plazo (nullable: true)
         seguro (nullable: true)
         solicitud (nullable: false)
+        //cat (nullable: true)
     }
     
     static mapping = {

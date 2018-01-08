@@ -235,7 +235,7 @@ function deleteSmsTemplate(idTemplate) {
 
 function validateTemplate() {
     var errors = 0;
-
+    
     $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });

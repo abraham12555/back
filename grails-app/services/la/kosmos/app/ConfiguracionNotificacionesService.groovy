@@ -24,9 +24,9 @@ class ConfiguracionNotificacionesService {
             cronList.each {
                 stopScheduler(it)
                 addJob(it)
+                    }
+                }                
             }
-        }
-    }
 
     def stopScheduler(NotificacionesCron cron) {
         def id = cron.id.toString()

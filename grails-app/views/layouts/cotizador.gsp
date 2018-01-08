@@ -7,6 +7,11 @@
         <title>${(configuracion?.htmlTitle ? (configuracion?.htmlTitle + " - " )  : "" )}Cotizador</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta charset="utf-8">
+        <meta property="og:title" content="${(configuracion?.htmlTitle ? (configuracion?.htmlTitle + " - " )  : "" )}Cotizador" />
+        <meta property="og:description" content="¡Solicita tu Crédito Libertad y obtén tu Pre-Autorización de Crédito en menos de 5 minutos!" /> 
+        <meta property="og:image" content="${assetPath(src: 'favicon.ico')}" /> 
+        <meta property="og:url" content="http://www.micreditolibertad.com/" /> 
+        <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
         <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">

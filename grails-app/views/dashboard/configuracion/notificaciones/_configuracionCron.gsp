@@ -59,9 +59,9 @@
                                 <label> a las </label>
                                 <input type="text" class="day-cron inputs lightGray letterspacing1 font14" id="monthTime" name="monthTime"/> horas
                             </div>
-                        </div>
-                    </div>
-                </div>
+                                            </div>
+                                        </div>
+                                            </div>
                 <div class="col12 col12-mob floatLeft">
                     <div class="col4 col4-mob floatLeft paddingTop15">
                     </div>
@@ -82,9 +82,9 @@
                         <div class="paddingTop5">
                             <div id="smsOptions-div" class="marginLeft20">
 
-                            </div>
                         </div>
                     </div>
+                </div>
                 </div>
                 <div class="col12 col12-mob floatLeft hide" id="emailTemplateConfig-div">
                     <div class="col4 col4-mob floatLeft">
@@ -97,11 +97,11 @@
                         <div class="paddingTop20">
                             <div id="emailOptions-div" class="marginLeft20">
 
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                    </div>
+                        </div>
             <div class="formContainer">
                 <button class="loginButton blueButton letterspacing2 font14 pointer" id="saveCron-btn">GUARDAR</button>
                 <button type="button" onclick="cerrarModal('modalEnvio');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>

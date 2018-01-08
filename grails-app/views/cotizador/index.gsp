@@ -51,6 +51,7 @@
                             <g:hiddenField id="txtPago" name="txtPago" value=""/>
                             <g:hiddenField id="txtSeguro" name="txtSeguro" value=""/>
                             <g:hiddenField id="txtPeriodo" name="txtPeriodo" value=""/>
+                            <!-- <g:hiddenField id="cat" name="cat" value=""/> -->
                             <div class="marginTop40 marginBottom20 blur" id="submitCotizador">
                                 <div class="paddingAside20">
                                     <input type="submit" value="Comenzar mi Solicitud" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" id="btnCotSub" disabled/>

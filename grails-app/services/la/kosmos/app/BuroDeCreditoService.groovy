@@ -1088,7 +1088,7 @@ class BuroDeCreditoService {
         return cadenaBuro
     }
     
-    def calcularMontoAPagar(def solicitudId, def asalariado) {
+    def calcularMontoAPagar(def solicitudId, def asalariado, def porcentajeDeDescuento ) {
         double montoAPagar = 0
         SolicitudDeCredito solicitud = SolicitudDeCredito.get(solicitudId)
         if(solicitud && solicitud?.reporteBuroCredito) {
@@ -1135,11 +1135,8 @@ class BuroDeCreditoService {
                     println "Monto a Pagar Acumulado: " + montoAPagar
                 }
                 println "Monto a Pagar (Preliminar): " + montoAPagar
-                if(asalariado) {
-                    println "Aplicando el 50% al ser asalariado..."
-                    montoAPagar = 0.5 * montoAPagar
-                }
-                println "Monto a Pagar Final: " + montoAPagar
+                montoAPagar = montoAPagar * porcentajeDeDescuento
+                println "Monto a Pagar Final: " + montoAPagar 
                 println " ***** Terminando procedimiento de cálculo del monto a pagar ***** "
             } catch(Exception e) {
                 println "Se murio al calcular el monto a apagar...."

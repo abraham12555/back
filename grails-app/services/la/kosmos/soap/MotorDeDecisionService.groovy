@@ -15,7 +15,7 @@ class MotorDeDecisionService {
         println("Entrando a obtenerScore... Configurando servicio...")
         proxy.setURL(ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecision)
         println("Invoncando servicio...")
-        def result= proxy.doGetScore(datos.solicitudId, datos.riesgoGeografico, datos.plazo, datos.periodicidad, datos.riesgoOcupacion, datos.edad, datos.estadoCivil, datos.productoServicio, datos.antiguedadVivienda, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.dependientesEconomicos, datos.gastoRenta, datos.cuotaMensualCredito, datos.tipoDeVivienda, datos.asalariado, datos.cadenaBuroDeCredito)
+        def result= proxy.doGetScore(datos.solicitudId, datos.riesgoGeografico, datos.plazo, datos.periodicidad, datos.riesgoOcupacion, datos.edad, datos.estadoCivil, datos.productoServicio, datos.antiguedadVivienda, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.dependientesEconomicos, datos.gastoRenta, datos.cuotaMensualCredito, datos.tipoDeVivienda, datos.asalariado, datos.cadenaBuroDeCredito,datos.porcentajeDeDescuento)
         println "Respuesta Recibida: " + result
         return result
     }
@@ -59,7 +59,7 @@ class MotorDeDecisionService {
         println("Entrando a obtenerScoreClienteExistente... Configurando servicio...")
         proxy.setURL(ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE)
         println("Invoncando servicio...")
-        def result= proxy.doGetScore(datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.rcobsldpas12, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cantidadIntegrantesFamilia, datos.gastosDeAlquiler, datos.cuotaCredito, datos.tipoDeVivienda, datos.asalariado, datos.experienciaCrediticia, datos.creditosLiquidados, datos.cadenaBuroDeCredito)
+        def result= proxy.doGetScore(datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.rcobsldpas12, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cantidadIntegrantesFamilia, datos.gastosDeAlquiler, datos.cuotaCredito, datos.tipoDeVivienda, datos.asalariado, datos.experienciaCrediticia, datos.creditosLiquidados, datos.cadenaBuroDeCredito,datos.porcentajeDeDescuento)
         println "Respuesta Recibida: " + result
         return result
     }

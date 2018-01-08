@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="experiencia_crediticia" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="creditos_liquidados" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="cadena_bc" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="porcentajeDedescuento" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -74,7 +75,8 @@ import javax.xml.bind.annotation.XmlType;
     "asalariado",
     "experienciaCrediticia",
     "creditosLiquidados",
-    "cadenaBc"
+    "cadenaBc",
+    "porcentajeDedescuento"
 })
 public class CalculateProb {
 
@@ -122,6 +124,7 @@ public class CalculateProb {
     protected int creditosLiquidados;
     @XmlElement(name = "cadena_bc")
     protected String cadenaBc;
+    protected Double porcentajeDedescuento;
 
     /**
      * Obtiene el valor de la propiedad solicitudId.
@@ -673,6 +676,30 @@ public class CalculateProb {
      */
     public void setCadenaBc(String value) {
         this.cadenaBc = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad porcentajeDedescuento.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getPorcentajeDedescuento() {
+        return porcentajeDedescuento;
+    }
+
+    /**
+     * Define el valor de la propiedad porcentajeDedescuento.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setPorcentajeDedescuento(Double value) {
+        this.porcentajeDedescuento = value;
     }
 
 }

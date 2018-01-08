@@ -29,7 +29,7 @@ public class DecisionEngineCeWebService {
         return path;
     }
 
-    public HashMap doGetScore(Long solicitudId, String riesgoGeografico, String renovacion, Double rdifmspwultcpt12, Double revoPagos3, Double propMontoLiberado, Double fecAntigCliCred, Integer edad, Integer antiguedadEmpleo, String riesgoOcupacion, String estadoCivil, String claveServicio, Double rcobsldpas12, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer cantidadIntegrantesFamilia, Double gastosDeAlquiler, Double cuotaCredito, Integer tipoDeVivienda, boolean asalariado, boolean experienciaCrediticia, Integer creditosLiquidados, String cadenaBuroDeCredito) {
+    public HashMap doGetScore(Long solicitudId, String riesgoGeografico, String renovacion, Double rdifmspwultcpt12, Double revoPagos3, Double propMontoLiberado, Double fecAntigCliCred, Integer edad, Integer antiguedadEmpleo, String riesgoOcupacion, String estadoCivil, String claveServicio, Double rcobsldpas12, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer cantidadIntegrantesFamilia, Double gastosDeAlquiler, Double cuotaCredito, Integer tipoDeVivienda, boolean asalariado, boolean experienciaCrediticia, Integer creditosLiquidados, String cadenaBuroDeCredito,Double porcentajeDeDescuento) {
         String URL = getURL();
         mx.ksms.engine.ce.EngineCEDataOutput resultado = null;
         HashMap respuesta = null;
@@ -39,7 +39,7 @@ public class DecisionEngineCeWebService {
             EngineCEServiceService service = new EngineCEServiceService(url, qname1);
             EngineCEService port = service.getEngineCEServicePort();
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
-            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, renovacion, rdifmspwultcpt12, revoPagos3, propMontoLiberado, fecAntigCliCred, edad, antiguedadEmpleo, riesgoOcupacion, estadoCivil, claveServicio, rcobsldpas12, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, cantidadIntegrantesFamilia, gastosDeAlquiler, cuotaCredito, tipoDeVivienda, asalariado, experienciaCrediticia, creditosLiquidados, cadenaBuroDeCredito);
+            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, renovacion, rdifmspwultcpt12, revoPagos3, propMontoLiberado, fecAntigCliCred, edad, antiguedadEmpleo, riesgoOcupacion, estadoCivil, claveServicio, rcobsldpas12, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, cantidadIntegrantesFamilia, gastosDeAlquiler, cuotaCredito, tipoDeVivienda, asalariado, experienciaCrediticia, creditosLiquidados, cadenaBuroDeCredito,porcentajeDeDescuento);
             System.out.println("dictamenDePerfil: " + resultado.getDictamenDePerfil());
             System.out.println("dictamenCapacidadDePago: " + resultado.getDictamenCapacidadDePago());
             System.out.println("dictamenConjunto: " + resultado.getDictamenConjunto());

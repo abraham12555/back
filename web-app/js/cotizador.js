@@ -727,6 +727,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
                 $('#txtMontoSeguro').val(montoSeguro);
                 $('#txtMontoAsistencia').val(respuesta.montoAsistencia);
                 $('#pagoCalculado').html("Pago " + respuesta.nombrePeriodo + ": " + formatCurrency(respuesta.renta, "$"));
+//              $('#cat').val(respuesta.cat);
 
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "warning");

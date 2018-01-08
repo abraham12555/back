@@ -29,7 +29,7 @@ public class DecisionEngineWebService {
         return path;
     }
 
-    public HashMap doGetScore(Long solicitudId, String riesgoGeografico, Integer plazo, String periodicidad, String riesgoOcupacion, Integer edad, String estadoCivil, String productoServicio, Integer antiguedadVivienda, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer dependientesEconomicos, Double gastoRenta, Double cuotaMensualCredito, Integer tipoDeVivienda, boolean asalariado, String cadenaBuroDeCredito) {
+    public HashMap doGetScore(Long solicitudId, String riesgoGeografico, Integer plazo, String periodicidad, String riesgoOcupacion, Integer edad, String estadoCivil, String productoServicio, Integer antiguedadVivienda, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer dependientesEconomicos, Double gastoRenta, Double cuotaMensualCredito, Integer tipoDeVivienda, boolean asalariado, String cadenaBuroDeCredito,Double porcentajeDeDescuento) {
         String URL = getURL();
         mx.ksms.engine.cl.EngineDataOutput resultado = null;
         HashMap respuesta = null;
@@ -40,7 +40,7 @@ public class DecisionEngineWebService {
             EngineService port = service.getEngineServicePort();
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
             System.out.println("Si lo alcanza o no? " + solicitudId + ", " + riesgoGeografico + ", " + plazo + ", " + periodicidad + ", " + riesgoOcupacion + ", " + edad + ", " + estadoCivil + ", " + productoServicio + ", " + antiguedadVivienda + ", " + ingresosFijosMensuales + ", " + ingresosVariablesMensuales + ", " + gastoRenta + ", " + cuotaMensualCredito);
-            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, plazo, periodicidad, riesgoOcupacion, edad, estadoCivil, productoServicio, antiguedadVivienda, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, dependientesEconomicos, gastoRenta, cuotaMensualCredito, tipoDeVivienda, asalariado, cadenaBuroDeCredito);
+            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, plazo, periodicidad, riesgoOcupacion, edad, estadoCivil, productoServicio, antiguedadVivienda, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, dependientesEconomicos, gastoRenta, cuotaMensualCredito, tipoDeVivienda, asalariado, cadenaBuroDeCredito,porcentajeDeDescuento);
             System.out.println("dictamenDePerfil: " + resultado.getDictamenDePerfil());
             System.out.println("dictamenCapacidadDePago: " + resultado.getDictamenCapacidadDePago());
             System.out.println("dictamenConjunto: " + resultado.getDictamenConjunto());

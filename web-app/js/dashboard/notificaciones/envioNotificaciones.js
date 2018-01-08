@@ -25,7 +25,7 @@ $(document).ready(function () {
 
     $('#newCronConfiguration-btn').on('click', function (event) {
         event.preventDefault();
-        loadDataCron(0);
+            loadDataCron(0);
     });
 
     $("#datepickerCron").datepicker({
@@ -176,7 +176,7 @@ function loadDataCron(idCron) {
                 });
 
                 selectFrequency($('input:radio[name="cronOptions"]:checked').val());
-
+                
                 fillTemplates(response);
 
                 openModal('modalEnvio');
@@ -244,10 +244,10 @@ function saveCron() {
         contentType: false,
         processData: false,
         success: function (response) {
-            getCronList();
-            cerrarModal('modalEnvio');
+                getCronList();
+                cerrarModal('modalEnvio');
 
-            sweetAlert({html: false, title: "¡Excelente!", text: "La configuración se ha guardado correctamente.", type: "success"});
+                sweetAlert({html: false, title: "¡Excelente!", text: "La configuración se ha guardado correctamente.", type: "success"});
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -290,11 +290,11 @@ function deleteCron(idCron) {
 
 function validateForm() {
     var errors = 0;
-
+ 
     $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });
-
+    
     if ($('input[name=cronOptions]:checked').length <= 0) {
         errors++;
         cronErrorMessage('frequency', "El campo es obligatorio");
@@ -347,9 +347,9 @@ function validateForm() {
     }
 
     if ($('input[name=templateOptions]').length > 0 && $('input[name=templateOptions]:checked').length <= 0) {
-        errors++;
+                errors++;
         cronErrorMessage('template', "Debe seleccionar una plantilla");
-    }
+        }
 
     if (errors === 0) {
         saveCron();

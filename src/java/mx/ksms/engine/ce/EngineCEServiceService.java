@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "EngineCEServiceService", targetNamespace = "http://ce.engine.ksms.mx/", wsdlLocation = "http://192.168.0.120:8080/decision-engine-ws/services/engineCE?wsdl")
+@WebServiceClient(name = "EngineCEServiceService", targetNamespace = "http://ce.engine.ksms.mx/", wsdlLocation = "http://192.168.0.183:8080/decision-engine-ws/services/engineCE?wsdl")
 public class EngineCEServiceService
     extends Service
 {
@@ -30,7 +30,7 @@ public class EngineCEServiceService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://192.168.0.120:8080/decision-engine-ws/services/engineCE?wsdl");
+            url = new URL("http://192.168.0.183:8080/decision-engine-ws/services/engineCE?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

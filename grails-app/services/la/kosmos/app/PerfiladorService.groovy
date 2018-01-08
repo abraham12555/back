@@ -9,7 +9,7 @@ import java.nio.file.Files
 import org.apache.commons.codec.binary.Base64
 import java.time.*
 import la.kosmos.app.exception.BusinessException
-
+//import org.apache.poi.ss.formula.eval.*;
 @Transactional
 class PerfiladorService {
 
@@ -388,7 +388,7 @@ class PerfiladorService {
             //Primer Filtro
             def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
             if (productosAplicables.size() == 0) {
-                log.error("ERRPROD" + (aleatorio()) + ". No hay productos que apliquen al perfil del prospecto. Solicitud: " + datosSolicitud.idSolicitud)
+                log.error("ERRPROD" + (aleatorio()) + ". No se generarón ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado. Solicitud: " + datosSolicitud.idSolicitud)
                 throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
             }
 
@@ -464,6 +464,19 @@ class PerfiladorService {
                 def plazosPermitidos = ((plazosPosibles.plazosPermitidos ? (plazosPosibles.plazosPermitidos.tokenize(',')) : null))
                 plazosPermitidos = plazosPermitidos?.reverse()
                 //println "Plazos Permitidos: " + plazosPermitidos
+                def solicitud = SolicitudDeCredito.get(datos.solicitudId as long)
+                def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (tipoDeDocumento.tipoDeIngresos.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: producto.id, regionId: solicitud.sucursal.region.id])
+                if(porcentajeDeDescuento){
+                   datosSolicitud.porcentajeDeDescuento = porcentajeDeDescuento[0]
+                }
+                if(!datosSolicitud.porcentajeDeDescuento){
+                    if(tipoDeDocumento.tipoDeIngresos.id == 1){
+                       datosSolicitud.porcentajeDeDescuento = 0.5
+                    }else{
+                       datosSolicitud.porcentajeDeDescuento = 1
+
+                    }
+                }
                 plazosPermitidos?.each { plazo ->
                     ///  println "Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
                     datosSolicitud.plazos = plazo
@@ -500,6 +513,9 @@ class PerfiladorService {
                                 oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
                                 oferta.dictamenDePoliticas = ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
                                 println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
+                                oferta.tipoProducto = oferta.tipoProducto
+                                oferta.plazoCondonado = oferta.plazoCondonado 
+                                //oferta.cat = oferta.cat
                                 ofertaProducto.listaDeOpciones << oferta
                                 def mapaPlazo = [:]
                                 mapaPlazo.plazos = (plazo as int)
@@ -528,7 +544,7 @@ class PerfiladorService {
         if (ofertas.size() > 0) {
             return ofertas
         } else {
-            log.error("ERROP. No se generaron ofertas. Solicitud: " + datos.solicitudId);
+            log.error("ERROP. No se generaron ofertas. Solicitud: " + identificadores.idSolicitud);
             throw new BusinessException("Error desconocido. Favor de reportar al administrador del sistema");
         }
     }
@@ -576,7 +592,7 @@ class PerfiladorService {
         }
     }
 
-    def calcularCuota(def montoDelCredito, def periodicidad, def plazos, def tasaDeInteres, def entidadFinancieraId) {
+    def calcularCuota(def opcion, def montoDelCredito, def periodicidad, def plazos, def tasaDeInteres, def entidadFinancieraId,def plazoCondonado) {
         def respuesta = [:]
         //println "Parametros de entrada ->  monto" + montoDelCredito + ", periodicidad: " + periodicidad + ", plazo: " + plazos + ", tasa de interes: " + tasaDeInteres
         respuesta.montoAsistencia = obtenerSeguroAsistencia(1, periodicidad, plazos, entidadFinancieraId, montoDelCredito)
@@ -584,17 +600,37 @@ class PerfiladorService {
         //println "Seguro: " + respuesta.montoSeguro + " -  Asistencia: " + respuesta.montoAsistencia
         def tasaConI = tasaDeInteres * 1.16
         //println "tasa con i: " + tasaConI
+        //def tasaSinI = tasaDeInteres
         def n = plazos as int
         def c = (montoDelCredito + respuesta.montoSeguro + respuesta.montoAsistencia)
-        //println "C: " + c
-        def i = (tasaConI/periodicidad.periodosAnuales)
-        //println "i: " + i
-        def renta =  (c / ((1-((1+i)**(-n)))/i))
-        respuesta.cuota = renta //* vxc Solo se ocupa para mensualizar el pago
+        if(opcion==1){
+            //println "C: " + c
+            def i = (tasaConI/periodicidad.periodosAnuales)
+            //println "i: " + i
+            //def ie = (tasaSinI/periodicidad.periodosAnuales)
+            //def renta2 = (c / ((1-((1+ie)**(-n)))/ie))
+            def renta =  (c / ((1-((1+i)**(-n)))/i))
+            
+            respuesta.cuota = renta //* vxc Solo se ocupa para mensualizar el pago
+            //respuesta.cat = buildAmortTable(c,0,renta2,n,respuesta.montoSeguro,0,0,periodicidad.periodosAnuales,opcion)
+
+        }else if(opcion == 2){
+            def montoSinSeguros = c
+            def pagoCapital = (c/((plazos as int)))
+            def a = pagoCapital*plazoCondonado
+            c = c-a
+            //respuesta.cat = buildAmortTable(c,montoSinSeguros,pagoCapital,(plazos as int),respuesta.montoSeguro,plazoCondonado,tasaDeInteres,periodicidad.periodosAnuales,opcion)
+            def pagoIntereses = ((c*(tasaDeInteres/12))/30)*15.20833
+            def pagoIvaIntereses = pagoIntereses*0.16
+            def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
+            respuesta.montoMaximo = montoDelCredito
+            respuesta.cuota = pagoTotal
+            
+        }
         return respuesta
     }
 
-    def calcularMaximaCapacidadDePago(def ingresosFijos, def ingresosVariables, def gastos, def montoDeLaRenta, def dependientesEconomicos, def tipoDeVivienda, def solicitudId, def asalariado) {
+    def calcularMaximaCapacidadDePago(def ingresosFijos, def ingresosVariables, def gastos, def montoDeLaRenta, def dependientesEconomicos, def tipoDeVivienda, def solicitudId, def asalariado, def porcentajeDeDescuento) {
         def respuesta = [:]
         def porc_alq = 0.18 //valor constante
         def pto_corte = 15.00 as float
@@ -615,7 +651,7 @@ class PerfiladorService {
         def egresohip = 0
         def grupofam = (dependientesEconomicos + 1)
         def tipov = String.valueOf(tipoDeVivienda)
-        def montoAPagar = buroDeCreditoService.calcularMontoAPagar(solicitudId, asalariado)
+        def montoAPagar = buroDeCreditoService.calcularMontoAPagar(solicitudId, asalariado, porcentajeDeDescuento)
         gastos = montoAPagar
         if(tipov == 'Rentada') {
             if((ing_ssmm * porc_alq) < egresorenta){ 
@@ -692,35 +728,88 @@ class PerfiladorService {
     }
 
     def calcularOferta(def datosSolicitud) {
-        def oferta = calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud, (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ))
-        oferta.montoMaximo = calcularMontoMaximo(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago)
-        ///println "MONTO MAXIMO CALCULADO: " + oferta.montoMaximo
-        oferta.montoAsistencia = obtenerSeguroAsistencia(1, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, oferta.montoMaximo)
-        oferta.montoSeguro = obtenerSeguroAsistencia(0, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, (oferta.montoMaximo))
-        oferta.montoMaximo = (oferta.montoMaximo - oferta.montoSeguro - oferta.montoAsistencia)
-        //println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
-        def limites = LimitePlazoProducto.findWhere(producto: datosSolicitud.producto, plazo: (datosSolicitud.plazos as int), periodicidad: datosSolicitud.periodicidad)
-        oferta.montoMinimo = limites.limiteMinimo
-        if ((limites.limiteMaximo > 0) && (oferta.montoMaximo > limites.limiteMaximo) ){
-            oferta.montoMaximo = limites.limiteMaximo
-        } else if (oferta.montoMaximo < 0) {
-            oferta.montoMaximo = 0
+        //println "CALCULANDO OFERTA + DATOS DE SOLICITUD"+ datosSolicitud  
+        def oferta = calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud, (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+       // println "MAXIMA CAPACIDAD DE PAGO "+oferta.maximaCapacidadDePago
+        if(datosSolicitud.producto.esquema.id == 1){
+            oferta.montoMaximo = calcularMontoMaximo(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago)
+            ///println "MONTO MAXIMO CALCULADO: " + oferta.montoMaximo
+            oferta.montoAsistencia = obtenerSeguroAsistencia(1, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, oferta.montoMaximo)
+            oferta.montoSeguro = obtenerSeguroAsistencia(0, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, (oferta.montoMaximo))
+            oferta.montoMaximo = (oferta.montoMaximo - oferta.montoSeguro - oferta.montoAsistencia)
+            //println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
+            def limites = LimitePlazoProducto.findWhere(producto: datosSolicitud.producto, plazo: (datosSolicitud.plazos as int), periodicidad: datosSolicitud.periodicidad)
+            oferta.montoMinimo = limites.limiteMinimo
+            if ((limites.limiteMaximo > 0) && (oferta.montoMaximo > limites.limiteMaximo) ){
+                oferta.montoMaximo = limites.limiteMaximo
+            } else if (oferta.montoMaximo < 0) {
+                oferta.montoMaximo = 0
+            }
+            if(oferta.montoMinimo > oferta.montoMaximo) {
+                oferta.montoMinimo = oferta.montoMaximo
+                oferta.ratio = 0
+                return oferta 
+            }
+            //println "MONTO MAXIMO FINAL: " + oferta.montoMaximo
+            def calculoCuota =  calcularCuota(1,oferta.montoMaximo, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId,datosSolicitud.producto.plazoCondonado)
+            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+            oferta.cuota = calculoCuota.cuota
+            oferta.montoSeguro = calculoCuota.montoSeguro
+            oferta.montoAsistencia = calculoCuota.montoAsistencia
+            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+            oferta.plazos = datosSolicitud.plazos
+            oferta.periodicidad = datosSolicitud.periodicidad
+            oferta.tasaDeInteres = datosSolicitud.tasaDeInteres
+            oferta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: datosSolicitud.producto.id, monto: (oferta.montoMaximo as float)])
+            oferta.tipoProducto = 1
+            oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
+            //oferta.cat = calculoCuota.cat
+            //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR: " + oferta.montoSeguro + " | MONTO A PAGAR: " + oferta.montoAsistencia + " | CAT: " + oferta.cat    
+        }else if(datosSolicitud.producto.esquema.id == 2){
+            def respuesta
+            respuesta  = calcularMontoMaximoPagosInsolutos(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago,datosSolicitud.producto)
+            oferta.montoMaximo = respuesta.montoMaximo
+            //println "MONTO MAXIMO 1 "+oferta.montoMaximo
+
+            oferta.montoAsistencia = obtenerSeguroAsistencia(1, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, oferta.montoMaximo)
+            oferta.montoSeguro = obtenerSeguroAsistencia(0, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, (oferta.montoMaximo))
+            oferta.montoMaximo = (oferta.montoMaximo - oferta.montoSeguro - oferta.montoAsistencia)
+            //println "MONTO MAXIMO MENOS SEGUROS "+oferta.montoMaximo
+            def limites = LimitePlazoProducto.findWhere(producto: datosSolicitud.producto, plazo: (datosSolicitud.plazos as int), periodicidad: datosSolicitud.periodicidad)
+            oferta.montoMinimo = limites.limiteMinimo
+            //println "oferta.montoMinimo "+oferta.montoMinimo
+            //println "limite maximo "+limites.limiteMaximo
+            if ((limites.limiteMaximo > 0) && (oferta.montoMaximo > limites.limiteMaximo) ){
+                oferta.montoMaximo = limites.limiteMaximo
+                
+            } else if (oferta.montoMaximo < 0) {
+                oferta.montoMaximo = 0
+            }
+            if(oferta.montoMinimo > oferta.montoMaximo) {
+                oferta.montoMinimo = oferta.montoMaximo
+                oferta.ratio = 0
+                return oferta 
+            }
+            // println "MONTO MAXIMO QUE SE VA A CACULARCUOTA "+oferta.montoMaximo
+            
+            def calculoCuota =  calcularCuota(2,oferta.montoMaximo, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId,datosSolicitud.producto.plazoCondonado)           
+            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+            oferta.montoMaximo = calculoCuota.montoMaximo
+            //println "MONTO MAXIMO FINAL "+oferta.montoMaximo
+            oferta.cuota =  calculoCuota.cuota
+            oferta.montoSeguro = calculoCuota.montoSeguro
+            oferta.montoAsistencia = calculoCuota.montoAsistencia
+            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+            oferta.plazos = datosSolicitud.plazos
+            oferta.periodicidad = datosSolicitud.periodicidad
+            oferta.tasaDeInteres = datosSolicitud.tasaDeInteres
+            oferta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: datosSolicitud.producto.id, monto: (oferta.montoMaximo as float)])
+            oferta.tipoProducto = 2
+            oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
+            //oferta.cat = calculoCuota.cat
+            //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTO A PAGAR SEGURO: " + oferta.montoSeguro + " | MONTO A PAGAR ASISTENCIA: " + oferta.montoAsistencia  + " | CAT: " + oferta.cat    
         }
-        if(oferta.montoMinimo > oferta.montoMaximo) {
-            oferta.montoMinimo = oferta.montoMaximo
-        }
-        //println "MONTO MAXIMO FINAL: " + oferta.montoMaximo
-        def calculoCuota =  calcularCuota(oferta.montoMaximo, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId)
-        oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-        oferta.cuota = calculoCuota.cuota
-        oferta.montoSeguro = calculoCuota.montoSeguro
-        oferta.montoAsistencia = calculoCuota.montoAsistencia
-        oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
-        oferta.plazos = datosSolicitud.plazos
-        oferta.periodicidad = datosSolicitud.periodicidad
-        oferta.tasaDeInteres = datosSolicitud.tasaDeInteres
-        oferta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: datosSolicitud.producto.id, monto: (oferta.montoMaximo as float)])
-        //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR: " + oferta.montoAPagar
+       
         return oferta
     }
 
@@ -731,11 +820,11 @@ class PerfiladorService {
         //println "Producto encontrado: " + producto
         //        println "Buscar oferta..."
         def oferta = producto.listaDeOpciones.find { it.plazos == (params.plazo) && it.periodicidad.id == (params.periodicidadId as long) }
-        //println "Oferta encontrada: " + oferta
-        respuesta.cuota =  calcularCuota((params.montoDeCredito as float), oferta.periodicidad, oferta.plazos, oferta.tasaDeInteres, producto.producto.entidadFinanciera.id)
+        respuesta.cuota =  calcularCuota(oferta.tipoProducto,(params.montoDeCredito as float), oferta.periodicidad, oferta.plazos, oferta.tasaDeInteres, producto.producto.entidadFinanciera.id,oferta.plazoCondonado)
         respuesta.tasaDeInteres = oferta.tasaDeInteres
         respuesta.periodicidad = oferta.periodicidad.nombre.toUpperCase()
         respuesta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: producto.producto.id, monto: (params.montoDeCredito as float)])
+        //oferta.cat = respuesta.cuota.cat
         return respuesta
     }
 
@@ -765,6 +854,7 @@ class PerfiladorService {
         productoSolicitud.plazos = params.plazo as int
         productoSolicitud.tasaDeInteres = oferta.tasaDeInteres
         productoSolicitud.montoDeServicioDeAsistencia = oferta.montoAsistencia
+        //productoSolicitud.cat = oferta.cat as float
         productoSolicitud.solicitud = solicitud
         if(productoSolicitud.save(flush:true)){
             ///println("El producto se ha registrado correctamente")
@@ -927,6 +1017,123 @@ class PerfiladorService {
         } 
         def cuotaMensualizada = cuota * factor
         cuotaMensualizada
+    }
+      def calcularMontoMaximoPagosInsolutos(def tasaDeInteres, def periodosAnuales, def plazos, def capacidadDePago, def producto) {
+        def respuesta =[:]
+        def dcapag = 2.1
+        def a = ((plazos as int)*capacidadDePago)/dcapag
+        def p = ((plazos as int )-producto.plazoCondonado)
+        def b = ((((tasaDeInteres/periodosAnuales))*p)*1.16)+1
+        def monto_max_cred  = (a/b)
+        respuesta.montoMaximo = monto_max_cred.round(2)
+        return respuesta
+    }
+    
+      def buildAmortTable(def montoDelCredito,def montoDelCreditoSinSeguros,def pagoCapital,def plazos,def montoSeguro,def plazoCondonado, def tasaDeInteres, def periodosAnuales, def esquema ){
+        def lista = []
+        def pagoCero
+        double[] incomesList 
+        double irr
+        double irrRounded
+        def cat
+        if (esquema == 1){
+            pagoCero = -(montoDelCredito - montoSeguro)
+            lista << pagoCero
+            (1..plazos).each{
+                lista << pagoCapital.round(2)
+            }
+            incomesList = lista
+            irr = this.irr(incomesList);
+            cat = Math.pow((1+irr),periodosAnuales)-1
+            return cat
+        }
+        else if (esquema == 2){
+            pagoCero = -(montoDelCreditoSinSeguros - montoSeguro)
+            lista << pagoCero
+            (1..plazoCondonado).each{
+                lista << pagoCapital
+            }
+            (plazoCondonado+1..plazos).each {
+                def pagoIntereses = ((montoDelCredito*(tasaDeInteres/12))/30)*15.20833
+                def pagoIvaIntereses = pagoIntereses*0.16
+                def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
+                montoDelCredito = montoDelCredito - pagoCapital
+                def flujoRecursos2 = pagoCapital + pagoIntereses
+                lista << flujoRecursos2.round(2)
+            }
+            incomesList = lista
+            irr = this.irr(incomesList);
+            cat = Math.pow((1+irr),periodosAnuales)-1
+            return cat
+        } 
+        
+    }
+     public static double irr(double[] income) {
+        return irr(income, 0.1d);
+    }
+        public static double irr(double[] values, double guess) {
+        int maxIterationCount = 20;
+        double absoluteAccuracy = 1E-7;
+        double x0 = guess;
+        double x1;
+        int i = 0;
+        while (i < maxIterationCount) {
+            // the value of the function (NPV) and its derivate can be calculated in the same loop
+            double fValue = 0;
+            double fDerivative = 0;
+            for (int k = 0; k < values.length; k++) {
+                fValue += values[k] / Math.pow(1.0 + x0, k);
+                fDerivative += -k * values[k] / Math.pow(1.0 + x0, k + 1);
+            }
+            // the essense of the Newton-Raphson Method
+            x1 = x0 - fValue/fDerivative;
+            if (Math.abs(x1 - x0) <= absoluteAccuracy) {
+                return x1;
+            }
+            x0 = x1;
+            ++i;
+        }
+        if(i== 20){
+            i = 0
+            maxIterationCount = 100
+            while (i < maxIterationCount) {
+                // the value of the function (NPV) and its derivate can be calculated in the same loop
+                double fValue = 0;
+                double fDerivative = 0;
+                for (int k = 0; k < values.length; k++) {
+                    fValue += values[k] / Math.pow(1.0 + x0, k);
+                    fDerivative += -k * values[k] / Math.pow(1.0 + x0, k + 1);
+                }
+                // the essense of the Newton-Raphson Method
+                x1 = x0 - fValue/fDerivative;
+                if (Math.abs(x1 - x0) <= absoluteAccuracy) {
+                    return x1;
+                }
+                x0 = x1;
+                ++i;
+            }
+        }
+        if(i== 100){
+            i = 0
+            maxIterationCount = 200
+            while (i < maxIterationCount) {
+                // the value of the function (NPV) and its derivate can be calculated in the same loop
+                double fValue = 0;
+                double fDerivative = 0;
+                for (int k = 0; k < values.length; k++) {
+                    fValue += values[k] / Math.pow(1.0 + x0, k);
+                    fDerivative += -k * values[k] / Math.pow(1.0 + x0, k + 1);
+                }
+                // the essense of the Newton-Raphson Method
+                x1 = x0 - fValue/fDerivative;
+                if (Math.abs(x1 - x0) <= absoluteAccuracy) {
+                    return x1;
+                }
+                x0 = x1;
+                ++i;
+            }
+             return Double.NaN;
+        }
     }
 
 }

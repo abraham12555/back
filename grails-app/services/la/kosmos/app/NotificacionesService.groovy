@@ -327,7 +327,7 @@ class NotificacionesService {
 
     private boolean sendMessage(String phoneNumber, String message, ConfiguracionEntidadFinanciera configuracion) throws Exception {
         phoneNumber = phoneNumber.replaceAll('-', '')
-
+        
         Future future = executorService.submit([call: {
                     boolean value = this.smsService.sendSMS(phoneNumber, message, configuracion)
                     return value
@@ -481,7 +481,7 @@ class NotificacionesService {
         def cronList = []
         list.each {
             Cron c = new Cron(it)
-            this.loadCronContent(c)
+                this.loadCronContent(c)
             cronList << c
         }
 
@@ -509,9 +509,9 @@ class NotificacionesService {
         def respuesta = [:]
         def idCron = Long.parseLong(params.idCron)
         NotificacionesCron notificacionCron
-
+            
         EnvioNotificaciones envio = new EnvioNotificaciones(params)
-
+        
         if(idCron == 0) {
             notificacionCron = new NotificacionesCron()
             notificacionCron.configuracionEntidadFinanciera = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(entidadFinanciera)
@@ -557,9 +557,9 @@ class NotificacionesService {
             //updating job
             configuracionNotificacionesService.rescheduleJob(notificacionCron)
         }
-        return respuesta
-    }
-
+                return respuesta
+            }
+          
     private String buildCronExpression (EnvioNotificaciones envio){
         def option = envio.cronOptions
         def expression = new CronExpression()
@@ -671,49 +671,49 @@ class NotificacionesService {
         def envioNotificaciones = new EnvioNotificaciones()
         envioNotificaciones.weekDay = Constants.DaysWeek.LUNES.value
         envioNotificaciones.dayMonth = Constants.DAY_MONTH
-
+        
         if(idCron == 0) {
             return envioNotificaciones
         }
-
+        
         def notificacion = NotificacionesCron.get(idCron)
-
-        def (second, minute, hour, dayOfMonth, month, dayOfWeek, year) = notificacion.cron.tokenize(' ')
-
-        switch(notificacion.configCron.ordinal()) {
-        case Constants.CronConfig.MINUTO.ordinal():
-            envioNotificaciones.cronOptions = Constants.CronConfig.MINUTO.name()
-
-            break;
-        case Constants.CronConfig.HORA.ordinal():
-            envioNotificaciones.cronOptions = Constants.CronConfig.HORA.name()
-            envioNotificaciones.hour = hour
-
-            break;
-        case Constants.CronConfig.DIA.ordinal():
-            envioNotificaciones.cronOptions = Constants.CronConfig.DIA.name()
-            envioNotificaciones.dayTime = hour + ":" + this.formatDateTime(Long.parseLong(minute))
-
-            break;
-        case Constants.CronConfig.SEMANA.ordinal():
-            envioNotificaciones.cronOptions = Constants.CronConfig.SEMANA.name()
-            envioNotificaciones.weekDay = dayOfWeek
-            envioNotificaciones.weekTime =  hour + ":" + this.formatDateTime(Long.parseLong(minute))
-
-            break;
-        case Constants.CronConfig.MES.ordinal():
-            envioNotificaciones.cronOptions = Constants.CronConfig.MES.name()
-            envioNotificaciones.dayMonth = dayOfMonth
-            envioNotificaciones.monthTime = hour + ":" + this.formatDateTime(Long.parseLong(minute))
-
-            break;
-        }
+            
+            def (second, minute, hour, dayOfMonth, month, dayOfWeek, year) = notificacion.cron.tokenize(' ')
+            
+            switch(notificacion.configCron.ordinal()) {
+            case Constants.CronConfig.MINUTO.ordinal():
+                envioNotificaciones.cronOptions = Constants.CronConfig.MINUTO.name()
+                
+                break;
+            case Constants.CronConfig.HORA.ordinal():
+                envioNotificaciones.cronOptions = Constants.CronConfig.HORA.name()
+                envioNotificaciones.hour = hour
+                
+                break;
+            case Constants.CronConfig.DIA.ordinal():
+                envioNotificaciones.cronOptions = Constants.CronConfig.DIA.name()
+                envioNotificaciones.dayTime = hour + ":" + this.formatDateTime(Long.parseLong(minute))
+                
+                break;
+            case Constants.CronConfig.SEMANA.ordinal():
+                envioNotificaciones.cronOptions = Constants.CronConfig.SEMANA.name()
+                envioNotificaciones.weekDay = dayOfWeek
+                envioNotificaciones.weekTime =  hour + ":" + this.formatDateTime(Long.parseLong(minute))
+                
+                break;
+            case Constants.CronConfig.MES.ordinal():
+                envioNotificaciones.cronOptions = Constants.CronConfig.MES.name()
+                envioNotificaciones.dayMonth = dayOfMonth
+                envioNotificaciones.monthTime = hour + ":" + this.formatDateTime(Long.parseLong(minute))
+                
+                break;
+            }
 
         envioNotificaciones.templateOptions = []
         notificacion.templates.each {
             envioNotificaciones.templateOptions << it.id
         }
-
+        
         return envioNotificaciones
     }
 
@@ -740,7 +740,7 @@ class NotificacionesService {
         configuracionNotificacionesService.stopScheduler(notificacionCron)
 
         notificacionCron.delete()
-
+        
         return respuesta
     }
 
@@ -772,4 +772,4 @@ class NotificacionesService {
     def enableEmailTemplate(EntidadFinanciera entidadFinanciera){
         return (this.loadAvailableStatusByType(entidadFinanciera, Constants.TipoPlantilla.EMAIL)).size() > 0
     }
-}
+    }

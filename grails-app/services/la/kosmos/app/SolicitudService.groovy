@@ -704,6 +704,7 @@ class SolicitudService {
             productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
             productoSolicitud.plazos = datosCotizador.plazo as int
             productoSolicitud.tasaDeInteres = productoSolicitud.producto.tasaDeInteres
+            //productoSolicitud.cat = datosCotizador.cat as float
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
                 println("El producto se ha registrado correctamente")
@@ -740,6 +741,7 @@ class SolicitudService {
                 solicitud.nombreDelCliente = datosCotizador.nombreCliente
                 solicitud.emailCliente = datosCotizador.emailCliente
                 solicitud.telefonoCliente = datosCotizador.telefonoCliente
+                //solicitud.cat = datosCotizador.cat
             } else {
                 solicitud.montoDelPago = datosCotizador.pagos as float
                 solicitud.montoDelSeguroDeDeuda = 0
@@ -1411,6 +1413,18 @@ class SolicitudService {
         datos.cuotaMensualCredito = new Double(productoSolicitud.montoDelPago)
         datos.tipoDeVivienda = direccion.tipoDeVivienda.id.intValue()
         datos.asalariado = (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ? true : false)
+        def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: productoSolicitud.producto.id, regionId: solicitud.sucursal.region.id])
+        if(porcentajeDeDescuento){
+            datos.porcentajeDeDescuento = new Double(porcentajeDeDescuento[0])
+        }
+        else if(!datos.porcentajeDeDescuento){
+            if(productoSolicitud.documentoElegido.tipoDeIngresos.id == 1){
+                datos.porcentajeDeDescuento = new Double (0.5)
+            }else{
+                datos.porcentajeDeDescuento = new Double(1)
+                
+            }
+        }
         if(bitacoraDeBuro){
             datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
         } else {
@@ -1504,7 +1518,8 @@ class SolicitudService {
         datosSolicitud.cotizador.enganche = productoSolicitud.enganche
         datosSolicitud.cotizador.periodo = (productoSolicitud.periodicidad ? productoSolicitud.periodicidad.id : null)
         datosSolicitud.cotizador.plazo = productoSolicitud.plazos
-        
+        //datosSolicitud.cotizador.cat = productoSolicitud.cat
+
         datosSolicitud.pasoFormulario.cliente.tipoDeDocumento = datosSolicitud.cotizador.documento
         
         if(cliente.fechaDeNacimientoDelConyugue){
@@ -1652,6 +1667,7 @@ class SolicitudService {
         respuesta.cotizador.periodo = solicitud.periodicidad.id
         respuesta.cotizador.plazo = solicitud.plazos
         respuesta.cotizador.montoAsistencia = solicitud.montoDeServicioDeAsistencia
+        //respuesta.cotizador.cat = solicitud.cat
         respuesta.identificadores.idSolicitudTemporal = solicitud.id
         respuesta.configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: solicitud.entidadFinanciera)
         respuesta.ef = solicitud.entidadFinanciera
@@ -1948,4 +1964,4 @@ class SolicitudService {
             respuesta
     }
 
-}
+        }

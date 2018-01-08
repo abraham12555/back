@@ -1056,6 +1056,7 @@ function mostrarOfertas(data) {
             html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta[i].listaDeOpciones[0].tasaDeInteres * 100), 2) + " %</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoSeguro, "$") + "</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoAsistencia, "$") + "</p>";
+//            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta[i].listaDeOpciones[0].cat * 100), 1) + " %</p>";
             html += "</li>";
             //fin-temporal
             html += "<li><h6>REQUISITOS</h6></li>";
@@ -1225,6 +1226,7 @@ function cambiarPlazo(producto, plazo) {
     html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].tasaDeInteres * 100), 2) + " %</p>";
     html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoSeguro, "$") + "</p>";
     html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoAsistencia, "$") + "</p>";
+//    html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].cat * 100), 1) + " %</p>";
     $('#temporal_' + ofertasCalculadas[producto].producto.id).html(html);
     //fin-temporal
     var html2 = "4. GARANTIAS <ul>";
@@ -1260,6 +1262,7 @@ function calcularOferta(producto, montoDeCredito) {
             html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta.tasaDeInteres * 100), 2) + " %</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta.cuota.montoSeguro, "$") + "</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta.cuota.montoAsistencia, "$") + "</p>";
+//            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta.cuota.cat * 100), 1) + " %</p>";
             $('#temporal_' + producto).html(html);
             //fin-temporal
             var html2 = "4. GARANTIAS <ul>";
@@ -1433,7 +1436,7 @@ function consultarBuroTradicional() {
     if ($.contextAwarePathJS === "/qa/") {
         cadenaDeBuro = encodeURIComponent($('#cadenaBuroTestTradicional').val());
     }
-
+    
     var data = new Object();
     data.cadenaDeBuro = cadenaDeBuro;
 

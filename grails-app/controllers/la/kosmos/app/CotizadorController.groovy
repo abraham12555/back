@@ -2,6 +2,7 @@ package la.kosmos.app
 
 import grails.converters.JSON
 import java.net.URL
+//import org.apache.poi.ss.formula.eval.*;
 
 class CotizadorController {
     
@@ -37,7 +38,7 @@ class CotizadorController {
         def respuesta = cotizadorService.cargarCatalogos(params)
         session.ef = respuesta.entidadFinanciera
         session.configuracion = respuesta.configuracion
-
+       
         respuesta
         //}
     }
@@ -175,24 +176,49 @@ class CotizadorController {
                 println ("Encontrado: " + asistenciaAplicable.montoInicial + " - " + asistenciaAplicable.montoFinal)
                 montoAsistencia = asistenciaAplicable.importeAsistencia
             }
-            println "Seguro: " + montoSeguro
-            println "Asistencia: " + montoAsistencia
-            def tasaAnual = producto.tasaDeInteres * 12
-            println "Tasa Anual: " + tasaAnual
-            def tasaConI = tasaAnual*1.16
-            println "Tasa con i: " + tasaConI
-            def n = params.plazoElegido as int
-            println "n: " + n
-            def c = (montoFinanciado + montoSeguro + montoAsistencia)
-            println "c: " + c
-            def i = (tasaConI/periodicidad.periodosAnuales)
-            println "i: " + i
-            def renta =  (c / ((1-((1+i)**(-n)))/i))
-            respuesta.montoAsistencia = montoAsistencia
-            respuesta.montoSeguro = montoSeguro
-            respuesta.nombrePeriodo = periodicidad.nombre
-            respuesta.renta =  renta.round(2)
-            respuesta.exito = true
+            
+            if(producto.esquema.id == 2){
+                println "Seguro: " + montoSeguro
+                println "Asistencia: " + montoAsistencia
+                def montoMasSeguros = (montoFinanciado + montoSeguro + montoAsistencia)
+                println "C"+ montoMasSeguros
+                def pagoCapital = (montoMasSeguros/((params.plazoElegido as int)))
+                def a = pagoCapital*producto.plazoCondonado
+                montoMasSeguros = montoMasSeguros-a
+                def pagoIntereses = ((montoMasSeguros*(producto.tasaDeInteresAnual/12))/30)*15.20833
+
+                def pagoIvaIntereses = pagoIntereses*0.16
+                def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
+                //respuesta.cat = catPagosVariables(montoMasSeguros,montoSeguro,tasaDeInteres,(params.plazoElegido as int),periodicidad.periodosAnuales,plazoCondonado)
+                respuesta.montoAsistencia = montoAsistencia
+                respuesta.montoSeguro = montoSeguro
+                respuesta.nombrePeriodo = periodicidad.nombre
+                respuesta.renta =  pagoTotal.round(2)
+                respuesta.exito = true    
+            }else if(producto.esquema.id ==1) {
+                println "Seguro: " + montoSeguro
+                println "Asistencia: " + montoAsistencia
+                def tasaAnual = producto.tasaDeInteres * 12
+                println "Tasa Anual: " + tasaAnual
+                def tasaConI = tasaAnual*1.16
+                //def tasaSinI = tasaAnual 
+                println "Tasa con i: " + tasaConI
+                def n = params.plazoElegido as int
+                println "n: " + n
+                def c = (montoFinanciado + montoSeguro + montoAsistencia)
+                println "c: " + c
+                def i = (tasaConI/periodicidad.periodosAnuales)
+                //def ie = (tasaSinI/periodicidad.periodosAnuales)
+                println "i: " + i
+                def renta =  (c / ((1-((1+i)**(-n)))/i))
+                //def renta2 = (c / ((1-((1+ie)**(-n)))/ie))
+                //respuesta.cat = catPagosFijos(c,montoSeguro,renta2,n,periodicidad.periodosAnuales)
+                respuesta.montoAsistencia = montoAsistencia
+                respuesta.montoSeguro = montoSeguro
+                respuesta.nombrePeriodo = periodicidad.nombre
+                respuesta.renta =  renta.round(2)
+                respuesta.exito = true
+            }
         }
         render respuesta as JSON
     }
@@ -217,6 +243,7 @@ class CotizadorController {
                 session.cotizador.nombreCliente = params.nombre
                 session.cotizador.emailCliente = params.email
                 session.cotizador.telefonoCliente = params.telefonoCelular
+                //session.cotizador.cat = (params.cat ? (params.cat as float) : 0)
             } else {
                 session.cotizador.producto = (params.txtProducto ? (params.txtProducto as long) : 0)
                 session.cotizador.periodo = (params.txtPeriodo ? (params.txtPeriodo as long) : 0)
@@ -309,5 +336,114 @@ def solicitarCodigoShorUrl() {
             respuesta.incorrecto = true
         }
         render respuesta as JSON
+    }
+    
+    def catPagosFijos(def montoDelCredito,def seguroDeDeuda,def pagosFijos, def plazos, def periodosAnuales){
+        def lista = []
+        double[] incomesList 
+        double irr
+        def cat
+        def pagoCero = -(montoDelCredito - seguroDeDeuda)
+        lista << pagoCero
+            (1..plazos).each{
+                lista << pagosFijos.round(2)
+            }
+            incomesList = lista
+            irr = this.irr(incomesList);
+            cat = Math.pow((1+irr),periodosAnuales)-1
+            return cat
+        
+    }
+    def catPagosVariables(def montoDelCredito,def seguroDeDeuda,def pagoCapital, def plazos, def periodosAnuales,def plazosCondonados){
+        def lista = []
+        double[] incomesList 
+        double irr
+        def cat
+        def pagoCero 
+            pagoCero = -(montoDelCreditoSinSeguros - montoSeguro)
+            lista << pagoCero
+            (1..plazosCondonados).each{
+                lista << pagoCapital
+            }
+            (plazosCondonados+1..plazos).each {
+                def pagoIntereses = ((montoDelCredito*(tasaDeInteres/12))/30)*15.20833
+                def pagoIvaIntereses = pagoIntereses*0.16
+                def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
+                montoDelCredito = montoDelCredito - pagoCapital
+                def flujoRecursos2 = pagoCapital + pagoIntereses
+                lista << flujoRecursos2.round(2)
+            }
+            incomesList = lista
+            irr = this.irr(incomesList);
+            cat = Math.pow((1+irr),periodosAnuales)-1
+            return cat
+        
+    }
+     public static double irr(double[] income) {
+        return irr(income, 0.1d);
+    }
+        public static double irr(double[] values, double guess) {
+        int maxIterationCount = 20;
+        double absoluteAccuracy = 1E-7;
+        double x0 = guess;
+        double x1;
+        int i = 0;
+        while (i < maxIterationCount) {
+            // the value of the function (NPV) and its derivate can be calculated in the same loop
+            double fValue = 0;
+            double fDerivative = 0;
+            for (int k = 0; k < values.length; k++) {
+                fValue += values[k] / Math.pow(1.0 + x0, k);
+                fDerivative += -k * values[k] / Math.pow(1.0 + x0, k + 1);
+            }
+            // the essense of the Newton-Raphson Method
+            x1 = x0 - fValue/fDerivative;
+            if (Math.abs(x1 - x0) <= absoluteAccuracy) {
+                return x1;
+            }
+            x0 = x1;
+            ++i;
+        }
+        if(i== 20){
+            i = 0
+            maxIterationCount = 100
+            while (i < maxIterationCount) {
+                // the value of the function (NPV) and its derivate can be calculated in the same loop
+                double fValue = 0;
+                double fDerivative = 0;
+                for (int k = 0; k < values.length; k++) {
+                    fValue += values[k] / Math.pow(1.0 + x0, k);
+                    fDerivative += -k * values[k] / Math.pow(1.0 + x0, k + 1);
+                }
+                // the essense of the Newton-Raphson Method
+                x1 = x0 - fValue/fDerivative;
+                if (Math.abs(x1 - x0) <= absoluteAccuracy) {
+                    return x1;
+                }
+                x0 = x1;
+                ++i;
+            }
+        }
+        if(i== 100){
+            i = 0
+            maxIterationCount = 200
+            while (i < maxIterationCount) {
+                // the value of the function (NPV) and its derivate can be calculated in the same loop
+                double fValue = 0;
+                double fDerivative = 0;
+                for (int k = 0; k < values.length; k++) {
+                    fValue += values[k] / Math.pow(1.0 + x0, k);
+                    fDerivative += -k * values[k] / Math.pow(1.0 + x0, k + 1);
+                }
+                // the essense of the Newton-Raphson Method
+                x1 = x0 - fValue/fDerivative;
+                if (Math.abs(x1 - x0) <= absoluteAccuracy) {
+                    return x1;
+                }
+                x0 = x1;
+                ++i;
+            }
+             return Double.NaN;
+        }
     }
 }

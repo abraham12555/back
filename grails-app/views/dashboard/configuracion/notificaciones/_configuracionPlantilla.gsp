@@ -55,8 +55,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                     </div>
+                            </div>
             <div class="formContainer">
                 <button class="loginButton blueButton letterspacing2 font14 pointer" id="saveSmsTemplate-btn">GUARDAR PLANTILLA</button>
                 <button type="button" onclick="cerrarModal('modalPlantillaSms');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>

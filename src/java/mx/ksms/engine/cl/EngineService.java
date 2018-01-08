@@ -43,6 +43,7 @@ public interface EngineService {
      * @param agServicio
      * @param agPeriodicidad
      * @param antigvivienda
+     * @param porcentajeDeDescuento
      * @return
      *     returns mx.ksms.engine.cl.EngineDataOutput
      */
@@ -86,7 +87,9 @@ public interface EngineService {
         @WebParam(name = "asalariado", targetNamespace = "")
         boolean asalariado,
         @WebParam(name = "cadena_bc", targetNamespace = "")
-        String cadenaBc);
+        String cadenaBc,
+        @WebParam(name = "porcentajeDeDescuento", targetNamespace = "")
+        Double porcentajeDeDescuento);
 
     /**
      * 

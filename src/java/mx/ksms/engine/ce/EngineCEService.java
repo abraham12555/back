@@ -101,30 +101,31 @@ public interface EngineCEService {
 
     /**
      * 
-     * @param agRiesgoocupacion
      * @param cantidadIntegrantesFamilia
-     * @param cuotaCredito
      * @param solicitudId
-     * @param ingresosFijosMensuales
-     * @param gastosDeAlquiler
      * @param creditosLiquidados
-     * @param rDIFMSPWULTCPT12
-     * @param fecantigclicred
      * @param tipoDeVivienda
      * @param otrosIngresos
      * @param cadenaBc
-     * @param edad
      * @param renovacion
      * @param antigempleo
+     * @param agEstadocivil
+     * @param propmontoliberado
+     * @param agRiesgoocupacion
+     * @param cuotaCredito
+     * @param porcentajeDedescuento
+     * @param ingresosFijosMensuales
+     * @param gastosDeAlquiler
+     * @param rDIFMSPWULTCPT12
+     * @param fecantigclicred
+     * @param edad
      * @param ingresosVariablesMensuales
      * @param riesgogeografico
      * @param rCOBSLDPAS12
      * @param asalariado
      * @param experienciaCrediticia
      * @param rEVOPAGOS3
-     * @param agEstadocivil
      * @param agServicio
-     * @param propmontoliberado
      * @return
      *     returns mx.ksms.engine.ce.EngineCEDataOutput
      */
@@ -180,7 +181,9 @@ public interface EngineCEService {
         @WebParam(name = "creditos_liquidados", targetNamespace = "")
         int creditosLiquidados,
         @WebParam(name = "cadena_bc", targetNamespace = "")
-        String cadenaBc);
+        String cadenaBc,
+        @WebParam(name = "porcentajeDedescuento", targetNamespace = "")
+        Double porcentajeDedescuento);
 
     /**
      * 
