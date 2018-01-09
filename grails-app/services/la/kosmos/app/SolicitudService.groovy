@@ -647,27 +647,29 @@ class SolicitudService {
     
     def moverDocumento(def archivoTemporalId, def solicitudId){
         def respuesta = false
-        def documentoTemporal = DocumentoTemporal.get(archivoTemporalId as long)
-        if(documentoTemporal){
-            def solicitud =  SolicitudDeCredito.get(solicitudId as long)
-            def documento = new DocumentoSolicitud()
-            def nombreDelArchivo = (documentoTemporal.rutaDelArchivo).replace("/var/uploads/kosmos/temporales/","")
-            documento.fechaDeSubida = new Date()
-            documento.solicitud = solicitud
-            documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + nombreDelArchivo
-            documento.tipoDeDocumento = documentoTemporal.tipoDeDocumento
-            if(documento.save(flush:true)){
-                def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
-                subdir.mkdir()
-                println ("Moviendo el documento de: " + documentoTemporal.rutaDelArchivo + " a: " + documento.rutaDelArchivo)
-                def fis = new FileInputStream(documentoTemporal.rutaDelArchivo)
-                def fos = new FileOutputStream(documento.rutaDelArchivo)
-                fos << fis
-                fis.close()
-                fos.close()
-                respuesta = true
-            } else {
-                respuesta = false
+        archivoTemporalId.each{
+            def documentoTemporal = DocumentoTemporal.get(it as long)
+            if(documentoTemporal){
+                def solicitud =  SolicitudDeCredito.get(solicitudId as long)
+                def documento = new DocumentoSolicitud()
+                def nombreDelArchivo = (documentoTemporal.rutaDelArchivo).replace("/var/uploads/kosmos/temporales/","")
+                documento.fechaDeSubida = new Date()
+                documento.solicitud = solicitud
+                documento.rutaDelArchivo = "/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio + "/" + nombreDelArchivo
+                documento.tipoDeDocumento = documentoTemporal.tipoDeDocumento
+                if(documento.save(flush:true)){
+                    def subdir = new File("/var/uploads/kosmos/documentos/" + solicitud.entidadFinanciera.nombre + "/" + solicitud.folio)
+                    subdir.mkdir()
+                    println ("Moviendo el documento de: " + documentoTemporal.rutaDelArchivo + " a: " + documento.rutaDelArchivo)
+                    def fis = new FileInputStream(documentoTemporal.rutaDelArchivo)
+                    def fos = new FileOutputStream(documento.rutaDelArchivo)
+                    fos << fis
+                    fis.close()
+                    fos.close()
+                    respuesta = true
+                } else {
+                    respuesta = false
+                }
             }
         }
         return respuesta

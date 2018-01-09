@@ -15,6 +15,8 @@ import la.kosmos.app.security.CustomLoginSuccessHandler
 import la.kosmos.app.security.CustomPreAuthenticationChecks
 import la.kosmos.app.security.CustomPostAuthenticationChecks
 import la.kosmos.app.security.CustomPostAuthenticationChecks
+import la.kosmos.soap.DecisionEngineCeWebService
+import la.kosmos.soap.DecisionEngineWebService
 import grails.util.Environment;
 
 beans = {
@@ -54,6 +56,16 @@ beans = {
         mailService = ref('mailService')
     }
 
+    decisionEngineWebService(DecisionEngineWebService){ bean ->
+        bean.scope = 'prototype'
+        bean.constructorArgs = [grailsApplication.config.urlDecisionEngine.toString()]
+    }
+
+    decisionEngineCeWebService(DecisionEngineCeWebService){ bean ->
+        bean.scope = 'prototype'
+        bean.constructorArgs = [grailsApplication.config.urlDecisionEngineCE.toString()]
+    }
+    
     switch(Environment.current) {
     case Environment.PRODUCTION:
         smsService(SmsService) {

@@ -1139,8 +1139,7 @@ class BuroDeCreditoService {
                 println "Monto a Pagar Final: " + montoAPagar 
                 println " ***** Terminando procedimiento de cálculo del monto a pagar ***** "
             } catch(Exception e) {
-                println "Se murio al calcular el monto a apagar...."
-                e.printStackTrace()
+                log.error("Ocurrio un error al calcular el monto a pagar", e)
             }
         }
         return montoAPagar

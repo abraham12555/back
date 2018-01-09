@@ -980,7 +980,11 @@ class SolicitudController {
                         respuesta = solicitudService.guardarDocumento(listaDeArchivos.getAt(0), session.identificadores.idSolicitud, params.docType)
                     }
                 } else {
-                    session.archivoTemporal = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
+                    if(!session.archivoTemporal){
+                        session.archivoTemporal = []
+                    }
+                    def document = solicitudService.guardarDocumentoTemporal(listaDeArchivos.getAt(0), params.docType, ephesoft)
+                    session.archivoTemporal << document
                 }
             }
         } else {
@@ -1587,5 +1591,15 @@ class SolicitudController {
         def respuesta = buroDeCreditoService.consultaINTL(request.JSON, session["pasoFormulario"]?.cliente, session["pasoFormulario"]?.direccionCliente, SolicitudDeCredito.get(session.identificadores.idSolicitud), idEntidadFinanciera, usuario)
         
         render respuesta as JSON
+    }
+    
+    def decisionEngineService() {
+        def response = perfiladorService.initDecisionEngineServiceService()
+        render response as JSON
+    }
+
+    def valuesDecisionEngineService() {
+        def map = perfiladorService.getDecisionEngineValues()
+        render map as JSON
     }
 }
