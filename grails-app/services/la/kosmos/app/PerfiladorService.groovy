@@ -9,13 +9,14 @@ import java.nio.file.Files
 import org.apache.commons.codec.binary.Base64
 import java.time.*
 import la.kosmos.app.exception.BusinessException
-//import org.apache.poi.ss.formula.eval.*;
+import org.apache.poi.ss.formula.eval.*;
 @Transactional
 class PerfiladorService {
 
     def dataSource
     def buroDeCreditoService
     def motorDeDecisionService
+    def bitacoraOfertasService
 
     def vxc = 2.03 //constante que al multiplicarse * cuota, se obtine el pago mensual ¿varia segun el tipo de pago ?
     def sal_min = 80.04  // $$ salario minimo activo al 2017/marzo
@@ -388,15 +389,16 @@ class PerfiladorService {
             //Primer Filtro
             def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
             if (productosAplicables.size() == 0) {
-                log.error("ERRPROD" + (aleatorio()) + ". No se generarón ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado. Solicitud: " + datosSolicitud.idSolicitud)
-                throw new BusinessException("No se pudo procesar la información. Inténtelo más tarde.");
+                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datosSolicitud.idSolicitud as long),'No existen productos aplicables para el tipo de comprobante de ingresos seleccionado.','Rechazado')
+                log.error("ERRPROD" + (aleatorio()) + ".No se generaron ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado.. Solicitud: " + datosSolicitud.idSolicitud)
+                throw new BusinessException("No se generaron ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado.");
             }
 
             //Segundo Filtro
             def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
             if(bitacoraDeBuro == null || bitacoraDeBuro.empty) {
-                log.error("ERRBC" + (aleatorio()) + ". No hay informacion de buro de credito. Solicitud: " + datosSolicitud.idSolicitud)
-                throw new BusinessException("No se pudo recuperar la información. Inténtelo más tarde.");
+                log.error("ERRBC" + (aleatorio()) + ". No se generaron resultados por parte del Buró de Crédito. Solicitud: " + datosSolicitud.idSolicitud)
+                throw new BusinessException("No se generaron resultados por parte del Buró de Crédito");
             }
 
             def datos = [:]
@@ -411,12 +413,22 @@ class PerfiladorService {
                 if(clienteExistente == "SI") {
                     datos.experienciaCrediticia = (perfil?.experienciaCrediticia == "EP" ? true : false)
                     datos.creditosLiquidados = (perfil?.numCredLiqdExp ?: 0)
+                    
+                    datos.clienteCredVigente = perfil.clienteCredVigente
+                    datos.renovacion1 = perfil.dictamenRenovacion1
+                    datos.ultimaFechaCredito = perfil.antiguedadUltimoCredito
+                    datos.avanceCapital1 = perfil.avanceCapital1
+                    datos.avanceCapital2 = perfil.avanceCapital2
+                    datos.clienteConRenovacion = perfil.clienteRenovacion
+                    datos.atrasoPago = perfil.atrasoPago
+                    datos.malaFe = perfil.malaFe
+
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuroClienteExistente(entidadFinanciera,datos)
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
                     } else {
                         log.error("ERRCLEX" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
-                        throw new BusinessException("No se pudo enviar la información de buró de crédito. Inténtelo más tarde.");
+                        throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
                     }
                 } else {
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuro(entidadFinanciera, datos)
@@ -424,13 +436,14 @@ class PerfiladorService {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticas(entidadFinanciera, datos)
                     } else {
                         log.error("ERRCLN" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
-                        throw new BusinessException("No se pudo enviar la información de buró de crédito. Inténtelo más tarde.");
+                        throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
                     }
                 }
 
                 if(respuestaDictameneDePoliticas != null && respuestaDictameneDePoliticas.empty) {
+                    bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Politicas','Rechazado')
                     log.error("ERRDP" + (aleatorio()) + ". Se detectaron errores al obtener el dictamen de políticas. Solicitud: " + datos.solicitudId)
-                    throw new BusinessException("No se pudo obtener el dictamen de políticas. Inténtelo más tarde.");
+                    throw new BusinessException("Se detectaron errores al obtener el dictamen de políticas");
                 }
             }
 
@@ -441,14 +454,15 @@ class PerfiladorService {
                     if(dictamen) {
                         listaTemporal << producto
                     }
-                }
-            }
-
+                        }
+                        }
+			
             if (listaTemporal.empty) {
+                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Politicas','Rechazado')
                 log.error("ERRDPR" + (aleatorio()) + ". El prospecto obtuvo como resultado \"Rechazado\" en el dictamen de políticas. Solicitud: " + datos.solicitudId)
                 throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Políticas");
             }
-
+            
             productosAplicables = listaTemporal
             boolean errorCapacidadPago = Boolean.TRUE
             boolean errorDictamenPerfil = Boolean.TRUE
@@ -467,14 +481,14 @@ class PerfiladorService {
                 def solicitud = SolicitudDeCredito.get(datos.solicitudId as long)
                 def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (tipoDeDocumento.tipoDeIngresos.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: producto.id, regionId: solicitud.sucursal.region.id])
                 if(porcentajeDeDescuento){
-                   datosSolicitud.porcentajeDeDescuento = porcentajeDeDescuento[0]
+                    datosSolicitud.porcentajeDeDescuento = porcentajeDeDescuento[0]
                 }
                 if(!datosSolicitud.porcentajeDeDescuento){
                     if(tipoDeDocumento.tipoDeIngresos.id == 1){
-                       datosSolicitud.porcentajeDeDescuento = 0.5
+                        datosSolicitud.porcentajeDeDescuento = 0.5
                     }else{
-                       datosSolicitud.porcentajeDeDescuento = 1
-
+                        datosSolicitud.porcentajeDeDescuento = 1
+                        
                     }
                 }
                 plazosPermitidos?.each { plazo ->
@@ -488,7 +502,7 @@ class PerfiladorService {
                     oferta = calcularOferta(datosSolicitud)
                     if(oferta.ratio > 1){
                         errorCapacidadPago = Boolean.FALSE
-
+                        
                         def respuestaDictamenDePerfil
                         if(clienteExistente == "SI") {
                             datos = construirDatosMotorDeDecisionClienteExistente(identificadores, producto, perfil, oferta)
@@ -497,15 +511,15 @@ class PerfiladorService {
                             datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, producto, oferta)
                             respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
                         }
-
+                        
                         if (respuestaDictamenDePerfil != null) {
                             errorDictamenPerfil = Boolean.FALSE
                             
                             if(respuestaDictamenDePerfil?.dictamen == 'A') {
                                 errorDictamenPerfilRechazado = Boolean.FALSE
                                 
-                                def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
-                                if(tasaAplicable) {
+                               def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
+                               if(tasaAplicable) {
                                     datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
                                     oferta = calcularOferta(datosSolicitud)
                                 }
@@ -515,7 +529,7 @@ class PerfiladorService {
                                 println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
                                 oferta.tipoProducto = oferta.tipoProducto
                                 oferta.plazoCondonado = oferta.plazoCondonado 
-                                //oferta.cat = oferta.cat
+                                oferta.cat = oferta.cat
                                 ofertaProducto.listaDeOpciones << oferta
                                 def mapaPlazo = [:]
                                 mapaPlazo.plazos = (plazo as int)
@@ -532,18 +546,21 @@ class PerfiladorService {
             }
 
             if (errorCapacidadPago) {
+                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Pago','Rechazado')
                 throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago");
             } else if (errorDictamenPerfil) {
+                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
                 log.error("ERRDPER" + (aleatorio()) + ". No se pudo obtener el dictamen de perfil. Solicitud: " + datos.solicitudId)
                 throw new BusinessException("No se pudo obtener el dictamen de perfil. Inténtelo más tarde.");
             } else if (errorDictamenPerfilRechazado) {
+                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
                 throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil");
             }
         }
-
         if (ofertas.size() > 0) {
             return ofertas
         } else {
+            bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(identificadores.idSolicitud as long),'No se generaron ofertas','Rechazado')
             log.error("ERROP. No se generaron ofertas. Solicitud: " + identificadores.idSolicitud);
             throw new BusinessException("Error desconocido. Favor de reportar al administrador del sistema");
         }
@@ -600,26 +617,26 @@ class PerfiladorService {
         //println "Seguro: " + respuesta.montoSeguro + " -  Asistencia: " + respuesta.montoAsistencia
         def tasaConI = tasaDeInteres * 1.16
         //println "tasa con i: " + tasaConI
-        //def tasaSinI = tasaDeInteres
+        def tasaSinI = tasaDeInteres
         def n = plazos as int
         def c = (montoDelCredito + respuesta.montoSeguro + respuesta.montoAsistencia)
         if(opcion==1){
             //println "C: " + c
             def i = (tasaConI/periodicidad.periodosAnuales)
             //println "i: " + i
-            //def ie = (tasaSinI/periodicidad.periodosAnuales)
-            //def renta2 = (c / ((1-((1+ie)**(-n)))/ie))
+            def ie = (tasaSinI/periodicidad.periodosAnuales)
+            def renta2 = (c / ((1-((1+ie)**(-n)))/ie))
             def renta =  (c / ((1-((1+i)**(-n)))/i))
             
             respuesta.cuota = renta //* vxc Solo se ocupa para mensualizar el pago
-            //respuesta.cat = buildAmortTable(c,0,renta2,n,respuesta.montoSeguro,0,0,periodicidad.periodosAnuales,opcion)
+            respuesta.cat = buildAmortTable(c,0,renta2,n,respuesta.montoSeguro,0,0,periodicidad.periodosAnuales,opcion)
 
         }else if(opcion == 2){
             def montoSinSeguros = c
             def pagoCapital = (c/((plazos as int)))
             def a = pagoCapital*plazoCondonado
             c = c-a
-            //respuesta.cat = buildAmortTable(c,montoSinSeguros,pagoCapital,(plazos as int),respuesta.montoSeguro,plazoCondonado,tasaDeInteres,periodicidad.periodosAnuales,opcion)
+            respuesta.cat = buildAmortTable(c,montoSinSeguros,pagoCapital,(plazos as int),respuesta.montoSeguro,plazoCondonado,tasaDeInteres,periodicidad.periodosAnuales,opcion)
             def pagoIntereses = ((c*(tasaDeInteres/12))/30)*15.20833
             def pagoIvaIntereses = pagoIntereses*0.16
             def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
@@ -630,7 +647,7 @@ class PerfiladorService {
         return respuesta
     }
 
-    def calcularMaximaCapacidadDePago(def ingresosFijos, def ingresosVariables, def gastos, def montoDeLaRenta, def dependientesEconomicos, def tipoDeVivienda, def solicitudId, def asalariado, def porcentajeDeDescuento) {
+    def calcularMaximaCapacidadDePago(def ingresosFijos, def ingresosVariables, def gastos, def montoDeLaRenta, def dependientesEconomicos, def tipoDeVivienda, def solicitudId, def asalariado,def porcentajeDeDescuento) {
         def respuesta = [:]
         def porc_alq = 0.18 //valor constante
         def pto_corte = 15.00 as float
@@ -654,7 +671,7 @@ class PerfiladorService {
         def montoAPagar = buroDeCreditoService.calcularMontoAPagar(solicitudId, asalariado, porcentajeDeDescuento)
         gastos = montoAPagar
         if(tipov == 'Rentada') {
-            if((ing_ssmm * porc_alq) < egresorenta){ 
+            if((ing_ssmm * porc_alq) < egresorenta){
                 alq = egresorenta
             } else {
                 alq = (ing_ssmm * porc_alq)
@@ -728,16 +745,16 @@ class PerfiladorService {
     }
 
     def calcularOferta(def datosSolicitud) {
-        //println "CALCULANDO OFERTA + DATOS DE SOLICITUD"+ datosSolicitud  
+        println "CALCULANDO OFERTA + DATOS DE SOLICITUD"+ datosSolicitud  
         def oferta = calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud, (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
-       // println "MAXIMA CAPACIDAD DE PAGO "+oferta.maximaCapacidadDePago
+        println "MAXIMA CAPACIDAD DE PAGO "+oferta.maximaCapacidadDePago
         if(datosSolicitud.producto.esquema.id == 1){
             oferta.montoMaximo = calcularMontoMaximo(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago)
-            ///println "MONTO MAXIMO CALCULADO: " + oferta.montoMaximo
+            println "MONTO MAXIMO CALCULADO: " + oferta.montoMaximo
             oferta.montoAsistencia = obtenerSeguroAsistencia(1, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, oferta.montoMaximo)
             oferta.montoSeguro = obtenerSeguroAsistencia(0, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.entidadFinancieraId, (oferta.montoMaximo))
             oferta.montoMaximo = (oferta.montoMaximo - oferta.montoSeguro - oferta.montoAsistencia)
-            //println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
+            println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
             def limites = LimitePlazoProducto.findWhere(producto: datosSolicitud.producto, plazo: (datosSolicitud.plazos as int), periodicidad: datosSolicitud.periodicidad)
             oferta.montoMinimo = limites.limiteMinimo
             if ((limites.limiteMaximo > 0) && (oferta.montoMaximo > limites.limiteMaximo) ){
@@ -750,7 +767,7 @@ class PerfiladorService {
                 oferta.ratio = 0
                 return oferta 
             }
-            //println "MONTO MAXIMO FINAL: " + oferta.montoMaximo
+            println "MONTO MAXIMO FINAL: " + oferta.montoMaximo
             def calculoCuota =  calcularCuota(1,oferta.montoMaximo, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId,datosSolicitud.producto.plazoCondonado)
             oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
             oferta.cuota = calculoCuota.cuota
@@ -763,8 +780,8 @@ class PerfiladorService {
             oferta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: datosSolicitud.producto.id, monto: (oferta.montoMaximo as float)])
             oferta.tipoProducto = 1
             oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
-            //oferta.cat = calculoCuota.cat
-            //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR: " + oferta.montoSeguro + " | MONTO A PAGAR: " + oferta.montoAsistencia + " | CAT: " + oferta.cat    
+            oferta.cat = calculoCuota.cat
+            println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR: " + oferta.montoSeguro + " | MONTO A PAGAR: " + oferta.montoAsistencia + " | CAT: " + oferta.cat    
         }else if(datosSolicitud.producto.esquema.id == 2){
             def respuesta
             respuesta  = calcularMontoMaximoPagosInsolutos(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago,datosSolicitud.producto)
@@ -806,13 +823,13 @@ class PerfiladorService {
             oferta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: datosSolicitud.producto.id, monto: (oferta.montoMaximo as float)])
             oferta.tipoProducto = 2
             oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
-            //oferta.cat = calculoCuota.cat
+            oferta.cat = calculoCuota.cat
             //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTO A PAGAR SEGURO: " + oferta.montoSeguro + " | MONTO A PAGAR ASISTENCIA: " + oferta.montoAsistencia  + " | CAT: " + oferta.cat    
         }
        
         return oferta
     }
-
+    
     def recalcularOferta(def ofertas, def params) {
         def respuesta = [:]
         //println "Buscar producto..."
@@ -824,7 +841,7 @@ class PerfiladorService {
         respuesta.tasaDeInteres = oferta.tasaDeInteres
         respuesta.periodicidad = oferta.periodicidad.nombre.toUpperCase()
         respuesta.garantias = GarantiaProducto.executeQuery("Select gp From GarantiaProducto gp Where gp.producto.id = :productoId And ( :monto >= gp.cantidadMinima And :monto <= gp.cantidadMaxima) order by gp.id", [productoId: producto.producto.id, monto: (params.montoDeCredito as float)])
-        //oferta.cat = respuesta.cuota.cat
+        oferta.cat = respuesta.cuota.cat
         return respuesta
     }
 
@@ -854,7 +871,7 @@ class PerfiladorService {
         productoSolicitud.plazos = params.plazo as int
         productoSolicitud.tasaDeInteres = oferta.tasaDeInteres
         productoSolicitud.montoDeServicioDeAsistencia = oferta.montoAsistencia
-        //productoSolicitud.cat = oferta.cat as float
+        productoSolicitud.cat = oferta.cat as float
         productoSolicitud.solicitud = solicitud
         if(productoSolicitud.save(flush:true)){
             ///println("El producto se ha registrado correctamente")
@@ -875,6 +892,11 @@ class PerfiladorService {
                 solicitud.save(flush: true)
                 respuesta.oferta = oferta
                 respuesta.productoSolicitud = productoSolicitud
+                def bitacoraOfertas = BitacoraOfertas.findWhere(solicitud:solicitud)
+                bitacoraOfertas.motivo = 'Seleccionó Oferta'
+                bitacoraOfertas.error = 'Ninguno'
+                bitacoraOfertas.fecha = new Date ()
+                bitacoraOfertas.save(flush:true)
             } else {
                 if (resultadoMotorDeDecision.hasErrors()) {
                     resultadoMotorDeDecision.errors.allErrors.each {
@@ -955,6 +977,14 @@ class PerfiladorService {
         def cuotaMensualizada = mensualizarCuota(oferta.cuota, oferta.periodicidad.id)
         datos.rcobsldpas12 = ((promedioVecAhorro + (promedioVecInversion * 0.1))/ cuotaMensualizada)
         datos.asalariado = oferta.asalariado
+        datos.clienteCredVigente = String.valueOf(perfil.clienteCredVigente)
+        datos.renovacion1 = perfil.dictamenRenovacion1
+        datos.ultimaFechaCredito = perfil.antiguedadUltimoCredito
+        datos.avanceCapital1 = perfil.avanceCapital1
+        datos.avanceCapital2 = perfil.avanceCapital2
+        datos.clienteConRenovacion = perfil.clienteRenovacion
+        datos.atrasoPago = perfil.atrasoPago
+        datos.malaFe = perfil.malaFe
         //println "Regresando: " + datos
         //println "****** Fin Clientes Existentes *********"
         datos
