@@ -38,7 +38,7 @@ class SolicitudController {
     def perfiladorService
     def dataSource
     def springSecurityService
-
+    def bitacoraOfertasService
     int timeWait = 500
     def maximumAttempts = 100
     def formatoFecha = "dd-MM-yyyy"
@@ -687,8 +687,8 @@ class SolicitudController {
                                 def solicitudAntesMotor = SolicitudDeCredito.get(session.identificadores.idSolicitud)
                                 if(solicitudAntesMotor?.reporteBuroCredito && !solicitudAntesMotor?.reporteBuroCredito?.tipoErrorBuroCredito) {
                                     def datos = solicitudService.construirDatosMotorDeDecision(session.identificadores)
-                                    respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
-                                    if(respuestaMotor){
+                                        respuestaMotor = motorDeDecisionService.obtenerScore(entidadFinanciera,datos)
+                                        if(respuestaMotor){
                                         def resultadoMotorDeDecision = new ResultadoMotorDeDecision()
                                         resultadoMotorDeDecision.solicitud = solicitudAntesMotor
                                         resultadoMotorDeDecision.probabilidadDeMora = respuestaMotor.probabilidadDeMora
@@ -709,6 +709,9 @@ class SolicitudController {
                                             }
                                         }
                                         if(pasoOpcional.dependeDelMotor) {
+                                            if(resultadoMotorDeDecision.dictamenFinal == "A"){
+                                                bitacoraOfertasService.registrarBitacora(solicitudAntesMotor,'Pasó Directo','Ninguno')
+                                            }
                                             if(resultadoMotorDeDecision.dictamenFinal != "A") {
                                                 pasoActual = pasoOpcional
                                                 aplicaPasoOpcional = true
@@ -721,7 +724,7 @@ class SolicitudController {
                                     println "No se invoca el motor porque no se tiene respuesta del buro o porque se tienen errores"
                                     println "Reporte Buro: " + solicitudAntesMotor?.reporteBuroCredito + " - " + solicitudAntesMotor?.reporteBuroCredito?.tipoErrorBuroCredito
                                 }
-                            }
+                            } 
                         }
                         def statusDeSolicitud
                         if(pasoActual.tipoDePaso.nombre == "pasoFormulario"){
@@ -794,8 +797,9 @@ class SolicitudController {
                             }
 
                             try {
-                                propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil)
+                                propuestas = perfiladorService.obtenerPropuestas("cotizador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, clienteExistente, session.perfil, null)
                                 session.ofertas = propuestas
+                                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(session.identificadores.idSolicitud as long),'Abandonó','Ninguno')
                             } catch(BusinessException ex) {
                                 motivoRechazo = ex.message
                             }
@@ -847,6 +851,8 @@ class SolicitudController {
                             def solicitud = SolicitudDeCredito.get(session.identificadores?.idSolicitud)
                             solicitud.ultimoPaso = pasoActual.numeroDePaso
                             solicitud.statusDeSolicitud = statusDeSolicitud
+                            solicitudService.eliminarEnviosProgramadosTemporales(solicitud.folio)
+                            solicitudService.registrarEnviosProgramadosTemporales(solicitud.folio , pasoActual.numeroDePaso)
                             solicitud.save(flush: true)
                         }
                         render(template: ( aplicaPasoOpcional ? "pasoOpcional" : pasoActual.tipoDePaso.nombre), model: modelo)
@@ -928,8 +934,8 @@ class SolicitudController {
             if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
                 if(params.cara == "frente") {
                     if(session.contadorOcr == 0) {
-                        def respuestaPreliminar = documentSenderService.send(listaDeArchivos)
-                        respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId)
+                        def respuestaPreliminar = documentSenderService.send(listaDeArchivos,session?.folio)
+                        respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId,session?.folio)
                         session.contadorOcr++
                     } else {
                         respuesta = [:]
@@ -1128,7 +1134,7 @@ class SolicitudController {
             if(medio?.nombre == "Sucursales"){
                 respuesta = SucursalEntidadFinanciera.findAllWhere(entidadFinanciera: session.ef);
             } else {
-                respuesta = OpcionMedioDeContacto.findAllWhere(medioDeContacto: medio)
+                respuesta = OpcionMedioDeContacto.findAllWhere(medioDeContacto: medio, visible : true)
                 if(!respuesta){
                     respuesta = [:]
                 }
@@ -1169,13 +1175,6 @@ class SolicitudController {
             def parrafos
             def configuracion = session.configuracion//ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)
 
-            if(!session.shortUrl) {
-                def resultadoShortener = urlShortenerService.acortarUrl((entidadFinanciera.nombre + session.id), configuracion)
-                if(resultadoShortener.statusCode == 200){
-                    session.token = resultadoShortener.token
-                    session.shortUrl = resultadoShortener.jsonGoogle.id
-                }
-            }
 
             if(session.pasosDelCliente){
                 pasosDeSolicitud = session.pasosDelCliente
@@ -1205,17 +1204,6 @@ class SolicitudController {
                 } else {
                     avance."paso$paso.numeroDePaso" = 0
                 }
-            }
-            if(siguientePaso == 1 && session.shortUrl && session.token && !session.identificadores?.idSolicitud && !session.identificadores?.idSolicitudTemporal){
-                if(!session.identificadores){
-                    session.identificadores = [:]
-                }
-                session.identificadores.idSolicitudTemporal = solicitudService.registrarSolicitudTemporal (session.cotizador, session.token, session.shortUrl, session.ef)
-                session.respuestaEphesoft = [:]
-                session.respuestaEphesoft.telefonoCliente = [:]
-                session.respuestaEphesoft.telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
-                session.respuestaEphesoft.emailCliente = [:]
-                session.respuestaEphesoft.emailCliente.emailPersonal = session.cotizador.emailCliente
             }
             def camposDelPaso = CampoPasoSolicitud.findAllWhere(pasoSolicitud: pasoActual)
             camposDelPaso = camposDelPaso.sort { it.numeroDeCampo }
@@ -1408,6 +1396,7 @@ class SolicitudController {
                 }
                 if(solicitud){
                     def datosRecuperados = solicitudService.continuarSolicitud(solicitud)
+                    solicitudService.eliminarEnviosProgramadosTemporales(solicitud.folio)
                     def ultimoPaso = datosRecuperados.ultimoPaso
                     session.yaUsoLogin = true
                     session.ef = datosRecuperados.entidadFinanciera
@@ -1419,6 +1408,7 @@ class SolicitudController {
                     session.token = datosRecuperados.token
                     session.shortUrl = datosRecuperados.shortUrl
                     session.estadoRecuperacion = datosRecuperados.llenado
+                    session.folio = datosRecuperados.folio
                     println "Estado: " + session.estadoRecuperacion
                     params.keySet().asList().each { params.remove(it) }
                     forward action:'formulario', params: [paso: ultimoPaso]
@@ -1435,6 +1425,7 @@ class SolicitudController {
                     }
                     if(temporal){
                         def datosRecuperados = solicitudService.armarDatosTemporales(temporal)
+                        solicitudService.eliminarEnviosProgramadosTemporales(temporal.folio)
                         println datosRecuperados
                         session.yaUsoLogin = false
                         session.ef = datosRecuperados.ef
@@ -1445,6 +1436,7 @@ class SolicitudController {
                         session.shortUrl = datosRecuperados.shortUrl
                         session.cargarImagen = datosRecuperados.cargarImagen
                         session.respuestaEphesoft = datosRecuperados.prefilled
+                        session.folio = datosRecuperados.folio
                         params.keySet().asList().each { params.remove(it) }
                         forward action:'formulario', params: [paso: datosRecuperados.ultimoPaso]
                     } else {
@@ -1557,7 +1549,7 @@ class SolicitudController {
         respuesta.nomenclatura = productoSolicitud.periodicidad.nomenclatura
         respuesta.montoDelSeguroDeDeuda = productoSolicitud.montoDelSeguroDeDeuda
         respuesta.nombreDelProducto = productoSolicitud.producto?.nombreDelProducto
-        respuesta.cat =  (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0
+        respuesta.cat =  (productoSolicitud?.cat) ? ((productoSolicitud?.cat * 100).round(1)) : 0
         respuesta.sucursal = productoSolicitud?.solicitud?.sucursal
         respuesta.ubicacion = productoSolicitud?.solicitud?.sucursal.ubicacion
         respuesta.documentoElegidoCantidad = productoSolicitud?.documentoElegido?.cantidadSolicitada
@@ -1572,7 +1564,7 @@ class SolicitudController {
         respuesta.origen= "solicitud"
         respuesta.nombreComercial = configuracion?.nombreComercial?.toUpperCase()
         respuesta.nombreCliente = productoSolicitud?.solicitud?.cliente
-        respuesta.email = session["pasoFormulario"].emailCliente.emailPersonal
+        respuesta.email = session["pasoFormulario"]?.emailCliente?.emailPersonal
         respuesta.rutaLogotipoFormatoBuro = configuracion?.rutaLogotipoFormatoBuro
         respuesta.claveDeProducto = productoSolicitud.producto?.claveDeProducto
         mapa << respuesta

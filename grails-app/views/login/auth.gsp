@@ -15,7 +15,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     </head>
     <body class="loginBody">
-        <div class="loginContainer">
+        <div class="loginContainer2" >
             <div class="loginlogoBox center">
                 <img class="loginlogo" src="${resource(dir:'images', file:'kosmos-logo.png')}" title="Logo" alt="Logo">
             </div>

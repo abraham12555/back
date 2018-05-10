@@ -5,6 +5,7 @@ class OpcionMedioDeContacto implements Serializable{
     MedioDeContacto medioDeContacto
     String nombre
     boolean activo = true
+    boolean visible
     
     static constraints = {
         medioDeContacto (nullable: false)

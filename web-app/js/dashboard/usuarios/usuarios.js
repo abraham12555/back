@@ -7,6 +7,7 @@ $.getUsers = $.contextAwarePathJS + "dashboard/getUsers";
 $.getUserDetails = $.contextAwarePathJS + "dashboard/getUserDetails";
 $.validNoEmpleado = $.contextAwarePathJS + "dashboard/validNoEmpleado";
 $.validNewPassword = $.contextAwarePathJS + "dashboard/validNewPassword";
+$.getUsersBusqueda = $.contextAwarePathJS + "dashboard/getUsersBusqueda";
 $.userAuthentication = false;
 $.currentValue;
 
@@ -38,7 +39,13 @@ $(document).ready(function () {
     $('#pagination').on('click', 'a.page', function (event) {
         event.preventDefault();
         var page = $(this).data('page');
-        getUsers(page);
+        if ($("#busquedaNombreGuardada").val() !== null || $("#busquedaUsernameGuardada").val() !== null) {
+            var nombreUsuario = $("#busquedaNombreGuardada").val();
+            var usernameUsuario =  $("#busquedaUsernameGuardada").val();
+            getUsersBusqueda(page,nombreUsuario,usernameUsuario);
+        } else {
+            getUsers(page);
+        }        
     });
 
     $('#rol').focus(function () {
@@ -419,4 +426,97 @@ function validNewPassword(callback) {
             }
         });
     }
+}
+function getUsersBusqueda(page,nombre,username) {
+    $("#resultadoBusqueda").removeClass("hide");
+    var paso = false;
+    var nombreUsuarioBusqueda;
+    var usernameUsuarioBusqueda;
+    var filter = new Object();
+    if ((nombre !== null || username !== null)) {
+        nombreUsuarioBusqueda = $("#busquedaNombreGuardada").val();
+        usernameUsuarioBusqueda = $("#busquedaUsernameGuardada").val();
+        $("#busquedaNombreGuardada").val(nombre);
+        $("#busquedaUsernameGuardada").val(username);
+        paso = true;
+    } else if (paso === false) {
+        nombreUsuarioBusqueda = $("#nombreUsuarioBusqueda").val();
+        usernameUsuarioBusqueda = $("#usernameUsuarioBusqueda").val();
+        $("#busquedaNombreGuardada").val($("#nombreUsuarioBusqueda").val());
+        $("#busquedaUsernameGuardada").val($("#usernameUsuarioBusqueda").val());
+
+    }
+
+    filter.page = page;
+    filter.nombreUsuarioBusqueda =  nombreUsuarioBusqueda;
+    filter.usernameUsuarioBusqueda = usernameUsuarioBusqueda;
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.getUsersBusqueda,
+        data: JSON.stringify(filter),
+        contentType: "application/json",
+        beforeSend: function (XMLHttpRequest, settings) {
+            $("#error-users-div").addClass("hide");
+        },
+        success: function (response) {
+            var page = response.page;
+            var totalPages = response.totalPages;
+            $('#pagination').empty();
+            $("#usuarios-tb tbody").empty();
+             $("#resultadoBusqueda").empty();
+             $('#resultadoBusqueda').append('Resultados de la búsqueda: '+(nombreUsuarioBusqueda ? nombreUsuarioBusqueda :  usernameUsuarioBusqueda));
+            if (response.usuarios.length > 0) {
+                pagination(totalPages, page, 'pagination');
+                $.each(response.usuarios, function (index) {
+                    var row = "";
+                    if (index === 0) {
+                        row += "<tr></tr>";
+                    }
+                    row += '<tr>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += 'Nombre de usuario <br/>';
+                    row += '<span class="font14 textlower tableDescriptionColor">' + this.username + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += 'nombre <br/>';
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + this.fullName + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += 'correo electrónico <br/>';
+                    row += '<span class="font14 textlower tableDescriptionColor">' + this.email + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += 'rol <br/>';
+                    $.each(this.authorities, function (i) {
+                        if (i > 0) {
+                            row += "<br/>";
+                        }
+                        row += '<span class="font14 textUpper tableDescriptionColor">' + this.authority + '</span>';
+                    });
+                    row += '</td>';
+                    row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<button class="greenBox colorWhite userDetails" data-id="' + this.id + '" type="button">editar</button>';
+                    row += '</td>';
+                    row += '</tr>';
+                    $("#usuarios-tb tbody:last").append(row);
+                });
+            } else {
+                var row = "";
+                row += '<tr></tr>';
+                row += '<tr>';
+                row += '<td colspan="5" class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                row += '<span class="font14 tableDescriptionColor">No hay usuarios registrados</span>';
+                row += '</td>';
+                row += '</tr>';
+                $("#usuarios-tb tbody:last").append(row);
+            }
+            $('a.show-pop-async-users').webuiPopover('hide');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#error-users-div").html("Ocurrió un error al obtener la lista de usuarios. Inténtalo más tarde");
+            $("#error-users-div").removeClass("hide");
+        }
+    });
 }

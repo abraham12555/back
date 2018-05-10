@@ -103,6 +103,10 @@ class ReporteService {
                 datos.probabilidadDeMora = it.probabilidad_de_mora
                 datos.razonDeCobertura = it.razon_de_cobertura
                 datos.usuario = it.usuario
+                datos.rol = it.rol
+                datos.tipoDeCliente = it.tipo_de_cliente
+                datos.error = it.error
+                datos.motivo = it.motivo
                 datosReporte << datos
             }
             if(datosReporte.size() > 0 ){
@@ -132,7 +136,7 @@ class ReporteService {
                     }
                 }
                 workbook = builder.build {
-                    sheet(name: "ReporteCentroDeContacto", widthColumns: [20,20,20,25,20,20,20,30,40,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,30,30,30,30,30,30,30,30,30,30,30,30]) {
+                    sheet(name: "ReporteCentroDeContacto", widthColumns: [20,20,20,25,20,20,20,30,40,40,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30]) {
                         row (style: 'titulo') {
                             cell { "FOLIO" }
                             cell { "FECHA DE SOLICITUD" }
@@ -144,7 +148,8 @@ class ReporteService {
                             cell { "ULTIMO PASO" }
                             cell { "SHORT URL" }
                             cell { "SUCURSAL" }
-                            cell { "EJECUTIVO QUE REGISTRÓ" }
+                            cell { "USUARIO QUE REGISTRÓ" }
+                            cell { "PERFIL" }
                             cell { "NOMBRE DEL PRODUCTO" }
                             cell { "RUBRO" }
                             cell { "TIPO DE DOCUMENTO" }
@@ -192,6 +197,7 @@ class ReporteService {
                             cell { "FECHA INGRESO" }
                             cell { "INGRESOS FIJOS" }
                             cell { "INGRESOS VARIABLES" }
+                            cell { "TIPO DE CLIENTE" }
                             cell { "CONSULTA A BURO EJECUTADA" }
                             cell { "ERROR CONSULTA BURO" }
                             cell { "DICTAMEN CAPACIDAD DEPAGO" }
@@ -201,14 +207,16 @@ class ReporteService {
                             cell { "DICTAMEN FINAL" }
                             cell { "PROBABILIDAD DE MORA" }
                             cell { "RAZON DE COBERTURA" }
+                            cell { "ERROR OFERTA" }
+                            cell { "MOTIVO OFERTA" }
                                 
                         }
                         datosReporte.each { fila ->
                             row (style: 'contenido') {
-                                cell { fila.id.trim() ?: "-" }
-                                cell { fila.fechaDeSolicitud }
-                                cell { fila.origen ?: ""}
-                                cell { fila.status ?: ""} 
+                                cell { fila?.id?.trim() ?: "-" }
+                                cell { fila?.fechaDeSolicitud }
+                                cell { fila?.origen ?: ""}
+                                cell { fila?.status ?: ""} 
                                 cell { fila.medioDeContacto ?: "" }
                                 cell { fila.opcionDeContacto ?: ""} 
                                 cell { fila.nombreCliente?.toUpperCase() } 
@@ -216,17 +224,18 @@ class ReporteService {
                                 cell { fila.shortUrl ?: ""} 
                                 cell { fila.sucursal ?: ""} 
                                 cell { fila.usuario ?: ""} 
+                                cell { fila.rol ?: ""} 
                                 cell { fila.nombreDelProducto ?: ""} 
                                 cell { fila.rubro ?: "" } 
                                 cell { fila.tipoDeDocumento ?: ""}
                                 cell { fila.enganche ?: ""} 
                                 cell { fila.haTenidoAtrasos ?: ""} 
                                 cell { fila.montoDelCredito }
-                                cell { fila.montoDelPago } 
-                                cell { fila.montoDelSeguroDeDeuda } 
-                                cell { fila.montoPagoBuro } 
-                                cell { fila.plazos }
-                                cell { fila.periodicidad } 
+                                cell { fila.montoDelPago ?: ""} 
+                                cell { fila.montoDelSeguroDeDeuda ?: ""} 
+                                cell { fila.montoPagoBuro ?: "" } 
+                                cell { fila.plazos ?: "" }
+                                cell { fila.periodicidad ?: ""} 
                                 cell { fila.fechaDeNacimiento ?: "" } 
                                 cell { fila.dependientesEconomicos ?: "" } 
 				cell { fila.genero ?: ""}
@@ -263,6 +272,7 @@ class ReporteService {
                                 cell { fila.fechaIngreso ?: "" } 
                                 cell { fila.ingresosFijos ?: "" } 
                                 cell { fila.ingresosVariables ?: ""} 
+                                cell { fila.tipoDeCliente ?: ""}
                                 cell { fila.consultaABuroEjecutada ?: ""}
                                 cell { fila.errorConsultaBuro ?: "" } 
                                 cell { fila.dictamenCapacidadDePago ?: "" } 
@@ -272,6 +282,8 @@ class ReporteService {
                                 cell { fila.dictamenFinal ?: "" }
                                 cell { fila.probabilidadDeMora ?: ""} 
                                 cell { fila.razonDeCobertura ?: ""}
+                                cell { fila.error ?: ""}
+                                cell { fila.motivo ?: ""}
                             }
                         }
                     }
@@ -523,6 +535,7 @@ class ReporteService {
                 datos.montoDelCredito = it.monto_del_credito
                 datos.montoDelPago = it.monto_del_pago
                 datos.montoDelSeguroDeDeuda = it.monto_del_seguro_de_deuda
+                datos.montoPagoBuro =(it.monto_pago_buro) ?: "" 
                 datos.plazos = it.plazos
                 datos.periodicidad = it.periodicidad
                 datos.fechaDeNacimiento = it.fecha_de_nacimiento
@@ -560,6 +573,8 @@ class ReporteService {
                 datos.usuario = it.usuario
                 datos.log = it.log
                 datos.respuesta = it.respuesta
+                datos.error = it.error
+                datos.motivo = it.motivo
                 datosReporte << datos
             }
             if(datosReporte.size() > 0 ){
@@ -589,7 +604,7 @@ class ReporteService {
                     }
                 }
                 workbook = builder.build {
-                    sheet(name: "ReporteOperaciones", widthColumns: [20,20,20,25,20,20,30,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,50]) {
+                    sheet(name: "ReporteOperaciones", widthColumns: [20,20,20,25,20,20,30,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,50]) {
                         row (style: 'titulo') {
                             cell { "FOLIO" }
                             cell { "FECHA DE SOLICITUD" }
@@ -645,14 +660,16 @@ class ReporteService {
                             cell { "PROBABILIDAD DE MORA" }
                             cell { "RAZON DE COBERTURA" }
                             cell { "LOG" }
+                            cell { "ERROR OFERTA" }
+                            cell { "MOTIVO OFERTA" }
 			    cell { "RESPUESTA" }
                                 
                         }
                         datosReporte.each { fila ->
                             row (style: 'contenido') {
-                                cell { fila.id.trim() ?: "-" }
-                                cell { fila.fechaDeSolicitud }
-                                cell { fila.origen }
+                                cell { fila?.id?.trim() ?: "-" }
+                                cell { fila?.fechaDeSolicitud }
+                                cell { fila?.origen }
                                 cell { fila.status } 
                                 cell { fila.medioDeContacto ?: "" }
                                 cell { fila.opcionDeContacto ?: ""} 
@@ -704,6 +721,8 @@ class ReporteService {
                                 cell { fila.probabilidadDeMora ?: ""} 
                                 cell { fila.razonDeCobertura ?: ""}
                                 cell { fila.log ?: ""} 
+                                cell { fila.error ?: ""}
+                                cell { fila.motivo ?: ""}
                                 cell { fila.respuesta ?: "" }
                             }
                         }
@@ -717,6 +736,76 @@ class ReporteService {
             }
             
 
+        } else if( tipo == 'bitacoraMitek'){
+            //REPORTE DE CONSULTAS MITEK 
+            def result = db.rows("select * from bitacora_mitek   where fecha_consulta >= '"+ finicio + " 00:00' and fecha_consulta <= '"+ ffin +" 23:59'  order by fecha_consulta asc ") 
+            result?.each {
+                println it
+                def datos = [:]
+                datos.folio = it.folio  
+                datos.fechaConsulta = it.fecha_consulta  
+                datos.tuvoExito = it.tuvo_exito 
+                datos.tuvoError = it.tuvo_error             
+                datos.estatus = it.estatus                 
+                datos.descripcionError = it.descripcion_error 
+                datos.tiempoEnContestar = it.tiempo_en_contestar                
+                
+                datosReporte << datos 
+            }
+            if(datosReporte.size() > 0 ){
+                def workbook
+                def builder = new ExcelBuilder()
+                def plataforma = System.properties['os.name'].toLowerCase()
+                def contenidoReporte = []
+                def archivoDelReporte
+                if(plataforma.contains('windows')){
+                    archivoDelReporte = new File("C:/tmp/reporteGenerado_BitacoraMitek.xlsx")
+                } else {
+                    archivoDelReporte = new File("/tmp/reporteGenerado_BitacoraMitek.xlsx")
+                }
+                archivoDelReporte.createNewFile() 
+                builder.config {
+                    font('negrita') { font ->
+                        font.bold = true
+                    }
+                    style('titulo') { cellStyle ->
+                        cellStyle.font = font('negrita')
+                        cellStyle.alignment = CellStyle.ALIGN_LEFT
+                        cellStyle.verticalAlignment = CellStyle.VERTICAL_CENTER
+                    }
+                    style('contenido') { cellStyle ->
+                        cellStyle.alignment = CellStyle.ALIGN_LEFT
+                        cellStyle.verticalAlignment = CellStyle.VERTICAL_CENTER
+                    }
+                }
+                workbook = builder.build {
+                    sheet(name: "ReporteConsultasMitek", widthColumns: [20,20,20,20,60,60,20]) {
+                        row (style: 'titulo') {
+                            cell { "FOLIO" }
+                            cell { "FECHA DE CONSULTA" }
+                            cell { "TUVO EXITO" }
+                            cell { "TUVO ERROR" }
+                            cell { "ESTATUS RESULT" }
+                            cell { "DESCRIPCION DEL ERROR" }
+                            cell { "TIEMPO EN CONTESTAR" }
+                        }
+                        datosReporte.each { fila ->
+                            row (style: 'contenido') {
+                                cell { fila.folio ?: ""}  
+                                cell { fila.fechaConsulta ?: ""}
+                                cell { fila.tuvoExito ? "SI": "NO"}
+                                cell { fila.tuvoError ? "SI": "NO"}
+                                cell { fila.estatus ?: ""}
+                                cell { fila.descripcionError ?: ""}
+                                cell { fila.tiempoEnContestar ?: ""}             
+                            }
+                        }
+                    }
+                }
+                workbook.write(new FileOutputStream(archivoDelReporte))
+                return archivoDelReporte
+            }
+            
         }
        
     }
@@ -725,6 +814,7 @@ class ReporteService {
         def respuesta = [:]
         def query
         def qf
+        def sql = new Sql(dataSource)
         if(temporalidad){
             switch(temporalidad){
             case 1:
@@ -770,7 +860,6 @@ class ReporteService {
             println "551  => " + entidadf*/
         if(informe == "usoCredito"){
             query = "select count(folio) as folios, rubro from reporte_solicitudes where rubro <> '' and  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+fechaFinal +" 23:59','dd/mm/yyyy hh24:mi')  and entidad = 6 group by 2"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.estadisticas = []
             def datosEstadisticas = [:]
@@ -784,7 +873,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "productosSolicitados") {
             query = "select count(folio) as folios , nombre_del_producto from reporte_solicitudes where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6 and nombre_del_producto <> '' group by nombre_del_producto order by folios desc"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.estadisticas = []
             def datosEstadisticas = [:]
@@ -798,7 +886,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "comprobanteIngresos") {
             query = "select count(folio) as folios, tipo_de_documento from reporte_solicitudes where tipo_de_documento <> ' ' and  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+fechaFinal +" 23:59','dd/mm/yyyy hh24:mi')  and entidad = 6 group by 2"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.estadisticas = []
             def datosEstadisticas = [:]
@@ -812,7 +899,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "volumenHora") {
             query  = "select count(folio) as  folios ,  (to_char((to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi')), 'HH24') ) as hora from reporte_solicitudes where  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by hora order by folios desc"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.periodos = [:]
             respuesta.periodos.categories = []
@@ -834,7 +920,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "volumenDia") {
             query = "select count(folio) folios, dia_semana(fecha_de_solicitud) as dia, (EXTRACT(DOW FROM DATE (to_date(fecha_de_solicitud, 'dd/MM/yyyy'))) ) as d from reporte_solicitudes where  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by 2 ,d order by d"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.periodos = [:]
             respuesta.periodos.categories = []
@@ -856,7 +941,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "dictamenStatus") {
             query = "select count(rmdd.id_resultado_motor_de_decision) as folios, rmdd.dictamen_final, sum(ps.monto_del_credito) from resultado_motor_de_decision rmdd, solicitud_de_credito sc, producto_solicitud ps  where rmdd.solicitud_id = sc.id_solicitud_de_credito and fecha_de_solicitud between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and rmdd.solicitud_id = ps.solicitud_id  group by dictamen_final"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.estadisticas = []
             def datosEstadisticas = [:]
@@ -877,7 +961,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "residenciaClientes") {
             query = "select count(folio) as folios, estado, avg(monto_del_credito) promedio_credito, sum(monto_del_credito) as monto  from reporte_solicitudes where estado <> ' ' and  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6 group by 2 order by 1"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.periodos = [:]
             respuesta.periodos.categories = []
@@ -901,7 +984,6 @@ class ReporteService {
             respuesta.estadisticas << datosEstadisticas
         }else if (informe == "mPSProducto") {
             query = " select count(rmdd.id_resultado_motor_de_decision) as folios , rmdd.dictamen_final,p.nombre_del_producto as producto, sum(ps.monto_del_credito ) credito , avg(ps.monto_del_credito) as credito_promedio from resultado_motor_de_decision rmdd , producto_solicitud ps, producto  p, solicitud_de_credito sc where rmdd.solicitud_id  = ps.solicitud_id and p.id_producto = ps.producto_id and rmdd.solicitud_id = sc.id_solicitud_de_credito and sc.fecha_de_solicitud between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and sc.entidad_financiera_id = 6 group by  2 , p.nombre_del_producto   order by 3,2"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             def tf = 0
             def mat = []
@@ -940,7 +1022,6 @@ class ReporteService {
             query += " select genero,'Mayor a \$40000 y Menor a \$50000.00' as rango_ingresos, count(folio) as folios  ,avg(monto_del_credito) prom_credito from  genero_edad where ingresos <= 50000 and ingresos > 40000 and  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6 group by genero UNION "
             query += " select genero,'Mayor a \$50000 ' as rango_ingresos, count(folio) as folios,avg(monto_del_credito) prom_credito  from  genero_edad where  ingresos > 50000 and  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6 group by genero  order by genero,rango_ingresos"
             
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             def qt = "select count(*) as folios from genero_edad where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6"
             def r = sql.rows(qt)
@@ -968,7 +1049,6 @@ class ReporteService {
             query += "select count(folio) folios, genero, avg(monto_del_credito) prom_credito,avg(ingresos) prom_ingresos, 'Mayor a 31 y Menor a 45 años' as rango_edad from genero_edad where edad >= 31 and edad <= 45 and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6   group by  genero  union "
             query += "select count(folio) folios, genero, avg(monto_del_credito) prom_credito,avg(ingresos) prom_ingresos, 'Mayor a 46 y Menor a 65 años' as rango_edad from genero_edad where edad >= 46 and edad <= 65 and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi')  and entidad = 6  group by genero  union  "
             query += "select count(folio) folios, genero, avg(monto_del_credito) prom_credito,avg(ingresos) prom_ingresos, 'Mayor a 65 años' as rango_edad from genero_edad where edad >  65 and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by  genero order by genero,rango_edad "
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             
             def qt = "select count(*) as folios from genero_edad where to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6"
@@ -992,7 +1072,6 @@ class ReporteService {
         }else if (informe == "productosDiscriminados") {
             query = " select count(rmdd.id_resultado_motor_de_decision) as folios , rmdd.dictamen_final,p.nombre_del_producto as producto, sum(ps.monto_del_credito ) credito , avg(ps.monto_del_credito) as credito_promedio from resultado_motor_de_decision rmdd , producto_solicitud ps, producto  p, solicitud_de_credito sc where rmdd.solicitud_id  = ps.solicitud_id and p.id_producto = ps.producto_id and rmdd.solicitud_id = sc.id_solicitud_de_credito and sc.fecha_de_solicitud between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and sc.entidad_financiera_id = 6 group by  2 , p.nombre_del_producto   order by 3,2"
             
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             def mat = []
             def qr = "select count(rmdd.id_resultado_motor_de_decision) as folios  from resultado_motor_de_decision rmdd , producto_solicitud ps, producto  p, solicitud_de_credito sc where rmdd.solicitud_id  = ps.solicitud_id and p.id_producto = ps.producto_id and rmdd.solicitud_id = sc.id_solicitud_de_credito and sc.fecha_de_solicitud between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and sc.entidad_financiera_id = 6 "
@@ -1021,7 +1100,6 @@ class ReporteService {
             
         }else if (informe == "contacto") {
             query = "select count(folio) as folios , medio_de_contacto, dictamen_final from reporte_produccion where medio_de_contacto <> '' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by 2, 3 order by 2,3"
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             def mat = []
             def qt = "select count(folio) as folios from reporte_produccion where medio_de_contacto <> '' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6"
@@ -1051,7 +1129,6 @@ class ReporteService {
         }else if (informe == "abandono") {
             query = "select count(rp.folio) as folios , ps.titulo , ps.numero_de_paso /*,rp.dictamen_final*/  from reporte_produccion rp, paso_solicitud_entidad_financiera ps  where rp.ultimo_paso = ps.numero_de_paso and  to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6 group by ps.titulo , 3 /*,rp.dictamen_final*/  order by 3 "
             
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             respuesta.periodos = [:]
             respuesta.periodos.categories = []
@@ -1086,7 +1163,6 @@ class ReporteService {
             query += " select  count(dictamen_de_politicas) as folios, 'Rechazados x Dictamen Politicas '  as tipo  from reporte_produccion where dictamen_de_politicas = 'R' and dictamen_final = 'R' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') UNION  "
             query += " select  count(dictamen_de_politicas)  as folios, 'Autorizado x Dictamen Politicas '  as tipo   from reporte_produccion where dictamen_de_politicas = 'A' and dictamen_final = 'R' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') UNION  "
             query += " select  count(dictamen_de_politicas)  as folios, 'Duda x Dictamen Politicas '  as tipo   from reporte_produccion where dictamen_de_politicas = 'D' and dictamen_final = 'R' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi')  "
-            def sql = new Sql(dataSource)
             def resultados = sql.rows(query)
             def mat = []
             def qt = "select count(dictamen_final) as folios, 'Rechazados Totales' as tipo   from reporte_produccion where dictamen_final='R' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6"
@@ -1104,7 +1180,6 @@ class ReporteService {
             }
            return mat 
         }else if (informe == "causaRechazo") {
-            def sql = new Sql(dataSource)
             def qdpoliticas  = "select count(folio)as folios  , dictamen_de_politicas as dictamen ,'Dictamen De Politicas' as tipo  from reporte_produccion where dictamen_de_politicas <> '' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by 2 order by 1 desc"
             def qdperfil = "select count(folio) as folios , dictamen_de_perfil as dictamen, 'Dictamen De Perfil' as tipo from reporte_produccion where dictamen_de_perfil <> '' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by 2 order by 1 desc "
             def qdconjunto = "select count(folio) as folios , dictamen_conjunto as dictamen, 'Dictamen Conjunto' as tipo  from reporte_produccion where dictamen_conjunto <> '' and to_timestamp(fecha_de_solicitud,'dd/mm/yyyy hh24:mi') between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi') and entidad = 6  group by 2 order by 1 desc"
@@ -1176,7 +1251,6 @@ class ReporteService {
             }
             return mat 
         }else if (informe == "consultasBC") {
-            def sql = new Sql(dataSource)
             def tcb = "select count(*) as folios from reporte_buro_credito where fecha_consulta between to_timestamp('"+ fechaInicio +" 00:00','dd/mm/yyyy hh24:mi') and to_timestamp('"+ fechaFinal +" 23:59','dd/mm/yyyy hh24:mi')   "
             def r = sql.rows(tcb)
             def totalcb

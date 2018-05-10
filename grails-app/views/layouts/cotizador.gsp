@@ -32,6 +32,24 @@
             <div class="cotizador-header"  style="background-color: ${configuracion?.colorEncabezado};">
                 <div class="container paddingTop20 paddingBottom20">
                     <img src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo">
+                    <div style="float:right; margin-right:21px; margin-left: 21px;" class="block">
+                            <table cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td class='font14 fontWhite fontBolder'colspan="3" style=" padding-bottom: 10px;" >¿Ya cuentas con una solicitud registrada? ingresa tu folio y continua</td>
+                                    </tr>
+                                    <tr class="floatRight">
+                                        <td class='fontWhite font15 paddingFolio'>Folio</td>
+                                        <td><input type="text" name="folioFormulario" id="folioFormulario" style="max-height: 30px; max-width: 150px; font-size: 1.0em;" maxlength="7" onkeypress="return event.keyCode != 13;"/></td>
+                                        <td><input type="button" value="Continuar Solicitud" onclick="compareFolio('formulario');" style="padding-bottom: 5px;" class=" floatRight block font15 pointer letterspacing1 blueButton2 blue-shadow2 padding10 width400 center autoMargin" id="btnContSol" /></td>
+                                    </tr>
+                                    <tr id="filaErrorFolioFormulario" class="hide"><td colspan="3" class="font14 textAlignCenter "><a id='folioFormularioError' style="color:#ffcb00; float:right;"></a></td></tr>
+                                    <tr>
+                                        <td id="leyendaFolioSms"colspan="3" style='padding-top: 10px;'class="font14  textAlignCenter"><a  class="pointer floatRight" onclick="abrirModalFolioFormulario();" style="color:#b4b8d4;">¿No recuerdas tu folio ? da clic aquí te lo enviaremos por sms</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    </div>-
                 </div>
             </div>
             <g:layoutBody/>

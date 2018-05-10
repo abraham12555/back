@@ -6,6 +6,7 @@ class TipoErrorBuroCredito implements Serializable {
 	String nombre;
 	String numeroCampo;
 	String descripcion;
+        boolean visible = false;
 
     static constraints = {
 		tipo nullable: false

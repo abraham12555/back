@@ -7,6 +7,13 @@ var consultaTradicional = true;
 $(document).ready(function () {
 
 getProfilePicture();
+           
+});
+$(document).on("click", function (e) {
+    var container = $("#botonAbrirMenu");
+    if(!container.is(e.target) && container.has(e.target).length === 0){
+        $("#mySidenav").fadeOut();
+    }
 
 });
 function operacionesPerfilador() {
@@ -377,6 +384,9 @@ function goBackStep1() {
     $('.step2').removeClass('active');
     $('.step2 .step').removeClass('active');
     $('#menuPersonales').removeClass('active');
+    $('#step1Mobile').addClass('current');
+    $('#step2Mobile').addClass('disabled');
+    $('#step2Mobile').removeClass('current');
 }
 
 function goStep2() {
@@ -391,6 +401,7 @@ function goStep2() {
             success: function (data, textStatus) {
                 var respuesta = eval(data);
                 if (respuesta.encontrado === true) {
+                    sendRequestForm('datosGenerales');
                     $('#step1').hide();
                     $('#step2').removeClass('hide');
                     $('.step1 .step').removeClass('active');
@@ -401,11 +412,19 @@ function goStep2() {
                     $('.step2').addClass('active');
                     $('.step2 .step').addClass('active');
                     $('#menuPersonales').addClass('active');
+                    $('#step1Mobile').removeClass('current');
+                    $('#step2Mobile').removeClass('disabled');
+                    $('#step2Mobile').addClass('current');
                     $('#cliente_rfc').focus();
                     $('#cliente_rfc').val($('#rfcClienteExistente').val());
                     $('#cliente_rfc').prop('readonly', true);
                     $("#cliente_rfc").addClass('notEmpty');
                     $("#cliente_rfc").addClass('headingColor');
+                    if ($(".desktopLeftBar").css('display') === 'none'){
+                        $("#uso_movil").val('true');
+                    }else{
+                        $("#usoMovil").val('false');
+                    }
                     sweetAlert("¡Excelente!", "El R.F.C indicado ha sido encontrado. Complementa los datos que son solicitados en los siguientes apartados.", "success");
                     vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
                 } else {
@@ -417,6 +436,7 @@ function goStep2() {
             }
         });
     } else {
+        sendRequestForm('datosGenerales');
         $('#step1').hide();
         $('#step2').removeClass('hide');
         $('.step1 .step').removeClass('active');
@@ -427,12 +447,20 @@ function goStep2() {
         $('.step2').addClass('active');
         $('.step2 .step').addClass('active');
         $('#menuPersonales').addClass('active');
+        $('#step1Mobile').removeClass('current');
+        $('#step2Mobile').removeClass('disabled');
+        $('#step2Mobile').addClass('current');
         if ($('#rfcClienteExistente').val() !== null && $('#rfcClienteExistente').val() !== undefined && $('#rfcClienteExistente').val() !== '') {
             $('#rfcClienteExistente').val('');
             $('#cliente_rfc').val('');
             $('#cliente_rfc').prop('readonly', false);
             $("#cliente_rfc").removeClass('notEmpty');
             $("#cliente_rfc").removeClass('headingColor');
+        }
+        if ($(".desktopLeftBar").css('display') === 'none') {
+            $("#uso_movil").val('true') ;
+        } else {
+            $("#usoMovil").val('false');
         }
         vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
     }
@@ -455,6 +483,7 @@ function goStep3() {
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.resultado === true) {
+                sendRequestForm('datosVivienda');
                 $('#step2').hide();
                 $('#step3').removeClass('hide');
                 $('#menuPersonales').removeClass('active');
@@ -481,6 +510,7 @@ function goStep4() {
     $('#step4').removeClass('hide');
     $('#menuVivienda').removeClass('active');
     $('#menuFamilia').addClass('active');
+    sendRequestForm('datosFamiliares');
 }
 
 function goBackStep4() {
@@ -495,6 +525,7 @@ function goStep5() {
     $('#step5').removeClass('hide');
     $('#menuFamilia').removeClass('active');
     $('#menuEmpleo').addClass('active');
+    sendRequestForm('datosEmpleo');
 }
 function goBackStep5() {
     $('#step5').show();
@@ -506,6 +537,9 @@ function goBackStep5() {
     $('#accionesNormalesIntl').fadeIn();
     $('#accionesErrorAutenticador').fadeOut();
     $('#accionesErrorIntl').fadeOut();
+    $('#step3Mobile').removeClass('current');
+    $('#step2Mobile').removeClass('disabled');
+    $('#step2Mobile').addClass('current');
 }
 
 function goConsultaBuro() {
@@ -523,6 +557,7 @@ function goConsultaBuro() {
                 $("body").mLoading('hide');
                 sweetAlert("Oops...", "Algo salió mal con los datos proporcionados, intenta nuevamente en unos minutos.", "error");
             } else {
+                sendRequestForm('buroDeCredito');
                 $('#step5').hide();
                 $('#buro').removeClass('hide');
                 $('#tabs').removeClass('hide');
@@ -532,6 +567,12 @@ function goConsultaBuro() {
                 $('.step3').addClass('active');
                 $('.step3 .step').addClass('active');
                 $('#menuEmpleo').removeClass('active');
+                $('#step2Mobile').removeClass('current');
+                $('#step3Mobile').removeClass('disabled');
+                $('#step3Mobile').addClass('current');
+                $('#folioPerfilador').removeClass('hide'); 
+                $('#folioPerfilador').css("text-transform", "none");
+                $('#folioPerfilador').append(' '+data.folio);
                 $("body").mLoading('hide');
             }
         },
@@ -553,8 +594,12 @@ function verOfertas() {
         url: $.contextAwarePathJS + 'dashboard/obtenerOfertas',
         success: function (response, textStatus) {
             mostrarOfertas(response);
+            $('#step3Mobile').removeClass('current');
+            $('#step4Mobile').removeClass('disabled');
+            $('#step4Mobile').addClass('current');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sendRequestForm('confirmacionSinOfertas');
             $("body").mLoading('hide');
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
         }
@@ -888,7 +933,7 @@ function enviarSms(telefonoCelular) {
         success: function (data, textStatus) {
             var respuesta = eval(data);
             if (respuesta.mensajeEnviado === true) {
-                sweetAlert("SMS Enviado", "Espera por favor entre 15 y 30 segundos para recibir tu código. Si después de 30 segundos no recibes el código, puedes avanzar capturando 00000.", "success");
+                sweetAlert("SMS Enviado", "Espera por favor entre 15 y 30 segundos para recibir tu código.", "success");
             } else {
                 sweetAlert("Oops...", "Ocurrió un problema al enviar el mensaje. Verifica tu número de Celular.", "error");
             }
@@ -908,7 +953,7 @@ function consultarBuro() {
     var creditoAutomotriz = $('#creditoA').val();
     var tipoDeConsulta = 'autenticador';
     var cadenaDeBuro = null;
-    if ($.contextAwarePathJS === "/qa/") {
+    if ($.contextAwarePathJS === "/libertadqa/") {
        cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());
     } else {
         cadenaDeBuro = "undefined";
@@ -969,7 +1014,11 @@ function consultarBuro() {
                         $('#goBackStep5').addClass('hide');
                         $('#goBackStep5').fadeOut();
                         consultaAutenticador = false;
-                        sweetAlert("Oops...", "Algo salió mal. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
+                        if (respuesta.error === -1) {
+                            $('#buttonconsultaINTL').prop('disabled', true);
+                        }
+                        var mensaje = (respuesta.segmento ) ? " Motivo: "+respuesta.segmento : " ";
+                        sweetAlert("Oops...", (respuesta.errorDesc ? respuesta.errorDesc : " ") + "  " + mensaje, "error");
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1024,7 +1073,8 @@ function mostrarOfertas(data) {
 
     var html = "";
     var productos = [];
-    html += "<h2>Ofertas disponibles</h2>";
+    html += "<h2 class='marginMobile'>Ofertas disponibles</h2>";
+    html += "<h2 class=\"buy\"><button class='blueboxButton'style='right;margin-right: 35px;'onclick=\"cerrarOferta();\">CAMBIAR OFERTA</button></h2>";
     html += "<div class=\"promos\">";
     html += "<div id=\"wrapper_bu\">";
     if (respuesta !== null) {
@@ -1041,7 +1091,7 @@ function mostrarOfertas(data) {
             html += "</li>";
             html += "<li>";
             html += "<h6>PLAZO</h6> <span id=\"plazo_" + respuesta[i].producto.id + "\">";
-            html += "<select class=\"browser-default\" style=\"border-bottom: 0px;\" onchange= \"cambiarPlazo(" + i + ", this.value)\">";
+            html += "<select class=\"browser-default selectmin\" style=\"border-bottom: 0px;position: relative;\" onchange= \"cambiarPlazo(" + i + ", this.value)\">";
             html += "<option value=\"0\" selected>" + respuesta[i].listaDePlazos[0].plazos + " " + respuesta[i].listaDePlazos[0].periodicidad.toUpperCase() + "</option>";
             for (var j = 1; j < respuesta[i].listaDePlazos.length; j++) {
                 html += "<option value=\"" + j + "\">" + respuesta[i].listaDePlazos[j].plazos + " " + respuesta[i].listaDePlazos[j].periodicidad.toUpperCase() + "</option>";
@@ -1056,7 +1106,7 @@ function mostrarOfertas(data) {
             html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta[i].listaDeOpciones[0].tasaDeInteres * 100), 2) + " %</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoSeguro, "$") + "</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoAsistencia, "$") + "</p>";
-//            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta[i].listaDeOpciones[0].cat * 100), 1) + " %</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta[i].listaDeOpciones[0].cat * 100), 1) + " %</p>";
             html += "</li>";
             //fin-temporal
             html += "<li><h6>REQUISITOS</h6></li>";
@@ -1076,9 +1126,11 @@ function mostrarOfertas(data) {
             html += "</ul></div></div>";
             productos.push(respuesta[i].producto.id);
         }
+        sendRequestForm('ofertas');
     } else if (typeof data.motivoRechazo !== "undefined") {
         html += "<div>No se encontraron ofertas que se ajusten al perfil del cliente por el siguiente motivo:</div>";
         html += "<h2><b><strong>" + data.motivoRechazo + "</strong></b></p>"; 
+        sendRequestForm('confirmacionSinOfertas');
     }
     
     html += "</div></div>";
@@ -1098,7 +1150,7 @@ function mostrarOfertas(data) {
             $(('#plazoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].plazos);
             $(('#periodicidadSeleccionada_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].periodicidad.id);
             $(('#pagoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].cuota);
-            inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 1000);
+            inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 100);
         }
     }
 
@@ -1124,6 +1176,7 @@ function mostrarOfertas(data) {
                         firstIndexBeforeArrLength++;
                     }
                 }
+                $('.holder_bu_center').find("ul").fadeIn("slow");
             },
             clickReg: function () {
                 $(".holder_bu").each(function () {
@@ -1135,20 +1188,23 @@ function mostrarOfertas(data) {
                 }
                 ;
                 $(".holder_bu").click(function (buid) {
-                    var me = this, id = this.id || buid, joId = $("#" + id), joCN = joId.attr("class").replace(" holder_bu", "");
-                    var cpos = buArr.indexOf(joCN), mpos = buArr.indexOf("holder_bu_center");
-                    if (cpos !== mpos) {
-                        tomove = cpos > mpos ? arlen - cpos + mpos : mpos - cpos;
-                        while (tomove) {
-                            var t = buArr.shift();
-                            buArr.push(t);
-                            for (var i = 1; i <= arlen; ++i) {
-                                $("#bu" + i).removeClass().addClass(buArr[i - 1] + " holder_bu");
+                    $(buid.currentTarget.children).find( "ul" ).fadeIn("slow");
+                        var me = this, id = this.id || buid, joId = $("#" + id), joCN = joId.attr("class").replace(" holder_bu", "");
+                        var cpos = buArr.indexOf(joCN), mpos = buArr.indexOf("holder_bu_center");
+                        if (cpos !== mpos) {
+                            tomove = cpos > mpos ? arlen - cpos + mpos : mpos - cpos;
+                            while (tomove) {
+                                var t = buArr.shift();
+                                buArr.push(t);
+                                for (var i = 1; i <= arlen; ++i) {
+                                    $("#bu" + i).removeClass().addClass(buArr[i - 1] + " holder_bu");
+                                }
+                                --tomove;
                             }
-                            --tomove;
                         }
-                    }
+                    
                 });
+                //$(".holder_bu").off();
             },
             auto: function () {
                 for (i = 1; i <= 1; ++i) {
@@ -1156,6 +1212,7 @@ function mostrarOfertas(data) {
                     console.log("called");
                 }
             }
+            
         };
     })();
 
@@ -1166,6 +1223,9 @@ function mostrarOfertas(data) {
 function inicializarSlider(elemento, producto, montoInicial, montoMinimo, montoMaximo, incremento) {
     console.log("Inicializando slider: " + elemento + " del producto " + producto);
     console.log("Parametros de inicializacion: " + montoInicial + ", " + montoMinimo + ", " + montoMaximo + ", " + incremento);
+    if (montoMinimo.toString().substr(-1) === "1") {
+        montoMaximo = montoMaximo + 1;
+    }
     $("#" + elemento).slider({
         orientation: 'horizontal',
         range: false,
@@ -1174,23 +1234,31 @@ function inicializarSlider(elemento, producto, montoInicial, montoMinimo, montoM
         max: montoMaximo,
         step: incremento,
         create: function (event, ui) {
-            console.log("Entra al create");
             var montoElegido = montoInicial;
             $(('#montoSeleccionado_' + producto)).val(montoElegido);
             $(('#monto_' + producto)).html(formatCurrency(montoElegido, "$"));
         },
         slide: function (event, ui) {
             var valorElegido;
-            valorElegido = (ui.value);
-            console.log("Entra al slide");
+            if($("#" + elemento).slider("option", "min").toString().substr(-1) === "1"){
+                valorElegido = (ui.value-1);
+            }else{
+                valorElegido = (ui.value);
+            }
             $(('#montoSeleccionado_' + producto)).val(valorElegido);
             $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
             $(('#pago_' + producto)).html("<h6> RECALCULANDO PAGO </h6> </li>");
         },
         stop: function (event, ui) {
             var valorElegido;
-            valorElegido = (ui.value);
-            console.log("Entra al stop");
+            if($("#" + elemento).slider("option", "min").toString().substr(-1) === "1"){
+                valorElegido = (ui.value-1);
+                if ($("#" + elemento).slider("option", "min") - 1 === valorElegido) {
+                    valorElegido = valorElegido+1;
+                }
+            }else{
+                valorElegido = (ui.value);
+            }
             $(('#montoSeleccionado_' + producto)).val(valorElegido);
             $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
             calcularOferta(producto, valorElegido);
@@ -1204,7 +1272,12 @@ function reiniciarSlider(elemento, producto, montoInicial, montoMinimo, montoMax
     var valorElegido = montoInicial;
     $("#" + elemento).slider("option", "value", montoInicial);
     $("#" + elemento).slider("option", "min", montoMinimo);
-    $("#" + elemento).slider("option", "max", montoMaximo);
+    if (montoMinimo.toString().substr(-1) === "1") {
+        montoMaximo = montoMaximo+1;
+        $("#" + elemento).slider("option", "max", montoMaximo);
+    } else {
+        $("#" + elemento).slider("option", "max", montoMaximo);
+    }
     $("#" + elemento).slider("option", "step", incremento);
     $(('#montoSeleccionado_' + producto)).val(valorElegido);
     $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
@@ -1218,7 +1291,7 @@ function cambiarPlazo(producto, plazo) {
     $(('#pagoSeleccionado_' + ofertasCalculadas[producto].producto.id)).val(ofertasCalculadas[producto].listaDeOpciones[plazo].cuota);
     $(('#monto_' + ofertasCalculadas[producto].producto.id)).html(formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo, "$"));
     $(('#pago_' + ofertasCalculadas[producto].producto.id)).html("<h6>PAGO " + ofertasCalculadas[producto].listaDeOpciones[plazo].periodicidad.nombre.toUpperCase() + "</h6> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].cuota, "$") + " </li>");
-    reiniciarSlider(("flat-slider-" + ofertasCalculadas[producto].producto.id), ofertasCalculadas[producto].producto.id, (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMinimo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), 1000);
+    reiniciarSlider(("flat-slider-" + ofertasCalculadas[producto].producto.id), ofertasCalculadas[producto].producto.id, (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMinimo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), 100);
     //inicio-temporal
     var html = "<h6>CÁLCULOS (Fines de Prueba)</h6>";
     html += "<p style=\"font-size: 0.89em;\"><strong>MONTO A PAGAR BC:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoAPagar, "$") + "</p>";
@@ -1226,7 +1299,7 @@ function cambiarPlazo(producto, plazo) {
     html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].tasaDeInteres * 100), 2) + " %</p>";
     html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoSeguro, "$") + "</p>";
     html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoAsistencia, "$") + "</p>";
-//    html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].cat * 100), 1) + " %</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].cat * 100), 1) + " %</p>";
     $('#temporal_' + ofertasCalculadas[producto].producto.id).html(html);
     //fin-temporal
     var html2 = "4. GARANTIAS <ul>";
@@ -1262,7 +1335,7 @@ function calcularOferta(producto, montoDeCredito) {
             html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta.tasaDeInteres * 100), 2) + " %</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta.cuota.montoSeguro, "$") + "</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta.cuota.montoAsistencia, "$") + "</p>";
-//            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta.cuota.cat * 100), 1) + " %</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta.cuota.cat * 100), 1) + " %</p>";
             $('#temporal_' + producto).html(html);
             //fin-temporal
             var html2 = "4. GARANTIAS <ul>";
@@ -1321,7 +1394,9 @@ function seleccionarOferta(posicion, producto) {
             $('.step4').removeClass('active');
             $('#ofertas').hide();
             $('#confirmacion').removeClass('hide');
+            $('#folioPerfilador').addClass('hide');
             $("body").mLoading('hide');
+            sendRequestForm('confirmacion');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Hubo un problema al seleccionar la oferta, intenta nuevamente en unos minutos.", "error");
@@ -1433,7 +1508,7 @@ function consultarBuroTradicional() {
     });
     var cadenaDeBuro = null;
     
-    if ($.contextAwarePathJS === "/qa/") {
+    if ($.contextAwarePathJS === "/libertadqa/") {
         cadenaDeBuro = encodeURIComponent($('#cadenaBuroTestTradicional').val());
     }
     
@@ -1485,14 +1560,13 @@ function consultarBuroTradicional() {
                 $('#accionesNormalesIntl').fadeOut();
                 $('#accionesErrorIntl').fadeIn();
                 $('#divAutorizacionBuro').fadeOut();
-                $('.consultarB').fadeIn();
                 $('.correctaBox').unbind('click');
                 $('#goBackStep5').addClass('hide');
                 $('#goBackStep5').fadeOut();
                 consultaTradicional = false;
                 $('#buttonconsultaINTL').prop('disabled', true);
-                sweetAlert("Oops...", "Algo salió mal. La consulta tradicional falló. "+(respuesta.errorDesc ? respuesta.errorDesc : " "), "error");
-
+                var mensaje = (respuesta.segmento ) ? " Motivo: "+respuesta.segmento : " ";
+                sweetAlert("Oops...", (respuesta.errorDesc ? respuesta.errorDesc : " ") + " " + mensaje, "error");
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1503,3 +1577,14 @@ function consultarBuroTradicional() {
         }
     });
 }
+
+function sendRequestForm(pag) {
+    ga('set', 'page', '/dashboard/perfilarCliente/' + pag);
+    ga('send', 'pageview');
+}
+	
+
+function cerrarOferta() {
+    $(".features").css('display', 'none');
+}
+

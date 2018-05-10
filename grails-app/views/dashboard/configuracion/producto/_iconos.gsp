@@ -19,7 +19,7 @@
         </div>
           <div class="formContainer">
                 <button onclick class="loginButton blueButton letterspacing2 font14 pointer">Actualizar</button>
-                <button type="button" onclick="cerrarModal('modalDetalleIconos');" class="loginButton letterspacing2 font14 pointer" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
+                <button type="button" onclick="cerrarModal('modalDetalleIconos');" class="loginButton letterspacing2 font14 pointer blueButton" style="background-image: #ffffff;box-shadow: 0 6px 9px 0 rgba(219, 220, 232, 0.5);">CANCELAR</button>
             </div>
         </form>
     </div>

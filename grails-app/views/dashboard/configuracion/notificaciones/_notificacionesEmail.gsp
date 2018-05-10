@@ -4,7 +4,7 @@
     </div>
     <table class="applicationContainers solicitudes_table dashboard" id="plantillasEmail-tb">
         <thead>
-        <th colspan="5" class="left navyBg">
+        <th colspan="7" class="left navyBg">
             <h1 class="graphHeading colorWhite letterspacing2 textUpper">plantillas email</h1>
         </th>
         </thead>

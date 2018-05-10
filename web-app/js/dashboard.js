@@ -30,7 +30,7 @@ $(document).ready(function () {
         $("#currentPageSolicitudesBusqueda").val(page);
          pagination(parseInt(totalPages),parseInt(page), idPaginacion);
     }
-        
+    sortTable("listaDeSolicitudesBusqueda");
     $(function () {
         $("#accordion").accordion({
             header: "h1",
@@ -173,7 +173,13 @@ $(document).ready(function () {
     getProfilePicture();
     //operacionesValidar();
 });
+$(document).on("click", function (e) {
+    var container = $("#botonAbrirMenu");
+    if(!container.is(e.target) && container.has(e.target).length === 0){
+        $("#mySidenav").fadeOut();
+    }
 
+});
 window.onclick = function (event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -1101,6 +1107,7 @@ function consultarSolicitudesPorTiempo(temporalidad, idDiv, fechaInicio, fechaFi
                 pagination(totalPages, page, idPaginacion);
                 mostrarSolicitudesFechas(response.solicitudes, idTabla);
                 $("#" + idTemporalidad).val(temporalidad);
+                
             } else {
                 $('#' + idTabla + 'tbody').empty();
 
@@ -1291,7 +1298,8 @@ function cambiarEstatus(estatus, idSolicitud) {
     }
 }
 
-function actualizarConfiguracionBuroCredito() {
+function actualizarConfiguracionBuroCredito(tipoDeConsulta) {
+    
     jQuery.ajax({
         type: 'POST',
         data: $('#configuracionBuroCreditoForm').serialize(),
@@ -3971,6 +3979,9 @@ function getSolicitudes(page, idPaginacion) {
             if (response.solicitudes.length > 0) {
                 pagination(totalPages, page, idPaginacion);
                 mostrarSolicitudesPaginados(response.solicitudes);
+                removerOrdenarTabla();
+                sortTable("listaDeSolicitudes");
+                
             } else {
                 var row = "";
                 row += '<tr></tr>';
@@ -4011,6 +4022,9 @@ function getSolicitudesBusqueda(page, idPaginacion, folio, nombre, apellidoPater
             if (response.solicitudes.length > 0) {
                 pagination(totalPages, page, idPaginacion);
                 mostrarSolicitudesPaginadosBusqueda(response.solicitudes);
+                removerOrdenarTabla();
+                sortTable("listaDeSolicitudesBusqueda");
+                
             } else {
                 var row = "";
                 row += '<tr></tr>';
@@ -4037,7 +4051,7 @@ function mostrarSolicitudesPaginados(data) {
     var html = "";
     for (var x = 0; x < respuesta.length; x++) {
         if (respuesta[x].puntoDeVenta === null) {
-            respuesta[x].puntoDeVenta = "";
+            respuesta[x].puntoDeVenta = "PDV";
         }
         html += "<tr>";
         html += "<td  class='left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
@@ -4092,6 +4106,7 @@ function mostrarSolicitudesPaginados(data) {
 }
 
 function mostrarSolicitudesFechas(data, idTabla) {
+    console.log("mostrarSolicitudesFechas"+idTabla);
     $('#' + idTabla + 'tbody').html('');
     //$('#lista1').html('');
     $(window).scrollTop($('#' + idTabla).position().top);
@@ -4100,7 +4115,7 @@ function mostrarSolicitudesFechas(data, idTabla) {
     var html = "";
     for (var x = 0; x < respuesta.length; x++) {
         if (respuesta[x].puntoDeVenta === null) {
-            respuesta[x].puntoDeVenta = "";
+            respuesta[x].puntoDeVenta = "pdv";
         }
         html += "<tr>";
         html += "<td  class='left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
@@ -4149,7 +4164,8 @@ function mostrarSolicitudesFechas(data, idTabla) {
         html += "</tr>";
     }
     $('#' + idTabla + ' tbody').html(html);
-
+    removerOrdenarTabla();
+    sortTable(idTabla);
 
 }
 
@@ -4160,7 +4176,7 @@ function mostrarSolicitudesPaginadosBusqueda(data) {
     var html = "";
     for (var x = 0; x < respuesta.length; x++) {
         if (respuesta[x].puntoDeVenta === null) {
-            respuesta[x].puntoDeVenta = "";
+            respuesta[x].puntoDeVenta = "PDV";
         }
         html += "<tr>";
         html += "<td  class='left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper'>";
@@ -4344,4 +4360,61 @@ function mostrarApartadoSubmenu(e) {
     });
 }
 
+function seleccionConsultaBc(id) {
+        if(id === 1){
+            $('.tipoDeConsultaBc').addClass("hide");
+            $('#tipoAutenticador').addClass("hide");
+            $('#tipoTradicional').removeClass("hide");
+            $('#valorTipoConsulta').val(1);
+            $('#botonAtras').removeClass("hide");
+        } else if (id === 0){
+            $('.tipoDeConsultaBc').addClass("hide");
+            $('#tipoTradicional').addClass("hide");
+            $('#tipoAutenticador').removeClass("hide");
+            $('#valorTipoConsulta').val(0);
+            $('#botonAtras').removeClass("hide");
+            $('#tabsClavesBc').removeClass("hide");
+
+
+        }
+}
+function atrasBc() {
+    $('#botonAtras').addClass("hide");
+    $('#tipoTradicional').addClass("hide");
+    $('#tipoAutenticador').addClass("hide");
+    $('.tipoDeConsultaBc').removeClass("hide");
+    $('#tipoAutenticadorAutoServicio').addClass("hide");
+    $('#tabsClavesBc').addClass("hide");
+
+}
+function abrirTab(tabOpen, tabClose) {
+    if ($('#button' + tabOpen).hasClass('blueButton')) {
+
+    } else {
+        $('#button' + tabClose).removeClass('blueButton');
+        $('#button' + tabOpen).addClass('blueButton');
+    }
+    if (tabOpen === 'tipoAutenticador') {
+        $('#tipoAutenticador').removeClass("hide");
+        $('#tipoAutenticadorAutoServicio').addClass("hide");
+        $('#valorTipoConsulta').val(0);
+
+    }
+    if (tabOpen === 'tipoAutenticadorAutoServicio') {
+        $('#tipoAutenticadorAutoServicio').removeClass("hide");
+        $('#tipoAutenticador').addClass("hide");
+        $('#valorTipoConsulta').val(2);
+
+    }
+
+}
+
+function sortTable(n) {
+    $('#' + n).tablesorter();
+}
+
+function removerOrdenarTabla() {
+    $('table').trigger('update');
+}
+ 
 

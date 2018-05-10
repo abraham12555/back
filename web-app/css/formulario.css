@@ -1246,6 +1246,14 @@ body{
 }
 
 .loginContainer{
+    width: 750px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    position: absolute;
+}
+.loginContainer2 {
     width: 450px;
     top: 50%;
     left: 50%;
@@ -1991,7 +1999,7 @@ body{
     height: 36px;
     border: solid 1px #252d60;
     border-radius: 50px;
-    margin: 20px 10px 10px 22px;
+    margin: 20px 10px 10px 10px;
 }
 
 .userPicture.dashboard{
@@ -2000,7 +2008,6 @@ body{
 
 .userName{
     font-size: 18px;
-    letter-spacing: 1.1px;
     color: #181d3f;
     display: inline-block;
     border-radius: 2px;
@@ -3219,7 +3226,16 @@ margin-top: -10px;
         float:none;
     }
 
-
+    .mobileLeftBar{
+        display: none;
+    }
+    .desktopLeftBar{
+        display: block;
+    }
+    .stepsContainer{
+        width: 100%;
+        margin: 0 0.5em 0.5em;
+    }
 
 }
 
@@ -3247,6 +3263,13 @@ margin-top: -10px;
     }
 
     .loginContainer {
+        width: 96%;
+        position: static;
+        transform: translate(0,0);
+        -webkit-transform: translate(0,0);
+        margin:30px auto;
+    }
+    .loginContainer2 {
         width: 96%;
         position: static;
         transform: translate(0,0);
@@ -3430,7 +3453,12 @@ margin-top: -10px;
         width: 90%;
     }
 
-
+    .mobileLeftBar{
+        display: none;
+    }
+    .desktopLeftBar{
+        display: block;
+    }
 
 
 
@@ -3540,7 +3568,7 @@ margin-top: -10px;
     padding: 5px;
     color: #F1F3FA;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 10px;
     transition: 0.6s ease;
     border-radius: 50%;
     background-color: #9EA1BE;
@@ -3549,7 +3577,7 @@ margin-top: -10px;
 /* Position the "prev button" to the left */
 .prev {
     border-radius: 50%;
-    margin-left: 1%;
+    margin-left: 3%;
 }
 
 /* Position the "next button" to the right */
@@ -3569,7 +3597,7 @@ margin-top: -10px;
 .centerLink {
     margin: auto;
     width: 50%;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
 }
 
@@ -3803,3 +3831,191 @@ div.tab button:hover {
   stroke-dashoffset: 48;
   animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
 }
+.hoverPlus{
+    color: white;
+    background-image: linear-gradient(258deg, #59c4fb, #2d91f6);
+    box-shadow: 0 0 7px 0 #298df5;
+}
+
+@media only screen and (max-width: 1125px) {
+.centerLink {
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+.prev {
+    border-radius: 50%;
+    margin-left: 3%;
+}
+
+
+}
+
+
+@media only screen and (max-width: 784px) {
+.centerLink {
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+.next {
+    border-radius: 50%;
+    margin-left: -10%;
+}
+.prev {
+    border-radius: 50%;
+    margin-left: 1%;
+}
+
+}
+
+@media only screen and (max-width: 500px) {
+.centerLink {
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+.next {
+    border-radius: 50%;
+    margin-left: -12%;
+    font-size: 10px;
+}
+.prev {
+    border-radius: 50%;
+    margin-left: 5%;
+    font-size: 10px;
+}
+.fa {
+    display: inherit;
+    font-size: 10px;
+}
+
+}
+.errorCampo{
+    border-bottom-color: rgb(255, 0, 0);
+}
+@media only screen and (max-width: 1024px) and (min-width: 767px) {
+
+    .desktopLeftBar{
+        display: none;
+    }
+    .stepsContainer{
+        width: 70%;
+        margin: 0 0.5em 0.5em;
+    }
+
+    .mobileLeftBar{
+        width: 25%;
+        overflow: hidden;
+        display: inline;
+    }
+    .mobileLeftBar ul{
+        list-style: none !important;
+        padding: 0;
+        margin: 0;
+    }
+    .mobileLeftBar>ul>li {
+        float: none;
+        display: block;
+        width: auto;
+        margin: 0 0.5em 0.5em;
+        padding: 1em 1em;
+        text-decoration: none;
+        border-radius: 15px;
+        border: 1px solid #cacaca;
+
+    }
+    .current{
+        background: #005398;
+
+    }
+    .current>a{
+        color: #fff;
+        cursor: default;
+    }
+    .disabled>a {
+        background: #f2f2f2;
+        color: #333333;
+        cursor: default;
+    }
+    .select2 {
+        width: 100%;
+    }
+    .vnotify-container.vn-top-right {
+        right: 5%;
+        top: 15%; 
+    }
+
+    
+    
+
+}
+
+@media only screen and (max-width: 767px) and (min-width: 100px) {
+    .mobileLeftBar{
+        display: inline;
+    }
+    .desktopLeftBar{
+        display: none;
+    }
+    .stepsContainer{
+        width: 95%;
+        margin: 0 0.5em 0.5em;
+        border-radius: 15px;
+        border: 1px solid #d4dbe6;
+    }
+    .stepsContainerSinMargen{
+        width: 95%;
+        margin: 0 0.5em 0.5em;
+    }
+
+    .mobileLeftBar{
+        width: 100%;
+        overflow: hidden;
+    }
+    .mobileLeftBar ul{
+        list-style: none !important;
+        padding: 0;
+        margin: 0;
+    }
+    .mobileLeftBar>ul>li {
+        float: none;
+        display: block;
+        width: auto;
+        margin: 0 0.5em 0.5em;
+        padding: 1em 1em;
+        text-decoration: none;
+        border-radius: 15px;
+        border: 1px solid #d4dbe6;
+    }
+    .current{
+        background: #005398;
+
+    }
+    .current>a{
+        color: #fff;
+        cursor: default;
+    }
+    .disabled>a {
+        background: #f2f2f2;
+        color: #333333;
+        cursor: default;
+    }
+    .width100Mobile{
+        width: 95%;
+        padding-top: 3%;
+    }
+    
+    .marginMobile{
+        margin: 0 0.5em 0.5em;
+    }
+    #divAutorizacionBuro{
+        width: 95%;
+    }
+
+}
+
+    

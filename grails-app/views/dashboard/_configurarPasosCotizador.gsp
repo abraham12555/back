@@ -685,10 +685,10 @@
             <div class="dashBordBox">
                 <div class="loginForm gray font14">
                     <input type="hidden" name="solicitudId" value="4">
-                    <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">Documentos</p>
+                    <p class="loginTitle font25 fontWeight500 darkBluetitle textUpper letterspacing1 center paddingAside15 marginBottom25">Vistas</p>
                     <div class="solicitudTitle autoMargin" style="width: 100%;">
                         <p class="center font14 lightGray nombreRubro">Asocia vistas a este Rubro</p>
-                         <input type="text" id='idDivVistas' value=""/>
+                         <input type="hidden" id='idDivVistas' value=""/>
                     </div>
                     <div class="formContainer">
                         <div class="blueButton caracteristicasRubro">

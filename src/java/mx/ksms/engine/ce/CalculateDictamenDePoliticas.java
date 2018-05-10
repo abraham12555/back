@@ -20,8 +20,17 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="solicitudId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="servicios" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="EDAD" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="experiencia_crediticia" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         &lt;element name="experiencia_crediticia" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="creditos_liquidados" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="clienteCredVigente" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="renovacion1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="ultimaFechaCredito" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="avanceCapital1" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="avanceCapital2" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="clienteConRenovacion" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="atrasoPago" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="malaFe" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="porcentajeDedescuento" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,7 +45,16 @@ import javax.xml.bind.annotation.XmlType;
     "servicios",
     "edad",
     "experienciaCrediticia",
-    "creditosLiquidados"
+    "creditosLiquidados",
+    "clienteCredVigente",
+    "renovacion1",
+    "ultimaFechaCredito",
+    "avanceCapital1",
+    "avanceCapital2",
+    "clienteConRenovacion",
+    "atrasoPago",
+    "malaFe",
+    "porcentajeDedescuento"
 })
 public class CalculateDictamenDePoliticas {
 
@@ -45,9 +63,18 @@ public class CalculateDictamenDePoliticas {
     @XmlElement(name = "EDAD")
     protected Integer edad;
     @XmlElement(name = "experiencia_crediticia")
-    protected boolean experienciaCrediticia;
+    protected String experienciaCrediticia;
     @XmlElement(name = "creditos_liquidados")
     protected int creditosLiquidados;
+    protected String clienteCredVigente;
+    protected String renovacion1;
+    protected String ultimaFechaCredito;
+    protected Double avanceCapital1;
+    protected Double avanceCapital2;
+    protected String clienteConRenovacion;
+    protected String atrasoPago;
+    protected String malaFe;
+    protected Double porcentajeDedescuento;
 
     /**
      * Obtiene el valor de la propiedad solicitudId.
@@ -124,16 +151,24 @@ public class CalculateDictamenDePoliticas {
     /**
      * Obtiene el valor de la propiedad experienciaCrediticia.
      * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public boolean isExperienciaCrediticia() {
+    public String getExperienciaCrediticia() {
         return experienciaCrediticia;
     }
 
     /**
      * Define el valor de la propiedad experienciaCrediticia.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
-    public void setExperienciaCrediticia(boolean value) {
+    public void setExperienciaCrediticia(String value) {
         this.experienciaCrediticia = value;
     }
 
@@ -151,6 +186,222 @@ public class CalculateDictamenDePoliticas {
      */
     public void setCreditosLiquidados(int value) {
         this.creditosLiquidados = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad clienteCredVigente.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getClienteCredVigente() {
+        return clienteCredVigente;
+    }
+
+    /**
+     * Define el valor de la propiedad clienteCredVigente.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setClienteCredVigente(String value) {
+        this.clienteCredVigente = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad renovacion1.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRenovacion1() {
+        return renovacion1;
+    }
+
+    /**
+     * Define el valor de la propiedad renovacion1.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRenovacion1(String value) {
+        this.renovacion1 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad ultimaFechaCredito.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUltimaFechaCredito() {
+        return ultimaFechaCredito;
+    }
+
+    /**
+     * Define el valor de la propiedad ultimaFechaCredito.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUltimaFechaCredito(String value) {
+        this.ultimaFechaCredito = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad avanceCapital1.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getAvanceCapital1() {
+        return avanceCapital1;
+    }
+
+    /**
+     * Define el valor de la propiedad avanceCapital1.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setAvanceCapital1(Double value) {
+        this.avanceCapital1 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad avanceCapital2.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getAvanceCapital2() {
+        return avanceCapital2;
+    }
+
+    /**
+     * Define el valor de la propiedad avanceCapital2.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setAvanceCapital2(Double value) {
+        this.avanceCapital2 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad clienteConRenovacion.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getClienteConRenovacion() {
+        return clienteConRenovacion;
+    }
+
+    /**
+     * Define el valor de la propiedad clienteConRenovacion.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setClienteConRenovacion(String value) {
+        this.clienteConRenovacion = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad atrasoPago.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAtrasoPago() {
+        return atrasoPago;
+    }
+
+    /**
+     * Define el valor de la propiedad atrasoPago.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAtrasoPago(String value) {
+        this.atrasoPago = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad malaFe.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getMalaFe() {
+        return malaFe;
+    }
+
+    /**
+     * Define el valor de la propiedad malaFe.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setMalaFe(String value) {
+        this.malaFe = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad porcentajeDedescuento.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getPorcentajeDedescuento() {
+        return porcentajeDedescuento;
+    }
+
+    /**
+     * Define el valor de la propiedad porcentajeDedescuento.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setPorcentajeDedescuento(Double value) {
+        this.porcentajeDedescuento = value;
     }
 
 }

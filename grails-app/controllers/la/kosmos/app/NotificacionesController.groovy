@@ -32,9 +32,11 @@ class NotificacionesController {
 
     def viewTemplateDetails() {
         def response = [:]
+        def entidadFinanciera = session.usuario.entidadFinanciera
 
         response.fields = notificacionesService.loadAvailableOptionsTemplate()
         response.template = notificacionesService.getTemplate(params)
+        response.status = notificacionesService.loadAvailableSmsStatus(entidadFinanciera)
         render response as JSON
     }
 
@@ -65,15 +67,16 @@ class NotificacionesController {
 
         def response = [:]
         response.notificacionEnvio = notificacionesService.loadCronConfiguration(params)
-        response.templatesSms = notificacionesService.getSmsTemplates(entidadFinanciera)
-        response.templatesEmail = notificacionesService.getEmailTemplates(entidadFinanciera)
+        response.templatesSms = notificacionesService.getSmsTemplates(entidadFinanciera,params)
+        response.templatesEmail = notificacionesService.getEmailTemplates(entidadFinanciera,params)
         render response as JSON
     }
 
     def saveCron() {
         def response = [:]
         def entidadFinanciera = session.usuario.entidadFinanciera
-
+        def lista =  params.list('templateOptions[]')
+        params.templateOptions = lista
         response.content = notificacionesService.saveCron(entidadFinanciera, params)
         render response as JSON
     }

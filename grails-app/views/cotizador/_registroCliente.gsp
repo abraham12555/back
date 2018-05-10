@@ -34,7 +34,7 @@
                     <span class="goBtn">Siguiente</span>
                 </p>
             </div>
-            <p style="margin-top: 10px;" id="leyendaTel"><small class="darkBluetitle">* Enviaremos un código de confirmación al número ingresado.</small></p>
+            <p style="margin-top: 10px;" id="leyendaTel"><small class="darkBluetitle"></small></p>
             <p style="margin-top: 10px;" id="leyendaTelError"></p>
 
         </div>
@@ -47,11 +47,25 @@
                     <span class='goBtn'>Siguiente</span>
                 </p>
             </div>
-            <p style="margin-top: 10px;" id="leyendaCodigo"><small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código. Si después de 30 segundos no recibes el código, puedes avanzar capturando 00000.</strong></small></p>
+            <p style="margin-top: 10px;" id="leyendaCodigo"><small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código..</strong></small></p>
             <p style="margin-top: 10px;" id="leyendaCodigoError"></p>
         </div>
+        <div id="folio_form" class="input-field col12 hide">
+            <label for="folio" class="darkBluetitle">Hemos notado que ya tienes una solicitud en proceso, ingresa tu folio para continuar</label>
+            <input id="folio" type="text" name="folio" class="validate" maxlength="7" onkeypress="return event.keyCode != 13;">
+            <div style="text-align: center;">
+               <p style="display: inline-block;margin-top: 10px; text-align: center;" id="editarTelefono2"></p>
+                <p class="sigPaso" style="display: inline-block;margin-top: 10px; text-align: center;">
+                    <span class='goBtn'>Siguiente</span>
+                </p>
+            </div>
+            <p style="margin-top: 10px;" id="leyendaFolio"><small style='color: #25a3ff;'><strong></strong></small></p>
+            <p style="margin-top: 10px;" id="leyendaFolioError"></p>
+            <p class="darkBluetitle font14 fontWeight400 letterspacing1 justify">
+                <strong><a class="pointer" onclick="enviarFolio();" style="text-decoration: underline;">¿No recuerdas tu folio ? Da clic aquí te lo enviaremos por SMS</a></strong>  
+            </p>
+        </div>
         <div id="resume_form" class="input-field col12 hide">
-            <label for="codigo" class="darkBluetitle">Hemos notado que ya tienes una solicitud en proceso, da click en el siguiente botón para complementarla</label>
             <div style="text-align: center;">
                 <p style="display: inline-block;margin-top: 10px; text-align: center;" id="resumirSolicitud"></p>
             </div>

@@ -29,7 +29,9 @@ class SolicitudTemporal {
     String folio
     boolean solicitudVigente = true
     float montoDeServicioDeAsistencia = 0
-    //float cat 
+    float cat 
+    MedioDeContacto medioDeContacto
+    long opcionMedioDeContacto 
     static constraints = {
         colorModelo (nullable: true)
         modelo (nullable: true)
@@ -47,7 +49,9 @@ class SolicitudTemporal {
         token (nullable: false)
         shortUrl (nullable: false)
         folio (nullable: true)
-        //cat (nullable: true)
+        cat (nullable: true)
+        medioDeContacto (nullable: true)
+        opcionMedioDeContacto (nullable: true)
     }
     
     static mapping = {

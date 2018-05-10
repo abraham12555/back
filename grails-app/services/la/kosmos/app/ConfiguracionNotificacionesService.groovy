@@ -22,11 +22,17 @@ class ConfiguracionNotificacionesService {
 
         if (cronList != null && !cronList?.empty) {
             cronList.each {
-                stopScheduler(it)
-                addJob(it)
+                def content = it
+                it.templates.each{
+                    if(it.tipoDeEnvio == 0){
+                        stopScheduler(content)
+                        addJob(content)
                     }
+                    
                 }                
             }
+        }
+    }
 
     def stopScheduler(NotificacionesCron cron) {
         def id = cron.id.toString()

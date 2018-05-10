@@ -35,13 +35,13 @@ public class DecisionEngineCeWebService {
         }
     }
 
-    public HashMap doGetScore(String URL, Long solicitudId, String riesgoGeografico, String renovacion, Double rdifmspwultcpt12, Double revoPagos3, Double propMontoLiberado, Double fecAntigCliCred, Integer edad, Integer antiguedadEmpleo, String riesgoOcupacion, String estadoCivil, String claveServicio, Double rcobsldpas12, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer cantidadIntegrantesFamilia, Double gastosDeAlquiler, Double cuotaCredito, Integer tipoDeVivienda, boolean asalariado, boolean experienciaCrediticia, Integer creditosLiquidados, String cadenaBuroDeCredito, Double porcentajeDeDescuento) {
+    public HashMap doGetScore(String URL, Long solicitudId, String riesgoGeografico, String renovacion, Double rdifmspwultcpt12, Double revoPagos3, Double propMontoLiberado, Double fecAntigCliCred, Integer edad, Integer antiguedadEmpleo, String riesgoOcupacion, String estadoCivil, String claveServicio, Double rcobsldpas12, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer cantidadIntegrantesFamilia, Double gastosDeAlquiler, Double cuotaCredito, Integer tipoDeVivienda, boolean asalariado, String experienciaCrediticia, Integer creditosLiquidados, String cadenaBuroDeCredito, String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2, String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento) {
 
         mx.ksms.engine.ce.EngineCEDataOutput resultado = null;
         HashMap respuesta = null;
         try {
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
-            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, renovacion, rdifmspwultcpt12, revoPagos3, propMontoLiberado, fecAntigCliCred, edad, antiguedadEmpleo, riesgoOcupacion, estadoCivil, claveServicio, rcobsldpas12, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, cantidadIntegrantesFamilia, gastosDeAlquiler, cuotaCredito, tipoDeVivienda, asalariado, experienciaCrediticia, creditosLiquidados, cadenaBuroDeCredito,porcentajeDeDescuento);
+            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, renovacion, rdifmspwultcpt12, revoPagos3, propMontoLiberado, fecAntigCliCred, edad, antiguedadEmpleo, riesgoOcupacion, estadoCivil, claveServicio, rcobsldpas12, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, cantidadIntegrantesFamilia, gastosDeAlquiler, cuotaCredito, tipoDeVivienda, asalariado, experienciaCrediticia, creditosLiquidados, cadenaBuroDeCredito,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento);
             respuesta = new HashMap();
             respuesta.put("dictamenDePerfil", resultado.getDictamenDePerfil());
             respuesta.put("dictamenCapacidadDePago", resultado.getDictamenCapacidadDePago());
@@ -74,11 +74,11 @@ public class DecisionEngineCeWebService {
         }
     }
 
-    public List<HashMap> getDictamenteDePoliticas(String URL, Long solicitudId, String listaDeServicios, Integer edad, boolean experienciaCrediticia, Integer creditosLiquidados) {
+    public List<HashMap> getDictamenteDePoliticas(String URL, Long solicitudId, String listaDeServicios, Integer edad, String experienciaCrediticia, Integer creditosLiquidados,String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2,String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento) {
         List<HashMap> respuesta = new ArrayList();
         try {
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
-            String resultado = port.calculateDictamenDePoliticas(solicitudId.toString(), listaDeServicios, edad, experienciaCrediticia, creditosLiquidados);
+            String resultado = port.calculateDictamenDePoliticas(solicitudId.toString(), listaDeServicios, edad, experienciaCrediticia, creditosLiquidados,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento);
             StringTokenizer servicios = new StringTokenizer(resultado, ",");
             while (servicios.hasMoreElements()) {
                 StringTokenizer dictamen = new StringTokenizer(servicios.nextElement().toString(), "=");

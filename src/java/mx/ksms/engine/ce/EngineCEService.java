@@ -75,11 +75,20 @@ public interface EngineCEService {
 
     /**
      * 
-     * @param servicios
+     * @param atrasoPago
+     * @param malaFe
+     * @param porcentajeDedescuento
      * @param solicitudId
-     * @param experienciaCrediticia
      * @param creditosLiquidados
+     * @param ultimaFechaCredito
+     * @param renovacion1
      * @param edad
+     * @param servicios
+     * @param clienteConRenovacion
+     * @param experienciaCrediticia
+     * @param clienteCredVigente
+     * @param avanceCapital1
+     * @param avanceCapital2
      * @return
      *     returns java.lang.String
      */
@@ -95,29 +104,54 @@ public interface EngineCEService {
         @WebParam(name = "EDAD", targetNamespace = "")
         Integer edad,
         @WebParam(name = "experiencia_crediticia", targetNamespace = "")
-        boolean experienciaCrediticia,
+        String experienciaCrediticia,
         @WebParam(name = "creditos_liquidados", targetNamespace = "")
-        int creditosLiquidados);
+        int creditosLiquidados,
+        @WebParam(name = "clienteCredVigente", targetNamespace = "")
+        String clienteCredVigente,
+        @WebParam(name = "renovacion1", targetNamespace = "")
+        String renovacion1,
+        @WebParam(name = "ultimaFechaCredito", targetNamespace = "")
+        String ultimaFechaCredito,
+        @WebParam(name = "avanceCapital1", targetNamespace = "")
+        Double avanceCapital1,
+        @WebParam(name = "avanceCapital2", targetNamespace = "")
+        Double avanceCapital2,
+        @WebParam(name = "clienteConRenovacion", targetNamespace = "")
+        String clienteConRenovacion,
+        @WebParam(name = "atrasoPago", targetNamespace = "")
+        String atrasoPago,
+        @WebParam(name = "malaFe", targetNamespace = "")
+        String malaFe,
+        @WebParam(name = "porcentajeDedescuento", targetNamespace = "")
+        Double porcentajeDedescuento);
 
     /**
      * 
      * @param cantidadIntegrantesFamilia
      * @param solicitudId
      * @param creditosLiquidados
+     * @param ultimaFechaCredito
      * @param tipoDeVivienda
      * @param otrosIngresos
      * @param cadenaBc
      * @param renovacion
      * @param antigempleo
+     * @param clienteConRenovacion
      * @param agEstadocivil
      * @param propmontoliberado
+     * @param avanceCapital1
+     * @param avanceCapital2
+     * @param atrasoPago
      * @param agRiesgoocupacion
      * @param cuotaCredito
+     * @param malaFe
      * @param porcentajeDedescuento
      * @param ingresosFijosMensuales
      * @param gastosDeAlquiler
      * @param rDIFMSPWULTCPT12
      * @param fecantigclicred
+     * @param renovacion1
      * @param edad
      * @param ingresosVariablesMensuales
      * @param riesgogeografico
@@ -126,6 +160,7 @@ public interface EngineCEService {
      * @param experienciaCrediticia
      * @param rEVOPAGOS3
      * @param agServicio
+     * @param clienteCredVigente
      * @return
      *     returns mx.ksms.engine.ce.EngineCEDataOutput
      */
@@ -177,11 +212,27 @@ public interface EngineCEService {
         @WebParam(name = "asalariado", targetNamespace = "")
         boolean asalariado,
         @WebParam(name = "experiencia_crediticia", targetNamespace = "")
-        boolean experienciaCrediticia,
+        String experienciaCrediticia,
         @WebParam(name = "creditos_liquidados", targetNamespace = "")
         int creditosLiquidados,
         @WebParam(name = "cadena_bc", targetNamespace = "")
         String cadenaBc,
+        @WebParam(name = "clienteCredVigente", targetNamespace = "")
+        String clienteCredVigente,
+        @WebParam(name = "renovacion1", targetNamespace = "")
+        String renovacion1,
+        @WebParam(name = "ultimaFechaCredito", targetNamespace = "")
+        String ultimaFechaCredito,
+        @WebParam(name = "avanceCapital1", targetNamespace = "")
+        Double avanceCapital1,
+        @WebParam(name = "avanceCapital2", targetNamespace = "")
+        Double avanceCapital2,
+        @WebParam(name = "clienteConRenovacion", targetNamespace = "")
+        String clienteConRenovacion,
+        @WebParam(name = "atrasoPago", targetNamespace = "")
+        String atrasoPago,
+        @WebParam(name = "malaFe", targetNamespace = "")
+        String malaFe,
         @WebParam(name = "porcentajeDedescuento", targetNamespace = "")
         Double porcentajeDedescuento);
 

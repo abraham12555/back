@@ -23,6 +23,8 @@ var seguro;
 var tipoDeProductoSelected;
 var pagoCalculado = 0;
 var plazos;
+var montoComparaBien = null;
+var plazoComparaBien = null;
 $(document).ready(function () {
     $(document).tooltip({
         position: {
@@ -44,6 +46,15 @@ $(document).ready(function () {
     lastStep = Number($('#ultimoPaso').val());
     initSteps();
     initActions();
+    if ($("#comparaBien").val() === "true") {
+        $("#productosList .col6 .paddingAside5").each(function (index) {
+            if ($(this).children().data("id") === 1) {
+                $(this).children().click();
+                montoComparaBien = $("#montoComparaBien").val();
+                plazoComparaBien = $("#plazoComparaBien").val();
+            }
+        });
+    }
 }); //end of document ready
 
 function checkIfJson(data) {
@@ -160,9 +171,12 @@ function initActions() {
             var parentStep = $(this).closest('.cotizadorStep');
             var tipoDePaso = $(parentStep).data('tipoDePaso');
             step = $(parentStep).data('step');
-
+            if (tipoDePaso === "stepProducto" && $(this).data('id') !== 1) {
+                montoComparaBien = null;
+                plazoComparaBien = null;
+            }
             stepAction(step, tipoDePaso, $(this));
-
+          
             if ((tipoDePaso !== "stepProducto" && $('#aplicacionVariable').val() === "true") || ($('#aplicacionVariable').val() === "false")) {
 
                 habilitarPaso(step, lastStep, parentStep);
@@ -470,7 +484,11 @@ function identificarProducto(rubro, documento, atraso) {
             if (respuesta.exito) {
                 var minimo = (Number(respuesta.montoMinimo) / 1000);
                 var maximo = (Number(respuesta.montoMaximo) / 1000);
-                var inicial = minimo;
+                if(montoComparaBien !== null && plazoComparaBien !== null){
+                     inicial = (Number(montoComparaBien) / 1000);
+                }else{
+                    var inicial = minimo;
+                }
                 var incremento = 1;
                 if ($("#slider").slider("instance") !== undefined) {
                     reiniciarSlider('slider', ' Mil', 'dinero', minimo, maximo, inicial, incremento);
@@ -519,6 +537,10 @@ function cargarPlazos(producto, documento, montoSeleccionado) {
                 html += "<p class='letterspacing1 marginBottom20 clearFloat'><span id='datosSeguro'></span></p>";
                 html += "<div class='clearFix loading-bar-container inner marginBottom40' style='margin: 15px 0;'>";
                 html += "<p id='pagoCalculado' class='pagos-box marginAuto width350 font20'></p>";
+                html += "<div class='clearFloat'></div>";
+                html += "</div>";
+                html += "<div class='clearFix loading-bar-container inner marginBottom40' style='margin: 15px 0;'>";
+                html += "<p id='catCalculado' class='pagos-box marginAuto width350 font20'></p>";
                 html += "<div class='clearFloat'></div>";
                 html += "</div>";
                 html += "</div>";
@@ -599,14 +621,24 @@ function iniciarSlider(elemento, etiqueta, tipoDeCifra, montoMinimo, montoMaximo
         step: incremento,
         create: function (event, ui) {
             var valorElegido;
+            var llave;
             $(this).slider('value', montoInicial);
-            if (usarLista) {
+            if (usarLista && plazoComparaBien !== null) {
+                $.each(plazos, function (key, value) {
+                    if(parseInt(value) === parseInt(plazoComparaBien)){
+                       llave = key;
+                       valorElegido = plazos[key];
+                   }
+                });
+            } else if(usarLista){
                 valorElegido = plazos[montoInicial];
-            } else {
+            }
+            else {
                 valorElegido = montoInicial;
             }
             $('#' + elemento + ' .ui-slider-handle').html('< ' + (valorElegido + etiqueta) + ' >');
             if (tipoDeCifra === "cantidad") {
+                $(this).slider('value', (llave ? llave : montoInicial));
                 if (enganche === 0) {
                     restante = montoElegido;
                 } else {
@@ -727,8 +759,8 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
                 $('#txtMontoSeguro').val(montoSeguro);
                 $('#txtMontoAsistencia').val(respuesta.montoAsistencia);
                 $('#pagoCalculado').html("Pago " + respuesta.nombrePeriodo + ": " + formatCurrency(respuesta.renta, "$"));
-//              $('#cat').val(respuesta.cat);
-
+                $('#cat').val(respuesta.cat);
+                $('#catCalculado').html("CAT: " +round((respuesta.cat * 100),1)+"%");
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "warning");
             }
@@ -864,4 +896,87 @@ function cargaCompletada() {
     setTimeout(function () {
         $("body").mLoading('hide');
     }, 1000);
+}
+function submitCotizador() {
+    esperePorFavor();
+    $("#btnCotSub").prop("disabled", true);
+    $.ajax({
+        type: 'POST',
+        data: $('#formCotizador').serialize(),
+        url: $.contextAwarePathJS + 'cotizador/procesar',
+        success: function (data, textStatus) {
+            cargaCompletada();
+            var respuesta = (data);
+            if(respuesta.sesionExpirada){
+                     sweetAlert("Oops...", "La sesión ha caducado recarga la página e intenta de nuevo.", "error");
+            }
+            if(respuesta.idSolicitudTemporal){
+                window.location.href =  $.contextAwarePathJS +'solicitud/formulario'
+            }else if (respuesta.error){
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            }
+      
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                $("#btnCotSub").prop("disabled", false);
+                cargaCompletada();
+        }
+    });
+}
+
+function abrirModalFolioFormulario() {
+    sweetAlert({html: true,
+        title: "Ingresa tu número de celular",
+        text: "<input type='text' style='display:block;'autofocus name='numeroTelefonicoFormulario' id='numeroTelefonicoFormulario' data-mask='99-99-99-99-99' maxlength='14'/> <br> <p style='margin-top: 10px;' id='leyendaFolioFormulario'></p>",
+        showCancelButton: true,
+        confirmButtonText: "Enviar",
+        cancelButtonText: "Cancelar",
+        closeOnConfirm: false
+        }, function () {
+         enviarFolioFormulario();
+    });
+}
+
+function enviarFolioFormulario() {
+   var phone = $('#numeroTelefonicoFormulario').val();
+   phone= phone.replace(/\-/g,"");
+    if ($('#numeroTelefonicoFormulario').val() === '') {
+            $('#leyendaFolioFormulario').html("<small style='color: red;'>El campo no puede ir vacio.</small>");
+        }
+    else if (phone.length ===10 && validarSiNumero(phone) === false ) {
+       $.ajax({
+        type: 'POST',
+        data: {
+            telefonoCelular: $('#numeroTelefonicoFormulario').val(),
+            origen: "formulario"
+        },
+        url: $.contextAwarePathJS + "cotizador/solicitarCodigo",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if(respuesta.sesionExpirada){
+                     sweetAlert("Oops...", "La sesión ha caducado recarga la página e intenta de nuevo.", "error");
+            }
+            if (respuesta.mensajeEnviado === true) {
+                swal("SMS Enviado!", "Espera por favor entre 15 y 30 segundos para recibir tu folio.", "success");
+                return true;
+            } else if (respuesta.mensajeEnviado === false && respuesta.solicitud === false) {
+                $('#leyendaFolioFormulario').html("<small style='color: red;'>No hay ningún folio vinculado al teléfono proporcionado.</small>");
+            } else if (respuesta.mensajeEnviado === true) {
+                $('#leyendaFolioFormulario').html("<small style='color: red;'>Ocurrió un problema al enviar el mensaje.</small>");
+            }
+            else if (respuesta.multiplesClientes === true) {
+                $('#leyendaFolioFormulario').html("<small style='color: red;'>Hemos notado que existen varias folios en proceso con el número que nos proporcionaste</small>");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+    }else{
+      $('#leyendaFolioFormulario').html("<small style='color: red;'>El teléfono debe contener 10 caracteres numéricos</small>");
+    }
+}
+function round(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }

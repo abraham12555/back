@@ -25,6 +25,7 @@ class Producto implements Serializable {
     int edadMinima
     int edadMaxima
     int plazoCondonado
+    boolean tieneDescuento
 
     static constraints = {
         nombreDelProducto(blank: false)

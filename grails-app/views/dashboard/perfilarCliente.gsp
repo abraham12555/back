@@ -19,7 +19,7 @@
             <div class="container">
                 <div class="section form">
                     <div class="col12 paddingTop25">
-                        <div class="col3 floatLeft">
+                        <div class="col3 floatLeft desktopLeftBar">
 
                             <ul id="navbar-steps" class="progress-indicator stepped stacked">
                                 <li class="step1 active">
@@ -55,16 +55,27 @@
                                 </li>
                             </ul>
                         </div>
+                        <div class="col12 floatLeft hide mobileLeftBar">
+
+                        <ul role="tablist">
+                      <li role="tab" data-toggle="tab" id ="step1Mobile" class="wizard first current" aria-disabled="false" aria-selected="true"><a id="wizard-vertical-t-0"  aria-controls="wizard-vertical-p-0"><span class="number">1.</span> Cliente</a></li>
+                      <li role="tab" data-toggle="tab" id ="step2Mobile" class="wizard disabled" aria-disabled="true"><a id="wizard-vertical-t-1"  aria-controls="wizard-vertical-p-1"><span class="number">2.</span> Generales</a></li>
+                      <li role="tab" data-toggle="tab" id ="step3Mobile" class="wizard disabled" aria-disabled="true"><a id="wizard-vertical-t-2"  aria-controls="wizard-vertical-p-2"><span class="number">3.</span> Consulta Buró de Crédito</a></li>
+                      <li role="tab" data-toggle="tab" id ="step4Mobile" class="wizard disabled" aria-disabled="true"><a id="wizard-vertical-t-3"  aria-controls="wizard-vertical-p-3"><span class="number">4.</span> Ofertas</a></li>
+                    </ul>
+                        </div>
                         <div class="col9 floatLeft stepsContainer">
+                            <h2 id='folioPerfilador' class='hide marginMobile'><span  style='color:#298df5;'>EL FOLIO DE SOLICITUD ES:</span></h2>
                             <div id='tabs'class="tab hide col9 floatLeft stepsContainer marginBottom28">
-                                <button id='buttonconsultaAutenticador'class="tablinks consultaAutenticador blueButton" onclick="openTab('consultaAutenticador','consultaINTL')" >CONSULTA AUTENTICADOR</button>
-                                <button id='buttonconsultaINTL'class="tablinks consultaINTL " onclick="openTab('consultaINTL','consultaAutenticador')">CONSULTA TRADICIONAL</button>
+                                <button id='buttonconsultaAutenticador'class="col6 tablinks consultaAutenticador blueButton" onclick="openTab('consultaAutenticador','consultaINTL')" >CONSULTA AUTENTICADOR</button>
+                                <button id='buttonconsultaINTL'class="col6 tablinks consultaINTL " onclick="openTab('consultaINTL','consultaAutenticador')">CONSULTA TRADICIONAL</button>
                             </div>                            
                             <form id="perfiladorForm">
+                                <input type="hidden" id="uso_movil" name ="uso_movil" value="false">
                                 <div id="step1" class="col12 floatLeft stepContent animated fadeInRight">
-                                    <h2>Perfilador del cliente</h2>
+                                    <h2 class="marginMobile">Perfilador del cliente</h2>
                                     <div class="perfilador padding20">
-                                        <div class="col6 floatLeft">
+                                        <div class="col6 floatLeft stepsContainerSinMargen">
                                             <p class="correctaBoxLabel">¿Cliente ha tenido Créditos con Libertad?</p>
                                             <div id="cliente_si" class="correctaBox floatLeft">
                                                 <p class="center paddingTop15 paddingBottom15 lightGray">SI</p>
@@ -74,7 +85,7 @@
                                             </div>
                                             <input type="hidden" class="datoPerfilador" name="cliente_clienteExistente" id="clienteExistente">
                                         </div>
-                                        <div id="inputNoCliente" class="hide col6 floatLeft">
+                                        <div id="inputNoCliente" class="hide col6 floatLeft width100Mobile">
                                             <p class="gray font14 letterspacing1.1">R.F.C. DEL CLIENTE</p>
                                             <input class="datoPerfilador inPuts4a marginTop15 headingColor requerido" style="width: 50%;" type="text" name="rfcClienteExistente" id="rfcClienteExistente" />
                                         </div>
@@ -94,7 +105,7 @@
                                         </div>
                                         <div class="clearfix"></div>
                                     </div>
-                                    <div class="col12 floatLeft paddingTop20">
+                                    <div class="col12 floatLeft paddingTop20 marginMobile">
                                         <button class="greenBox colorWhite hide" type="button" onclick="goStep2()">Siguiente</button>
                                     </div>
                                 </div>
@@ -103,55 +114,55 @@
                                     <div style="color: #005398;"><span><strong style="color:#fb5e48;">*</strong></span> Obligatorio </div>
                                     <!--<div id="errorNombre" class="error">Los nombres y apellidos deben contener letras únicamente.</div>
                                     <div id="errorEmail" class="error">La dirección de correo es incorrecta, verifica la estructura. Ej. ejemplo@mail.com</div>-->
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="nombre" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Nombre</label>
                                             <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_nombre" name="cliente_nombre" maxlength="26">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="segundo-nombre" class="mat-label">Segundo Nombre</label>
                                             <input type="text" class="datoPerfilador mat-input validarNombre" id="cliente_segundoNombre" name="cliente_segundoNombre">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="apellidoPaterno" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Apellido paterno</label>
                                             <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoPaterno" name="cliente_apellidoPaterno" maxlength="26">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="apellidoMaterno" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Apellido materno</label>
                                             <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoMaterno" name="cliente_apellidoMaterno" maxlength="26">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="celular" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Teléfono celular</label>
-                                            <input type="phone" class="datoPerfilador mat-input requerido" id="telefonoCliente_telefonoCelular" name="telefonoCliente_telefonoCelular" data-mask="99-99-99-99-99" maxlength="14">
+                                            <input type="tel" class="datoPerfilador mat-input requerido" id="telefonoCliente_telefonoCelular" name="telefonoCliente_telefonoCelular" data-mask="99-99-99-99-99" maxlength="14">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="code" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Código de Verificación</label>
                                             <input type="text" class="datoPerfilador mat-input requerido" id="code" maxlength="5">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="tel-fijo" class="mat-label">Teléfono Fijo</label>
                                             <input type="text" class="datoPerfilador mat-input" id="telefonoCliente_telefonoCasa" name="telefonoCliente_telefonoCasa" data-mask="99-99-99-99-99" maxlength="14">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="mail" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Correo Electrónico</label>
                                             <input type="text" style='box-shadow:none;' class="datoPerfilador mat-input requerido validarEmail" id="emailCliente_emailPersonal" name="emailCliente_emailPersonal">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Sexo</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -159,7 +170,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Fecha de nacimiento</span>
                                         <div class="col2 floatLeft">
                                             <div class="mdl-selectfield">
@@ -180,7 +191,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Lugar de nacimiento</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -189,19 +200,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="rfc" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> R.F.C.</label>
                                             <input type="text" class="datoPerfilador mat-input requerido" id="cliente_rfc" name="cliente_rfc">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="curp" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> C.U.R.P.</label>
                                             <input type="text" class="datoPerfilador mat-input requerido" id="cliente_curp" name="cliente_curp">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Nacionalidad</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -219,31 +230,31 @@
                                 <div id="step3" class="hide col12 floatLeft stepContent animated fadeInRight">
                                     <h2>Vivienda</h2>
                                     <div style="color: #005398;"><span><strong style="color:#fb5e48;">*</strong></span> Obligatorio </div>
-                                    <div class="col8 floatLeft">
+                                    <div class="col8 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="calle" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Calle</label>
                                             <input type="text" class="datoPerfilador mat-input requerido" id="direccionCliente_calle" name="direccionCliente_calle">
                                         </div>
                                     </div>
-                                    <div class="col2 floatLeft">
+                                    <div class="col2 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="no-exterior" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> No. Exterior</label>
                                             <input type="text" class="datoPerfilador mat-input requerido" id="direccionCliente_numeroExterior" name="direccionCliente_numeroExterior">
                                         </div>
                                     </div>
-                                    <div class="col2 floatLeft">
+                                    <div class="col2 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="no-interior" class="mat-label">No. Interior</label>
                                             <input type="text" class="datoPerfilador mat-input" id="direccionCliente_numeroInterior" name="direccionCliente_numeroInterior">
                                         </div>
                                     </div>
-                                    <div class="col3 floatLeft">
+                                    <div class="col3 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="cp" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Código postal</label>
                                             <input type="text" class="datoPerfilador mat-input requerido" id="direccionCliente_codigoPostal" name="direccionCliente_codigoPostal" maxlength="5">
                                         </div>
                                     </div>
-                                    <div class="col5 floatLeft">
+                                    <div class="col5 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Colonia</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -254,7 +265,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col4 floatLeft">
+                                    <div class="col4 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Municipio/Delegación</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -265,7 +276,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Estado</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -276,7 +287,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Tipo de Vivienda</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -285,19 +296,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="divMontoDeLaRenta" class="col6 floatLeft" style="display:none;">
+                                    <div id="divMontoDeLaRenta" class="col6 floatLeft width100Mobile" style="display:none;">
                                         <div class="mat-div">
                                             <label for="renta" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Monto de Renta</label>
                                             <input type="text" class="datoPerfilador mat-input hide requerido" id="direccionCliente_montoDeLaRenta_autoNumeric" >
                                         </div>
                                     </div>
-                                    <div id="divMontoDeLaHipoteca" class="col6 floatLeft"  style="display:none;">
+                                    <div id="divMontoDeLaHipoteca" class="col6 floatLeft width100Mobile"  style="display:none;">
                                         <div class="mat-div">
                                             <label for="hipoteca" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Monto de la Hipoteca</label>
                                             <input type="text" class="datoPerfilador mat-input hide requerido" id="direccionCliente_montoDeLaHipoteca_autoNumeric" >
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Antigüedad en la Vivienda</span>
                                         <div class="col7 floatLeft">
                                             <div class="mdl-selectfield">
@@ -312,7 +323,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Antigüedad en la Ciudad</span>
                                         <div class="col7 floatLeft">
                                             <div class="mdl-selectfield">
@@ -337,7 +348,7 @@
                                 <div id="step4" class="hide col12 floatLeft stepContent animated fadeInRight">
                                     <h2>Datos Familiares</h2>
                                     <div style="color: #005398;"><span><strong style="color:#fb5e48;">*</strong></span> Obligatorio </div>
-                                    <div class="col4 floatLeft">
+                                    <div class="col4 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Dependientes Económicos</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -346,7 +357,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col4 floatLeft">
+                                    <div class="col4 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Estado Civil</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -355,7 +366,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="divRegimenMatrimonial" class="col4 floatLeft" style="display: none;">
+                                    <div id="divRegimenMatrimonial" class="col4 floatLeft width100Mobile" style="display: none;">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Régimen de Bienes</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -364,25 +375,25 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="divNombreDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divNombreDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <div class="mat-div">
                                             <label for="nombre-conyuge" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Nombre del conyugue</label>
                                             <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_nombreDelConyugue" name="cliente_nombreDelConyugue">
                                         </div>
                                     </div>
-                                    <div id="divApellidoPaternoDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divApellidoPaternoDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <div class="mat-div">
                                             <label for="nombre-conyuge" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Apellido Paterno del Conyugue</label>
                                             <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoPaternoDelConyugue" name="cliente_apellidoPaternoDelConyugue">
                                         </div>
                                     </div>
-                                    <div id="divApellidoMaternoDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divApellidoMaternoDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <div class="mat-div">
                                             <label for="nombre-conyuge" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Apellido Materno del Conyugue</label>
                                             <input type="text" class="datoPerfilador mat-input requerido validarNombre" id="cliente_apellidoMaternoDelConyugue" name="cliente_apellidoMaternoDelConyugue">
                                         </div>
                                     </div>
-                                    <div id="divFechaDeNacimientoDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divFechaDeNacimientoDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Fecha de Nacimiento del Conyugue</span>
                                         <div class="col2 floatLeft">
                                             <div class="mdl-selectfield">
@@ -403,7 +414,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="divLugarNacimientoConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divLugarNacimientoConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Lugar de Nacimiento del Conyugue</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -412,19 +423,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="divRfcDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divRfcDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <div class="mat-div">
                                             <label for="rfc" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> R.F.C. del conyugue</label>
                                             <input type="text" id="cliente_rfcDelConyugue" name="cliente_rfcDelConyugue" class="datoPerfilador mat-input requerido">
                                         </div>
                                     </div>
-                                    <div id="divCurpDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divCurpDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <div class="mat-div">
                                             <label for="curp" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> C.U.R.P. del conyugue</label>
                                             <input type="text" id="cliente_curpDelConyugue" name="cliente_curpDelConyugue" class="datoPerfilador mat-input requerido">
                                         </div>
                                     </div>
-                                    <div id="divNacionalidadDelConyugue" class="col6 floatLeft" style="display: none;">
+                                    <div id="divNacionalidadDelConyugue" class="col6 floatLeft width100Mobile" style="display: none;">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Nacionalidad del Conyugue</span>
                                         <div class="col12 floatLeft">
                                             <div class="mdl-selectfield">
@@ -444,7 +455,7 @@
                                     <div class="col6 floatLeft">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Profesión</span>
                                         <div class="col12 floatLeft">
-                                            <div class="mat-div is-completed">
+                                            <div class="mat-div is-completed selectmatdiv">
                                                 <br/>
                                                 <g:select id="empleoCliente_profesion" name="empleoCliente_profesion" class="datoPerfilador select2 requerido" style="width: 95%;" optionKey="id" optionValue="nombre" from="${la.kosmos.app.Profesion.list()}" noSelection="['':'Profesión']" />
                                             </div>
@@ -453,19 +464,19 @@
                                     <div class="col6 floatLeft">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Ocupación</span>
                                         <div class="col12 floatLeft">
-                                            <div class="mat-div is-completed">
+                                            <div class="mat-div is-completed selectmatdiv">
                                                 <br/>
                                                 <g:select id="empleoCliente_ocupacion" name="empleoCliente_ocupacion" class="datoPerfilador select2 requerido" style="width: 95%;" optionKey="id" optionValue="nombre" from="${la.kosmos.app.Ocupacion.list()}" noSelection="['':'Ocupación']" />
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="empresa" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Nombre de la Empresa</label>
-                                            <input type="text" class="datoPerfilador mat-input" id="empleoCliente_empresa" name="empleoCliente_empresa">
+                                            <input type="text" class="datoPerfilador mat-input requerido" id="empleoCliente_empresa" name="empleoCliente_empresa">
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <span class="select-label multi"><span><strong style="color:#fb5e48;">*</strong></span> Antigüedad en la Empresa</span>
                                         <div class="col7 floatLeft">
                                             <div class="mdl-selectfield">
@@ -480,16 +491,16 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="ingreso-fijo" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Ingresos Fijos</label>
-                                            <input type="text" class="datoPerfilador mat-input requerido" id="empleoCliente_ingresosFijos_autoNumeric" >
+                                            <input type="tel" class="datoPerfilador mat-input requerido" id="empleoCliente_ingresosFijos_autoNumeric" >
                                         </div>
                                     </div>
-                                    <div class="col6 floatLeft">
+                                    <div class="col6 floatLeft width100Mobile">
                                         <div class="mat-div">
                                             <label for="ingreso-variable" class="mat-label"><span><strong style="color:#fb5e48;">*</strong></span> Ingresos Variables</label>
-                                            <input type="text" class="datoPerfilador mat-input requerido" id="empleoCliente_ingresosVariables_autoNumeric" >
+                                            <input type="tel" class="datoPerfilador mat-input requerido" id="empleoCliente_ingresosVariables_autoNumeric" >
                                         </div>
                                     </div>
                                     <input type="hidden" class="datoPerfilador" name="empleoCliente_ingresosFijos" id="empleoCliente_ingresosFijos" >
@@ -500,7 +511,7 @@
                                     </div>
                                 </div>
                             </form>
-                            <div id="buro" class="hide col12 floatLeft animated fadeInRight">
+                            <div id="buro" class="hide col12 floatLeft animated fadeInRight stepsContainerSinMargen">
                                 <h2>Consulta de Buró de Crédito</h2><br><br>
                                 <g:if env="production">
                                   <div id="consultaAutenticador" class=" animated fadeInRight"S>
@@ -547,7 +558,7 @@
                                             <input type="hidden" class="datoPerfilador formValues textUpper" name="creditoA" id="creditoA" value="${generales?.creditoA}">
                                         </div>
                                     </div>
-                                    <div id="divAutorizacionBuro" class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
+                                   <div id="divAutorizacionBuro" class="col12 col12-mob col floatLeft paddingTop20 paddingBottom20 ">
                                         <p class="font18 gray letterspacing1 justify">
                                             Hoy siendo <span id="fechaAutorizacionConsulta" class="headingColor">
                                                 ${fechaActual}

@@ -31,7 +31,7 @@
                 <g:else>
                     <div class="paddingAside15 clearFix">
                         <div class="grayrectangle floatLeft marginRight10">Atras</div>
-                        <div data-numero-de-paso="${pasoActual.numeroDePaso}" id="circuloPaso${pasoActual.numeroDePaso}" class="botonCambioDePaso grayrectangle floatLeft nextBtn mobileChange">Ir al paso ${pasoActual?.numeroDePaso}</div>
+                        <div data-numero-de-paso="${pasoActual.numeroDePaso}" id="circuloPaso${pasoActual.numeroDePaso}" class="botonCambioDePaso grayrectangle floatLeft nextBtn sendBtn mobileChange">Ir al paso ${pasoActual?.numeroDePaso}</div>
                     </div>
                 </g:else>
             </g:if>

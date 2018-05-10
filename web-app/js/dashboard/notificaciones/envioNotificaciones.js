@@ -4,6 +4,12 @@ $.loadDataCron = $.contextAwarePathJS +"notificaciones/loadDataCron";
 $.deleteCron = $.contextAwarePathJS +"notificaciones/deleteCron";
 
 $(document).ready(function () {
+    $(".js-example-basic-multiple").select2({
+        allowClear: true
+    });
+    $(".js-example-basic-multiple2").select2({
+        allowClear: true
+    });
     $("#hours-cron").timepicker({
         showMinutes: false,
         showPeriod: false,
@@ -25,7 +31,11 @@ $(document).ready(function () {
 
     $('#newCronConfiguration-btn').on('click', function (event) {
         event.preventDefault();
+        if ($("input[name=tipoDeEnvioEnvio]:checked").val() === '0') {
             loadDataCron(0);
+        } else if($("input[name=tipoDeEnvioEnvio]:checked").val() === '1'){
+            loadDataCronAbandono(0);
+        }
     });
 
     $("#datepickerCron").datepicker({
@@ -56,8 +66,9 @@ $(document).ready(function () {
 
     $('#cron-tb').on('click', 'button.cronDetails', function (event) {
         event.preventDefault();
+        var idTipoDeEnvio = this.getAttribute('data-idtipodeenvio');
         var idCron = this.getAttribute('data-id');
-        loadDataCron(idCron);
+        loadDataCronDetails(idCron,idTipoDeEnvio);
     });
 
     $('#cron-tb').on('click', 'button.deleteCron', function (event) {
@@ -97,7 +108,7 @@ function getCronList() {
                     row += 'Plantilla SMS <br/>';
                     $.each(this.templates, function () {
                         if (this.tipoPlantilla.name === "SMS") {
-                            row += '<span class="font14 textUpper tableDescriptionColor">' + this.status + '</span><br/>';
+                            row += '<span class="font14 textUpper tableDescriptionColor">' + this.nombrePlantilla + '</span><br/>';
                         }
                     });
                     row += '</td>';
@@ -105,12 +116,26 @@ function getCronList() {
                     row += 'Plantilla email <br/>';
                     $.each(this.templates, function () {
                         if (this.tipoPlantilla.name === "EMAIL") {
-                            row += '<span class="font14 textUpper tableDescriptionColor">' + this.status + '</span><br/>';
+                            row += '<span class="font14 textUpper tableDescriptionColor">' + this.nombrePlantilla + '</span><br/>';
+                        }
+                    });
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
+                    row += '<span class="textUpper">Tipo de Envío</span><br/>';
+                    $.each(this.templates, function (index) {
+                        if (index === 0) {
+                            row += '<span class="font14 tableDescriptionColor">' + (this.tipoDeEnvio === 0 ? "Fijo" : "Por Inactividad") + '</span>';
                         }
                     });
                     row += '</td>';
                     row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                    row += '<button class="greenBox colorWhite width100 cronDetails" data-id="' + this.id + '" type="button">editar</button>';
+                    row += '<button class="greenBox colorWhite width100 cronDetails"';
+                      $.each(this.templates, function (index) {
+                        if (index === 0) {
+                            row += 'data-idtipodeenvio="'+(this.tipoDeEnvio === 0 ? 0 : 1)+'" ' ;
+                        }
+                    });
+                    row += 'data-id="' + this.id + '" type="button">editar</button>';
                     row += '</td>';
                     row += '<td class="center colorWhite font14 paddingTop5 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
                     row += '<button class="greenBox colorWhite width100 deleteCron" data-id="' + this.id + '" type="button">eliminar</button>';
@@ -140,7 +165,7 @@ function loadDataCron(idCron) {
         type: "POST",
         dataType: "json",
         url: $.loadDataCron,
-        data: "idCron=" + idCron,
+        data: "idCron=" + idCron+ "&idTipoDeEnvio=" + 0,
         cache: false,
         beforeSend: function (XMLHttpRequest, settings) {
             $('span[class*="help-block"]').each(function () {
@@ -149,6 +174,9 @@ function loadDataCron(idCron) {
 
             $("#smsOptions-div").empty();
             $("#emailOptions-div").empty();
+            $(".js-example-basic-multiple").empty();
+            $(".js-example-basic-multiple2").empty();
+            $("#idTipoDeEnvio2").val(0);
         },
         success: function (response) {
             $('#formAddCron')[0].reset();
@@ -160,7 +188,8 @@ function loadDataCron(idCron) {
                 $("#dayTime").val(response.notificacionEnvio.dayTime);
                 $("#daysWeek").val(response.notificacionEnvio.weekDay);
                 $("#weekTime").val(response.notificacionEnvio.weekTime);
-
+                $('#cronOptions-div').show();
+                $('#eachMinute2').hide();
                 $("#monthTime").val(response.notificacionEnvio.monthTime);
 
                 var date = new Date(2017, 0, response.notificacionEnvio.dayMonth);
@@ -177,7 +206,25 @@ function loadDataCron(idCron) {
 
                 selectFrequency($('input:radio[name="cronOptions"]:checked').val());
                 
-                fillTemplates(response);
+              if (response.templatesSms.length > 0) {
+                    var options = $('.js-example-basic-multiple');
+                    $.each(response.templatesSms, function () {
+                        options.append($("<option />").val(this.id).text(this.nombrePlantilla));
+                    });
+                    $("#smsTemplateConfig-div").css("display", "block");
+                } else {
+                    $("#smsTemplateConfig-div").css("display", "none");
+                }
+                if (response.templatesEmail.length > 0) {
+                    var options2 = $('.js-example-basic-multiple2');
+                    $.each(response.templatesEmail, function () {
+                        options2.append($("<option />").val(this.id).text(this.nombrePlantilla));
+                    });
+                    $("#emailTemplateConfig-div").css("display", "block");
+                } else {
+                    $("#emailTemplateConfig-div").css("display", "none");
+                }
+                //fillTemplates(response);
 
                 openModal('modalEnvio');
             } else {
@@ -244,10 +291,15 @@ function saveCron() {
         contentType: false,
         processData: false,
         success: function (response) {
+            if (response.content.error) {
+                cronErrorMessage('time', "" + response.content.mensaje + "");
+            } else {
                 getCronList();
                 cerrarModal('modalEnvio');
+                cerrarModal('seleccionEnvio');
 
                 sweetAlert({html: false, title: "¡Excelente!", text: "La configuración se ha guardado correctamente.", type: "success"});
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -294,6 +346,7 @@ function validateForm() {
     $('span[class*="help-block"]').each(function () {
         $(this).remove();
     });
+    if($('#idTipoDeEnvio2').val()==='0'){
     
     if ($('input[name=cronOptions]:checked').length <= 0) {
         errors++;
@@ -345,11 +398,30 @@ function validateForm() {
             }
         }
     }
+}else{
+    if($('#minutosPrueba').val() ===''){
+        $('#minutosPrueba').val(0);
+    }
+    if($('#horasPrueba').val() ===''){
+        $('#horasPrueba').val(0);
+    }
+    if($('#diasPrueba').val() ===''){
+        $('#diasPrueba').val(0);
+    }
 
-    if ($('input[name=templateOptions]').length > 0 && $('input[name=templateOptions]:checked').length <= 0) {
+    if($('#horasPrueba').val() === '0' && $('#diasPrueba').val() === '0'){
+        if($('#minutosPrueba').val() === '0' || $('#minutosPrueba').val() === '1' || $('#minutosPrueba').val() === '2' || $('#minutosPrueba').val() === '3' || $('#minutosPrueba').val() === '4'){
                 errors++;
-        cronErrorMessage('template', "Debe seleccionar una plantilla");
+                cronErrorMessage('time', "Los minutos minimos deben ser 5");
         }
+    }
+}
+
+
+if(($('#myselect').val().length === 0 && $('#myselect2').val().length === 0) ){
+            errors++;
+            cronErrorMessage('plantilla', "Debe seleccionar al menos una plantilla");
+}
 
     if (errors === 0) {
         saveCron();
@@ -443,3 +515,196 @@ function fillTemplates(response) {
         $("input[name=templateOptions][value='" + this + "']").prop('checked', true);
     });
 }
+function seleccionTipoDeEnvioEnvio(){
+    openModal('seleccionEnvio');
+}
+
+function loadDataCronAbandono(idCron) {
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.loadDataCron,
+        data: "idCron=" + idCron+ "&idTipoDeEnvio=" + 1,
+        cache: false,
+        beforeSend: function (XMLHttpRequest, settings) {
+            $('span[class*="help-block"]').each(function () {
+                $(this).remove();
+            });
+
+            $("#smsOptions-div").empty();
+            $("#emailOptions-div").empty();
+            $(".js-example-basic-multiple").empty();
+            $(".js-example-basic-multiple2").empty();
+            $("#idTipoDeEnvio2").val(1);
+        },
+        success: function (response) {
+            $('#formAddCron')[0].reset();
+            if (response.templatesSms.length > 0 || response.templatesEmail.length > 0) {
+                $("#idCron").val(idCron);
+                $('#cronOptions-div').hide();
+                $('#eachMinute2').show();
+                
+                $("[name=cronOptions]").val([response.notificacionEnvio.cronOptions]);
+                $("#hours-cron").val(response.notificacionEnvio.hour);
+                $("#dayTime").val(response.notificacionEnvio.dayTime);
+                $("#daysWeek").val(response.notificacionEnvio.weekDay);
+                $("#weekTime").val(response.notificacionEnvio.weekTime);
+
+                $("#monthTime").val(response.notificacionEnvio.monthTime);
+
+                var date = new Date(2017, 0, response.notificacionEnvio.dayMonth);
+                $("#datepickerCron").datepicker("setDate", date);
+                var day = $("#datepickerCron").datepicker('getDate').getDate();
+                $("#datepickerCron").val(day);
+                $("#datepickerAux").datepicker("setDate", date);
+
+                $('input:radio[name="cronOptions"]').change(function () {
+                    if ($(this).is(':checked')) {
+                        selectFrequency($(this).val());
+                    }
+                });
+
+                selectFrequency($('input:radio[name="cronOptions"]:checked').val());
+                
+
+                if (response.templatesSms.length > 0) {
+                    var options = $('.js-example-basic-multiple');
+                    $.each(response.templatesSms, function () {
+                        options.append($("<option />").val(this.id).text(this.nombrePlantilla));
+                    });
+                    $("#smsTemplateConfig-div").css("display", "block");
+                } else {
+                    $("#smsTemplateConfig-div").css("display", "none");
+                }
+                if (response.templatesEmail.length > 0) {
+                    var options2 = $('.js-example-basic-multiple2');
+                    $.each(response.templatesEmail, function () {
+                        options2.append($("<option />").val(this.id).text(this.nombrePlantilla));
+                    });
+                    $("#emailTemplateConfig-div").css("display", "block");
+                } else {
+                    $("#emailTemplateConfig-div").css("display", "none");
+                }
+                //fillTemplates(response);
+
+                openModal('modalEnvio');
+            } else {
+                sweetAlert({html: false, title: "¡Atención!", text: "Para configurar el envío de mensajes, primero debe registrar plantillas al sistema.", type: "warning"});
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+function loadDataCronDetails(idCron,idTipoDeEnvio) {
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: $.loadDataCron,
+        data: "idCron=" + idCron+ "&idTipoDeEnvio=" + idTipoDeEnvio,
+        cache: false,
+        beforeSend: function (XMLHttpRequest, settings) {
+            $('span[class*="help-block"]').each(function () {
+                $(this).remove();
+            });
+
+            $("#smsOptions-div").empty();
+            $("#emailOptions-div").empty();
+            $(".js-example-basic-multiple").empty();
+            $(".js-example-basic-multiple2").empty();
+            if (idTipoDeEnvio === "0") {
+                $("#idTipoDeEnvio2").val(0);
+            } else if (idTipoDeEnvio === "1") {
+                $("#idTipoDeEnvio2").val(1);
+            }
+
+        },
+        success: function (response) {
+            $('#formAddCron')[0].reset();
+            if (response.templatesSms.length > 0 || response.templatesEmail.length > 0) {
+                if (idTipoDeEnvio === "0") {
+                    $('#cronOptions-div').show();
+                    $('#eachMinute2').hide();
+                } else if (idTipoDeEnvio === "1") {
+                    $('#cronOptions-div').hide();
+                    $('#eachMinute2').show();
+                     $('#diasPrueba').val(response.notificacionEnvio.dias);
+                     $('#horasPrueba').val(response.notificacionEnvio.horas);
+                     $('#minutosPrueba').val(response.notificacionEnvio.minutos);
+                }
+                $("#idCron").val(idCron);
+                $("[name=cronOptions]").val([response.notificacionEnvio.cronOptions]);
+                $("#hours-cron").val(response.notificacionEnvio.hour);
+                $("#dayTime").val(response.notificacionEnvio.dayTime);
+                $("#daysWeek").val(response.notificacionEnvio.weekDay);
+                $("#weekTime").val(response.notificacionEnvio.weekTime);
+
+                $("#monthTime").val(response.notificacionEnvio.monthTime);
+
+                var date = new Date(2017, 0, response.notificacionEnvio.dayMonth);
+                $("#datepickerCron").datepicker("setDate", date);
+                var day = $("#datepickerCron").datepicker('getDate').getDate();
+                $("#datepickerCron").val(day);
+                $("#datepickerAux").datepicker("setDate", date);
+
+                $('input:radio[name="cronOptions"]').change(function () {
+                    if ($(this).is(':checked')) {
+                        selectFrequency($(this).val());
+                    }
+                });
+
+                selectFrequency($('input:radio[name="cronOptions"]:checked').val());
+
+
+                if (response.templatesSms.length > 0) {
+                    var options = $('.js-example-basic-multiple');
+                    $.each(response.templatesSms, function () {
+                          options.append($("<option />").val(this.id).text(this.nombrePlantilla));
+                    });
+                    $("#smsTemplateConfig-div").css("display", "block");
+                } else {
+                    $("#smsTemplateConfig-div").css("display", "none");
+                }
+
+                if (response.templatesEmail.length > 0) {
+                    var options2 = $('.js-example-basic-multiple2');
+                    $.each(response.templatesEmail, function () {
+                        options2.append($("<option/>").val(this.id).text(this.nombrePlantilla));
+                    });
+                    $("#emailTemplateConfig-div").css("display", "block");
+                } else {
+                    $("#emailTemplateConfig-div").css("display", "none");
+                }
+                
+                $.each(response.notificacionEnvio.templateOptions, function () {
+                    var aux1 = this.valueOf();
+                    $("#myselect option").each(function ()
+                    {
+                        var aux2 = parseInt($(this).val());
+                        if (aux1 === aux2) {
+                            $("#myselect option[value='" + aux1 + "']").prop('selected', true);
+
+                        }
+                    });
+                    $("#myselect2 option").each(function ()
+                    {
+                        var aux2 = parseInt($(this).val());
+                        if (aux1 === aux2) {
+                            $("#myselect2 option[value='" + aux1 + "']").prop('selected', true);
+
+                        }
+                    });
+                });
+
+                openModal('modalEnvio');
+            } else {
+                sweetAlert({html: false, title: "¡Atención!", text: "Para configurar el envío de mensajes, primero debe registrar plantillas al sistema.", type: "warning"});
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+        }
+    });
+}
+

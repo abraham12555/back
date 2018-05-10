@@ -124,7 +124,13 @@ function habilitarBotonesAvance() {
 }
 
 function plusSlides(n) {
+    if(checkErrorInputs() === 0){
+    $(".next").mouseleave();
+    $(".next").removeClass("hoverPlus");
     showSlides(slideIndex += n);
+    }else{
+      vNotify.error({text: 'Los campos señalados en color rojo son requeridos.', title: 'Error de Validación.', visibleDuration: 5000});
+    }
 }
 
 function currentSlide(n) {
@@ -205,9 +211,38 @@ function operacionesFormulario() {
             if ($(this).val() !== '') {
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
+                $(this).removeClass('errorCampo');
+                $(this).css("color", "");
                 if ($(this).attr('id') === 'cliente_nombre') {
-                    $('#nombreCliente').html('¡Hola! ' + $(this).val());
-                } else if ($(this).attr('id') === 'cliente_nacionalidad') {
+                    if (validateName($(this).val())) {
+                        $('#nombreCliente').html('¡Hola! ' + $(this).val());
+                    } else {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                    }
+                }else if ($(this).attr('id') === 'cliente_apellidoPaterno') {
+                    if (!validateName($(this).val())) {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                    }
+                } 
+                else if ($(this).attr('id') === 'cliente_apellidoMaterno') {
+                    if (!validateName($(this).val())) {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                    }
+                } 
+                else if ($(this).attr('id') === 'emailCliente_emailPersonal') {
+                    if (!validateEmail($(this).val())) {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                    }
+                } 
+                else if ($(this).attr('id') === 'cliente_nacionalidad') {
                     if ($('#cliente_nacionalidad').val() === '2') {
                         swal({
                             title: "¡Importante!",
@@ -273,6 +308,7 @@ function operacionesFormulario() {
                     $('#empleoCliente_ingresosTotales').val(sumatoria);
                     $('#empleoCliente_ingresosTotales').addClass('notEmpty');
                     $('#empleoCliente_ingresosTotales').addClass('headingColor');
+                    $('#empleoCliente_ingresosTotales').removeClass('errorCampo');
                     listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
                 }
             } else {
@@ -291,9 +327,47 @@ function operacionesFormulario() {
             if ($(this).val() !== '') {
                 $(this).addClass('notEmpty');
                 $(this).addClass('headingColor');
+                $(this).removeClass('errorCampo');
+                $(this).css("color", "");
+                if($(this).parent().parent().hasClass('required')){
+                    $(this).parent().removeClass("errorCampo");
+                }
                 if ($(this).attr('id') === 'cliente_nombre') {
-                    $('#nombreCliente').html('¡Hola! ' + $(this).val());
-                } else if ($(this).attr('id') === 'cliente_nacionalidad') {
+                    if (validateName($(this).val())) {
+                        $('#nombreCliente').html('¡Hola! ' + $(this).val());
+                    } else {
+                        $(this).css("color", "red");
+                        $('#nombreCliente').html('¡Hola! ');
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                        vNotify.error({text: 'El nombre debe contener letras únicamente.', title: 'Error de Validación.', visibleDuration: 3000});
+                    }
+                }
+                else if ($(this).attr('id') === 'cliente_apellidoPaterno') {
+                    if (!validateName($(this).val())) {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                        vNotify.error({text: 'El apellido paterno debe contener letras únicamente.', title: 'Error de Validación.', visibleDuration: 3000});
+                    }
+                } 
+                else if ($(this).attr('id') === 'cliente_apellidoMaterno') {
+                    if (!validateName($(this).val())) {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                        vNotify.error({text: 'El apellido materno debe contener letras únicamente.', title: 'Error de Validación.', visibleDuration: 3000});
+                    }
+                } 
+                else if ($(this).attr('id') === 'emailCliente_emailPersonal') {
+                    if (!validateEmail($(this).val())) {
+                        $(this).css("color", "red");
+                        $(this).removeClass('notEmpty');
+                        $(this).removeClass('headingColor');
+                        vNotify.error({text: 'El correo electrónico debe tener un formato valido.', title: 'Error de Validación.', visibleDuration: 3000});
+                    }
+                } 
+                else if ($(this).attr('id') === 'cliente_nacionalidad') {
                     if ($('#cliente_nacionalidad').val() === '2') {
                         swal({
                             title: "¡Importante!",
@@ -372,6 +446,13 @@ function operacionesFormulario() {
                     listaDeControl[$(".showOnFill").index($('#empleoCliente_ingresosTotales').closest('.showOnFill'))] = 1;
                 }
             } else {
+                if(!$(this).parent().hasClass('nonRequired')){
+                    $(this).addClass('errorCampo');
+                }
+                if($(this).parent().parent().hasClass('required')){
+                    $(this).parent().addClass('errorCampo');
+                }
+                $(this).css("color", "");
                 $(this).removeClass('notEmpty');
                 $(this).removeClass('headingColor');
             }
@@ -397,6 +478,8 @@ function operacionesFormulario() {
                         $('#circuloPaso' + (parseInt(currentStep) + 1)).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
                         $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                         $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
+                        $('#circuloPaso' + (parseInt(currentStep) + 1)+'.mobileChange').addClass('nextBtn');
+                        $('#circuloPaso' + (parseInt(currentStep) + 1)+'.mobileChange').addClass('sendBtn');
                         $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').addClass('paddingTop10');
                         $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').removeClass('paddingTop5');
                         $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
@@ -414,15 +497,23 @@ function operacionesFormulario() {
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
+                    $('#circuloPaso' + (parseInt(currentStep) + 1)+'.mobileChange').addClass('nextBtn');
+                    $('#circuloPaso' + (parseInt(currentStep) + 1)+'.mobileChange').addClass('sendBtn');
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').addClass('paddingTop10');
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').removeClass('paddingTop5');
                     $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
                 }
             } else {
-                $(this).parent().parent().slideUp();
-                $(this).parent().parent().next('.formStep').slideDown();
-                $('.slideStep').fadeIn();
-                slideIndex++;
+                if ($('#cliente_curpDelConyugue').val() !== '' && $('#cliente_curpDelConyugue').val() !== undefined && $('#cliente_curpDelConyugue').is(":visible")) {
+                    $('.next').addClass("hoverPlus");
+                    $(".next").mouseover();
+                    $('html, body').animate({scrollTop:$('#pasoActual').position().top}, 'slow');
+                } else {
+                    $(this).parent().parent().slideUp();
+                    $(this).parent().parent().next('.formStep').slideDown();
+                    $('.slideStep').fadeIn();
+                    slideIndex++;
+                }
             }
             $('.successBubble').fadeOut();
         }
@@ -553,6 +644,7 @@ function mostrarSiguienteCampo(index) {
         }
     } else {
         if ($('#circuloPaso' + (parseInt(pasoActual) + 1)).hasClass("sendBtn")) {
+            vNotify.error({text: 'Los campos señalados en color rojo son requeridos.', title: 'Error de Validación.', visibleDuration: 5000});
             $('.footerContainer .width600').animate({width: "490px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).animate({width: "36px", height: "36px", marginTop: "5px"}, {queue: false});
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).removeClass('nextBtn');
@@ -560,6 +652,8 @@ function mostrarSiguienteCampo(index) {
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').addClass('paddingTop5');
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').removeClass('paddingTop10');
             $('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').html($('#circuloPaso' + (parseInt(pasoActual) + 1)).children('p').text().replace("IR AL PASO ", ""));
+            $('#circuloPaso' + (parseInt(pasoActual) + 1)+'.mobileChange').removeClass('nextBtn');
+            $('#circuloPaso' + (parseInt(pasoActual) + 1)+'.mobileChange').removeClass('sendBtn');
         }
     }
 }
@@ -1133,6 +1227,7 @@ function operacionesBuro() {
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('nextBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).addClass('sendBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1) + '.mobileChange').addClass('sendBtn');
+                $('#circuloPaso' + (parseInt(currentStep) + 1) + '.mobileChange').addClass('nextBtn');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').addClass('paddingTop10');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').removeClass('paddingTop5');
                 $('#circuloPaso' + (parseInt(currentStep) + 1)).children('p').html("IR AL PASO " + (parseInt(currentStep) + 1));
@@ -1904,7 +1999,7 @@ function consultarBuro() {
     var hipoteca = $('#creditoH').val();
     var creditoAutomotriz = $('#creditoA').val();
     var cadenaDeBuro = null;
-    if ($.contextAwarePathJS === "/qa/") {
+    if ($.contextAwarePathJS === "/libertadqa/") {
         cadenaDeBuro = encodeURIComponent($('#cadenaBuroTest').val());//$('#cadenaBuroTest').val();
     } else {
         cadenaDeBuro = "undefined";
@@ -2478,7 +2573,7 @@ function inicializarDropzone(elemento, boton) {
             sweetAlert("Oops...", "El documento envíado no está vigente. Por favor, suba un documento vigente.", "error");
         } else {
             //To Do Cerrar modal, deshabilitar boton de envio
-            sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga bordes blancos. Por favor intente de nuevo.", "warning");
+            sweetAlert("Oh no!", "No se ha podido determinar la vigencia del documento. Verifique que la imagen/archivo es legible y no tenga tachaduras o enmendaduras, así como que no tenga bordes blancos.\n Favor de volver a subir la imagen", "warning");
         }
         this.removeAllFiles();
         $('.barraProgresoComp').fadeOut();
@@ -2497,7 +2592,9 @@ function inicializarDropzone(elemento, boton) {
 
 function sendRequestForm() {
     var step = $("#currentStep").val();
+    var folioUserId = document.getElementById("folioUserId").firstElementChild.innerHTML; 
     ga('set', 'page', '/solicitud/formulario/paso' + step);
+    ga('set', 'userId', folioUserId); 
     ga('send', 'pageview');
 }
 
@@ -2633,11 +2730,13 @@ function mostrarOfertas() {
             //html += "<p style=\"font-size: 0.89em;\"><strong>MONTO A PAGAR BC:</strong> " + respuesta[i].listaDeOpciones[0].montoAPagar + "</p>";
             //html += "<p style=\"font-size: 0.89em;\"><strong>BALANCE DE CAJA:</strong> " + respuesta[i].listaDeOpciones[0].balanceDeCaja + "</p>";
             //html += "<p style=\"font-size: 0.89em;\"><strong>RATIO:</strong> " + respuesta[i].listaDeOpciones[0].ratio + "</p>";
-            //html += "<p style=\"font-size: 0.89em;\"><strong>PROBABILIDAD DE MORA:</strong> " + respuesta[i].listaDeOpciones[0].probabilidadDeMora + "</p>";
+            if ($.contextAwarePathJS === "/libertadqa/") {
+                html += "<p style=\"font-size: 0.89em;\"><strong>PROBABILIDAD DE MORA:</strong> " + respuesta[i].listaDeOpciones[0].probabilidadDeMora + "</p>";
+            }
             html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta[i].listaDeOpciones[0].tasaDeInteres * 100), 2) + " %</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoSeguro, "$") + "</p>";
             html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta[i].listaDeOpciones[0].montoAsistencia, "$") + "</p>";
-//            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta[i].listaDeOpciones[0].cat * 100), 1) + " %</p>";
+            html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta[i].listaDeOpciones[0].cat * 100), 1) + " %</p>";
             html += "</li>";
             //fin-temporal
             html += "<li><h6>REQUISITOS</h6></li>";
@@ -2673,6 +2772,7 @@ function mostrarOfertas() {
         $('#circuloPaso' + (parseInt(currentStep))).animate({width: "250px", height: "45px", marginTop: "0px"}, {queue: false});
         $('#circuloPaso' + (parseInt(currentStep))).addClass('nextBtn');
         $('#circuloPaso' + (parseInt(currentStep))).addClass('sendBtn');
+        $('#circuloPaso' + (parseInt(currentStep)) + '.mobileChange').addClass('nextBtn');
         $('#circuloPaso' + (parseInt(currentStep)) + '.mobileChange').addClass('sendBtn');
         $('#circuloPaso' + (parseInt(currentStep))).children('p').addClass('paddingTop10');
         $('#circuloPaso' + (parseInt(currentStep))).children('p').removeClass('paddingTop5');
@@ -2687,7 +2787,7 @@ function mostrarOfertas() {
             $(('#plazoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].plazos);
             $(('#periodicidadSeleccionada_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].periodicidad.id);
             $(('#pagoSeleccionado_' + ofertasCalculadas[i].producto.id)).val(ofertasCalculadas[i].listaDeOpciones[0].cuota);
-            inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 1000);
+            inicializarSlider(("flat-slider-" + respuesta[i].producto.id), respuesta[i].producto.id, (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), (Number(respuesta[i].listaDeOpciones[0].montoMinimo)), (Number(respuesta[i].listaDeOpciones[0].montoMaximo)), 100);
         }
     }
     
@@ -2776,6 +2876,9 @@ function mostrarOfertas() {
 function inicializarSlider(elemento, producto, montoInicial, montoMinimo, montoMaximo, incremento) {
     console.log("Inicializando slider: " + elemento + " del producto " + producto);
     console.log("Parametros de inicializacion: " + montoInicial + ", " + montoMinimo + ", " + montoMaximo + ", " + incremento);
+    if (montoMinimo.toString().substr(-1) === "1") {
+        montoMaximo = montoMaximo + 1;
+    }
     $("#" + elemento).slider({
         orientation: 'horizontal',
         range: false,
@@ -2791,7 +2894,11 @@ function inicializarSlider(elemento, producto, montoInicial, montoMinimo, montoM
         },
         slide: function (event, ui) {
             var valorElegido;
-            valorElegido = (ui.value);
+            if ($("#" + elemento).slider("option", "min").toString().substr(-1) === "1") {
+                valorElegido = (ui.value - 1);
+            } else {
+                valorElegido = (ui.value);
+            }
             console.log("Entra al slide");
             $(('#montoSeleccionado_' + producto)).val(valorElegido);
             $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
@@ -2799,7 +2906,14 @@ function inicializarSlider(elemento, producto, montoInicial, montoMinimo, montoM
         },
         stop: function (event, ui) {
             var valorElegido;
-            valorElegido = (ui.value);
+            if($("#" + elemento).slider("option", "min").toString().substr(-1) === "1"){
+                valorElegido = (ui.value-1);
+                if ($("#" + elemento).slider("option", "min") - 1 === valorElegido) {
+                    valorElegido = valorElegido+1;
+                }
+            }else{
+                valorElegido = (ui.value);
+            }
             console.log("Entra al stop");
             $(('#montoSeleccionado_' + producto)).val(valorElegido);
             $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
@@ -2814,7 +2928,12 @@ function reiniciarSlider(elemento, producto, montoInicial, montoMinimo, montoMax
     var valorElegido = montoInicial;
     $("#" + elemento).slider("option", "value", montoInicial);
     $("#" + elemento).slider("option", "min", montoMinimo);
-    $("#" + elemento).slider("option", "max", montoMaximo);
+    if (montoMinimo.toString().substr(-1) === "1") {
+        montoMaximo = montoMaximo+1;
+        $("#" + elemento).slider("option", "max", montoMaximo);
+    } else {
+        $("#" + elemento).slider("option", "max", montoMaximo);
+    }
     $("#" + elemento).slider("option", "step", incremento);
     $(('#montoSeleccionado_' + producto)).val(valorElegido);
     $(('#monto_' + producto)).html(formatCurrency(valorElegido, "$"));
@@ -2828,7 +2947,7 @@ function cambiarPlazo(producto, plazo) {
     $(('#pagoSeleccionado_' + ofertasCalculadas[producto].producto.id)).val(ofertasCalculadas[producto].listaDeOpciones[plazo].cuota);
     $(('#monto_' + ofertasCalculadas[producto].producto.id)).html(formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo, "$"));
     $(('#pago_' + ofertasCalculadas[producto].producto.id)).html("<h6>PAGO " + ofertasCalculadas[producto].listaDeOpciones[plazo].periodicidad.nombre.toUpperCase() + "</h6> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].cuota, "$") + " </li>");
-    reiniciarSlider(("flat-slider-" + ofertasCalculadas[producto].producto.id), ofertasCalculadas[producto].producto.id, (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMinimo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), 1000);
+    reiniciarSlider(("flat-slider-" + ofertasCalculadas[producto].producto.id), ofertasCalculadas[producto].producto.id, (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMinimo)), (Number(ofertasCalculadas[producto].listaDeOpciones[plazo].montoMaximo)), 100);
     //inicio-temporal
     var html = "<h6>CÁLCULOS</h6>";
     //html += "<p style=\"font-size: 0.89em;\"><strong>CAPACIDAD DE PAGO:</strong> " + ofertasCalculadas[producto].listaDeOpciones[plazo].maximaCapacidadDePago + "</p>";
@@ -2839,7 +2958,7 @@ function cambiarPlazo(producto, plazo) {
     html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].tasaDeInteres * 100), 2) + " %</p>";
     html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoSeguro, "$") + "</p>";
     html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(ofertasCalculadas[producto].listaDeOpciones[plazo].montoAsistencia, "$") + "</p>";
-//    html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].cat * 100), 1) + " %</p>";
+    html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((ofertasCalculadas[producto].listaDeOpciones[plazo].cat * 100), 1) + " %</p>";
     $('#temporal_' + ofertasCalculadas[producto].producto.id).html(html);
     //fin-temporal
     var html2 = "4. GARANTIAS <ul>";
@@ -2879,7 +2998,7 @@ function calcularOferta(producto, montoDeCredito) {
                 html += "<p style=\"font-size: 0.89em;\"><strong>TASA DE INTERES:</strong> " + round((respuesta.tasaDeInteres * 100), 2) + " %</p>";
                 html += "<p style=\"font-size: 0.89em;\"><strong>SEGURO:</strong> " + formatCurrency(respuesta.cuota.montoSeguro, "$") + "</p>";
                 html += "<p style=\"font-size: 0.89em;\"><strong>LIBERASISTENCIA:</strong> " + formatCurrency(respuesta.cuota.montoAsistencia, "$") + "</p>";
-//                html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta.cuota.cat * 100), 1) + " %</p>";
+                html += "<p style=\"font-size: 0.89em;\"><strong>CAT:</strong> " + round((respuesta.cuota.cat * 100), 1) + " %</p>";
                 $('#temporal_' + producto).html(html);
                 //fin-temporal
                 var html2 = "4. GARANTIAS <ul>";
@@ -3234,6 +3353,19 @@ function validarSiNumero(numero){
     }
   }
 
-
+function validateName(nombre) {
+    var re = /^([a-zA-Z \. \- \@ ñáéíóúüÑÁÉÍÓÚÜ])+$/;
+    return re.test(nombre);
+}
+function checkErrorInputs() {
+    var totalElementosRequeridosSubpaso = $(".required[data-subpaso='" + (slideIndex - 1) + "']").find(".formValues").length;
+    var totalElementosRequeridosLlenosSubpaso = $(".required[data-subpaso='" + (slideIndex - 1) + "']").find(".notEmpty").length;
+    var elementosLlenosVisibles = $('.notEmpty:visible').length;
+    var totalElementosVisibles = $('.formStep:visible .formValues').length;
+    var totalElementosRequeridos = $('.required .formValues').length;
+    if((elementosLlenosVisibles === totalElementosVisibles) || (totalElementosRequeridosSubpaso === totalElementosRequeridosLlenosSubpaso)){
+        return 0;
+    }
+}
 
 // ***************************** Fin de Funciones Short Url

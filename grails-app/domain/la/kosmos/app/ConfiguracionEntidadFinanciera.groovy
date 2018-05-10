@@ -47,6 +47,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String  rutaLogotipoFormatoBuro
     String  nombreEntidadFinancieraFormatoBuro
     String  codigoCalidad
+//    boolean usarEmailsCalixta 
+//    boolean usarEmailsCalixtaTemplate
 
     static constraints = {
         nombreComercial (blank:false)
@@ -80,6 +82,8 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         rutaLogotipoFormatoBuro (nullable: true)
         nombreEntidadFinancieraFormatoBuro (nullable: true)
         codigoCalidad (nullable: true)
+//        usarEmailsCalixta (nullable: true)
+//        usarEmailsCalixtaTemplate (nullable: true)
     }
 
     static mapping = {

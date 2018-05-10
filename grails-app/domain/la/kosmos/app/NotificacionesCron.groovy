@@ -7,11 +7,20 @@ class NotificacionesCron implements Serializable {
     ConfiguracionEntidadFinanciera configuracionEntidadFinanciera
     CronConfig configCron
     String cron
+    Integer dia
+    Integer hora
+    Integer minuto
+    Long milisegundos
 
     static constraints = {
         configuracionEntidadFinanciera (nullable: false)
         configCron (nullable: false)
         cron (nullable: false)
+        dia (nullable: true)
+        hora (nullable: true)
+        minuto (nullable: true)
+        milisegundos (nullable: true)
+
     }
 
     static mapping = {

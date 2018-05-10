@@ -44,8 +44,8 @@
         <input type="hidden" name="pasoAnterior" id="pasoAnterior" value="${pasoActual?.numeroDePaso}">
         <div class="centerLink slideStep" style="display: none;">
             <ul style="list-style-type: none;">
-                <li style="display: inline;"><a class="prev" onclick="plusSlides(-1)"><i class="fa fa-chevron-up"></i></a></li>
-                <li style="display: inline;"><a class="next" onclick="plusSlides(1)"><i class="fa fa-chevron-down"></i></a></li>
+                <li style="display: inline;"><a class="prev"  onclick="plusSlides(-1)">Anterior<br><i class="fa fa-chevron-up"></i></a></li>
+                <li style="display: inline;"><a class="next"  onclick="plusSlides(1)">Siguiente<br><i class="fa fa-chevron-down"></i></a></li>
             </ul>
         </div>
         <g:each status="p" in="${parrafos.keySet()}" var="parrafo">
@@ -285,7 +285,7 @@ if(campo.campo.catalogo){
             <g:else>
                 <div class="paddingAside15 clearFix">
                     <div class="grayrectangle floatLeft marginRight10">Atras</div>
-                    <div data-numero-de-paso="${pasoActual.numeroDePaso + 1}" id="circuloPaso${pasoActual.numeroDePaso + 1}" class="botonCambioDePaso grayrectangle floatLeft nextBtn">Ir al paso ${pasoActual?.numeroDePaso + 1}</div>
+                    <div data-numero-de-paso="${pasoActual.numeroDePaso + 1}" id="circuloPaso${pasoActual.numeroDePaso + 1}" class="botonCambioDePaso grayrectangle floatLeft nextBtn mobileChange">Ir al paso ${pasoActual?.numeroDePaso + 1}</div>
                 </div>
             </g:else>
         </g:if>

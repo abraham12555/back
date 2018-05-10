@@ -20,7 +20,8 @@
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
                             <p>CLAVE DEL PRODUCTO: <strong>${productoSolicitud?.producto?.claveDeProducto?.toUpperCase()}</strong></p>
                             <p>PRODUCTO: <strong>${productoSolicitud?.producto?.nombreDelProducto?.toUpperCase()}</strong></p>
-<!--                            <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>-->
+                            <p>CAT: <strong> <strong><g:formatNumber number="${(productoSolicitud?.cat) ? (productoSolicitud?.cat): 0}" format="0.#%" /></strong> SIN IVA.</p>
+                            <p>LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
@@ -87,7 +88,7 @@
                         electrónico o mediante una liga que lo lleve a nuestra página de Internet.
                     </p>
 
-                    <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session["pasoFormulario"].emailCliente.emailPersonal}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                    <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session["pasoFormulario"].emailCliente?.emailPersonal}", en caso de no visualizar el correo en la Bandeja de Entrada,
                         verificar la carpeta de "Correo no deseado" (SPAM).</p>
 
                 </div>
@@ -116,7 +117,9 @@
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
                             <p>CLAVE DEL PRODUCTO: <strong>${productoSolicitud?.producto?.claveDeProducto?.toUpperCase()}</strong></p>
                             <p>PRODUCTO: <strong>${productoSolicitud?.producto?.nombreDelProducto?.toUpperCase()}</strong></p>
-<!--                            <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>-->
+                            <p>CAT: <strong> <strong><g:formatNumber number="${(productoSolicitud?.cat) ? (productoSolicitud?.cat): 0}" format="0.#%" /></strong> SIN IVA.</p>
+                            <p>LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
+
                         </div>
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
@@ -176,7 +179,7 @@
                         <p class="formTitleColor">LIBERTAD@LIBERTAD.COM.MX</p>
                         <p class="formTitleColor">TEL. 01800 714 02 74</p>
                         <p class="formTitleColor">NUESTRO HORARIO DE ATENCIÓN ES DE LUNES A VIERNES DE 9:00 A 19:00 HORAS Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.</p>
-                        <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session["pasoFormulario"].emailCliente.emailPersonal}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                        <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session["pasoFormulario"].emailCliente?.emailPersonal}", en caso de no visualizar el correo en la Bandeja de Entrada,
                             verificar la carpeta de "Correo no deseado" (SPAM).</p>
 
                     </div>
@@ -216,7 +219,8 @@
                             <p>SEGURO CON LIBERTAD: <strong><g:formatNumber number="${productoSolicitud?.montoDelSeguroDeDeuda}" format="\044###,###,###.##" /></strong></p>
                             <p>CLAVE DEL PRODUCTO: <strong>${productoSolicitud?.producto?.claveDeProducto?.toUpperCase()}</strong></p>
                             <p>PRODUCTO: <strong>${productoSolicitud?.producto?.nombreDelProducto?.toUpperCase()}</strong></p>
-<!--                            <p>CAT PROMEDIO: <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>-->
+                            <p>CAT: <strong> <strong><g:formatNumber number="${(productoSolicitud?.cat) ? (productoSolicitud?.cat): 0}" format="0.#%" /></strong> SIN IVA.</p>
+                            <p>LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                         </div>
                     </div>
                     <div class="col6 col6-tab col12-mob floatLeft">
@@ -276,7 +280,7 @@
                         <p class="formTitleColor">LIBERTAD@LIBERTAD.COM.MX</p>
                         <p class="formTitleColor">TEL. 01800 714 02 74</p>
                         <p class="formTitleColor">NUESTRO HORARIO DE ATENCIÓN ES DE LUNES A VIERNES DE 9:00 A 19:00 HORAS Y LOS SÁBADOS DE 9:00 A 14:00 HORAS TIEMPO DE CENTRO.</p>
-                        <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session["pasoFormulario"].emailCliente.emailPersonal}", en caso de no visualizar el correo en la Bandeja de Entrada,
+                        <p class="formTitleColor"><br/>*Nota: El presente resultado ha sido enviado a la dirección de correo "${session["pasoFormulario"].emailCliente?.emailPersonal}", en caso de no visualizar el correo en la Bandeja de Entrada,
                             verificar la carpeta de "Correo no deseado" (SPAM).</p>
                     </div>
                 </div>

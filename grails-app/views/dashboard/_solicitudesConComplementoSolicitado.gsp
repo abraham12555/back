@@ -1,6 +1,6 @@
 <section class="container marginBottom50 ">
 
-    <table id="listaSolicitudesConComplementoSolicitado" class="applicationContainers solicitudes_table width990 autoMargin">
+    <table id="listaSolicitudesConComplementoSolicitado" class="applicationContainers solicitudes_table dashboard">
         <thead>
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
             <th colspan="9" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes con complemento solicitado</h1></th>
@@ -8,21 +8,19 @@
         <sec:ifAnyGranted roles='ROLE_EJECUTIVO, ROLE_SUCURSAL'>
             <th colspan="8" class="navyBg left"><h1 class="graphHeading colorWhite letterspacing2 textUpper">solicitudes con complemento solicitado</h1></th>
         </sec:ifAnyGranted>
-        </thead>
-        <tr class="lightGrayBG">
-            <td class="gray left">FOLIO <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="gray left">CLIENTE <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="gray left">ESTATUS <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="gray left">PDV <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="gray left">FUENTE <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="gray left">PRODUCTO <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="grayleft">FECHA <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-            <td class="grayleft">MONTO <i class="fa fa-caret-down" aria-hidden="true"></i></td>
-        <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA'>
-            <td class="gray"></td>
-        </sec:ifAnyGranted>
-        </tr>
+        <tr class="lightGrayBG font15">
+            <th class="gray pointer">FOLIO <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">CLIENTE <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">ESTATUS <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">PDV <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">FUENTE <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">PRODUCTO <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">FECHA <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+            <th class="gray pointer">MONTO <i class="fa fa-caret-down" aria-hidden="true"></i></th>
 
+        </tr>
+        </thead>
+        <tbody></tbody>
     </table>
 </section>
 <section class="container">

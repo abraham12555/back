@@ -77,5 +77,10 @@
 .vnotify-notify {
   background: #333;
   color: #fff; }
-
+@media only screen and (max-width: 767px) and (min-width: 100px) {
+    .vnotify-container.vn-top-right {
+        left: 20px;
+        top: 15%; 
+    }
+}
 /*# sourceMappingURL=vanilla-notify.css.map */

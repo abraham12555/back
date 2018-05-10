@@ -45,8 +45,21 @@ function getEmailTemplates() {
                     }
                     row += '<tr>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                    row += '<span class="textUpper">estatus </span><br/>';
-                    row += '<span class="font14 tableDescriptionColor textUpper">' + this.status + '</span>';
+                    row += '<span class="textUpper">nombre de plantilla </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + this.nombrePlantilla + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<span class="textUpper">tipo de envío </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + (this.tipoDeEnvio === 0 ? "Fijo" : "Por Inactividad")  + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<span class="textUpper">Paso Solicitud </span><br/>';
+                   var estatusEmail = this.status
+                    $.each(response.statusOption, function (index, value) {
+                        if(index == estatusEmail){
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + value + '</span>';
+                        }
+                    });
                     row += '</td>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
                     row += '<span class="textUpper">asunto </span><br/>';
@@ -105,15 +118,15 @@ function loadDataEmailTemplate() {
             $("#idEmailTemplate").val("0");
 
             $("#statusEmailConfig-div").css("display", "block");
-            loadAvailableFields(response.fields);
+            loadAvailableFieldsEmail(response.fields);
 
-            $.each(response.status, function () {
-                var radioBtn = $('<input name="statusEmail" value="' + this + '" type="radio"> <span class="marginRight20">' + this + '</span>');
+            $.each(response.status, function (index,value) {
+                var radioBtn = $('<li><input name="statusEmail" value="' + index + '" type="radio"> <span class="marginRight20">' + value + '</span></li>');
                 radioBtn.appendTo('#statusEmail-div');
             });
 
-            initDroppable($("#contenidoEmail"));
-            openModal('modalPlantillaEmail');
+            dragNDrop();
+            openModal('seleccionEmail');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -139,7 +152,9 @@ function saveEmailTemplate() {
             } else {
                 getEmailTemplates();
                 cerrarModal('modalPlantillaEmail');
+                cerrarModal('seleccionEmail');
                 sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha guardado correctamente.", type: "success"});
+                getCronList();
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -158,16 +173,30 @@ function viewEmailTemplateDetails(idEmailTemplate) {
             $('span[class*="help-block"]').each(function () {
                 $(this).remove();
             });
+            $("#statusEmail-div").empty();
         },
         success: function (response) {
-            $("#statusEmailConfig-div").css("display", "none");
-            loadAvailableFields(response.fields);
+
+            iniciarSummernote();
+            $("#statusEmailConfig-div").css("display", "block");
+            loadAvailableFieldsEmail(response.fields);
 
             $("#idEmailTemplate").val(response.template.id);
-            $("#contenidoEmail").val(response.template.plantilla);
+            $("#idTipoDeEnvioEmail").val(response.template.tipoDeEnvio);   
+            $("#summernote").summernote("code", response.template.plantilla);
+            //$("#summernote").val(response.template.plantilla);
             $("#emailAsunto").val(response.template.asunto);
-            initDroppable($("#contenidoEmail"));
-
+            $("#nombrePlantillaEmail").val(response.template.nombrePlantilla);
+            $.each(response.status, function (index,value) {
+                var radioBtn;
+               if(parseInt(index) === response.template.status){
+                    radioBtn = $('<li><input name="statusEmail" value="' + index + '" type="radio" checked> <span class="marginRight20">' + value + '</span></li>');
+               }else{
+                    radioBtn = $('<li><input name="statusEmail" value="' + index + '" type="radio"> <span class="marginRight20">' + value + '</span></li>');
+               }
+                radioBtn.appendTo('#statusEmail-div');
+            });
+            dragNDrop();
             openModal('modalPlantillaEmail');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -217,12 +246,12 @@ function validateEmailTemplate() {
         $(this).remove();
     });
 
-    if ($("#contenidoEmail").val().trim() === "") {
+    if ($("#summernote").val().trim() === "") {
         errors++;
         errorMessageTemplate('contenidoEmail', "El campo es obligatorio");
-    } else if ($('#contenidoEmail').val().trim().length > 500) {
+    } else if ($('#summernote').val().trim().length > 2000) {
         errors++;
-        errorMessageTemplate('contenidoEmail', "El texto no puede contener más de 500 caracteres");
+        errorMessageTemplate('contenidoEmail', "El texto no puede contener más de 2000 caracteres");
     }
 
     if ($("#emailAsunto").val().trim() === "") {
@@ -233,12 +262,54 @@ function validateEmailTemplate() {
         errorMessageTemplate('emailAsunto', "El texto no puede contener más de 100 caracteres");
     }
 
-    if ($("#idEmailTemplate").val() === "0" && $('input[name=statusEmail]:checked').length <= 0) {
+    if ($('input[name=statusEmail]:checked').length <= 0) {
         errors++;
         errorMessageTemplate('statusEmail', "El campo es obligatorio");
+    }
+    if ($("#nombrePlantillaEmail").val().trim() === "") {
+        errors++;
+        errorMessageTemplate('nombrePlantillaEmail', "El campo es obligatorio");
     }
 
     if (errors === 0) {
         saveEmailTemplate();
     }
+}
+function seleccionTipoDeEnvioEmail() {
+
+    if ($("input[name=tipoDeEnvioEmail]:checked").val() === '0') {
+        $("#idTipoDeEnvioEmail").val('0');
+        openModal('modalPlantillaEmail');
+        iniciarSummernote();
+
+    } else if ($("input[name=tipoDeEnvioEmail]:checked").val() === '1') {
+        $("#idTipoDeEnvioEmail").val('1');
+        openModal('modalPlantillaEmail');
+        iniciarSummernote();
+    }
+}
+
+function dragNDrop (){
+    
+    $('.prueba').on('dragstart', function (e) {
+      var elemento = $(e.currentTarget).data('elemento');
+      e.originalEvent.dataTransfer.setData('Text', elemento);
+    });
+  }
+function iniciarSummernote() {
+    $('#summernote').summernote('destroy');
+    $('#summernote').summernote({
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['view', ['codeview']]
+        ],
+        height: 200,
+        width: 400,
+        disableDragAndDrop: true
+
+    });
+    $("#summernote").summernote("code", "");
+
 }

@@ -88,20 +88,20 @@ grails.hibernate.osiv.readonly = false
 environments {
         development {
         grails.logging.jul.usebridge = true
-        grails.app.context = "/qa"
-        urlDecisionEngine = "http://201.161.66.195:8080/decision-engine-ws/services/engine?wsdl"
-        urlDecisionEngineCE = "http://201.161.66.195:8080/decision-engine-ws/services/engineCE?wsdl"
+        grails.app.context = "/libertadqa"
+        urlDecisionEngine = "http://localhost:8090/decision-engine-ws-a/services/engine?wsdl"
+        urlDecisionEngineCE = "http://localhost:8090/decision-engine-ws-a/services/engineCE?wsdl"
     }
     test {
-        grails.app.context = "/qa"
-        urlDecisionEngine = "http://localhost:8080/decision-engine-ws/services/engine?wsdl"
-        urlDecisionEngineCE = "http://localhost:8080/decision-engine-ws/services/engineCE?wsdl"
+        grails.app.context = "/libertadqa"
+        urlDecisionEngine = "http://201.161.90.79/decision-engine-ws-a/services/engine?wsdl"
+        urlDecisionEngineCE = "http://201.161.90.79/decision-engine-ws-a/services/engineCE?wsdl"
     }
     production {
         grails.logging.jul.usebridge = false
         grails.app.context = "/"
-        urlDecisionEngine = "https://micreditolibertad.com/decision-engine-ws/services/engine?wsdl"
-        urlDecisionEngineCE = "https://micreditolibertad.com/decision-engine-ws/services/engineCE?wsdl"
+        urlDecisionEngine = "https://micreditolibertad.com/decision-engine-ws-a/services/engine?wsdl"
+        urlDecisionEngineCE = "https://micreditolibertad.com/decision-engine-ws-a/services/engineCE?wsdl"
     }
 }
 
@@ -169,7 +169,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
         '/dashboard/reportes': ['ROLE_ADMIN','ROLE_DIRECTOR','ROLE_RIESGOS','ROLE_MERCADOTECNIA','ROLE_CENTRO_DE_CONTACTO'],
         '/notificaciones/**':  ['ROLE_ADMIN','ROLE_DIRECTOR','ROLE_MERCADOTECNIA'],
         '/entidadFinanciera/**':    ['ROLE_ADMIN'],
-        '/configuracionBuroCredito/**':    ['ROLE_ADMIN'],
+        '/configuracionBuroCredito/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],
         '/configuracionEntidadFinanciera/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],
         '/rubroDeAplicacionDeCredito/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],
         '/producto/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],
@@ -191,6 +191,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
         '/pasoSolicitudEntidadFinanciera/**':    ['ROLE_ADMIN','ROLE_ADMINISTRADOR'],
         '/rest/**':  ['permitAll'],
         '/solicitudRest/**':  ['permitAll'],
+        '/solicitudDeCreditoRest/**':  ['permitAll'],
+        '/loginRest/**':  ['permitAll'],
         '/classificationResult/**':  ['permitAll'],
         '/dossierSummary/**':  ['permitAll'],
          '/jasper/**':    ['permitAll'],

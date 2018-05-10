@@ -19,6 +19,7 @@
         <g:external dir="css" file="animate.min.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="jquery.mloading.css" title="text/css" rel="stylesheet" />
         <g:external dir="css" file="select2.css" title="text/css" rel="stylesheet" />
+        <g:external dir="css" file="vanilla-notify-solicitud.css" title="text/css" rel="stylesheet" />
         <g:if test="${configuracion?.rutaCss}">
             <link rel="stylesheet" href="${configuracion?.rutaCss}">
         </g:if>
@@ -45,9 +46,12 @@
                             </div>
                             <span class="mobile tablet floatLeft mobMenu"><i class="fa fa-bars" aria-hidden="true"></i></span>
                         </div>
-                        <div class="floatRight width337 borderGrayRight borderGrayLeft paddingBottom18 paddingTop19  desktop">
-                            <div class="urlBox autoMargin">
-                                <p class="letterspacing0.8 font14 paddingTop10 paddingRight36 paddingBottom10 center tuShortUrl">TU URL: <strong>${session.shortUrl}</strong></p>
+                        <div class="floatRight width337 borderGrayRight borderGrayLeft paddingBottom18 paddingTop19  desktop center" style="width:350px">
+                            <div class="urlBox autoMargin " style= "display: inline-block;">
+                                <p class="letterspacing0.8 font14 paddingTop10 paddingRight36 paddingBottom10 center">TU URL: <strong>${session.shortUrl}</strong></p>
+                            </div>
+                             <div class="urlBox autoMargin" style= "display: inline-block;">
+                                 <p id='folioUserId' class="letterspacing0.8 font14 paddingTop10 paddingRight36 paddingBottom10 center">TU FOLIO: <strong>${session.folio}</strong></p>
                             </div>
                         </div>
                         <div class="salvadoConatiner floatRight desktop">
@@ -110,5 +114,6 @@
     <g:external dir="js" file="jquery.mloading.js" />
     <g:external dir="js" file="select2.js" />
     <g:external dir="js" file="maps.js" />
-    <g:external dir="js" file="googleanalytics.js" />
+    <g:external dir="js" file="googleanalyticsSolicitud.js" />
+    <g:external dir="js" file="vanilla-notify.min.js" />
 </html>

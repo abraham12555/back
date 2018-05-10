@@ -33,28 +33,33 @@
                 <div class="col6 col12-mob floatLeft down800">
                     <div class="cotWrap">
                         <h1 class="darkBluetitle font30 fontWeight400 marginBottom95">${configuracion.tituloCotizador}</h1>
-                        <g:form controller="cotizador" action="procesar" class="cotizadorForm">
+                            <form method="POST" name="formCotizador" id="formCotizador">
                             <div id="contenedorDePasos">
                                 <g:render template="stepTemplate"/>
                             </div>
-                            <g:hiddenField id="txtRubro" name="txtRubro" value=""/>
-                            <g:hiddenField id="txtProducto" name="txtProducto" value=""/>
-                            <g:hiddenField id="txtModelo" name="txtModelo" value=""/>
-                            <g:hiddenField id="txtColor" name="txtColor" value=""/>
-                            <g:hiddenField id="txtEnganche" name="txtEnganche" value=""/>
-                            <g:hiddenField id="txtMontoCredito" name="txtMontoCredito" value=""/>
-                            <g:hiddenField id="txtMontoSeguro" name="txtMontoSeguro" value=""/>
-                            <g:hiddenField id="txtMontoAsistencia" name="txtMontoAsistencia" value=""/>
-                            <g:hiddenField id="txtDocumento" name="txtDocumento" value=""/>
-                            <g:hiddenField id="txtTieneAtrasos" name="txtTieneAtrasos" value=""/>
-                            <g:hiddenField id="txtPlazo" name="txtPlazo" value=""/>
-                            <g:hiddenField id="txtPago" name="txtPago" value=""/>
-                            <g:hiddenField id="txtSeguro" name="txtSeguro" value=""/>
-                            <g:hiddenField id="txtPeriodo" name="txtPeriodo" value=""/>
-                            <!-- <g:hiddenField id="cat" name="cat" value=""/> -->
+                            <input type="hidden" id="txtRubro" name="txtRubro" value="">
+                            <input type="hidden" id="txtProducto" name="txtProducto" value=""/>
+                            <input type="hidden" id="txtModelo" name="txtModelo" value=""/>
+                            <input type="hidden" id="txtColor" name="txtColor" value=""/>
+                            <input type="hidden" id="txtEnganche" name="txtEnganche" value=""/>
+                            <input type="hidden" id="txtMontoCredito" name="txtMontoCredito" value=""/>
+                            <input type="hidden" id="txtMontoSeguro" name="txtMontoSeguro" value=""/>
+                            <input type="hidden" id="txtMontoAsistencia" name="txtMontoAsistencia" value=""/>
+                            <input type="hidden" id="txtDocumento" name="txtDocumento" value=""/>
+                            <input type="hidden" id="txtTieneAtrasos" name="txtTieneAtrasos" value=""/>
+                            <input type="hidden" id="txtPlazo" name="txtPlazo" value=""/>
+                            <input type="hidden" id="txtPago" name="txtPago" value=""/>
+                            <input type="hidden" id="txtSeguro" name="txtSeguro" value=""/>
+                            <input type="hidden" id="txtPeriodo" name="txtPeriodo" value=""/>
+                            <input type="hidden" id="cat" name="cat" value=""/>
+                            <input type="hidden" id="comparaBien" name="comparaBien" value="${comparaBien?.comparaBien}">
+                            <input type="hidden" id="montoComparaBien" name="montoComparaBien" value="${comparaBien?.montoComparaBien}">
+                            <input type="hidden" id="plazoComparaBien" name="plazoComparaBien" value="${comparaBien?.plazoComparaBien}">
+                            <input type="hidden" id="correoComparaBien" name="correoComparaBien" value="${comparaBien?.correoComparaBien}">
+
                             <div class="marginTop40 marginBottom20 blur" id="submitCotizador">
                                 <div class="paddingAside20">
-                                    <input type="submit" value="Comenzar mi Solicitud" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" id="btnCotSub" disabled/>
+                                    <input type="button" value="Comenzar mi Solicitud" onclick="submitCotizador();" class="block font25 pointer letterspacing1 blueButton blue-shadow2 padding20 width400 center autoMargin" id="btnCotSub" disabled/>
                                 </div>
                             </div>
                             <div class="paddingAside10" style="margin-top: 10%;">
@@ -67,7 +72,7 @@
                                     y Aviso de Privacidad</a>
                                 </p>
                             </div>
-                        </g:form>
+                        </form>
                     </div>
                 </div>
             </g:if>

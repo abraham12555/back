@@ -28,7 +28,7 @@
         <g:external dir="js" file="numbersOnly.js" />
         <g:external dir="js" file="google.js" />
         <g:external dir="js" file="facebook.js" />
-        <g:external dir="js" file="googleanalytics.js" />
+        <g:external dir="js" file="googleanalyticsSolicitud.js" />
     </head>
     <body>
         <header class="topHeader">

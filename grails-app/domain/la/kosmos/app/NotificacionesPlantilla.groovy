@@ -11,12 +11,17 @@ class NotificacionesPlantilla implements Serializable {
     TipoPlantilla tipoPlantilla
     Integer status
     String asunto
+    String nombrePlantilla
+    Integer tipoDeEnvio
+
 
     static constraints = {
         configuracionEntidadFinanciera (nullable: false)
         plantilla maxSize:500
         tipoPlantilla (nullable: false)
+        tipoDeEnvio (nullable: true)
         status (nullable: false)
+        nombrePlantilla (nullable: true)
         asunto maxSize:100
     }
 

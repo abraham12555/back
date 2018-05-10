@@ -16,41 +16,45 @@
                 <h1 class="graphHeading colorWhite letterspacing2 textUpper">Solicitudes </h1>
             </th>
         </sec:ifAnyGranted>
+                      <tr class="lightGrayBG font15">
+                        
+                        <th class="gray pointer"><span>FOLIO</span> <i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>CLIENTE</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>STATUS</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>PDV</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>FUENTE</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>PRODUCTO</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>FECHA</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+                        <th class="gray pointer"><span>MONTO</span><i class="fa fa-caret-down" aria-hidden="true"></i></th>
+
+                    </tr>
         </thead>
         <tbody><div id="lista1">
             <g:if test="${solicitudes}">
                 <g:each var='solicitud' in='${solicitudes}'>
                     <tr>
                         <td  class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            folio <br>
                             <span class="font14 textlower tableDescriptionColor">${solicitud?.folio}</span>
                         </td>
                         <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            cliente <br>
                             <span class="font14 textlower tableDescriptionColor">${solicitud?.nombreCliente}</span>
                         </td>
                         <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            ESTATUS <br>
                             <span class="font14 textlower tableDescriptionColor">${solicitud?.statusDeSolicitud}</span>
                         </td>
                         <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            PDV <br>
                             <span class="font14 textlower tableDescriptionColor">${solicitud?.puntoDeVenta}</span>
                         </td>
                         <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            FUENTE <br>
                             <span class="font14 textlower tableDescriptionColor">${solicitud?.autenticadoMediante}</span>
                         </td>
                         <td class="left font12 tableTitleColor paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            PRODUCTO <br>
                             <span class="font14 textlower tableDescriptionColor">${solicitud?.producto}</span>
                         </td>
                         <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            FECHA <br>
                             <span class="font14 textlower tableDescriptionColor"><g:formatDate format="dd/MM/yyyy" date="${solicitud?.fechaDeSolicitud}"/></span>
                         </td>
                         <td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">
-                            MONTO <br>
                             <span class="font14 textlower tableDescriptionColor"><g:formatNumber number="${solicitud?.montoCredito}" format="\044###,###,###.##"/></span>
                         </td>
                 <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_DIRECTOR, ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>

@@ -26,7 +26,7 @@ class MotorDeDecisionService {
      * Cliente Nuevos
      */
 
-    def obtenerScore(def entidadFinanciera, def datos) {
+    def obtenerScore(def entidadFinanciera, def datos)throws Exception {
         println("Entrando a obtenerScore... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecision
         def result= decisionEngineWebService.doGetScore(url, datos.solicitudId, datos.riesgoGeografico, datos.plazo, datos.periodicidad, datos.riesgoOcupacion, datos.edad, datos.estadoCivil, datos.productoServicio, datos.antiguedadVivienda, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.dependientesEconomicos, datos.gastoRenta, datos.cuotaMensualCredito, datos.tipoDeVivienda, datos.asalariado, datos.cadenaBuroDeCredito, datos.porcentajeDeDescuento)
@@ -34,7 +34,7 @@ class MotorDeDecisionService {
         return result
     }
 
-    def enviarCadenaDeBuro(def entidadFinanciera, def datos){
+    def enviarCadenaDeBuro(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a enviarCadenaDeBuro... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecision
         def result= decisionEngineWebService.enviarCadenaDeBuro(url, datos.solicitudId, datos.cadenaBuroDeCredito)
@@ -42,19 +42,19 @@ class MotorDeDecisionService {
         return result
     }
 
-    def obtenerDictamenteDePoliticas(def entidadFinanciera, def datos){
+    def obtenerDictamenteDePoliticas(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a obtenerDictamenteDePoliticas... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecision
-        def result= decisionEngineWebService.getDictamenteDePoliticas(url, datos.solicitudId, datos.listaDeServicios, datos.edad)
-        println "Respuesta Recibida: " + result
+        def result= decisionEngineWebService.getDictamenteDePoliticas(url, datos.solicitudId, datos.listaDeServicios, datos.edad, datos.porcentajeDeDescuento)
+        println "Respuesta Recibida Politicas SolicitudId: " +datos.solicitudId+ " "+ result
         return result
     }
 
-    def obtenerDictamenteDePerfil(def entidadFinanciera, def datos){
+    def obtenerDictamenteDePerfil(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a obtenerDictamenteDePerfil... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecision
         def result= decisionEngineWebService.getDictamenteDePerfil(url, datos.solicitudId, datos.riesgoGeografico, datos.plazo, datos.periodicidad, datos.riesgoOcupacion, datos.edad, datos.estadoCivil, datos.productoServicio, datos.antiguedadVivienda, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cuotaMensualCredito)
-        println "Respuesta Recibida: " + result
+        println "Respuesta Recibida Dictamen de Perfil Solicitud: "+ datos?.solicitudId+" Producto: "+datos?.productoServicio +" Plazo: "+datos?.plazo+ " "+result
         return result
     }
 
@@ -62,15 +62,15 @@ class MotorDeDecisionService {
      * Cliente Existentes
      */
 
-    def obtenerScoreClienteExistente(def entidadFinanciera, def datos) {
+    def obtenerScoreClienteExistente(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a obtenerScoreClienteExistente... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE
-        def result= decisionEngineCeWebService.doGetScore(url, datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.rcobsldpas12, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cantidadIntegrantesFamilia, datos.gastosDeAlquiler, datos.cuotaCredito, datos.tipoDeVivienda, datos.asalariado, datos.experienciaCrediticia, datos.creditosLiquidados, datos.cadenaBuroDeCredito, datos.porcentajeDeDescuento)
+        def result= decisionEngineCeWebService.doGetScore(url, datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.rcobsldpas12, datos.ingresosFijosMensuales, datos.ingresosVariablesMensuales, datos.otrosIngresos, datos.cantidadIntegrantesFamilia, datos.gastosDeAlquiler, datos.cuotaCredito, datos.tipoDeVivienda, datos.asalariado, datos.experienciaCrediticia, datos.creditosLiquidados, datos.cadenaBuroDeCredito,datos.clienteCredVigente,datos.renovacion1,datos.ultimaFechaCredito,datos.avanceCapital1,datos.avanceCapital2,datos.clienteConRenovacion,datos.atrasoPago,datos.malaFe,datos.porcentajeDeDescuento)
         println "Respuesta Recibida: " + result
         return result
     }
 
-    def enviarCadenaDeBuroClienteExistente(def entidadFinanciera, def datos){
+    def enviarCadenaDeBuroClienteExistente(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a enviarCadenaDeBuroClienteExistente... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE
         def result= decisionEngineCeWebService.enviarCadenaDeBuro(url, datos.solicitudId, datos.cadenaBuroDeCredito)
@@ -78,19 +78,20 @@ class MotorDeDecisionService {
         return result
     }
 
-    def obtenerDictamenteDePoliticasClienteExistente(def entidadFinanciera, def datos){
+    def obtenerDictamenteDePoliticasClienteExistente(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a obtenerDictamenteDePoliticasClienteExistente... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE
-        def result= decisionEngineCeWebService.getDictamenteDePoliticas(url, datos.solicitudId, datos.listaDeServicios, datos.edad, datos.experienciaCrediticia, datos.creditosLiquidados)
-        println "Respuesta Recibida: " + result
+        def result= decisionEngineCeWebService.getDictamenteDePoliticas(url, datos.solicitudId, datos.listaDeServicios, datos.edad, datos.experienciaCrediticia, datos.creditosLiquidados,datos.clienteCredVigente,datos.renovacion1,datos.ultimaFechaCredito,datos.avanceCapital1,datos.avanceCapital2,datos.clienteConRenovacion,datos.atrasoPago,datos.malaFe,datos.porcentajeDeDescuento) 
+        //List<HashMap> respuesta = new ArrayList()
+        println "Respuesta Recibida Politicas SolicitudId: " +datos.solicitudId+ " "+ result
         return result
     }
 
-    def obtenerDictamenteDePerfilClienteExistente(def entidadFinanciera, def datos){
+    def obtenerDictamenteDePerfilClienteExistente(def entidadFinanciera, def datos)throws Exception{
         println("Entrando a obtenerDictamenteDePerfilClienteExistente... Configurando servicio...")
         String url = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: entidadFinanciera)?.wsdlMotorDeDecisionCE
         def result= decisionEngineCeWebService.getDictamenteDePerfil(url, datos.solicitudId, datos.riesgoGeografico, datos.renovacion, datos.rdifmspwultcpt12, datos.revoPagos3, datos.propMontoLiberado, datos.fecAntigCliCred, datos.edad, datos.antiguedadEmpleo, datos.riesgoOcupacion, datos.estadoCivil, datos.productoServicio, datos.rcobsldpas12)
-        println "Respuesta Recibida: " + result
+        println "Respuesta Recibida Dictamen de Perfil Solicitud: "+ datos?.solicitudId+" Producto: "+datos?.productoServicio +" Plazo: "+datos?.plazo+ " "+result
         return result
     }
 

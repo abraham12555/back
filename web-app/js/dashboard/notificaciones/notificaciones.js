@@ -18,6 +18,7 @@ $(document).ready(function () {
         event.preventDefault();
         var idTemplate = this.getAttribute('data-id');
         viewSmsTemplateDetails(idTemplate);
+        
     });
 
     $('#plantillasSms-tb').on('click', 'button.deleteSmsTemplate', function (event) {
@@ -26,6 +27,13 @@ $(document).ready(function () {
         deleteSmsTemplate(idTemplate);
     });
 
+
+$('#contenidoSms').keyup(updateCount);
+$('#contenidoSms').keydown(updateCount);
+    function updateCount() {
+        var cs = $(this).val().length;
+        $('#characters').text(cs);
+    }
     getSmsTemplates();
 });
 
@@ -45,8 +53,21 @@ function getSmsTemplates() {
                     }
                     row += '<tr>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
-                    row += '<span class="textUpper">estatus </span><br/>';
-                    row += '<span class="font14 tableDescriptionColor textUpper">' + this.status + '</span>';
+                    row += '<span class="textUpper">nombre de plantilla </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + this.nombrePlantilla + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<span class="textUpper">tipo de envío </span><br/>';
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + (this.tipoDeEnvio === 0 ? "Fijo" : "Por Inactividad")  + '</span>';
+                    row += '</td>';
+                    row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10 textUpper">';
+                    row += '<span class="textUpper">Paso Solicitud </span><br/>';
+                    var estatus = this.status
+                    $.each(response.statusOption, function (index, value) {
+                        if(index == estatus){
+                    row += '<span class="font14 tableDescriptionColor textUpper">' + value + '</span>';
+                        }
+                    });
                     row += '</td>';
                     row += '<td class="left tableTitleColor font12 paddingTop12 paddingRight12 paddingBottom5 paddingLeft10">';
                     row += '<span class="textUpper">plantilla </span><br/>';
@@ -96,6 +117,8 @@ function initDroppable($elements) {
             var str1 = val.substring(0, range1);
             var str3 = val.substring(range1, val.length);
             $elements.val(str1 + dropText + str3);
+            var cs = $('#contenidoSms').val().length;
+            $('#characters').text(cs);
         }
     });
 }
@@ -111,6 +134,7 @@ function loadDataSmsTemplate() {
             });
 
             $("#status-div").empty();
+            $('#characters').empty();
         },
         success: function (response) {
             $("#formAddTemplate")[0].reset();
@@ -119,13 +143,13 @@ function loadDataSmsTemplate() {
             $("#statusConfig-div").css("display", "block");
             loadAvailableFields(response.fields);
 
-            $.each(response.status, function () {
-                var radioBtn = $('<input name="status" value="' + this + '" type="radio"> <span class="marginRight20">' + this + '</span>');
+            $.each(response.status, function (index,value) {
+                var radioBtn = $('<li><input name="status" value="' + index + '" type="radio"> <span class="marginRight20">' + value + '</span></li>');
                 radioBtn.appendTo('#status-div');
             });
 
             initDroppable($("#contenidoSms"));
-            openModal('modalPlantillaSms');
+            openModal('seleccion');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
@@ -151,7 +175,9 @@ function saveSmsTemplate() {
             } else {
                 getSmsTemplates();
                 cerrarModal('modalPlantillaSms');
+                cerrarModal('seleccion');
                 sweetAlert({html: false, title: "¡Excelente!", text: "La plantilla se ha guardado correctamente.", type: "success"});
+                getCronList();
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -167,11 +193,25 @@ function viewSmsTemplateDetails(idTemplate) {
         url: $.viewSmsTemplateDetails,
         data: "idTemplate=" + idTemplate,
         success: function (response) {
-            $("#statusConfig-div").css("display", "none");
+            $("#status-div").empty();
+            $("#statusConfig-div").css("display", "block");
             loadAvailableFields(response.fields);
-
+            $('#characters').text();
             $("#idTemplate").val(response.template.id);
+            $("#nombrePlantilla").val(response.template.nombrePlantilla);
+            $("#idTipoDeEnvio").val(response.template.tipoDeEnvio);
             $("#contenidoSms").val(response.template.plantilla);
+            $('#characters').text($('#contenidoSms').val().length);
+            $.each(response.status, function (index,value) {
+                var radioBtn;
+                if(parseInt(index) === response.template.status){
+                    radioBtn = $('<li><input name="status" value="' + index + '" type="radio" checked> <span class="marginRight20">' + value + '</span></li>');
+                }else{
+                    radioBtn = $('<li><input name="status" value="' + index + '" type="radio"> <span class="marginRight20">' + value + '</span><li>');
+                }
+                radioBtn.appendTo('#status-div');
+                
+            });
             initDroppable($("#contenidoSms"));
 
             openModal('modalPlantillaSms');
@@ -248,10 +288,14 @@ function validateTemplate() {
         errorMessageTemplate('contenidoSms', "El texto no puede contener más de 120 caracteres "  );
     }
 
-    if ($("#idTemplate").val() === "0" && $('input[name=status]:checked').length <= 0) {
+    if ($('input[name=status]:checked').length <= 0) {
         errors++;
         errorMessageTemplate('status', "El campo es obligatorio  ");
     }
+    if ($("#nombrePlantilla").val().trim() === "") {
+        errors++;
+        errorMessageTemplate('nombrePlantillaSms', "El campo es obligatorio " );
+    } 
 
     if (errors === 0) {
         saveSmsTemplate();
@@ -260,4 +304,30 @@ function validateTemplate() {
 
 function errorMessageTemplate(element, message) {
     $("#" + element + "-control").html("<span class='help-block marginRight25'><small style='color: red;'>" + message + "</small></span>");
+}
+function seleccionTipoDeEnvio(){
+ 
+    if($("input[name=tipoDeEnvio]:checked").val() === '0' ){
+        $("#idTipoDeEnvio").val('0');
+            openModal('modalPlantillaSms');
+    }else if ($("input[name=tipoDeEnvio]:checked").val() === '1'){
+        $("#idTipoDeEnvio").val('1');
+            openModal('modalPlantillaSms');
+    }
+}
+
+function loadAvailableFieldsEmail(fields) {
+    $(".availableFields li").remove();
+    $.each(fields, function () {
+        var content = '<li class="prueba gray font14 fontWeight500 latterspacing1 paddingTop12 " style="cursor:move" draggable="true" ';
+        content += 'data-elemento="';
+        content += '{';
+        content += this;
+         content += '}';
+        content += '">';
+        content += this;
+        content += '</li>';
+        $(".availableFields").append(content);
+    });
+
 }

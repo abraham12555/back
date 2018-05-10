@@ -7,7 +7,7 @@ class ConfiguracionEntidadFinancieraController {
         println params
         def respuesta = [:]
                
-        if(session.configuracion.entidadFinanciera && params.colorBordeSuperior 
+        if(params.colorBordeSuperior 
             && params.colorEncabezado && params.colorFondo && params.colorGradienteSuperior
             && params.colorGradienteInferior && params.colorTitulos)
         {
@@ -39,7 +39,7 @@ class ConfiguracionEntidadFinancieraController {
             configuracionEntidadFinanciera.textoDescripcionDefault = params.textoDescripcionDefault.toString()
             configuracionEntidadFinanciera.textoMontoDefault = params.textoMontoDefault.toString()
             configuracionEntidadFinanciera.slogan = params.slogan
-            configuracionEntidadFinanciera.terminosCondiciones = params.terminosCondiciones
+            //configuracionEntidadFinanciera.terminosCondiciones = params.terminosCondiciones
             if(configuracionEntidadFinanciera.save(flush:true)){
                 respuesta.exito = true
                 respuesta.mensaje = "La Configuración fue guardada correctamente."

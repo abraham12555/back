@@ -10,6 +10,7 @@ class CotizadorService {
     def solicitudService
     
     def cargarCatalogos(def params) {
+        def respuesta = [:]
         def productos
         def tiposDeProducto
         def documentos
@@ -54,8 +55,16 @@ class CotizadorService {
             }
             x++
         }
+        if(params.montoComparaBien && params.plazoComparaBien){
+            respuesta.comparaBien = true
+            respuesta.montoComparaBien = params.montoComparaBien
+            respuesta.plazoComparaBien = params.plazoComparaBien
+            respuesta.correoComparaBien = params?.correoComparaBien 
+        }else{
+            respuesta.comparaBien = false
+        }
         pasosCotizador = pasosCotizador.sort { it.numeroDePaso }
-        [productos: productos, documentos: documentos, tiposDeProducto: tiposDeProducto, entidadFinanciera: entidadFinanciera, pasosCotizador: pasosCotizador, periodicidadList: Periodicidad.list(), configuracion: configuracion, landingImage: landingImage]
+        [productos: productos, documentos: documentos, tiposDeProducto: tiposDeProducto, entidadFinanciera: entidadFinanciera, pasosCotizador: pasosCotizador, periodicidadList: Periodicidad.list(), configuracion: configuracion, landingImage: landingImage, comparaBien : respuesta]
     }
     
     def obtenerBase64Imagenes(def ruta){
@@ -78,5 +87,10 @@ class CotizadorService {
         respuesta = solicitudService.verificarSolicitudExistenteCotizador(telefono, session)
         respuesta
     }
-     
+     def buscarFolio(def folio, def configuracion) {
+        def respuesta = [:]
+        respuesta = solicitudService.buscarFolio(folio,configuracion)
+        respuesta
+    }
+
 }

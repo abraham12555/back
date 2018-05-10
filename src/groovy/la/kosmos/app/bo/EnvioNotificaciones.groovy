@@ -19,6 +19,9 @@ class EnvioNotificaciones {
     def dayMonth
     def monthTime
     def templateOptions
+    def dias
+    def horas
+    def minutos
 
     EnvioNotificaciones(){
 

@@ -51,6 +51,7 @@
 
         <g:external dir="css" file="jquery-ui-kosmos.css" />
         <g:external dir="js" file="jquery-ui-kosmos.js" />
+        <g:external dir="js" file="jquery-ui-touch-punch.js" />
         <g:external dir="js" file="googleanalytics.js" />
         <g:external dir="js" file="perfilador.js" />
         <g:external dir="js" file="picker.js" />
@@ -58,6 +59,7 @@
         <g:external dir="js" file="jquery.mloading.js" />
         <g:external dir="js" file="vanilla-notify.min.js" />
         <g:external dir="js" file="autoNumeric.min.js" />
+        <g:external dir="js" file="jquery.tablesorter.js" />
         <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
         <script src="http://harvesthq.github.io/chosen/chosen.jquery.js"></script>
            <!-- Include Editor JS files. -->
@@ -85,7 +87,7 @@
                                 <a href="${urlLogout}">Salir</a>
                             </div>
                         </div>
-                        <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
+                        <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i id='botonAbrirMenu'class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
                     <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
                         <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
@@ -157,6 +159,9 @@
         <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
     </a>
 </sec:ifAnyGranted>
+</li>
+<li>
+<a href="${urlLogout}"><img class="menuIcon" src="${resource(dir:'images', file:'mobile-logo.png')}" alt="SALIR" title="SALIR"> SALIR</a>
 </li>
 </ul>
 <nav id="dashboardMenu" class="container menuBox marginBottom28">

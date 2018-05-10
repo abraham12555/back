@@ -31,6 +31,11 @@
                                 <a onclick="mostrarApartado('opcReportes','reportesTab','reporteMitek');" title="Ver Reporte Mitek " class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">MITEK</a>
                             </li>
                         </sec:ifAnyGranted>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN'>
+                            <li id="reporteMitekButton" class="opcReportes floatLeft paddingLeft5 paddingRight5">
+                                <a onclick="mostrarApartado('opcReportes','reportesTab','reporteBitacoraMitek');" title="Ver Reporte Mitek " class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">BITACORA MITEK</a>
+                            </li>
+                        </sec:ifAnyGranted>
                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR'>
                             <!--<li id="contactoClientesButton" class="opcReportes floatLeft paddingLeft5 paddingRight5">
                                 <a onclick="mostrarApartado('opcReportes','reportesTab','contactoClientes');" title="Ver Contacto de Clientes" class="displayInline font20 fontWeight500 darkBluetitle opacity05 padding20 pointer">CONTACTO CLIENTES</a>
@@ -82,6 +87,12 @@
     <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA'>
         <div class="reportesTab" id="operaciones" style="display: none;" >
             <g:render template="operaciones"/>
+        </div>
+    </sec:ifAnyGranted>
+    
+    <sec:ifAnyGranted roles='ROLE_ADMIN'>
+        <div class="reportesTab" id="reporteBitacoraMitek" style="display: none;" >
+            <g:render template="reporteBitacoraMitek"/>
         </div>
     </sec:ifAnyGranted>
 

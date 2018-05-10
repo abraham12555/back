@@ -5,6 +5,7 @@ class Periodicidad implements Serializable{
     String nombre
     String nomenclatura
     float periodosAnuales
+    float periodoDePago
     
     static constraints = {
         nombre (blank:false)

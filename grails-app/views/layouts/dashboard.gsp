@@ -46,6 +46,7 @@
         <g:external dir="js" file="googleanalytics.js" />
         <g:external dir="js" file="bootstrap-tour-standalone.min.js" />
         <g:external dir="js" file="jquery.webui-popover.min.js" />
+        <g:external dir="js" file="jquery.tablesorter.js" />
 
         <!-- Include external JS libs. -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
@@ -79,7 +80,7 @@
                                 <a href="${urlLogout}">Salir</a>
                             </div>
                         </div>
-                        <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
+                        <span class="mobile tablet floatLeft mobMenu dashboard dropbtn"><i id='botonAbrirMenu' class="fa fa-bars" aria-hidden="true" onclick="w3_open();"></i></span>
                     </div>
                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_ANALISTA,ROLE_EJECUTIVO,ROLE_SUCURSAL,ROLE_CAJERO,ROLE_MERCADOTECNIA,ROLE_CENTRO_DE_CONTACTO'>
                             <div class="floatRight width337 borderGrayRight paddingBottom10 paddingTop10 desktop">
@@ -152,6 +153,9 @@
                       <img class="menuIcon" src="${resource(dir:'images', file:'analiticas.png')}" alt="reportes" title="reportes"> REPORTES
                   </a>
               </sec:ifAnyGranted>
+          </li>
+          <li>
+              <a href="${urlLogout}"><img class="menuIcon" src="${resource(dir:'images', file:'mobile-logo.png')}" alt="SALIR" title="SALIR"> SALIR</a>
           </li>
         </ul>
     <nav id="dashboardMenu" class="container menuBox marginBottom28">
@@ -394,7 +398,28 @@ $.urlAbreModal = "${urlAbreModal}";
       html += "  </form>";
 												return html;
 					 						}};
+                                                                                        					var
+					 	asyncSettings2 = {	width:'300',
+					 						height:'200',
+					 						closeable:true,
+					 						padding:false,
+					 						cache:false,
+					 						type:'async',
+					 						content:function(data){
+                                                                                        var html='';
+                html += "<div   class='form-horizontal' id='busquedaForm'>";
+                html += "<div class='width990 autoMargin solicitudWhiteBox clearFix paddingBottom20'>";
+                html += "<div class='formContainer'>";
+                html += "<label class = 'darkBluetitle'>NOMBRE</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='nombreUsuarioBusqueda' id='nombreUsuarioBusqueda' type='text'  placeholder='Nombre' />";
+                html += "<label class = 'darkBluetitle' >NOMBRE DE USUARIO</label><input class='inputs marginBottom10 lightGray letterspacing1 font14' name='usernameUsuarioBusqueda' id='usernameUsuarioBusqueda' type='text'  placeholder='Username' />";
+                 html += "<button  onclick='getUsersBusqueda(1,null,null);' class='azulBox colorWhite'>BUSCAR</button>";
+                html += "</div>";
+           html += " </div>";
+      html += "  </div>";
+												return html;
+					 						}};
 					$('a.show-pop-async').webuiPopover('destroy').webuiPopover($.extend({},settings,asyncSettings));
+					$('a.show-pop-async-users').webuiPopover('destroy').webuiPopover($.extend({},settings,asyncSettings2));
 
 					$('#change').on('click',function(e){
 						e.preventDefault();

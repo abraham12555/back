@@ -26,6 +26,7 @@ class Usuario implements Serializable {
     String email
     Date fechaPassword
     String numeroDeEmpleado
+    String idDispositivo
 
     Usuario(String username, String password) {
         this()
@@ -66,6 +67,7 @@ class Usuario implements Serializable {
         fechaPassword nullable: false
         sesionUsuario nullable: true
         fotoPerfilUsuario nullable: true
+        idDispositivo nullable: true
     }
 
     static mapping = {

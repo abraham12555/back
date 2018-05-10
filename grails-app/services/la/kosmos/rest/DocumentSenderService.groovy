@@ -54,17 +54,18 @@ import org.codehaus.groovy.grails.io.support.IOUtils
 
 @Transactional
 class DocumentSenderService implements AwaitilityTrait{
-
+    
+    def bitacoraMitekService
     def generarBase64(def archivo) {
         def base64 = Base64.encodeBase64String(archivo)
         return base64
     }
     
-    def send(def listaDeArchivos){
-        send(listaDeArchivos, 1, null,null)
+    def send(def listaDeArchivos,def folio){
+        send(listaDeArchivos, 1, null,null,folio)
     }
     
-    def send(def listaDeArchivos, def total, def dossierId, def referencia) throws ClientProtocolException, IOException,
+    def send(def listaDeArchivos, def total, def dossierId, def referencia, def folio) throws ClientProtocolException, IOException,
     NoSuchAlgorithmException, KeyManagementException {
         BasicConfigurator.configure();
         def configuracion = ConfiguracionKosmos.get(1)
@@ -157,14 +158,16 @@ class DocumentSenderService implements AwaitilityTrait{
             String line = null;
             try {
                 if(respuesta.statusCode == 200){
+                    bitacoraMitekService.registrarBitacoraMitek(folio,false,false,"NINGUNO","DOCUMENTO ENVIADO")
                     sb.append(reader.readLine()?.replaceAll("\"",""))
                 } else {
+                    bitacoraMitekService.registrarBitacoraMitek(folio,false,true,"REGRESO UN CODIGO DIFERENTE A 200","DOCUMENTO ENVIADO")
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
                 }
             } catch (RuntimeException ex) {
-
+                    bitacoraMitekService.registrarBitacoraMitek(folio,false,true,ex.getStackTrace().toString(),"DOCUMENTO ENVIADO")
             } finally {
                 responseStream.close();
             }
@@ -201,18 +204,25 @@ class DocumentSenderService implements AwaitilityTrait{
         return result;
     }
     
-    def verificarRespuestaMitek(def referencia, def solicitud, def solicitudTemporal, def dossierId){
+    def verificarRespuestaMitek(def referencia, def solicitud, def solicitudTemporal, def dossierId,def folio){
         def datosRecibidos = false
         def datosDocto = false
         def validacionesDocto = false
         def mapa = [:]
+        def fechaInicial 
+        def fechaFinal
         try {
+            fechaInicial =  new Date()
             await().atMost(60, SECONDS).until { consultarResultadosMitek(referencia, dossierId) }
             datosRecibidos = true
         }catch(ConditionTimeoutException e){
+            bitacoraMitekService.registrarBitacoraMitek(folio,false,true,"NO SE RECIBIO RESPUESTA EN 60 ","SIN RESPUESTA",60)
             mapa.error = "No se ha recibido respuesta en 60 seguros. Intente nuevamente por favor."
         }
         if (datosRecibidos) {
+            fechaFinal = new Date()
+            def tiempoEnContestar = ((fechaFinal.getTime() - fechaInicial.getTime())/1000)
+            bitacoraMitekService.registrarBitacoraMitek(folio,true,false,"NINGUNO","RESPUESTA EXITOSA",tiempoEnContestar)
             def classificationResult = ClassificationResult.findByReference(referencia)
             def dossierSummary = DossierSummary.findByReference(referencia)
             if(classificationResult) {
@@ -306,7 +316,9 @@ class DocumentSenderService implements AwaitilityTrait{
                 if(dossierSummary.status == "Rejected") {
                     def motivos = DossierRejectIssue.findAllWhere(dossierSummary: dossierSummary)
                     mapa.motivosRechazo = (motivos*.dossierRejectReason)*.descripcion
+                    bitacoraMitekService.registrarBitacoraMitek(folio,true,true,mapa.motivosRechazo.join(","),"RESPUESTA EXITOSA DOSSIER SUMMARY REJECTED",tiempoEnContestar)
                 } else if (dossierSummary.status != "Rejected" && datosDocto == false) {
+                    bitacoraMitekService.registrarBitacoraMitek(folio,true,true,"LA IMAGEN PROPORCIONADA NO CORRESPONDE A UNA IDENTIFICACION VÁLIDA O LA CALIDAD ES DEMASIADO BAJA","RESPUESTA EXITOSA SIN CLASSIFICATIONRESULT",tiempoEnContestar)
                     println "[OCR Warning] El análisis tiene respuesta, pero no viene el classificationResult"
                     mapa.motivosRechazo = ["La imagen proporcionada no corresponde a una identificación válida o la calidad de la misma es demasiado baja."]
                 }
@@ -335,14 +347,14 @@ class DocumentSenderService implements AwaitilityTrait{
         println "A punto de comparar [classificationResultRecibido: " + classificationResultRecibido + ", dossierSummaryRecibido: " + dossierSummaryRecibido + "]"
         if(classificationResultRecibido > 0 && dossierSummaryRecibido > 0){
             println ("****************** SI HAY RESPUESTA *******************")
-    return true
+            return true
         } else if (classificationResultRecibido == 0 && dossierSummaryRecibido > 0) {
             println ("****************** RESPUESTA PARCIAL *******************")
             return true
         } else {
             println ("++++++++++++++++++ AUN NO HAY RESPUESTA ++++++++++++++++++")
             return false
-    }
+        }
     }
     
     def obtenerNumeroExterior(def direccion) {

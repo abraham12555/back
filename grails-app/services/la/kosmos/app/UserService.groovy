@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Propagation
+import org.apache.commons.lang.RandomStringUtils
 
 @Transactional
 class UserService {
@@ -38,6 +39,7 @@ class UserService {
     def springSecurityUiService
     def uiMailStrategy
     def uiRegistrationCodeStrategy
+    def emailService
 
     def changePassword(String username, String password){
         if(username == null){
@@ -660,4 +662,228 @@ class UserService {
 
         return respuesta
     }
+    def getUsersBusqueda(EntidadFinanciera entidadFinanciera, Pager pager, nombreUsuarioBusqueda,usernameUsuarioBusqueda){
+        pager.rowsPerPage = Constants.TOTAL_ROWS
+        def userList = []
+        def criteria = Usuario.createCriteria()
+        def results = criteria.list (max: pager.rowsPerPage, offset: pager.firstRow) {
+            eq ('entidadFinanciera', entidadFinanciera)
+            ilike("nombre","%"+nombreUsuarioBusqueda+"%")
+            ilike("username","%"+usernameUsuarioBusqueda+"%")
+            order("nombre", "asc")
+        }
+
+        pager.totalRows = results.totalCount
+
+        results.each {
+            User u = new User()
+            u.id = it.id
+            u.username = it.username
+            u.fullName = it.toString()
+            u.email = it.email
+            u.authorities = it.authorities
+            userList << u
+        }
+
+        return userList
+    }
+    def loginRest (params){
+        def respuesta = [:]
+        def usuario = Usuario.findByUsername(params.username)
+        if(!usuario || !passwordEncoder.isPasswordValid(usuario?.password, params.password, null)){
+            respuesta.error = true
+            respuesta.mensaje = "El usuario o password no coinciden"
+            return respuesta
+        }
+        if(usuario && passwordEncoder.isPasswordValid(usuario.password, params.password, null)){
+            respuesta.id = usuario.id
+            respuesta.username = usuario.username
+            respuesta.fullName = usuario.toString()
+            respuesta.email = usuario.email
+            respuesta.authorities = usuario.authorities
+            respuesta.exito = true
+            respuesta.mensaje = "Login success"
+            usuario.idDispositivo = params.idDispositivo
+        }
+        if(usuario?.passwordExpired){
+            respuesta.exito = false
+            respuesta.error = true
+            respuesta.mensaje = "El password ha expirado"
+            return respuesta
+        }
+        else if(!usuario?.enabled){
+            respuesta.exito = false
+            respuesta.error = true
+            respuesta.mensaje = "El usuario esta desactivado"
+            return respuesta
+        }
+        else if(usuario?.accountLocked){
+            respuesta.exito = false
+            respuesta.error = true
+            respuesta.mensaje = "El usuario tiene la cuenta bloqueada"
+            return respuesta
+        }
+        return respuesta
+        
+    }
+    def checarDispositivo(params){
+        def respuesta = [:]
+        println params
+        def usuario = Usuario.findByIdDispositivo(params)
+        if(!usuario){
+            respuesta.error = true
+            respuesta.mensaje = "No hay usuario asociado a este dispositivo"
+            return respuesta
+        }
+        if(usuario){
+            respuesta.id = usuario.id
+            respuesta.username = usuario.username
+            respuesta.fullName = usuario.toString()
+            respuesta.email = usuario.email
+            respuesta.authorities = usuario.authorities
+            respuesta.exito = true
+            respuesta.mensaje = "Login success"
+        }
+        if(usuario?.passwordExpired){
+            respuesta.exito = false
+            respuesta.error = true
+            respuesta.mensaje = "El password ha expirado"
+            return respuesta
+        }
+        else if(!usuario?.enabled){
+            respuesta.exito = false
+            respuesta.error = true
+            respuesta.mensaje = "El usuario esta desactivado"
+            return respuesta
+        }
+        else if(usuario?.accountLocked){
+            respuesta.exito = false
+            respuesta.error = true
+            respuesta.mensaje = "El usuario tiene la cuenta bloqueada"
+            return respuesta
+        }
+        return respuesta
+    }
+    def forgotPassword(params) {
+
+        Usuario user = Usuario.findByEmail(params.email)
+        if(user == null){
+            flash.message = "Error. Los datos del usuario son invalidos"
+            return
+        }
+
+        String email = user.email
+        def response = [:]
+
+        try {
+            def codigo = getRandomCode()
+            def registrationCode = new RegistrationCode ()
+            registrationCode.dateCreated = new Date()
+            registrationCode.token = codigo
+            registrationCode.username = user.username
+            if(registrationCode.save(flush:true)){
+                def texto = ''
+                texto += "Estimado usuario $user.username <br/> <br/>"
+                texto += "Se ha registrado una solicitud de \"Restablecimiento de contraseña\" de su cuenta de usuario. "
+                texto += "Para continuar con el proceso ingresa el siguiente código $codigo "
+                texto += "y proporcione una nueva contraseña de acceso. <br/> <br/>"
+                texto += "Por razones de seguridad tiene que proporcionar una nueva contraseña en los próximos 30 minutos. <br/>"
+                def configuracion = ConfiguracionEntidadFinanciera.get(1)
+                uiMailStrategy.sendForgotPasswordMail(to: email, from: springSecurityUiService.forgotPasswordEmailFrom,
+                subject: "Restablecimiento de contraseña", html: texto.toString())
+             }
+            response.usuario = user.username
+            response.exito = true
+            response.message = "Se ha enviado un mensaje a su cuenta de correo electrónico con las instrucciones que debe seguir para continuar con el proceso de restablecimiento de contraseña."
+        } catch (Exception e){
+            log.error ("Ocurrio un error al enviar el correo electronico", e)
+            response.error = Boolean.TRUE
+            response.message = "Ha ocurrido un error al enviar el correo electrónico. Por favor inténtalo más tarde."
+        }
+
+        return response 
+    }
+    def verificarCodigo(params){
+        def response = [:]
+        
+        def registrationCode = params.codigo ? RegistrationCode.findWhere(token:params.codigo,username:params.username) : null
+        if (!registrationCode) {
+            response.error = Boolean.TRUE
+            response.message = "La solicitud de restablecimiento de contraseña es inválida"
+            return response
+        }
+        
+        Calendar requestDate = Calendar.getInstance();
+        requestDate.setTime(registrationCode.dateCreated);
+        requestDate.add(Calendar.MINUTE, grailsApplication.config.password.recovery);
+        
+        Calendar now = new GregorianCalendar();
+        if (requestDate.compareTo(now) < 0) {
+            deleteRegistrationCode(params.codigo)
+            
+            response.error = Boolean.TRUE
+            response.message = "Ha excedido el tiempo permitido para hacer el cambio de contraseña"
+            return response;
+        }
+        
+        response.registrationCode = registrationCode
+        response.exito = true
+        return response
+        
+    }
+    
+    def passwordRecoveryRest(String username, String password){
+        def respuesta = [:]
+        Usuario user = Usuario.findByUsername(username)
+        
+        if(user == null){
+            throw new BusinessException("Error. Los datos del usuario son inválidos")
+        }
+        def validar = checkPasswordRecordRest(user, password)
+        if(!validar){
+            respuesta.exito = true
+            respuesta.mensaje = "La contraseña ha sido actualizada correctamente"
+            respuesta.usuario = user
+            //Saving current password
+            UsuarioPasswords userPassword = new UsuarioPasswords(user, Calendar.getInstance().getTime());
+            
+            //Updating password
+            user.password = password
+            user.passwordExpired = Boolean.FALSE
+            user.fechaPassword = Calendar.getInstance().getTime()
+            user.addToUserPasswords(userPassword);
+            
+            if(!user.save(validate: Boolean.FALSE, flush: Boolean.TRUE, failOnError: Boolean.TRUE)) {
+                respuesta.exito = false
+                respuesta.mensaje = "Ocurrió un error. Inténtalo más tarde"
+            }
+        }else{
+            respuesta.exito = false
+            respuesta.mensaje = "La contraseña ya ha sido utilizada"
+        }
+        return respuesta
+    }
+    
+    private boolean checkPasswordRecordRest(Usuario user, String password){
+        //Validating new password
+        def respuesta = false
+        if(passwordEncoder.isPasswordValid(user.password, password, null)){
+            respuesta = true
+        } else {
+            if(!user.userPasswords?.empty){
+                user.userPasswords.each {
+                    if(passwordEncoder.isPasswordValid(it.password, password, null)){
+                        respuesta = true
+                    }
+                }
+            }
+        }
+        return respuesta
+    }
+    private String getRandomCode() {
+        //def result = RandomStringUtils.randomAlphanumeric(5).toUpperCase()
+        def result = RandomStringUtils.randomNumeric(5).toUpperCase()
+        result
+    }
+
 }

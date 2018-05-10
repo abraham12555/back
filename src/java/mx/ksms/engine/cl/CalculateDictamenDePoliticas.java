@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="solicitudId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="servicios" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="EDAD" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="porcentajeDeDescuento" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -32,7 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "calculateDictamenDePoliticas", propOrder = {
     "solicitudId",
     "servicios",
-    "edad"
+    "edad",
+    "porcentajeDeDescuento"
 })
 public class CalculateDictamenDePoliticas {
 
@@ -40,6 +42,7 @@ public class CalculateDictamenDePoliticas {
     protected String servicios;
     @XmlElement(name = "EDAD")
     protected Integer edad;
+    protected Double porcentajeDeDescuento;
 
     /**
      * Obtiene el valor de la propiedad solicitudId.
@@ -111,6 +114,30 @@ public class CalculateDictamenDePoliticas {
      */
     public void setEDAD(Integer value) {
         this.edad = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad porcentajeDeDescuento.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getPorcentajeDeDescuento() {
+        return porcentajeDeDescuento;
+    }
+
+    /**
+     * Define el valor de la propiedad porcentajeDeDescuento.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setPorcentajeDeDescuento(Double value) {
+        this.porcentajeDeDescuento = value;
     }
 
 }

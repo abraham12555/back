@@ -21,6 +21,9 @@ import java.util.List;
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import la.kosmos.app.bo.Document
+import la.kosmos.app.bo.PageDocument
+import la.kosmos.app.exception.BusinessException
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageTree
@@ -267,14 +270,26 @@ class SolicitudService {
                             println("Si trae solicitud temporal, tiene folio? " + solicitudTemporal.folio)
                             if(solicitudTemporal.folio) {
                                 solicitudDeCredito.folio = solicitudTemporal.folio
+                                if(solicitudTemporal?.medioDeContacto){
+                                    solicitudDeCredito?.medioDeContacto = solicitudTemporal?.medioDeContacto
+                                    solicitudDeCredito?.opcionMedioDeContacto = solicitudTemporal?.opcionMedioDeContacto 
+                                }
+                                
                             } else {
                                 solicitudDeCredito.folio = generarFolioAlfanumerico(7);
                                 while(verificarExistenciaDeFolio(solicitudDeCredito.folio, solicitudDeCredito.entidadFinanciera, 1)) {
                                     solicitudDeCredito.folio = generarFolioAlfanumerico(7);
                                 }
+                                if(solicitudTemporal?.medioDeContacto){
+                                    solicitudDeCredito?.medioDeContacto = solicitudTemporal?.medioDeContacto
+                                    solicitudDeCredito?.opcionMedioDeContacto = solicitudTemporal?.opcionMedioDeContacto 
+                                }
                             }
                         } else {
                             println("No trae solicitud temporal ...")
+                            if(params?.uso_movil){
+                                solicitudDeCredito.usoMovil = params?.uso_movil?.toBoolean()
+                            }
                             solicitudDeCredito.folio = generarFolioAlfanumerico(7);
                             while(verificarExistenciaDeFolio(solicitudDeCredito.folio, solicitudDeCredito.entidadFinanciera, 1)) {
                                 solicitudDeCredito.folio = generarFolioAlfanumerico(7);
@@ -706,7 +721,7 @@ class SolicitudService {
             productoSolicitud.periodicidad = Periodicidad.get(datosCotizador.periodo as long)
             productoSolicitud.plazos = datosCotizador.plazo as int
             productoSolicitud.tasaDeInteres = productoSolicitud.producto.tasaDeInteres
-            //productoSolicitud.cat = datosCotizador.cat as float
+            productoSolicitud.cat = datosCotizador.cat as float
             productoSolicitud.solicitud = solicitud
             if(productoSolicitud.save(flush:true)){
                 println("El producto se ha registrado correctamente")
@@ -743,7 +758,11 @@ class SolicitudService {
                 solicitud.nombreDelCliente = datosCotizador.nombreCliente
                 solicitud.emailCliente = datosCotizador.emailCliente
                 solicitud.telefonoCliente = datosCotizador.telefonoCliente
-                //solicitud.cat = datosCotizador.cat
+                solicitud.cat = datosCotizador.cat
+                if(datosCotizador.medioDeContacto){
+                   solicitud.medioDeContacto = MedioDeContacto.get(2);
+                }
+                solicitud.opcionMedioDeContacto = ((datosCotizador.opcionMedioDeContacto == true) ? OpcionMedioDeContacto.get(6).id : 0)
             } else {
                 solicitud.montoDelPago = datosCotizador.pagos as float
                 solicitud.montoDelSeguroDeDeuda = 0
@@ -768,7 +787,7 @@ class SolicitudService {
             }
             if(solicitud.save(flush:true)){
                 println("La solicitud temporal se ha registrado correctamente")
-                return solicitud.id
+                return solicitud
             } else {
                 println("No se guardo nada")
                 if (solicitud.hasErrors()) {
@@ -802,6 +821,7 @@ class SolicitudService {
         def folioSolicitud
         def query = "SELECT s FROM SolicitudDeCredito s WHERE s.entidadFinanciera.id = " + auth.entidadFinanciera.id
         def query2
+        def usuario
         if(tipoDeConsulta && (tipoDeConsulta as int) == 0) {
             query += " AND s.statusDeSolicitud.id NOT IN (1,2,3)"
         } else if (tipoDeConsulta && (tipoDeConsulta as int) == 1) {
@@ -844,9 +864,7 @@ class SolicitudService {
             datosSolicitud.empleoCliente = EmpleoCliente.findWhere(cliente: solicitud.cliente)
             datosSolicitud.telefonosCliente = TelefonoCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
             datosSolicitud.emailCliente = EmailCliente.findAllWhere(cliente: solicitud.cliente, vigente: true)
-// *** SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS 
-//            datosSolicitud.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
-// *** SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS - FIN
+            datosSolicitud.documentosSolicitud = DocumentoSolicitud.findAllWhere(solicitud: solicitud)
             datosSolicitud.resultadoMotorDeDecision = ResultadoMotorDeDecision.findWhere(solicitud: solicitud)
             
             if(datosSolicitud.telefonosCliente){
@@ -891,9 +909,7 @@ class SolicitudService {
             solicitudRest.solicitud.direccion = [:]
             solicitudRest.solicitud.vivienda = [:]
             solicitudRest.solicitud.empleo = [:]
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL SCORE
-//            solicitudRest.solicitud.resultadoDelScore = [:]
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL SCORE - FIN
+            solicitudRest.solicitud.resultadoDelScore = [:]
             solicitudRest.solicitud.documentos = []
             solicitudRest.solicitud.buroDeCredito = ""
         
@@ -903,11 +919,9 @@ class SolicitudService {
             solicitudRest.solicitud.datosSolicitud.folio = ("" + solicitud.folio).padLeft(6, '0')
             solicitudRest.solicitud.datosSolicitud.puntoDeVenta = (solicitud.sucursal ? solicitud.sucursal.nombre : "")
             solicitudRest.solicitud.datosSolicitud.puntajeScore = (datosBuroDeCredito.score ? (datosBuroDeCredito.score as int) : 0)
-            solicitudRest.solicitud.datosSolicitud.resultadoDelScore = "" //[:]
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL MOTOR
-//            solicitudRest.solicitud.datosSolicitud.errorConsulta = (datosBuroDeCredito.tipoErrorBuroCredito ?: "")
-//            solicitudRest.solicitud.datosSolicitud.consultaBuroEjecutada = ((datosBuroDeCredito.reporte) ? 'SI' : "NO")            
-            /*if(datosSolicitud.resultadoMotorDeDecision) {
+            solicitudRest.solicitud.datosSolicitud.errorConsulta = (datosBuroDeCredito.tipoErrorBuroCredito ?: "")
+            solicitudRest.solicitud.datosSolicitud.consultaBuroEjecutada = ((datosBuroDeCredito.reporte) ? 'SI' : "NO")            
+            if(datosSolicitud.resultadoMotorDeDecision) {
             solicitudRest.solicitud.resultadoDelScore.dictamenCapacidadDePago = (datosSolicitud.resultadoMotorDeDecision.dictamenCapacidadDePago ?: "")
             solicitudRest.solicitud.resultadoDelScore.dictamenConjunto = (datosSolicitud.resultadoMotorDeDecision.dictamenConjunto ?: "")
             solicitudRest.solicitud.resultadoDelScore.dictamenDePerfil = (datosSolicitud.resultadoMotorDeDecision.dictamenDePerfil ?: "")
@@ -915,14 +929,12 @@ class SolicitudService {
             solicitudRest.solicitud.resultadoDelScore.dictamenFinal = (datosSolicitud.resultadoMotorDeDecision.dictamenFinal ?: "")
             solicitudRest.solicitud.resultadoDelScore.probabilidadDeMora = (datosSolicitud.resultadoMotorDeDecision.probabilidadDeMora ?: 0)
             solicitudRest.solicitud.resultadoDelScore.razonDeCobertura = (datosSolicitud.resultadoMotorDeDecision.razonDeCobertura ?: 0)
-            }*/
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL RESULTADO DEL MOTOR - FIN
+            }
             solicitudRest.solicitud.datosSolicitud.estadoDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ?"Autorizado" : "")
             solicitudRest.solicitud.datosSolicitud.usuarioDictaminador = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? "Usuario Dictaminador" : "")
             solicitudRest.solicitud.datosSolicitud.fechaDeDictaminacion = ""//(tipoDeConsulta || tipoDeConsulta == 0 ? (new Date()).format('dd/MM/yyyy HH:mm') : "")
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL ULTIMO PASO
-//            solicitudRest.solicitud.datosSolicitud.ultimoPaso = (solicitud.ultimoPaso ?:"")
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DEL ULTIMO PASO - FIN      
+            solicitudRest.solicitud.datosSolicitud.ultimoPaso = (solicitud.ultimoPaso ?:"")
+
             solicitudRest.solicitud.productoSeleccionado.producto = datosSolicitud.productoSolicitud?.producto?.claveDeProducto
             solicitudRest.solicitud.productoSeleccionado.modelo = ((datosSolicitud.productoSolicitud?.modelo) ? datosSolicitud.productoSolicitud?.modelo.nombre : "")
             solicitudRest.solicitud.productoSeleccionado.color = ((datosSolicitud.productoSolicitud?.colorModelo) ? datosSolicitud.productoSolicitud.colorModelo?.nombre : "")
@@ -933,10 +945,8 @@ class SolicitudService {
             solicitudRest.solicitud.productoSeleccionado.seguro = datosSolicitud.productoSolicitud?.montoDelSeguroDeDeuda
             solicitudRest.solicitud.productoSeleccionado.tasaDeInteres =  datosSolicitud.productoSolicitud?.producto?.tasaDeInteres
             solicitudRest.solicitud.productoSeleccionado.montoDelCredito = datosSolicitud.productoSolicitud?.montoDelCredito
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DE LIBERASISTENCIA
-//            solicitudRest.solicitud.productoSeleccionado.liberasistencia = datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DE LIBERASISTENCIA - FIN
-            
+            solicitudRest.solicitud.productoSeleccionado.liberasistencia = datosSolicitud.productoSolicitud?.montoDeServicioDeAsistencia
+
             def primerNombre
             def segundoNombre
             def nombreCompleto = solicitud.cliente.nombre?.split()
@@ -1010,21 +1020,45 @@ class SolicitudService {
             solicitudRest.solicitud.empleo.ingresosVariables = ((datosSolicitud.empleoCliente?.ingresosVariables) ? datosSolicitud.empleoCliente?.ingresosVariables : 0)
             solicitudRest.solicitud.empleo.ingresosTotales = solicitudRest.solicitud.empleo.ingresosFijos + solicitudRest.solicitud.empleo.ingresosVariables
             solicitudRest.solicitud.empleo.gastosMensuales = ((datosSolicitud.empleoCliente?.gastos) ? datosSolicitud.empleoCliente?.gastos : 0)
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS 
-            //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
             
-//            datosSolicitud.documentosSolicitud?.each { documento ->
-//                try{
-//                    def mapaDocto = [:]
-//                    mapaDocto.tipoDeDocumento = documento.tipoDeDocumento.codigo
-//                    mapaDocto.contenidoBase64 = generarBase64(new File(documento.rutaDelArchivo))
-//                    solicitudRest.solicitud.documentos << mapaDocto
-//                }catch(Exception e){
-//                    println ("[REST] Excepción ocurrida: " + e.getMessage())
-//                    println "[REST] Ocurrio un problema con el archivo con ruta $documento.rutaDelArchivo, verifiquelo por favor..."
-//                }
-//            }
-// SE RESTRINGE TEMPORALMENTE EL ENVIO DE DOCUMENTOS FIN
+            //solicitudRest.solicitud.documentos << [tipoDeDocumento: "Comprobante De Domicilio", contenidoBase64: "TEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOIC0gTEEgSU1BR0VOLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4gLSBMQSBJTUFHRU4="]
+
+            datosSolicitud.documentosSolicitud?.each { documento ->
+                File sourceFile = new File(documento.rutaDelArchivo)
+               
+                if (sourceFile.exists()) {
+                    try {
+                        String fileLabel = ".${sourceFile.name.split("\\.")[-1]}"
+
+                        Document document = new Document()
+                        document.tipoDeDocumento = documento.tipoDeDocumento.codigo
+
+                        //Transform PDF files
+                        if(fileLabel.equalsIgnoreCase(".pdf")){
+                            document.paginas = this.convertPDFtoImage(documento)
+                        } else {
+                            BufferedImage bufferedImage = ImageIO.read(new File(documento.rutaDelArchivo))
+
+                            if (bufferedImage == null) {
+                                throw new BusinessException("El documento con ruta $documento.rutaDelArchivo esta corrupto")
+                            }
+
+                            byte[] bf = this.redimensionar(documento, bufferedImage)
+                            String content = this.generarBase64(bf)
+
+                            PageDocument pagina = new PageDocument(1, content)
+                            document.paginas = []
+                            document.paginas << pagina
+                        }
+
+                        solicitudRest.solicitud.documentos << document
+                    } catch(Exception e){
+                        log.error("Ocurrio un error al convertir el documento: " + documento.rutaDelArchivo, e)
+                    }
+                } else {
+                    log.error("El archivo con ruta $documento.rutaDelArchivo no existe")
+                }
+            }
 
             if(!datosBuroDeCredito?.reporte || datosBuroDeCredito?.reporte?.tipoErrorBuroCredito) {
                 solicitudRest.solicitud.buroDeCredito = ""
@@ -1032,7 +1066,7 @@ class SolicitudService {
                 def bitacoraDeBuro = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + solicitud.id + "  Order by b.fechaRespuesta desc")
             
                 if(bitacoraDeBuro){
-                    solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
+                    solicitudRest.solicitud.buroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0),usuario)
                 }
             }
             
@@ -1383,15 +1417,13 @@ class SolicitudService {
         respuesta
     }
     
-    def generarBase64(def newFile) {
-        def base64
-        byte[] array = Files.readAllBytes((newFile).toPath()); 
-        base64 = Base64.encodeBase64String(array)
-        return base64
+    private String generarBase64(byte[] buf) {
+        return Base64.encodeBase64String(buf)
     }
     
     def construirDatosMotorDeDecision(def identificadores){
         def datos = [:]
+	def usuario  = [:]
         println ("Identificadores: " + identificadores)
         def solicitud = SolicitudDeCredito.get(identificadores.idSolicitud)
         def productoSolicitud = ProductoSolicitud.get(identificadores.idProductoSolicitud)
@@ -1404,7 +1436,7 @@ class SolicitudService {
         datos.periodicidad = productoSolicitud.periodicidad.nombre.toUpperCase()
         datos.riesgoOcupacion = empleo.ocupacion.riesgoDeOcupacion?.nombre?.replaceAll("\\s+", "")?.toUpperCase()
         datos.edad = calcularTiempoTranscurrido(solicitud.cliente.fechaDeNacimiento)
-        datos.estadoCivil = solicitud.cliente.estadoCivil.nombre.replaceAll("\\s+", "").toUpperCase()
+        datos.estadoCivil = solicitud.cliente.estadoCivil?.nombre?.replaceAll("\\s+", "").toUpperCase()
         datos.productoServicio = productoSolicitud.producto.claveDeProducto
         datos.antiguedadVivienda = calcularTiempoTranscurrido(new Date().parse("dd/MM/yyyy", ("01/" + direccion.tiempoDeVivienda)))
         datos.ingresosFijosMensuales = new Double(empleo.ingresosFijos)
@@ -1415,20 +1447,23 @@ class SolicitudService {
         datos.cuotaMensualCredito = new Double(productoSolicitud.montoDelPago)
         datos.tipoDeVivienda = direccion.tipoDeVivienda.id.intValue()
         datos.asalariado = (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ? true : false)
-        def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: productoSolicitud.producto.id, regionId: solicitud.sucursal.region.id])
+        def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (productoSolicitud?.documentoElegido?.tipoDeIngresos?.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: productoSolicitud?.producto?.id, regionId: solicitud?.sucursal?.region?.id])
         if(porcentajeDeDescuento){
             datos.porcentajeDeDescuento = new Double(porcentajeDeDescuento[0])
         }
-        else if(!datos.porcentajeDeDescuento){
-            if(productoSolicitud.documentoElegido.tipoDeIngresos.id == 1){
-                datos.porcentajeDeDescuento = new Double (0.5)
-            }else{
+        else if(!porcentajeDeDescuento){
+            if(productoSolicitud.producto.claveDeProducto == '6115'){
                 datos.porcentajeDeDescuento = new Double(1)
-                
+            }else {
+                if(productoSolicitud.documentoElegido.tipoDeIngresos.id == 1){
+                    datos.porcentajeDeDescuento = new Double (0.5)
+                }else{
+                    datos.porcentajeDeDescuento = new Double(1)
+                }
             }
         }
         if(bitacoraDeBuro){
-            datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0))
+            datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0), usuario)
         } else {
             datos.cadenaBuroDeCredito = ""
         }
@@ -1470,6 +1505,7 @@ class SolicitudService {
         datosSolicitud.cotizador = [:]
         datosSolicitud.token = solicitud.token
         datosSolicitud.shortUrl = solicitud.shortUrl
+        datosSolicitud.folio = solicitud.folio
         datosSolicitud.ultimoPaso = solicitud.ultimoPaso
         datosSolicitud.entidadFinanciera = solicitud.entidadFinanciera
         datosSolicitud.configuracion = configuracion
@@ -1520,7 +1556,7 @@ class SolicitudService {
         datosSolicitud.cotizador.enganche = productoSolicitud.enganche
         datosSolicitud.cotizador.periodo = (productoSolicitud.periodicidad ? productoSolicitud.periodicidad.id : null)
         datosSolicitud.cotizador.plazo = productoSolicitud.plazos
-        //datosSolicitud.cotizador.cat = productoSolicitud.cat
+        datosSolicitud.cotizador.cat = productoSolicitud.cat
 
         datosSolicitud.pasoFormulario.cliente.tipoDeDocumento = datosSolicitud.cotizador.documento
         
@@ -1669,12 +1705,13 @@ class SolicitudService {
         respuesta.cotizador.periodo = solicitud.periodicidad.id
         respuesta.cotizador.plazo = solicitud.plazos
         respuesta.cotizador.montoAsistencia = solicitud.montoDeServicioDeAsistencia
-        //respuesta.cotizador.cat = solicitud.cat
+        respuesta.cotizador.cat = solicitud.cat
         respuesta.identificadores.idSolicitudTemporal = solicitud.id
         respuesta.configuracion = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera: solicitud.entidadFinanciera)
         respuesta.ef = solicitud.entidadFinanciera
         respuesta.token = solicitud.token
         respuesta.shortUrl = solicitud.shortUrl
+        respuesta.folio = solicitud.folio
         respuesta.cargarImagen = solicitud.cargarImagen
         respuesta.ultimoPaso = 1
         return respuesta
@@ -1919,22 +1956,16 @@ class SolicitudService {
     def respuesta = [:]
         def query 
         def resultados
-        def sql = new Sql(dataSource)
-            query = "select solicitud_de_credito.id_solicitud_de_credito,solicitud_de_credito.token \
-            from solicitud_de_credito,cliente, telefono_cliente \
-            where solicitud_de_credito.cliente_id = cliente.id_cliente \
-            and solicitud_de_credito.status_de_solicitud_id in (1,2,3) \
-            and solicitud_de_credito.ultimo_paso != 6 and solicitud_de_credito.solicitud_vigente=true \
-            and cliente.id_cliente = telefono_cliente.cliente_id \
-            and telefono_cliente.numero_telefonico ='"+telefono+"' \
-            and telefono_cliente.tipo_de_telefono_id = 2 and telefono_cliente.vigente = true"
-            resultados = sql.rows(query)
+        def cliente2 = TelefonoCliente.executeQuery("Select tc.cliente,sc.token,sc.folio,tc.numeroTelefonico From TelefonoCliente tc, SolicitudDeCredito sc Where (replace(tc.numeroTelefonico,'-','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono OR replace(tc.numeroTelefonico,' ','') = :telefono044 OR replace(tc.numeroTelefonico,' ','') = :telefono045) and tc.tipoDeTelefono = 2 and tc.vigente=true and sc.cliente = tc.cliente and sc.ultimoPaso !=6 and sc.solicitudVigente=true and sc.statusDeSolicitud.id in(1,2,3) and tc.vigente = true and tc.tipoDeTelefono.id = 2 and sc.shortUrl is not null and sc.folio is not null and sc.token is not null", [telefono: telefono.replaceAll("-",""), telefono044: ('044' + telefono.replaceAll("-","")), telefono045: ('045' + telefono.replaceAll("-",""))])
+            resultados = cliente2
             if (resultados.size > 1) {
                 respuesta.multiplesClientes = true   
             }
             else if (resultados.size == 1){
-                  respuesta.shortUrl = session.urlDominio+"solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
+                  respuesta.shortUrl = session.urlDominio+"solicitud/verificacion?token=" +  resultados[0][1] //solicitudFormalExistente[0].shortUrl
                   respuesta.encontrado = true
+                  respuesta.folio = resultados[0][2]
+                  respuesta.numeroTelefonico = resultados[0][3]
             }else if(resultados.size == 0){
                       //respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
                       respuesta = verificarSolicitudInformalExistenteCotizador(telefono, session)
@@ -1947,23 +1978,209 @@ class SolicitudService {
          def respuesta = [:]
         def query 
         def resultados
-        def sql = new Sql(dataSource)
-        query = "select solicitud_temporal.id_solicitud_temporal,solicitud_temporal.token\
-            from solicitud_temporal\
-            where solicitud_temporal.telefono_cliente = '"+telefono+"'\
-            and solicitud_temporal.solicitud_vigente = true "
-            resultados = sql.rows(query)
+        def cliente2 = SolicitudTemporal.executeQuery("Select st.token,st.folio,st.telefonoCliente From  SolicitudTemporal st Where (replace(st.telefonoCliente,'-','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono OR replace(st.telefonoCliente,' ','') = :telefono044 OR replace(st.telefonoCliente,' ','') = :telefono045)  and st.solicitudVigente=true and st.folio is not null and st.token is not null", [telefono: telefono.replaceAll("-",""), telefono044: ('044' + telefono.replaceAll("-","")), telefono045: ('045' + telefono.replaceAll("-",""))])
+            resultados = cliente2
             if (resultados.size > 1) {
                 respuesta.multiplesClientes = true   
             }
             else if (resultados.size == 1){
-                  respuesta.shortUrl = session.urlDominio+"solicitud/verificacion?token=" +  resultados[0].token //solicitudFormalExistente[0].shortUrl
+                  respuesta.shortUrl = session.urlDominio+"solicitud/verificacion?token=" +  resultados[0][0] 
                   respuesta.encontrado = true
+                  respuesta.folio = resultados[0][1]
+                  respuesta.numeroTelefonico = resultados[0][2]
             }else if(resultados.size == 0){
-                      //respuesta = buscarSolicitudInformalExistente(telefono, nombreCompleto, email)
                       respuesta.encontrado = false 
             }
             respuesta
+}
+
+    private byte[] redimensionar (DocumentoSolicitud documento, BufferedImage bufferedImage){
+        int width = 0
+        int height = 0
+        def imagenTamMax
+
+        switch (documento.tipoDeDocumento.id) {
+        case TipoDeDocumento.RECIBOLUZ:
+            width = 817
+            height = 1059
+            imagenTamMax = 115382
+            break;
+        case TipoDeDocumento.INE:
+            width = 322
+            height = 205
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.ESTADODECUENTA:
+            width = 812
+            height= 1051
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.RECIBONOMINA:
+            width = 548
+            height= 812
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.DECLARACIONSAT:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.RECIBOHONORARIOS:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.NOTA:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.TICKET:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.REMISION:
+            width = 817
+            height= 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.RECIBOTELEFONICO:
+            width = 817
+            height = 1059
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.PASAPORTE:
+            width = 472
+            height = 662
+            imagenTamMax = 307200
+            break;
+        case TipoDeDocumento.FORMATOACBC:
+            width = 817
+            height = 1059
+            imagenTamMax = 307200
+            break;
+        default:
+            width = 817
+            height = 1059
+            imagenTamMax = 307200
+            break;
+        }
+
+        //Resize image
+        int w = bufferedImage.getWidth()
+        int h = bufferedImage.getHeight()
+        BufferedImage bufim = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+        Graphics2D g = bufim.createGraphics()
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+        g.drawImage(bufferedImage, 0, 0, width, height, 0, 0, w, h, null)
+        g.dispose()
+
+        //New image to bytes
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        ImageIO.write( bufim, "jpg", baos)
+        baos.flush()
+        byte[] imageInByte = baos.toByteArray()
+        baos.close()
+
+        return imageInByte
     }
 
+    private List<PageDocument> convertPDFtoImage(DocumentoSolicitud documento) {
+        PDDocument document = PDDocument.load(new File(documento.rutaDelArchivo))
+        PDFRenderer pdfRenderer = new PDFRenderer(document)
+        PDPageTree pages = document.getPages()
+        List<PageDocument> listPages = []
+
+        for (PDPage page : pages) {
+            int currentPage = (pages.indexOf(page))
+            int noPagina = currentPage + 1
+
+            if(currentPage < 10){
+                BufferedImage bim = pdfRenderer.renderImage(currentPage)
+
+                if (bim == null) {
+                    throw new BusinessException("Error al extraer contenido del documento $documento.rutaDelArchivo. Pagina: " + noPagina)
+                }
+
+                byte[] bf = this.redimensionar(documento, bim)
+                String content = this.generarBase64(bf)
+
+                PageDocument pagina = new PageDocument(noPagina, content)
+                listPages << pagina
+            } else {
+                log.error("El documento $documento.rutaDelArchivo excede del numero de paginas permitidas. Total: " + document.getPages().size())
+                break
+            }
         }
+        document.close()
+
+        return listPages
+    }
+      def buscarFolio(def folio, def configuracion){
+        def respuesta = [:]
+        def query 
+        def resultados
+        def solicitud
+
+        solicitud = SolicitudDeCredito.executeQuery("select sc.token From SolicitudDeCredito sc Where sc.folio='"+folio.trim()+"' and sc.solicitudVigente=true and sc.token is not null")
+        if(!solicitud){
+            solicitud = SolicitudTemporal.executeQuery("select st.token From SolicitudTemporal st Where st.folio='"+folio.trim()+"' and st.solicitudVigente=true and st.token is not null")
+        }
+        if(solicitud){
+            respuesta.shortUrl = configuracion.urlDominio +"solicitud/verificacion/?token="+solicitud[0]
+            respuesta.encontrado = true
+        }else{
+            respuesta.encontrado = false
+        }
+        respuesta
+    }
+
+      def registrarEnviosProgramadosTemporales (folio, estatus){
+        def criteria = NotificacionesCron.createCriteria()
+        def cronList = criteria.list{
+            createAlias('configuracionEntidadFinanciera', 'cef')
+            createAlias('cef.entidadFinanciera', 'ef')
+            eq ('ef.activa', Boolean.TRUE)
+        }
+
+        if (cronList != null && !cronList?.empty) {
+            cronList.each {
+                def content = it
+                content.templates.each{
+                    if(it.tipoDeEnvio == 1 && it.status == estatus){
+                        EnviosProgramados enviosProgramados = new EnviosProgramados ()
+                        enviosProgramados.folio = folio
+                        enviosProgramados.notificacionesPlantilla = it
+                        Integer milisegundos = content.milisegundos.intValue();
+                        Calendar calendar = Calendar.getInstance()
+                        calendar.setTime(new Date())
+                        calendar.add(Calendar.MILLISECOND, milisegundos)
+                        enviosProgramados.fechaExpiracion = calendar.getTime()
+                        if(enviosProgramados.save(flush:true)){
+                            
+                        }else {
+                            if (enviosProgramados.hasErrors()) {
+                                enviosProgramados.errors.allErrors.each {
+                                    println it
+                                }
+                            }
+                        }
+                    }else{
+                    }
+                    
+                }
+            }
+        }
+    }
+     def eliminarEnviosProgramadosTemporales (def folio){
+        def envioProgramado = EnviosProgramados.findAllWhere(folio: folio)
+        if(envioProgramado){
+            envioProgramado.each{
+                 it.delete()
+            }
+        }
+    }
+    
+    
+}

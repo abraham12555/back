@@ -36,8 +36,7 @@ class BuroDeCreditoService {
 
     def sequenceGeneratorService
     def conexionBCService
-	
-
+    def loggingService;
     static transactional = false
 	
     def post(String xml,String urlBuroCredito) throws Exception{
@@ -68,6 +67,7 @@ class BuroDeCreditoService {
             respuesta.error = Boolean.TRUE
             respuesta.errorDesc = "BCS01. Error interno. Contacte al administrador del sistema"
             log.error("Error. No se ha configurado el servicio web de la entidad financiera para la consulta a BC")
+            loggingService.loggingBusinessBC(String.valueOf(solicitud.id), usuario , "Error. No se ha configurado el servicio web de la entidad financiera para la consulta a BC")
             return respuesta
         }
 
@@ -81,6 +81,7 @@ class BuroDeCreditoService {
                     respuesta.errorDesc = "La consulta tradicional ya ha sido ejecutada exitosamente"
                 } else {
                     respuesta.errorDesc = "La consulta tradicional falló anteriormente. No se puede enviar la consulta con autenticador"
+                    loggingService.loggingBusinessBC(String.valueOf(solicitud.id), usuario , "Error. No se ha configurado el servicio web de la entidad financiera para la consulta a BC")
                 }
                 return respuesta
             } else {
@@ -92,6 +93,7 @@ class BuroDeCreditoService {
                     respuesta.error = 500
                     respuesta.errorDesc = "No se obtuvo el reporte de buró de crédito en un primer intento. En breve recibirás ayuda."
                     log.error("No se obtuvo el reporte de buró de crédito en un primer intento. Solicitud: " + solicitud.id)
+                    loggingService.loggingBusinessBC(String.valueOf(solicitud.id), usuario ,"No se obtuvo el reporte de buró de crédito en un primer intento ")
                     return respuesta
                 }
             }
@@ -303,6 +305,7 @@ class BuroDeCreditoService {
             respuesta.error = 500
             respuesta.errorDesc = "No se pudo obtener el reporte de buró de crédito en el primer intento. En breve recibirás ayuda."
             log.error("Error consulta BC WS. Solicitud: " + solicitud.id, e)
+            loggingService.loggingBusinessBC(String.valueOf(solicitud.id), usuario,e.getMessage());
             return respuesta
         }
     }
@@ -321,6 +324,7 @@ class BuroDeCreditoService {
             respuesta.error = Boolean.TRUE
             respuesta.errorDesc = "BCS02. Error interno. Contacte al administrador del sistema"
             log.error("Error. No se ha configurado la conexión de la entidad financiera para la consulta a BC")
+            loggingService.loggingBusinessBC(String.valueOf(solicitud.id), usuario , "Error. No se ha configurado el servicio web de la entidad financiera para la consulta a BC")
             return respuesta
         }
 
@@ -343,6 +347,7 @@ class BuroDeCreditoService {
                 respuesta.error = 500
                 respuesta.errorDesc = "No se pudo obtener el reporte de buró de crédito"
                 log.error("No se pudo obtener el reporte de buró de crédito. Solicitud: " + solicitud.id)
+		loggingService.loggingBusinessBC(String.valueOf(solicitud.id), usuario , "No se pudo obtener el reporte de buró de crédito. Solicitud: " + solicitud.id)
                 return respuesta
             }
         }
@@ -361,6 +366,7 @@ class BuroDeCreditoService {
             respuesta.error = 500
             respuesta.errorDesc = "No fue posible obtener el reporte de buró de crédito"
             log.error("Error consulta BC INTL. Solicitud: " + solicitud.id, e)
+            loggingService.loggingExceptionBC(e, String.valueOf(solicitud.id), usuario)
             return respuesta
         }
     }
@@ -410,8 +416,11 @@ class BuroDeCreditoService {
         if (reporteImpreso.getLength() > 0) {
             Element  reporte = (Element)reporteImpreso.item(0);
             ReporteBuroCredito reporteBuroCredito = obtenerDatosPersonales(reporte.getTextContent())
-            reporteBuroCredito.referenciaOperadorAR = referenciaOperador
-            reporteBuroCredito.referenciaOperadorUR = referenciaOperador
+            if (reporteBuroCredito) {
+                reporteBuroCredito.referenciaOperadorAR = referenciaOperador
+                reporteBuroCredito.referenciaOperadorUR = referenciaOperador
+            }
+
             def segmentos = ReporteBuroSegmentoError.findAllByReporteBuroCredito(reporteBuroCredito)
 			
             if(reporteBuroCredito != null && reporteBuroCredito.errorConsulta == null){
@@ -420,15 +429,23 @@ class BuroDeCreditoService {
                 solicitud.save(flush:true)
                 //respuesta.score   = obtenerScore(reporte.getTextContent())
             }else{
-                respuesta.error = 500
-                respuesta.errorDesc = "Error al procesar la información de la consulta"
-                if(reporteBuroCredito != null){
+                if (reporteBuroCredito != null) {
+                    respuesta.error = 500
+                    respuesta.errorDesc = "Error al procesar la información de la consulta."
+                    log.error("Error al procesar la informacion de la consulta. Solicitud: " + solicitud.id)
                     solicitud.reporteBuroCredito = reporteBuroCredito
                     solicitud.save(flush:true)
-                }else{
+                } else {
+                    //Sí y solo si ocurre una excepcion
+                    respuesta.error = -1
+                    respuesta.errorDesc = "Ocurrió un error interno. No se pudo procesar la información."
+                    log.error("Ocurrio un error al parsear la cadena INTL. Solicitud: " + solicitud.id)
+                    
                     ReporteBuroCredito reporteBuro = new ReporteBuroCredito()
-                    reporteBuro.errorConsulta="ERRR error al consumir WS"
-                    reporteBuro.save(flush:true)
+                    reporteBuro.referenciaOperadorAR = referenciaOperador
+                    reporteBuro.referenciaOperadorUR = referenciaOperador
+                    reporteBuro.errorConsulta = "ERRR ocurrio un error al parsear la cadena INTL"
+                    reporteBuro.save(flush:true)              
                     solicitud.reporteBuroCredito = reporteBuro
                     solicitud.save(flush:true)
                 }
@@ -453,10 +470,14 @@ class BuroDeCreditoService {
                     }
                 }
                 //NO SE PUDO AUTENTICAR AL USUARIO.
-                if(reporteBuroCredito.tipoErrorBuroCredito.tipo == "AR" && reporteBuroCredito.tipoErrorBuroCredito.numeroCampo == "00"){
-                    respuesta.problemasBuro = null
-                    respuesta.remove("problemasBuro")
-                    respuesta.segmento = "AUTENTICADOR"
+                if (reporteBuroCredito && (reporteBuroCredito.tipoErrorBuroCredito.tipo == "AR"  || reporteBuroCredito.tipoErrorBuroCredito.tipo == "UR")) {
+                    if (reporteBuroCredito.tipoErrorBuroCredito.visible) {
+                        respuesta.problemasBuro = null
+                        respuesta.remove("problemasBuro")
+                        respuesta.segmento = reporteBuroCredito.tipoErrorBuroCredito.nombre
+                    } else {
+                        respuesta.segmento = ""
+                    }
                 }
             }
         } else {
@@ -493,8 +514,10 @@ class BuroDeCreditoService {
         }
 
         ReporteBuroCredito reporteBuroCredito = obtenerDatosPersonales(intlResponse)
-        reporteBuroCredito.referenciaOperadorAR = referenciaOperador
-        reporteBuroCredito.referenciaOperadorUR = referenciaOperador
+        if (reporteBuroCredito) {
+            reporteBuroCredito.referenciaOperadorAR = referenciaOperador
+            reporteBuroCredito.referenciaOperadorUR = referenciaOperador
+        }
 
         if(reporteBuroCredito != null && reporteBuroCredito.errorConsulta == null){
             solicitud.reporteBuroCredito = reporteBuroCredito
@@ -504,15 +527,22 @@ class BuroDeCreditoService {
             respuesta.status = 200
         } else {
             respuesta.error = 500
-            respuesta.errorDesc = "Error al procesar la información"
-            log.error("Error al procesar la información. Solicitud: " + solicitud.id)
 
             if(reporteBuroCredito != null){
+                respuesta.errorDesc = "Error al procesar la información."
+                log.error("Error al procesar la informacion. Solicitud: " + solicitud.id)
+                
                 solicitud.reporteBuroCredito = reporteBuroCredito
                 solicitud.save(flush:Boolean.TRUE)
             } else {
+                //Sí y solo si ocurre una excepcion
+                respuesta.errorDesc = "Ocurrió un error interno. No se pudo procesar la información."
+                log.error("Ocurrio un error al parsear la cadena INTL13. Solicitud: " + solicitud.id)
+                
                 ReporteBuroCredito reporteBuro = new ReporteBuroCredito()
-                reporteBuro.errorConsulta = "ERRR error al consumir el servicio"
+                reporteBuro.referenciaOperadorAR = referenciaOperador
+                reporteBuro.referenciaOperadorUR = referenciaOperador
+                reporteBuro.errorConsulta = "ERRR ocurrio un error al parsear la cadena INTL13"
                 reporteBuro.save(flush:Boolean.TRUE)
                 solicitud.reporteBuroCredito = reporteBuro
                 solicitud.save(flush:Boolean.TRUE)
@@ -538,6 +568,15 @@ class BuroDeCreditoService {
                 } else if (peticiones > reintentos ){
                        respuesta.errorDesc = "Se han superado los reintentos disponibles"
                         
+                }
+            }
+            if (reporteBuroCredito && (reporteBuroCredito.tipoErrorBuroCredito.tipo == "AR"  || reporteBuroCredito.tipoErrorBuroCredito.tipo == "UR")) {
+                if (reporteBuroCredito.tipoErrorBuroCredito.visible) {
+                    respuesta.problemasBuro = null
+                    respuesta.remove("problemasBuro")
+                    respuesta.segmento = reporteBuroCredito.tipoErrorBuroCredito.nombre
+                } else {
+                    respuesta.segmento = ""
                 }
             }
         }
@@ -603,7 +642,7 @@ class BuroDeCreditoService {
         }
     }
 	
-    def obtenerDatosPersonales(String reporte){
+    def obtenerDatosPersonales(String reporte) throws Exception {
         /*
          * PN Nombre del Cliente
          * PA Direccion del Cliente
@@ -636,6 +675,10 @@ class BuroDeCreditoService {
         ScoreBuroCredito score = null
         SegFinBuroCredito segfinal = new SegFinBuroCredito()
         ResumenBuroCredito resumen = new ResumenBuroCredito()
+        boolean encontrado
+        def prioridad 
+        def var
+        def aux
 
         try{
             if (reporte.contains('INTL')){
@@ -645,6 +688,7 @@ class BuroDeCreditoService {
                 int saltoNumeroCampo = 2
                 datosPersonales = ""
                 indiceInicial=0
+                int longitud 
                 while(indiceInicial < subreporte.length() && (indiceInicial + saltoNumeroCampo) < subreporte.length()) {
                     numeroCampo = subreporte.substring(indiceInicial ,indiceInicial + saltoNumeroCampo)
 					
@@ -653,11 +697,32 @@ class BuroDeCreditoService {
                         || numeroCampo.equalsIgnoreCase("HR") || numeroCampo.equalsIgnoreCase("CR") || numeroCampo.equalsIgnoreCase("SC") || numeroCampo.equalsIgnoreCase("ES")){
                         etiqueta = numeroCampo
                     }
-					
-					
-                    int longitud = Integer.parseInt(subreporte.substring(indiceInicial + saltoNumeroCampo,indiceInicial+saltoNumeroCampo + saltoNumeroCampo))
-                    datosPersonales = subreporte.substring(indiceInicial + saltoNumeroCampo + saltoNumeroCampo ,indiceInicial + saltoNumeroCampo + saltoNumeroCampo+  longitud ) +" "
-
+                    
+                    if ((etiqueta.equalsIgnoreCase("CR") && (numeroCampo == "00") && (subreporte.substring(indiceInicial,indiceInicial+saltoNumeroCampo ) !="00"))) {
+                        var = subreporte.substring(indiceInicial+saltoNumeroCampo ,subreporte.indexOf("**"))
+                        if(var.find(/SC\d{2}/)){
+                            prioridad = var.find(/SC\d{2}/)
+                        }else if(var.find(/ES\d{2}/)){
+                            prioridad = var.find(/ES\d{2}/)
+                        }
+                        encontrado = Boolean.TRUE
+                        longitud =  subreporte.substring(indiceInicial + saltoNumeroCampo ,subreporte.indexOf(prioridad)).length()
+                        datosPersonales = subreporte.substring(indiceInicial + saltoNumeroCampo ,subreporte.indexOf(prioridad))  +" "
+                    } else if ((etiqueta.equalsIgnoreCase("CR") && (subreporte.substring(indiceInicial,indiceInicial+saltoNumeroCampo ) =="00"))) {
+                        var = subreporte.substring(indiceInicial,subreporte.indexOf("**"))
+                        if (var.find(/SC\d{2}/)) {
+                            prioridad = var.find(/SC\d{2}/)
+                        } else if(var.find(/ES\d{2}/)) {
+                            prioridad = var.find(/ES\d{2}/)
+                        }
+                        encontrado = Boolean.TRUE
+                        longitud =  subreporte.substring(indiceInicial + saltoNumeroCampo ,subreporte.indexOf(prioridad)).length()
+                        datosPersonales = subreporte.substring(indiceInicial+saltoNumeroCampo+saltoNumeroCampo,subreporte.indexOf(prioridad))  +" "
+                    } else {
+                        encontrado = Boolean.FALSE
+                        longitud = Integer.parseInt(subreporte.substring(indiceInicial + saltoNumeroCampo,indiceInicial+saltoNumeroCampo + saltoNumeroCampo))
+                        datosPersonales = subreporte.substring(indiceInicial + saltoNumeroCampo + saltoNumeroCampo ,indiceInicial + saltoNumeroCampo + saltoNumeroCampo+  longitud ) +" "
+                    }
                     switch(etiqueta){
                     case "PN":
                         if(numeroCampo.equals("PN")){
@@ -919,8 +984,21 @@ class BuroDeCreditoService {
                         if(numeroCampo.equals("CR")){
                             declarativa.reporteBuroCredito = reporteBuro
                             declarativa.tipoSegmento = datosPersonales 
+                            aux = datosPersonales
                         }
-                        if(numeroCampo.equals("00")){declarativa.declarativaCliente = datosPersonales }
+                        if (numeroCampo.equals("00")) {
+                            datosPersonales.split("##").each {
+                               if (!it.empty) {
+                                   declarativa.reporteBuroCredito = reporteBuro
+                                   declarativa.tipoSegmento = aux
+                                   declarativa.declarativaCliente = "##"+it
+                                   declarativa.save(flush:Boolean.TRUE)
+                               }
+                               if (declarativa != null) {
+                                   declarativa = new DeclaConsBuroCredito()
+                               }
+                            }
+                        } 
                         break;
                     case "SC":
                         if(numeroCampo.equals("SC")){
@@ -948,7 +1026,12 @@ class BuroDeCreditoService {
                         if(numeroCampo.equals("01")){segfinal.finRegistroRespuesta = datosPersonales }
                         break;
                     }
-                    indiceInicial = indiceInicial + longitud + saltoNumeroCampo  + saltoNumeroCampo
+                    
+                    if (encontrado) {
+                        indiceInicial = indiceInicial + longitud + saltoNumeroCampo
+                    } else {
+                        indiceInicial = indiceInicial + longitud + saltoNumeroCampo  + saltoNumeroCampo
+                    }
                 }
 				
                 if(direccion != null){
@@ -994,6 +1077,7 @@ class BuroDeCreditoService {
                 obtenerTipoError(reporteBuro, reporte)
             }	
         }catch(Exception e){
+            reporteBuro = null
             log.error("Exception obtenerDatosPersonales: ", e)
         }
         return reporteBuro
@@ -1057,7 +1141,7 @@ class BuroDeCreditoService {
         return response.replace("\$","N").replace("&","N")
     }
 		
-    def generarCadenaBC(BitacoraBuroCredito bitacoraDeBuro){
+    def generarCadenaBC(BitacoraBuroCredito bitacoraDeBuro, def usuario){
         String response = bitacoraDeBuro?.respuesta
         Constants.TipoConsulta tipoConsulta = bitacoraDeBuro?.tipoConsulta
         
@@ -1084,6 +1168,7 @@ class BuroDeCreditoService {
             log.error("Ocurrio un error al parsear la respuesta del buró...")
             log.error("Respuesta a parsear: " + response)
             log.error("Excepcion: " + e.getMessage() + "  - " + e.toString())
+            //loggingService.loggingExceptionBC(e, String.valueOf(bitacoraDeBuro.solicitud.id), usuario);
         }
         return cadenaBuro
     }
@@ -1098,12 +1183,12 @@ class BuroDeCreditoService {
                 List<CreditoClienteBuroCredito> validos = new ArrayList<>()
                 creditos.each { credito ->
                     def nombreUsuario = credito.nombreUsuario ? credito.nombreUsuario.trim() : ""
-                    println "Revisando cuenta -> id: " + credito.id + " claveDeObservacion: " + credito.claveDeObservacion + ",  claveUsuario: " + credito.claveUsuario + ", tipoDeCuenta: " + credito.tipoDeCuenta + ", tipoContratoProducto: " + credito.tipoContratoProducto + ", fechaCierre: " + credito.fechaCierre + ", montoAPagar: " + credito.montoAPagar + ", saldoActual: " + credito.saldoActual
-                    if (credito.tipoContratoProducto != "UT" && credito.tipoContratoProducto != "UU" && credito.tipoContratoProducto != "VV" && nombreUsuario != "LIBERTAD SFP" && nombreUsuario != "COMUNICACIONES") {
+                    //println "Revisando cuenta -> id: " + credito.id + " claveDeObservacion: " + credito.claveDeObservacion + ",  claveUsuario: " + credito.claveUsuario + ", tipoDeCuenta: " + credito.tipoDeCuenta + ", tipoContratoProducto: " + credito.tipoContratoProducto + ", fechaCierre: " + credito.fechaCierre + ", montoAPagar: " + credito.montoAPagar + ", saldoActual: " + credito.saldoActual
+                    if (credito.claveUsuario != "UT" && credito.claveUsuario != "UU" && credito.claveUsuario != "VV" && nombreUsuario != "LIBERTAD SFP" && nombreUsuario != "COMUNICACIONES" && nombreUsuario != "SERVICIOS" && nombreUsuario != "GUBERNAMENTALES") {
                         validos.add(credito)
-                        println "Se toma en cuenta? SI"
+                        //println "Se toma en cuenta? SI"
                     } else { //temporal
-                        println "Se toma en cuenta? NO"
+                        //println "Se toma en cuenta? NO"
                     }
                 }
 
@@ -1115,24 +1200,24 @@ class BuroDeCreditoService {
                 }
                 println " ***** Iniciando procedimiento de cálculo del monto a pagar (Solo cuentas abiertas) ***** "
                 cuentasAbiertas.each { credito ->
-                    println "Obtiendo saldo de la cuenta " + credito.id + " ..."
+                    //println "Obtiendo saldo de la cuenta " + credito.id + " ..."
                     int saldoAPagar = Integer.parseInt(credito.saldoActual.replace("+", "").trim())
-                    println "Saldo a Pagar (Sin Aplicar Reglas): " + saldoAPagar
-                    println "Monto a Pagar (Sin Aplicar Reglas): " + credito.montoAPagar
+                    //println "Saldo a Pagar (Sin Aplicar Reglas): " + saldoAPagar
+                    //println "Monto a Pagar (Sin Aplicar Reglas): " + credito.montoAPagar
                     if (!credito.montoAPagar) {
-                        println "Entra a 1"
+                        //println "Entra a 1"
                         montoAPagar += saldoAPagar * 0.05
                     } else if (Integer.parseInt(credito.montoAPagar?.trim()) >= saldoAPagar) {
-                        println "Entra a 2"
+                        //println "Entra a 2"
                         montoAPagar += Integer.parseInt(credito.montoAPagar.trim()) * 0.05
                     } else if (credito.tipoDeCuenta.trim().equals("I") || credito.tipoDeCuenta.trim().equals("M")) {
-                        println "Entra a 3"
+                        //println "Entra a 3"
                         montoAPagar += Integer.parseInt(credito.montoAPagar.trim())
                     } else if ((credito.tipoDeCuenta.trim().equals("R") || credito.tipoDeCuenta.trim().equals("O")) && saldoAPagar > Integer.parseInt(credito.montoAPagar?.trim())) {
-                        println "Entra a 4"
+                        //println "Entra a 4"
                         montoAPagar += Integer.parseInt(credito.montoAPagar.trim())
                     }
-                    println "Monto a Pagar Acumulado: " + montoAPagar
+                    //println "Monto a Pagar Acumulado: " + montoAPagar
                 }
                 println "Monto a Pagar (Preliminar): " + montoAPagar
                 montoAPagar = montoAPagar * porcentajeDeDescuento

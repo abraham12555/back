@@ -79,4 +79,12 @@ public class SmsMockService {
         String randomString = RandomStringUtils.random(randomStringLength, charset.toCharArray())
         randomString
     }
+    public boolean sendFolio(String to, String folio, def configuracion){
+        try {
+            println "Enviando folio por sms : " + folio
+            return this.sendSMS(to, folio , configuracion)
+        } catch (Exception e) {
+            return Boolean.FALSE
+        }
+    }
 }

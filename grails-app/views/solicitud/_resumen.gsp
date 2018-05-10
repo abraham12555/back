@@ -91,7 +91,8 @@
                         POR UN PERIODO DE
                         <span class="headingColor"> ${productoSolicitud?.plazos} ${(productoSolicitud.periodicidad.nomenclatura).toUpperCase()}.</span>
                     </p>
-                    <p class="paddingTop20">CAT PROMEDIO <strong>${ (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 } %</strong> Sin IVA para fines informativos y de comparación, calculado al 02 de enero del 2017. LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
+                    <p class="paddingTop20">CAT <strong><g:formatNumber number="${(productoSolicitud?.cat) ? (productoSolicitud?.cat): 0}" format="0.#%" /></strong> Sin IVA.</p>
+                    <p class="paddingTop20">LIBERTAD SERVICIOS FINANCIEROS, S.A. DE C.V., S.F.P.</p>
                 </div>
                 <div class="greenTitle paddingTop20">
                     <p>Es posible que más adelante se te solicite compartir esta</p>
@@ -100,6 +101,31 @@
                 </div>
 
             </div>
+            <g:if test="${productoSolicitud?.solicitud?.medioDeContacto?.id == 2 && productoSolicitud?.solicitud?.opcionMedioDeContacto == 6}">
+                 <div class="paddingBottom10" style="width: 70%;margin: auto;">
+                     <div class="fontWeight500 font14 darkBluetitle">
+                       <p>¿POR QUÉ MEDIO TE ENTERASTE DE NOSOTROS?</p>
+                        <p>
+                         <select class="modalSelect" id="" name="" >
+                             <option> ${productoSolicitud?.solicitud?.medioDeContacto?.nombre}</option>
+                         </select> 
+                        
+                        </p>
+                         <select class="modalSelect" id="" name="" >
+                             <option> ComparaBien</option>
+                         </select> 
+                       </p>
+                    </div>
+               </div>
+            <div class="borderLine marginTop12 marginBottom25"></div>
+            <div class="padding20"></div>
+            <div class="marginBottom25">
+                <div data-numero-de-paso="${(pasoActual.numeroDePaso + 1)}" id="terminarSolicitud" class="width350 blockAuto rectangleRound marginTop30 center font20 letterspacing1.8 textUpper enviarSolicitud blueButton pointer" style="font-size: 15px; color: rgb(255, 255, 255);">
+                    enviar mi solicitud
+                </div>
+            </div>
+            </g:if>
+            <g:else>
             <div class="paddingBottom10" style="width: 70%;margin: auto;">
                 <div class="fontWeight500 font14 darkBluetitle">
                     <p>¿POR QUÉ MEDIO TE ENTERASTE DE NOSOTROS?</p>
@@ -119,6 +145,7 @@
                     enviar mi solicitud
                 </div>
             </div>
+           </g:else>
         </div>
     </div>
 </div>

@@ -2,12 +2,14 @@ package la.kosmos.app
 
 import grails.converters.JSON
 import java.net.URL
-//import org.apache.poi.ss.formula.eval.*;
+import org.apache.poi.ss.formula.eval.*;
 
 class CotizadorController {
     
     def cotizadorService
     def smsService
+    def urlShortenerService
+    def solicitudService
 
     def index() {
         println params
@@ -182,14 +184,14 @@ class CotizadorController {
                 println "Asistencia: " + montoAsistencia
                 def montoMasSeguros = (montoFinanciado + montoSeguro + montoAsistencia)
                 println "C"+ montoMasSeguros
+                def c = montoMasSeguros
                 def pagoCapital = (montoMasSeguros/((params.plazoElegido as int)))
                 def a = pagoCapital*producto.plazoCondonado
                 montoMasSeguros = montoMasSeguros-a
                 def pagoIntereses = ((montoMasSeguros*(producto.tasaDeInteresAnual/12))/30)*15.20833
-
                 def pagoIvaIntereses = pagoIntereses*0.16
                 def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
-                //respuesta.cat = catPagosVariables(montoMasSeguros,montoSeguro,tasaDeInteres,(params.plazoElegido as int),periodicidad.periodosAnuales,plazoCondonado)
+                respuesta.cat = catPagosVariables(c,montoMasSeguros,montoSeguro,pagoCapital,(params.plazoElegido as int),periodicidad.periodosAnuales,producto.plazoCondonado,producto.tasaDeInteresAnual)
                 respuesta.montoAsistencia = montoAsistencia
                 respuesta.montoSeguro = montoSeguro
                 respuesta.nombrePeriodo = periodicidad.nombre
@@ -198,21 +200,21 @@ class CotizadorController {
             }else if(producto.esquema.id ==1) {
                 println "Seguro: " + montoSeguro
                 println "Asistencia: " + montoAsistencia
-                def tasaAnual = producto.tasaDeInteres * 12
+                def tasaAnual = producto.tasaDeInteresAnual 
                 println "Tasa Anual: " + tasaAnual
-                def tasaConI = tasaAnual*1.16
-                //def tasaSinI = tasaAnual 
+                def tasaConI = ((tasaAnual/12)*1.16)
+                def tasaSinI = (tasaAnual/12) 
                 println "Tasa con i: " + tasaConI
                 def n = params.plazoElegido as int
                 println "n: " + n
                 def c = (montoFinanciado + montoSeguro + montoAsistencia)
                 println "c: " + c
-                def i = (tasaConI/periodicidad.periodosAnuales)
-                //def ie = (tasaSinI/periodicidad.periodosAnuales)
+                def i = (tasaConI/30)*periodicidad.periodoDePago
+                def ie = (tasaSinI/30)*periodicidad.periodoDePago
                 println "i: " + i
                 def renta =  (c / ((1-((1+i)**(-n)))/i))
-                //def renta2 = (c / ((1-((1+ie)**(-n)))/ie))
-                //respuesta.cat = catPagosFijos(c,montoSeguro,renta2,n,periodicidad.periodosAnuales)
+                def renta2 = (c / ((1-((1+ie)**(-n)))/ie))
+                respuesta.cat = catPagosFijos(c,montoSeguro,renta2,n,periodicidad.periodosAnuales)
                 respuesta.montoAsistencia = montoAsistencia
                 respuesta.montoSeguro = montoSeguro
                 respuesta.nombrePeriodo = periodicidad.nombre
@@ -226,6 +228,7 @@ class CotizadorController {
     def procesar() {
         println params
         session.cotizador = [:]
+        def respuesta = [:]
         if(session.configuracion){
             def configuracion = session.configuracion 
             if(configuracion.aplicacionVariable){
@@ -243,7 +246,27 @@ class CotizadorController {
                 session.cotizador.nombreCliente = params.nombre
                 session.cotizador.emailCliente = params.email
                 session.cotizador.telefonoCliente = params.telefonoCelular
-                //session.cotizador.cat = (params.cat ? (params.cat as float) : 0)
+                session.cotizador.cat = (params.cat ? (params.cat as float) : 0)
+                session.cotizador.medioDeContacto = ((params.comparaBien == "true") ? true : false)
+                session.cotizador.opcionMedioDeContacto = ((params.comparaBien == "true") ? true : false)
+                def resultadoShortener = urlShortenerService.acortarUrl((configuracion.entidadFinanciera.nombre + session.id), configuracion)
+                if(resultadoShortener.statusCode == 200){
+                    session.token = resultadoShortener.token
+                    session.shortUrl = resultadoShortener.jsonGoogle.id
+                    def solicitud = solicitudService.registrarSolicitudTemporal (session.cotizador, session.token, session.shortUrl, session.ef)
+                    session.identificadores = [:]
+                    session.identificadores.idSolicitudTemporal = solicitud.id
+                    session.folio = solicitud.folio
+                    session.respuestaEphesoft = [:]
+                    session.respuestaEphesoft.telefonoCliente = [:]
+                    session.respuestaEphesoft.telefonoCliente.telefonoCelular = session.cotizador.telefonoCliente
+                    session.respuestaEphesoft.emailCliente = [:]
+                    session.respuestaEphesoft.emailCliente.emailPersonal = session.cotizador.emailCliente
+                    solicitudService.registrarEnviosProgramadosTemporales(solicitud.folio , 1)
+                    respuesta = session.identificadores
+                }else{
+                    respuesta.error = true
+                }
             } else {
                 session.cotizador.producto = (params.txtProducto ? (params.txtProducto as long) : 0)
                 session.cotizador.periodo = (params.txtPeriodo ? (params.txtPeriodo as long) : 0)
@@ -256,9 +279,10 @@ class CotizadorController {
                 session.cotizador.seguro = (params.txtSeguro ? params.txtSeguro as long : 0)
             }
             println session.cotizador
-            redirect(controller: "solicitud", action: "index")
+            render respuesta as JSON 
         } else {
-            redirect(controller: "cotizador", action: "index")
+            respuesta.sesionExpirada = true
+            render respuesta as JSON
         }
     }
     
@@ -275,27 +299,38 @@ class CotizadorController {
         render respuesta as JSON
     }
     
-    def solicitarCodigo() {
+   def solicitarCodigo() {
         println params
         def respuesta = [:]
         if(params.telefonoCelular){
-            def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
-            //respuesta = cotizadorService.verificarSolicitudExistente(toPhone, params.nombreCompleto, params.email)
-            //INHABILITADO TEMPORALMENTE
-            respuesta = [:] //cotizadorService.verificarSolicitudExistenteCotizador(params.telefonoCelular,session.configuracion)
-
-            println  "encontrado " + respuesta
-            if(!respuesta.encontrado && !respuesta.multiplesClientes) {
-                println "Por enviar el SMS..."
-                String sid = smsService.sendSMS(toPhone, session.configuracion)
-                if(sid){
-                    session.sid = sid
-                    respuesta.mensajeEnviado = true
-                } else {
-                    respuesta.mensajeEnviado = false
+            if(session.configuracion){
+                def toPhone = params.telefonoCelular.replaceAll('-', '').replaceAll(' ', '').trim()
+                respuesta = cotizadorService.verificarSolicitudExistenteCotizador(params.telefonoCelular,session.configuracion)
+                if(respuesta.encontrado && !respuesta.multiplesClientes && params.origen == "formulario"){
+                    if(respuesta.folio){
+                        String sid = smsService.sendFolio(toPhone,respuesta.folio, session.configuracion)
+                        if(sid){
+                            respuesta.mensajeEnviado = true
+                        } else {
+                            respuesta.mensajeEnviado = false
+                        }
+                    }
+                }else if (!respuesta.encontrado && !respuesta.multiplesClientes && params.origen == "cotizador"){
+                    println "Por enviar el SMS..."
+                    String sid = smsService.sendSMS(toPhone, session.configuracion)
+                    if(sid){
+                        session.sid = sid
+                        respuesta.mensajeEnviado = true
+                    } else {
+                        respuesta.mensajeEnviado = false
+                    }                
                 }
-            }else if (respuesta.encontrado  == false && respuesta.multiplesClientes == true){
-                respuesta.multiplesClientes == true
+                else if (!respuesta.encontrado && !respuesta.multiplesClientes && params.origen == "formulario"){
+                    respuesta.mensajeEnviado = false 
+                    respuesta.solicitud = false
+                }
+            }else{
+                respuesta.sesionExpirada = true
             }
         } else {
             respuesta.mensajeEnviado = false
@@ -354,13 +389,13 @@ def solicitarCodigoShorUrl() {
             return cat
         
     }
-    def catPagosVariables(def montoDelCredito,def seguroDeDeuda,def pagoCapital, def plazos, def periodosAnuales,def plazosCondonados){
+    def catPagosVariables(def c, def montoDelCredito,def seguroDeDeuda,def pagoCapital, def plazos, def periodosAnuales,def plazosCondonados, def tasaDeInteres){
         def lista = []
         double[] incomesList 
         double irr
         def cat
         def pagoCero 
-            pagoCero = -(montoDelCreditoSinSeguros - montoSeguro)
+            pagoCero = -(c - seguroDeDeuda)
             lista << pagoCero
             (1..plazosCondonados).each{
                 lista << pagoCapital
@@ -446,4 +481,47 @@ def solicitarCodigoShorUrl() {
              return Double.NaN;
         }
     }
+
+    def enviarFolio() {
+        def respuesta = [:]
+        if(params.folio && params.numeroTelefonico){
+            if(session.configuracion){
+                def toPhone = params.numeroTelefonico.replaceAll('-', '').replaceAll(' ', '').trim()
+                String sid = smsService.sendFolio(toPhone,params.folio, session.configuracion)
+                if(sid){
+                    session.sid = sid
+                    respuesta.mensajeEnviado = true
+                } else {
+                    respuesta.mensajeEnviado = false
+                }
+            }else{
+                respuesta.sesionExpirada = true
+            }
+        } else {
+            respuesta.mensajeEnviado = false
+        }
+        render respuesta as JSON
+    }
+    def buscarFolio() {
+        def respuesta = [:]
+        if(params.folio){
+            if(session.configuracion){
+                def solicitud = cotizadorService.buscarFolio(params.folio,session.configuracion)
+                
+                if(solicitud.encontrado && solicitud.shortUrl){
+                    respuesta.encontrado = true
+                    respuesta.shortUrl = solicitud.shortUrl
+                } else {
+                    respuesta.encontrado = false
+                }
+            }else{
+                   respuesta.sesionExpirada = true
+            }
+        } else {
+            respuesta.encontrado = false
+        }
+        render respuesta as JSON
+    }
+    
 }
+

@@ -22,13 +22,15 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:postgresql://localhost:5432/kosmosprod"
+            url = "jdbc:postgresql://localhost:5432/libertadempuje"
+            username = "postgres"
+            password = '$Abraham21'
         }
     }
     test {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:postgresql://localhost:5432/kosmosprod"
+            url = "jdbc:postgresql://localhost:5432/libertadempuje"
         }
     }
     production {

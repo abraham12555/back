@@ -5,7 +5,7 @@
 -->
 
 <%@ page contentType="text/html;charset=UTF-8" %>
-
+<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -13,12 +13,16 @@
         <script type="text/javascript">
             $.contextAwarePathJS = "${urlContextAware}";
         </script>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>  
     <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_DIRECTOR,ROLE_MERCADOTECNIA'>
         <g:external dir="js" file="dashboard/notificaciones/notificaciones.min.js" />
         <g:external dir="js" file="dashboard/notificaciones/notificacionesEmail.min.js" />
         <g:external dir="js" file="dashboard/notificaciones/envioNotificaciones.min.js" />
         <g:external dir="js" file="jasny-bootstrap.min.js" />
         <g:external dir="js" file="jquery.ui.timepicker.js" />
+        <g:external dir="css" file="bootstrapSummernote.css" />
         <g:external dir="css" file="jquery.ui.timepicker.css" />
     </sec:ifAnyGranted>
     <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR'>
@@ -189,7 +193,21 @@
                         <li class="floatLeft">
                             <a title="Descargar lista" class="displayInline font14 gray2 paddingTop10 paddingBottom10 paddingRight20 pointer" href="${createLink(controller: 'dashboard', action:'downloadUserList')}">DESCARGAR LISTA DE USUARIOS</a>
                         </li>
+                        <li class="floatLeft">
+                            
+                        </li>
+                        <li class="floatLeft">
+                           <input  type="hidden"  name ="busquedaNombreGuardada"  id="busquedaNombreGuardada"/>
+                           <input  type="hidden"  name ="busquedaUsernameGuardada"  id="busquedaUsernameGuardada"/>
+                        </li>
+                        <li class="floatLeft whiteBox clearFix">
+                            <a href="#" style="width:100%;" class="displayInline font14  show-pop-async-users fa fa-search gray2 paddingTop10 paddingBottom10 paddingLeft15 paddingRight10" data-placement="right">  BUSCAR 
+                            </a>
+                        </li>
+                        
                     </ul>
+                    <div id="resultadoBusqueda" class="clearFix paddingLeft30 lightGrayBG darkBluetitle hide">
+                    </div>
                 </div>
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles='ROLE_ADMIN, ROLE_ADMINISTRADOR,ROLE_DISENO,ROLE_DIRECTOR'>

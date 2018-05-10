@@ -20,6 +20,7 @@ class SolicitudDeCredito implements Serializable{
     Usuario registradaPor
     boolean solicitudVigente = true
     float montoPagoBuro = 0
+    boolean usoMovil 
     
     static constraints = {
         fechaDeSolicitud (nullable: false)
@@ -35,6 +36,7 @@ class SolicitudDeCredito implements Serializable{
         sucursal (nullable: true)
         medioDeContacto (nullable: true)
         registradaPor (nullable: true)
+        usoMovil (nullable: true)
     }
     
     static mapping = {

@@ -1,7 +1,12 @@
+var folio = "";
+var shortUrl = "";
+var numeroTelefonico = "";
 function iniciarFormularioRegistro() {
 // animacion de fadeIn
     $('.register').addClass('animated fadeIn');
-
+    if( $('#correoComparaBien').val() !== null){
+        $('#email').val($('#correoComparaBien').val());
+    }
     // elimino la clase para poder animar nuevamente
     setTimeout(function () {
         $('.register').removeClass('fadeIn');
@@ -20,6 +25,9 @@ function iniciarFormularioRegistro() {
             }
             if ($(this).parent().parent().attr('id') === 'codigo_form') {
                 submitCodigo();
+            }
+            if ($(this).parent().parent().attr('id') === 'folio_form') {
+                compareFolio("cotizador");
             }
         }
     });
@@ -177,19 +185,28 @@ function submitPhone() {
             }, 3000);
         } else {
             $('#leyendaTelError').html("");
+            $('#leyendaFolioError').html("");      
+            $('#leyendaFolio').html("");            
             $('#phone').prop('disabled', true);
             $('.sigPaso').addClass('locked');
+            $('#editarTelefono').html("");
+            $('#editarTelefono').hide();
+            $('#editarTelefono2').html("");
+            $('#editarTelefono2').hide();
             $.ajax({
                 type: 'POST',
                 data: {
                     telefonoCelular: $('#phone').val(),
                     email: $('#email').val(),
-                    nombreCompleto: $('#first_name').val()
+                    nombreCompleto: $('#first_name').val(),
+                    origen: "cotizador"
                 },
                 url: $.contextAwarePathJS + "cotizador/solicitarCodigo",
                 success: function (data, textStatus) {
                     var respuesta = eval(data);
-                    console.log(respuesta);
+                    if (respuesta.sesionExpirada) {
+                        sweetAlert("Oops...", "La sesión ha caducado recarga la página e intenta de nuevo.", "error");
+                    }
                     if (respuesta.mensajeEnviado === true) {
                         $('#editarTelefono').html("");
                         $('#editarTelefono').hide();
@@ -200,7 +217,7 @@ function submitPhone() {
                             $('#phone_form').addClass('hide');
                             $('#codigo_form').removeClass('hide');
                             $('.register').removeClass('fadeIn');
-                            $('#leyendaCodigo').html("<small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código. Si después de 30 segundos no recibes el código, puedes avanzar capturando 00000.</strong></small>");
+                            $('#leyendaCodigo').html("<small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu código.</strong></small>");
                         }, 600);
                         setTimeout(function () {
                             $('#editarTelefono').html("<span class='backBtn'>Corregir Teléfono</span>");
@@ -217,7 +234,7 @@ function submitPhone() {
                                 }, 600);
                             });
                         }, 20000);
-                    } else if (respuesta.encontrado === true && respuesta.shortUrl) {
+                    } else if (respuesta.encontrado === true && respuesta.shortUrl && respuesta.folio) {
                         $('#resumirSolicitud').html("");
                         $('#resumirSolicitud').hide();
                         $('.register').addClass('bounceOut');
@@ -225,14 +242,28 @@ function submitPhone() {
                             $('.register').removeClass(' bounceOut');
                             $('.register').addClass('fadeIn');
                             $('#phone_form').addClass('hide');
-                            $('#resume_form').removeClass('hide');
+                            $('#folio_form').removeClass('hide');
                             $('.register').removeClass('fadeIn');
                         }, 600);
-                        $('#resumirSolicitud').html("<span class='resumenBtn'>Continuar Solicitud</span>");
-                        $('#resumirSolicitud').fadeIn();
-                        $('#resumirSolicitud').click(function () {
-                            window.location.href = respuesta.shortUrl;
-                        });
+                        setTimeout(function () {
+                            $('#editarTelefono2').html("<span class='backBtn'>Corregir Teléfono</span>");
+                            $('#editarTelefono2').fadeIn();
+                            $('#editarTelefono2').click(function () {
+                                $('.register').addClass('bounceOut');
+                                setTimeout(function () {
+                                    $('.register').removeClass(' bounceOut');
+                                    $('.register').addClass('fadeIn');
+                                    $('#folio_form').addClass('hide');
+                                    $('#phone_form').removeClass('hide');
+                                    $('#phone_form').addClass('animated fadeIn');
+                                    $('.register').removeClass('fadeIn');
+                                }, 600);
+                            });
+                        }, 20000);
+
+                        folio = respuesta.folio;
+                        shortUrl= respuesta.shortUrl;
+                        numeroTelefonico= respuesta.numeroTelefonico;
                     } else if (respuesta.multiplesClientes === true){
                            $('#resumirSolicitud').html("");
                         $('#resumirSolicitud').hide();
@@ -334,3 +365,112 @@ function validarSiNumero(numero){
         return false;
     }
   }
+function compareFolio(origen) {
+    if (origen === "cotizador") {
+        if ($('#folio').val() === '') {
+            $('.register').addClass('shake');
+            setTimeout(function () {
+                $('.register').removeClass('shake');
+            }, 3000);
+            
+            $('#leyendaFolio').html("");
+            $('#leyendaFolioError').html("<small style='color: red;'>El folio no debe ir vacio</small>");
+        }
+        if ($('#folio').val() !== folio) {
+            $('.register').addClass('shake');
+            setTimeout(function () {
+                $('.register').removeClass('shake');
+            }, 3000);
+            $('#leyendaFolio').html("");
+            $('#leyendaFolioError').html("<small style='color: red;'>El folio no coincide favor de verificar</small>");
+        }
+        if($('#folio').val().length !==7){
+            $('#leyendaFolio').html("");
+            $('#leyendaFolioError').html("<small style='color: red;'>El folio debe contener 7 caracteres>");
+        }
+        if ($('#folio').val() === folio) {
+            $('#leyendaFolioError').html("");
+            window.location.href = shortUrl;
+            
+        }
+    } else if (origen === "formulario") {
+        if ($('#folioFormulario').val() === '') {
+            $('#folioFormularioError').html("El folio no puede ir vacio.");
+            $('#filaErrorFolioFormulario').removeClass('hide');
+            $('#leyendaFolioSms').css('padding-top','');
+        }
+        if ($('#folioFormulario').val().length ===7) {
+            var folioFormulario = $('#folioFormulario').val();
+            $.ajax({
+                type: 'POST',
+                data: {
+                    folio: folioFormulario
+                },
+                url: $.contextAwarePathJS + "cotizador/buscarFolio",
+                success: function (data, textStatus) {
+                    var respuesta = eval(data);
+                    if(respuesta.sesionExpirada){
+                     sweetAlert("Oops...", "La sesión ha caducado recarga la página e intenta de nuevo.", "error");
+                    }
+                    if (respuesta.encontrado) {
+                        window.location.href = respuesta.shortUrl;
+                    } else {
+                        $('#folioFormulario').val("");
+                        $('#folioFormularioError').html("El folio no existe o ya no se encuentra vigente por favor verificalo.");
+                        $('#filaErrorFolioFormulario').removeClass('hide');
+                        $('#leyendaFolioSms').css('padding-top','');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+                    $('#folioFormulario').val("");
+                    $('#folioFormularioError').html("Algo salió mal, intenta nuevamente en unos minutos.");
+                    $('#filaErrorFolioFormulario').removeClass('hide');
+                    $('#leyendaFolioSms').css('padding-top','');
+
+                }
+            });
+        }
+        else if($('#folioFormulario').val().length !==7 ){
+            $('#folioFormularioError').html("El folio debe contener 7 caracteres");
+            $('#filaErrorFolioFormulario').removeClass('hide');
+            $('#leyendaFolioSms').css('padding-top','');
+        }
+
+
+    }
+}
+
+function enviarFolio() {
+    $('#leyendaFolioError').html("");
+    $.ajax({
+        type: 'POST',
+        data: {
+            numeroTelefonico: numeroTelefonico,
+            folio: folio
+        },
+        url: $.contextAwarePathJS + "cotizador/enviarFolio",
+        success: function (data, textStatus) {
+            var respuesta = eval(data);
+            if (respuesta.sesionExpirada) {
+                     sweetAlert("Oops...", "La sesión ha caducado recarga la página e intenta de nuevo.", "error");
+            }
+            if (respuesta.mensajeEnviado) {
+                setTimeout(function () {
+                    $('#leyendaFolio').html("<small style='color: #25a3ff;'><strong>Espera por favor entre 15 y 30 segundos para recibir tu folio.</strong></small>");
+                }, 600);
+                setTimeout(function () {
+
+                }, 20000);
+            } else {
+                $('#leyendaFolio').html("<small style='color: red;'>Ocurrió un problema al enviar el mensaje.</small>");
+            }
+            $('.sigPaso').removeClass('locked');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            sweetAlert("Oops...", "Algo salió mal, intenta nuevamente en unos minutos.", "error");
+            $('#phone').prop('disabled', false);
+            $('.sigPaso').removeClass('locked');
+        }
+    });
+}

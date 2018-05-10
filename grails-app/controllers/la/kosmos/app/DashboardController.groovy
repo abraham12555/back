@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 import la.kosmos.app.bo.Pager
 import la.kosmos.app.bo.User
 import la.kosmos.app.exception.BusinessException
+import la.kosmos.app.vo.Constants
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 
@@ -26,7 +27,8 @@ class DashboardController {
     def notificacionesService
     def userService
     def reporteService
-
+    def bitacoraOfertasService
+    
     def index() {
         //def solicitudes = dashboardService.listaGeneralDeSolicitudes()
         //def temporales = dashboardService.listaDeSolicitudesTemporales()
@@ -218,8 +220,9 @@ class DashboardController {
         def listaTipoDeIngresos = TipoDeIngresos.findAll();
         def campoFormulario = CampoFormulario.findAll();
         //TODO: CHANGE CONFIGURATION
-        def configuracionBuroCredito = null//ConfiguracionEntidadFinanciera.findByEntidadFinanciera(session.usuario.entidadFinanciera).configuracionBuroCredito
         def configuracion = ConfiguracionEntidadFinanciera.findByEntidadFinanciera(session.usuario.entidadFinanciera)
+        def configuracionBuroCreditoAutenticador = ConfiguracionBuroCredito.findAllByConfiguracionEntidadFinancieraAndTipoConsulta(configuracion,Constants.TipoConsulta.AUTENTICADOR)
+        def configuracionBuroCreditoTradicional = ConfiguracionBuroCredito.findAllByConfiguracionEntidadFinancieraAndTipoConsulta(configuracion,Constants.TipoConsulta.TRADICIONAL)
         def listaPasoCotizador = PasoCotizadorEntidadFinanciera.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
         def listaPasosSolicitud = PasoSolicitudEntidadFinanciera.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
         def listaRubroDeAplicacionDeCredito = RubroDeAplicacionDeCredito.findAllWhere(entidadFinanciera: session.usuario.entidadFinanciera)
@@ -231,7 +234,9 @@ class DashboardController {
             listaDeRoles: roles, 
             listaSucursales: sucursales,
             listaDeProductos: productos, 
-            configuracionBuroCredito:configuracionBuroCredito,campoFormulario:campoFormulario,
+            configuracionBuroCreditoAutenticador:configuracionBuroCreditoAutenticador,
+            configuracionBuroCreditoTradicional:configuracionBuroCreditoTradicional,
+            campoFormulario:campoFormulario,
             tipoDeDocumento:tipoDeDocumento,tipoDeIngresos:tipoDeIngresos,
             listaTipoDeAsentamiento:listaTipoDeAsentamiento,
             listaTipoDeVivienda:listaTipoDeVivienda,listaTipoDeTasaDeInteres:listaTipoDeTasaDeInteres,
@@ -1692,8 +1697,9 @@ class DashboardController {
             println "imprimiendo session de las vistas"
             println session.pasoId
             def usuario = springSecurityService.currentUser
-            def nombreEmpresa = usuario.entidadFinanciera.nombre
+            def nombreEmpresa = session.usuario.entidadFinanciera.nombre
             nombreEmpresa = nombreEmpresa.replaceAll("[^a-zA-Z0-9]+","")
+            println nombreEmpresa
             session.nombre.each {
                 def rubroDeAplicacionDeCredito = new RubroDeAplicacionDeCredito();
                 rubroDeAplicacionDeCredito.nombre = it.texto
@@ -1783,7 +1789,8 @@ class DashboardController {
                             producto.activo = it.activo.toBoolean()
                             producto.montoMaximo = it.montoMaximo as float
                             producto.montoMinimo = it.montoMinimo as float
-                            producto.tasaDeInteres = it.tasaDeInteres as float
+                            producto.tasaDeInteres = (it.tasaDeInteres as float)/12
+                            producto.tasaDeInteresAnual = it.tasaDeInteres as float
                             producto.entidadFinanciera = session.usuario.entidadFinanciera
                             def esquema = Esquema.get(1)
                             def marca = Marca.get(5)
@@ -2202,6 +2209,8 @@ class DashboardController {
                 session.identificadores.idSolicitud = session["pasoFormulario"]?.cliente?.idSolicitud
                 session.identificadores.idDireccion = session["pasoFormulario"]?.direccionCliente?.idDireccion
                 session.identificadores.idEmpleo = session["pasoFormulario"]?.empleoCliente?.idEmpleo
+                def solicitud = SolicitudDeCredito.get(session.identificadores.idSolicitud as long)
+                respuesta.folio = solicitud.folio
             }
         } else {
             respuesta.error = Boolean.TRUE
@@ -2214,10 +2223,12 @@ class DashboardController {
         println params
         def respuesta = [:]
         session.ofertas = null
+	def  username = session.usuario
         try {
-            def ofertas = perfiladorService.obtenerPropuestas("perfilador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, session["pasoFormulario"]?.cliente?.clienteExistente, session.perfil)
+            def ofertas = perfiladorService.obtenerPropuestas("perfilador", session.identificadores, session["pasoFormulario"]?.cliente?.tipoDeDocumento, session["pasoFormulario"]?.cliente?.clienteExistente, session.perfil,  username)
             session.ofertas = ofertas
             respuesta.ofertas = ofertas
+            bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(session.identificadores.idSolicitud as long),'Abandonó','Ninguno')
         } catch (BusinessException ex) {
             respuesta.motivoRechazo = ex.message
         }
@@ -2443,7 +2454,7 @@ class DashboardController {
         respuesta.nomenclatura = productoSolicitud.periodicidad.nomenclatura
         respuesta.montoDelSeguroDeDeuda = productoSolicitud.montoDelSeguroDeDeuda
         respuesta.nombreDelProducto = productoSolicitud.producto?.nombreDelProducto
-        respuesta.cat =  (productoSolicitud?.producto?.cat) ? ((productoSolicitud?.producto?.cat * 100).round(2)) : 0 
+        respuesta.cat =  (productoSolicitud?.cat) ? ((productoSolicitud?.cat * 100).round(1)) : 0 
         respuesta.sucursal = productoSolicitud?.solicitud?.sucursal
         respuesta.ubicacion = productoSolicitud?.solicitud?.sucursal.ubicacion
         respuesta.documentoElegidoCantidad = productoSolicitud?.documentoElegido?.cantidadSolicitada
@@ -2503,6 +2514,35 @@ class DashboardController {
         if(reporte) {
             response.setContentType("application/octet-stream")
             response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_Operaciones" + ".xlsx\"")
+            response.outputStream << reporte.bytes
+        } else {
+            flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."
+            redirect action: "reportes"
+        }
+    }
+    def getUsersBusqueda() {
+        def page = request.JSON.page as long
+        def nombreUsuarioBusqueda
+        def usernameUsuarioBusqueda
+        def respuesta = [:]
+        respuesta.page = page
+       
+        Pager pager = new Pager(respuesta)
+        def entidadFinanciera = session.usuario.entidadFinanciera
+        def users = userService.getUsersBusqueda(entidadFinanciera, pager,request.JSON.nombreUsuarioBusqueda,request.JSON.usernameUsuarioBusqueda)
+
+        def response = [:]
+        response.usuarios = users
+        response.totalPages = pager.totalPages
+        response.page = pager.page
+        render response as JSON
+    }
+    
+    def descargarReporteBitacoraMitek(){
+        def reporte  = reporteService.obtenerReporte("bitacoraMitek",session.usuario.entidadFinanciera,params.from3,params.to3)
+        if(reporte) {
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=\"" + "Reporte_BitacoraMitek" + ".xlsx\"")
             response.outputStream << reporte.bytes
         } else {
             flash.error = "No se encontraron registros correspondientes al criterio de búsqueda."

@@ -8,10 +8,13 @@ import com.twilio.exception.ApiException
 import com.auronix.calixta.GatewayException;
 import com.auronix.calixta.sms.SMSGateway;
 import la.kosmos.app.ConfiguracionEntidadFinanciera
+import la.kosmos.app.logging.service.impl.LoggingService
 import la.kosmos.app.vo.Constants.StatusResponseCalixta
 import org.apache.commons.lang.RandomStringUtils
 import java.security.MessageDigest
 import org.apache.commons.lang.RandomStringUtils
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.sql.Timestamp
 import org.springframework.transaction.annotation.Propagation
 
@@ -21,8 +24,13 @@ public class SmsService {
 
     public static final String ACCOUNT_SID = "AC39bc0b4384b11a8ca04fc63e6a585ec4"
     public static final String AUTH_TOKEN = "29e92c58d2eae04752dff3ce075799c9"
-    public static final String PHONE_NUMBER = "+13152194197"
-
+    public static final String PHONE_NUMBER = "+13152194192"
+    /**@author Mike Martinez
+     *Inyectar servicion de Logging 
+     * */
+	@Autowired
+	LoggingService  loggingService
+	
     public String sendSMS(String to, def configuracion) {
         def respuesta
         def message
@@ -59,6 +67,24 @@ public class SmsService {
                     } else {
                         message.errorCode = idEnvio
                         message.status = "error"
+                        StringBuilder msg = new StringBuilder();				
+                        msg.append("CALIXTA respondio con un codigo: ").append(idEnvio).
+                            append(", Error al enviar SMS al numero: ").append(to);
+                        if(idEnvio == 6 ){
+                            msg.append(" , el numero no es de un telefono celular ");
+                            loggingService.loggingBusinessCX(msg.toString())
+                        }
+                        if(idEnvio == 10 ){					 
+                            msg.append(" , el  número no  existe ");				
+                            loggingService.loggingBusinessCX(msg.toString())
+                        }
+                        if(idEnvio == 101){
+                            msg.append( ", recargue saldo a CALIXTA  para contar con el servicio, de envio se SMS nuevamente ");
+                            loggingService.loggingBusinessCX(msg.toString())
+                        }
+                        respuesta = null
+                        
+                        
                     }
 
                     if(persistSms(message, randomCode, configuracion?.usarTwilio)){
@@ -66,16 +92,19 @@ public class SmsService {
                         if (message.sid) {
                             respuesta = message.sid
                         }
-                    }
+                    } 
                 }
             }
-        } catch (ApiException | Exception e) {
-            message.errorCode = StatusResponseCalixta.ERROR_INTERNO.value
-            message.status = "error"
-            persistSms(message, randomCode, configuracion?.usarTwilio)
-
-            respuesta = null            
-        } finally{
+        }catch(ApiException e){
+            /*Cachar las excepciones de al API de Calixta 
+             * */
+            loggingService.loggingExceptionCX(e, to)
+            respuesta = null
+        } 
+        catch(Exception ex ){
+            ex.printStackTrace()
+        }
+        finally{
             respuesta
         }
     }
@@ -84,6 +113,7 @@ public class SmsService {
         try {
             return this.sendSMS(to, configuracion.mensajeEnvioShortUrl + shortUrl, configuracion)
         } catch (Exception e) {
+	    loggingService.loggingExceptionCX(e, to)
             return Boolean.FALSE
         }
     }
@@ -127,19 +157,19 @@ public class SmsService {
                 if(idEnvio == StatusResponseCalixta.ENVIADO.value) {
                     return Boolean.TRUE
                 } else if (idEnvio == StatusResponseCalixta.NO_SALDO.value){
-                    saveError = Boolean.FALSE
+				    loggingService.loggingBusinessCX("El servico de CALIXTA no cuenta con saldo, Codigo de Error de API:  "+idEnvio)
                     throw new Exception("Error. No hay saldo para el envío de mensajes")
                 } else if (idEnvio == StatusResponseCalixta.ERROR.value){
-                    saveError = Boolean.FALSE
+					loggingService.loggingBusinessCX("El servico de CALIXTA genero un error no identificado, Codigo de Error de API:  "+idEnvio)
                     throw new Exception("Error desconocido")
                 } else {
                     return Boolean.FALSE
                 }
             }
         } catch(Exception e) {
-            if (saveError) {
-                persistSmsException(message, randomCode, configuracion)
-            }
+			/*Cachar las excepciones de al Apide Calixta
+			* */
+			loggingService.loggingExceptionCX(e, to)
             throw e
         }
     }
@@ -184,7 +214,7 @@ public class SmsService {
         if(mySms) {
             println "mySms.toPhone -> " + mySms.getToPhone()
             println "mySms.randomCode -> " + mySms.getRandomCode()
-            if ((mySms.getRandomCode() == randomCodeTmp.trim()) || randomCodeTmp.trim() == '00000') {
+            if (mySms.getRandomCode() == randomCodeTmp.trim()) {
                 result = true
             }
         }
@@ -207,5 +237,12 @@ public class SmsService {
         message.errorCode = StatusResponseCalixta.ERROR_INTERNO.value
         message.status = "error"
         persistSms(message, randomCode, configuracion?.usarTwilio)
+    }
+    public boolean sendFolio(String to, String folio, def configuracion){
+        try {
+            return this.sendSMS(to, folio , configuracion)
+        } catch (Exception e) {
+            return Boolean.FALSE
+        }
     }
 }

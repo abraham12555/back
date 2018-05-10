@@ -889,8 +889,8 @@
                                         <div class="marginLeft32">
                                             <p class="font12 fontWeight500 gray paddingTop10">MONTO DE LA RENTA</p>
                                             <p class="font18 fontWeight500 darkBluetitle">
-                                                <g:if test="${datosSolicitud.direccionCliente?.tipoDeVivienda?.id == 1}">
-                                                    <g:formatNumber number="${datosSolicitud.productoSolicitud?.montoDelCredito}" format="\044###,###,###.##"/>
+                                                <g:if test="${datosSolicitud.direccionCliente?.tipoDeVivienda?.id == 2 || datosSolicitud.direccionCliente?.tipoDeVivienda?.id == 6 || datosSolicitud.direccionCliente?.tipoDeVivienda?.id == 7 || datosSolicitud.direccionCliente?.tipoDeVivienda?.id == 8 || datosSolicitud.direccionCliente?.tipoDeVivienda?.id == 9}">
+                                                    <g:formatNumber number="${datosSolicitud.direccionCliente?.montoDeLaRenta}" format="\044###,###,###.##"/>
                                                 </g:if>
                                                 <g:else>
                                                     N/A
@@ -1359,56 +1359,6 @@
                                         </g:if>
                                     </g:if>
                               </sec:ifAnyGranted>
-                                </div>
-                                <div class="col12 clearFix">
-                                    <div class="col6 col12-mob floatLeft">
-                                        <div class="mobileAside10 solicitudWhiteBox radius2 paddingBottom12 marginBottom20">
-                                            <div class="navyBg radius2 ">
-                                                <p class="paddingLeft30 colorWhite letterspacing2 fontWeight600 font18 paddingTop15 paddingBottom10">VERIFICACIÓN</p>
-                                            </div>
-                                            <div class="marginLeft32 clearFix">
-                                                <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">VERIFICACIÓN DE IDENTIDAD</p>
-                                                <div class="floatRight">
-                                                    <img class="paddingTop10 paddingRight10" src="${resource(dir:'images', file:'green-icon.png')}" alt="green-icon"/>
-                                                </div>
-                                            </div>
-                                            <div class="paddingLeft30 lightGrayBG clearFix">
-                                                <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">VERIFICACIÓN DE DOMICILIO</p>
-                                                <div class="floatRight">
-                                                    <img class="paddingTop10 paddingRight10" src="${resource(dir:'images', file:'red-icon.png')}" alt="red-icon"/>
-                                                </div>
-                                            </div>
-                                            <div class="marginLeft32 clearFix">
-                                                <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">CAPACIDAD DE PAGO</p>
-                                                <div class="floatRight">
-                                                    <img class="paddingTop10 paddingRight10" src="${resource(dir:'images', file:'green-icon.png')}" alt="green-icon"/>
-                                                </div>
-                                            </div>
-                                            <div class="paddingLeft30 lightGrayBG clearFix">
-                                                <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">HISTORIAL DE CRÉDITO</p>
-                                                <div class="floatRight">
-                                                    <img class="paddingTop10 paddingRight10" src="${resource(dir:'images', file:'green-icon.png')}" alt="green-icon"/>
-                                                </div>
-                                            </div>
-                                            <div class="marginLeft32 clearFix">
-                                                <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">SIN ALERTAS DE FRAUDE</p>
-                                                <div class="floatRight">
-                                                    <img class="paddingTop10 paddingRight10" src="${resource(dir:'images', file:'green-icon.png')}" alt="green-icon"/>
-                                                </div>
-                                            </div>
-                                            <div class="paddingLeft30 lightGrayBG clearFix">
-                                                <p class="font18 fontWeight500 darkBluetitle paddingTop15 paddingBottom10 floatLeft">REFERENCIAS</p>
-                                                <div class="floatRight">
-                                                    <img class="paddingTop10 paddingRight10" src="${resource(dir:'images', file:'green-icon.png')}" alt="green-icon"/>
-                                                </div>
-                                            </div>
-                                            <div class="paddingAside15">
-                                                <div class="colorGreen autoMargin marginTop12 radius4">
-                                                    <p class="colorWhite fontWeighht700 font25 center paddingTop15 paddingBottom15">SCORE 543</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 </section>
                                 <g:if test="${!datosSolicitud.temporal}">
