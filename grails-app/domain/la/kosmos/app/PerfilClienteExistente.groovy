@@ -27,6 +27,7 @@ class PerfilClienteExistente implements Serializable{
     String atrasoPago
     String clienteRenovacion
     String malaFe
+    String listaNegra
     String reactivacion
     String renovacion
     String ultimaFechaCaptura
@@ -78,6 +79,7 @@ class PerfilClienteExistente implements Serializable{
         clienteCredVigente(nullable: true)
         periodoCredMaxEp(nullable: true)  
         plazoCredMaxEp(nullable: true)
+        listaNegra(nullable: true)
     }
     
     static mapping = {

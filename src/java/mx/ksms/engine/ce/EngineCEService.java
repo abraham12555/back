@@ -86,7 +86,67 @@ public interface EngineCEService {
      * @param servicios
      * @param clienteConRenovacion
      * @param experienciaCrediticia
+     * @param asalariado
      * @param clienteCredVigente
+     * @param listaNegra
+     * @param avanceCapital1
+     * @param avanceCapital2
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(name = "String", targetNamespace = "")
+    @RequestWrapper(localName = "calculateDictamenDePoliticasCasoExtraordinarioCE", targetNamespace = "http://ce.engine.ksms.mx/", className = "mx.ksms.engine.ce.CalculateDictamenDePoliticasCasoExtraordinarioCE")
+    @ResponseWrapper(localName = "calculateDictamenDePoliticasCasoExtraordinarioCEResponse", targetNamespace = "http://ce.engine.ksms.mx/", className = "mx.ksms.engine.ce.CalculateDictamenDePoliticasCasoExtraordinarioCEResponse")
+    public String calculateDictamenDePoliticasCasoExtraordinarioCE(
+        @WebParam(name = "solicitudId", targetNamespace = "")
+        String solicitudId,
+        @WebParam(name = "servicios", targetNamespace = "")
+        String servicios,
+        @WebParam(name = "EDAD", targetNamespace = "")
+        Integer edad,
+        @WebParam(name = "experiencia_crediticia", targetNamespace = "")
+        String experienciaCrediticia,
+        @WebParam(name = "creditos_liquidados", targetNamespace = "")
+        int creditosLiquidados,
+        @WebParam(name = "clienteCredVigente", targetNamespace = "")
+        String clienteCredVigente,
+        @WebParam(name = "renovacion1", targetNamespace = "")
+        String renovacion1,
+        @WebParam(name = "ultimaFechaCredito", targetNamespace = "")
+        String ultimaFechaCredito,
+        @WebParam(name = "avanceCapital1", targetNamespace = "")
+        Double avanceCapital1,
+        @WebParam(name = "avanceCapital2", targetNamespace = "")
+        Double avanceCapital2,
+        @WebParam(name = "clienteConRenovacion", targetNamespace = "")
+        String clienteConRenovacion,
+        @WebParam(name = "atrasoPago", targetNamespace = "")
+        String atrasoPago,
+        @WebParam(name = "malaFe", targetNamespace = "")
+        String malaFe,
+        @WebParam(name = "porcentajeDedescuento", targetNamespace = "")
+        Double porcentajeDedescuento,
+        @WebParam(name = "asalariado", targetNamespace = "")
+        Boolean asalariado,
+        @WebParam(name = "listaNegra", targetNamespace = "")
+        String listaNegra);
+
+    /**
+     * 
+     * @param atrasoPago
+     * @param malaFe
+     * @param porcentajeDedescuento
+     * @param solicitudId
+     * @param creditosLiquidados
+     * @param ultimaFechaCredito
+     * @param renovacion1
+     * @param edad
+     * @param servicios
+     * @param clienteConRenovacion
+     * @param experienciaCrediticia
+     * @param clienteCredVigente
+     * @param listaNegra
      * @param avanceCapital1
      * @param avanceCapital2
      * @return
@@ -124,7 +184,9 @@ public interface EngineCEService {
         @WebParam(name = "malaFe", targetNamespace = "")
         String malaFe,
         @WebParam(name = "porcentajeDedescuento", targetNamespace = "")
-        Double porcentajeDedescuento);
+        Double porcentajeDedescuento,
+        @WebParam(name = "listaNegra", targetNamespace = "")
+        String listaNegra);
 
     /**
      * 
@@ -161,6 +223,7 @@ public interface EngineCEService {
      * @param rEVOPAGOS3
      * @param agServicio
      * @param clienteCredVigente
+     * @param listaNegra
      * @return
      *     returns mx.ksms.engine.ce.EngineCEDataOutput
      */
@@ -234,7 +297,9 @@ public interface EngineCEService {
         @WebParam(name = "malaFe", targetNamespace = "")
         String malaFe,
         @WebParam(name = "porcentajeDedescuento", targetNamespace = "")
-        Double porcentajeDedescuento);
+        Double porcentajeDedescuento,
+        @WebParam(name = "listaNegra", targetNamespace = "")
+        String listaNegra);
 
     /**
      * 

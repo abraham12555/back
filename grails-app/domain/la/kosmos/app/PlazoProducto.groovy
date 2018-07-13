@@ -12,6 +12,7 @@ class PlazoProducto implements Serializable{
     boolean usarListaDePlazos = false
     String plazosPermitidos
     boolean usarEnPerfilador = false
+    boolean usarEnCotizador = true
     
     static constraints = {
         periodicidad (nullable: false)

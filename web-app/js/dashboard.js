@@ -4106,7 +4106,6 @@ function mostrarSolicitudesPaginados(data) {
 }
 
 function mostrarSolicitudesFechas(data, idTabla) {
-    console.log("mostrarSolicitudesFechas"+idTabla);
     $('#' + idTabla + 'tbody').html('');
     //$('#lista1').html('');
     $(window).scrollTop($('#' + idTabla).position().top);

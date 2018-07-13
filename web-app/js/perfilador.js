@@ -420,10 +420,12 @@ function goStep2() {
                     $('#cliente_rfc').prop('readonly', true);
                     $("#cliente_rfc").addClass('notEmpty');
                     $("#cliente_rfc").addClass('headingColor');
-                    if ($(".desktopLeftBar").css('display') === 'none'){
+                    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
                         $("#uso_movil").val('true');
-                    }else{
+
+                    } else {
                         $("#usoMovil").val('false');
+
                     }
                     sweetAlert("¡Excelente!", "El R.F.C indicado ha sido encontrado. Complementa los datos que son solicitados en los siguientes apartados.", "success");
                     vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
@@ -457,10 +459,12 @@ function goStep2() {
             $("#cliente_rfc").removeClass('notEmpty');
             $("#cliente_rfc").removeClass('headingColor');
         }
-        if ($(".desktopLeftBar").css('display') === 'none') {
-            $("#uso_movil").val('true') ;
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            $("#uso_movil").val('true');
+
         } else {
             $("#usoMovil").val('false');
+
         }
         vNotify.warning({text: 'Favor de capturar el Correo del Cliente, en caso de no contar con correo solo se aceptará capturar el correo genérico 1234@libertad.com.mx', title: 'Importante.', visibleDuration: 30000});
     }

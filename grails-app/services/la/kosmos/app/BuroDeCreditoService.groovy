@@ -1184,7 +1184,7 @@ class BuroDeCreditoService {
                 creditos.each { credito ->
                     def nombreUsuario = credito.nombreUsuario ? credito.nombreUsuario.trim() : ""
                     //println "Revisando cuenta -> id: " + credito.id + " claveDeObservacion: " + credito.claveDeObservacion + ",  claveUsuario: " + credito.claveUsuario + ", tipoDeCuenta: " + credito.tipoDeCuenta + ", tipoContratoProducto: " + credito.tipoContratoProducto + ", fechaCierre: " + credito.fechaCierre + ", montoAPagar: " + credito.montoAPagar + ", saldoActual: " + credito.saldoActual
-                    if (credito.claveUsuario != "UT" && credito.claveUsuario != "UU" && credito.claveUsuario != "VV" && nombreUsuario != "LIBERTAD SFP" && nombreUsuario != "COMUNICACIONES" && nombreUsuario != "SERVICIOS" && nombreUsuario != "GUBERNAMENTALES") {
+                    if (credito.claveUsuario != "UT" && credito.claveUsuario != "UU" && credito.claveUsuario != "VV" && nombreUsuario != "LIBERTAD SFP" && nombreUsuario != "COMUNICACIONES" && nombreUsuario != "SERVICIOS" && nombreUsuario != "GUBERNAMENTALES"  && nombreUsuario != "HIPOTECAGOBIERNO") {
                         validos.add(credito)
                         //println "Se toma en cuenta? SI"
                     } else { //temporal
@@ -1200,24 +1200,36 @@ class BuroDeCreditoService {
                 }
                 println " ***** Iniciando procedimiento de cálculo del monto a pagar (Solo cuentas abiertas) ***** "
                 cuentasAbiertas.each { credito ->
-                    //println "Obtiendo saldo de la cuenta " + credito.id + " ..."
+                    println"INICIO DE LA CUENTA------------"
+                    println "Obtiendo saldo de la cuenta " + credito.id + " ..."
                     int saldoAPagar = Integer.parseInt(credito.saldoActual.replace("+", "").trim())
-                    //println "Saldo a Pagar (Sin Aplicar Reglas): " + saldoAPagar
-                    //println "Monto a Pagar (Sin Aplicar Reglas): " + credito.montoAPagar
+                    println "Saldo a Pagar (Sin Aplicar Reglas): " + saldoAPagar
+                    println "Monto a Pagar (Sin Aplicar Reglas): " + credito.montoAPagar
                     if (!credito.montoAPagar) {
-                        //println "Entra a 1"
+                        println "Entra a 1"
+                        println "5% del saldo a pagar"+ saldoAPagar * 0.05
                         montoAPagar += saldoAPagar * 0.05
                     } else if (Integer.parseInt(credito.montoAPagar?.trim()) >= saldoAPagar) {
-                        //println "Entra a 2"
+                        println "Entra a 2"
+                        println "5% montoAPagar"+ Integer.parseInt(credito.montoAPagar.trim()) * 0.05
                         montoAPagar += Integer.parseInt(credito.montoAPagar.trim()) * 0.05
                     } else if (credito.tipoDeCuenta.trim().equals("I") || credito.tipoDeCuenta.trim().equals("M")) {
-                        //println "Entra a 3"
-                        montoAPagar += Integer.parseInt(credito.montoAPagar.trim())
-                    } else if ((credito.tipoDeCuenta.trim().equals("R") || credito.tipoDeCuenta.trim().equals("O")) && saldoAPagar > Integer.parseInt(credito.montoAPagar?.trim())) {
-                        //println "Entra a 4"
+                        println "Entra a 3"
+                        println "sumando monto a pagar"+Integer.parseInt(credito.montoAPagar.trim())
                         montoAPagar += Integer.parseInt(credito.montoAPagar.trim())
                     }
-                    //println "Monto a Pagar Acumulado: " + montoAPagar
+                    else if ((credito.tipoDeCuenta.trim().equals("R") || credito.tipoDeCuenta.trim().equals("O")) && Integer.parseInt(credito.montoAPagar?.trim()) == 0 ) {
+                        println "Entra a 4"
+                        println "5% del saldo a pagar"+saldoAPagar * 0.05
+                        montoAPagar += saldoAPagar * 0.05
+                    }
+                    else if ((credito.tipoDeCuenta.trim().equals("R") || credito.tipoDeCuenta.trim().equals("O")) && saldoAPagar > Integer.parseInt(credito.montoAPagar?.trim())) {
+                        println "Entra a 5"
+                        println "sumando monto a pagar"+Integer.parseInt(credito.montoAPagar.trim())
+                        montoAPagar += Integer.parseInt(credito.montoAPagar.trim())
+                    }
+                    println "Monto a Pagar Acumulado: " + montoAPagar
+                    println "FIN DE LA CUENTA---------------------"
                 }
                 println "Monto a Pagar (Preliminar): " + montoAPagar
                 montoAPagar = montoAPagar * porcentajeDeDescuento

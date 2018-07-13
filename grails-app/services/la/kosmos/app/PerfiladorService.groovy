@@ -24,6 +24,7 @@ class PerfiladorService {
     def motorDeDecisionService
     def offerService
     def bitacoraOfertasService
+    def smsService
     
     def vxc = 2.03 //constante que al multiplicarse * cuota, se obtine el pago mensual ¿varia segun el tipo de pago ?
     def sal_min = 80.04  // $$ salario minimo activo al 2017/marzo
@@ -381,44 +382,48 @@ class PerfiladorService {
         def datosSolicitud = consultarSolicitud(origen, identificadores.idSolicitud)
         def entidadFinanciera
         try {
-        if(datosSolicitud) {
-            entidadFinanciera = EntidadFinanciera.get(datosSolicitud.entidadFinancieraId as long)
-            /*if(origen == "cotizador") {
-            oferta = calcularOferta(datosSolicitud)
-            println "RATIO = " + oferta.ratio
-            if(oferta.ratio > 1 ){
-            println "RATIO APROBADO"
-            }else{
-            println "RATIO MENOR A UNO"
-            }
-            println "NUEVA OFERTA p/solicitudid " + datosSolicitud.idSolicitud
-            ofertas << oferta
-            }*/
-            def tipoDeDocumento = (datosSolicitud.documento ?: TipoDeDocumento.get(idTipoDeDocumento as long)) //Falta tomar en cuenta clienteExistente
-            //Primer Filtro
-            def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
-            if (productosAplicables.size() == 0) {
-                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datosSolicitud.idSolicitud as long),'No existen productos aplicables para el tipo de comprobante de ingresos seleccionado.','Rechazado')
-                log.error("ERRPROD" + (aleatorio()) + ".No se generaron ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado.. Solicitud: " + datosSolicitud.idSolicitud)
-                throw new BusinessException("No se generaron ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado.");
-            }
+            if(datosSolicitud) {
+                entidadFinanciera = EntidadFinanciera.get(datosSolicitud.entidadFinancieraId as long)
+                /*if(origen == "cotizador") {
+                oferta = calcularOferta(datosSolicitud)
+                println "RATIO = " + oferta.ratio
+                if(oferta.ratio > 1 ){
+                println "RATIO APROBADO"
+                }else{
+                println "RATIO MENOR A UNO"
+                }
+                println "NUEVA OFERTA p/solicitudid " + datosSolicitud.idSolicitud
+                ofertas << oferta
+                }*/
+                def tipoDeDocumento = (datosSolicitud.documento ?: TipoDeDocumento.get(idTipoDeDocumento as long)) //Falta tomar en cuenta clienteExistente
+                //Primer Filtro
+                println idTipoDeDocumento 
+                println "BUSCANDO PRODUCTOS APLICABLES  TIPO DE DOCUMENTO"+ tipoDeDocumento
+                def productosAplicables = (DocumentoProducto.executeQuery("Select dp.producto From DocumentoProducto dp Where dp.producto.usoEnPerfilador = true " +  ( (clienteExistente == "SI") ? "And dp.producto.segundoCredito = true" : "And dp.producto.primerCredito = true" ) + " And dp.producto.entidadFinanciera.id = :entidadFinancieraId And dp.tipoDeDocumento.tipoDeIngresos.id = :tipoDeIngresos And (:edad  >= dp.producto.edadMinima And :edad <= dp.producto.edadMaxima)", [entidadFinancieraId: datosSolicitud.entidadFinancieraId, tipoDeIngresos: tipoDeDocumento.tipoDeIngresos.id, edad: datosSolicitud.edad])) as Set
+                if (productosAplicables.size() == 0) {
+                    bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datosSolicitud.idSolicitud as long),'No existen productos aplicables para el tipo de comprobante de ingresos seleccionado.','Rechazado')
+                    log.error("ERRPROD" + (aleatorio()) + ".No se generaron ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado.. Solicitud: " + datosSolicitud.idSolicitud)
+                    throw new BusinessException("No se generaron ofertas debido a que no existen productos aplicables para el tipo de comprobante de ingresos seleccionado.");
+                }
 
-            //Segundo Filtro
-            def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
-            if(bitacoraDeBuro == null || bitacoraDeBuro.empty) {
-                log.error("ERRBC" + (aleatorio()) + ". No se generaron resultados por parte del Buró de Crédito. Solicitud: " + datosSolicitud.idSolicitud)
-                throw new BusinessException("No se generaron resultados por parte del Buró de Crédito");
-            }
+                //Segundo Filtro
+                def bitacoraDeBuro  = BitacoraBuroCredito.executeQuery("Select b from BitacoraBuroCredito b Where b.solicitud.id = " + identificadores.idSolicitud + "  Order by b.fechaRespuesta desc")
+                if(bitacoraDeBuro == null || bitacoraDeBuro.empty) {
+                    log.error("ERRBC" + (aleatorio()) + ". No se generaron resultados por parte del Buró de Crédito. Solicitud: " + datosSolicitud.idSolicitud)
+                    throw new BusinessException("No se generaron resultados por parte del Buró de Crédito");
+                }
 
-            def datos = [:]
-            /**
-             * Asiganacion de variables para automatizacion de lineamientos 
-             * */
-            /**/
+                def datos = [:]
+                /**
+                 * Asiganacion de variables para automatizacion de lineamientos 
+                 * */
+                /**/
             
             datos.solicitudId = identificadores.idSolicitud
             datos.listaDeServicios = (productosAplicables*.claveDeProducto)?.join(',')
             datos.edad = datosSolicitud.edad 
+            println "PRODUCTOS APLICABLES ANTES DE POLITICAS"+ datos.listaDeServicios
+
             if(bitacoraDeBuro){
                 datos.cadenaBuroDeCredito = buroDeCreditoService.generarCadenaBC(bitacoraDeBuro.getAt(0), sessionUser)
             } else {
@@ -426,8 +431,10 @@ class PerfiladorService {
             }
             boolean respuestaEnvioCadenaBC
             def respuestaDictameneDePoliticas
+            def respuestaDictameneDePoliticasCasoExtraordinario
+            def condicion6129 = false
             if(datos.cadenaBuroDeCredito) {
-                datos.porcentajeDeDescuento = 1
+                datos.porcentajeDeDescuento = 0.8
                 if(clienteExistente == "SI") {
                     datos.experienciaCrediticia = perfil?.experienciaCrediticia
                     datos.creditosLiquidados = (perfil?.numCredLiqdExp ?: 0)
@@ -440,11 +447,26 @@ class PerfiladorService {
                     datos.clienteConRenovacion = perfil.clienteRenovacion
                     datos.atrasoPago = perfil.atrasoPago
                     datos.malaFe = perfil.malaFe
+                    datos.listaNegra = perfil?.listaNegra
 
                     respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuroClienteExistente(entidadFinanciera,datos)
                     if(respuestaEnvioCadenaBC) {
                         respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticasClienteExistente(entidadFinanciera, datos)
-                    } else {
+                            datos.listaDeServicios2 = ''
+                            if(respuestaDictameneDePoliticas.find { (it."6119" == "Menores2000") }){
+                                datos.listaDeServicios2 += '6119,'
+                            }
+                            if(respuestaDictameneDePoliticas.find { (it."6099" == "Menores2000") }){
+                                datos.listaDeServicios2 += '6099,'
+                            }
+                            if(respuestaDictameneDePoliticas.find { (it."6119" == "Menores2000" || it."6099" == "Menores2000") }){
+                                datosSolicitud.documento2 = tipoDeDocumento
+                                datos.listaDeServicios =  datos.listaDeServicios2
+                                datos.asalariado = (datosSolicitud.documento2.tipoDeIngresos.id == 1 ? true : false)
+                                respuestaDictameneDePoliticasCasoExtraordinario = motorDeDecisionService.obtenerDictamenteDePoliticasCasoExtraordinarioCE(entidadFinanciera, datos)
+                            }
+                        
+                        } else {
                         log.error("ERRCLEX" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
                         throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
                     }
@@ -452,6 +474,22 @@ class PerfiladorService {
                         respuestaEnvioCadenaBC = motorDeDecisionService.enviarCadenaDeBuro(entidadFinanciera, datos)
                         if(respuestaEnvioCadenaBC) {
                             respuestaDictameneDePoliticas = motorDeDecisionService.obtenerDictamenteDePoliticas(entidadFinanciera, datos)
+                            datos.listaDeServicios2 = ''
+                            if(respuestaDictameneDePoliticas.find { (it."6119" == "Menores2000") }){
+                                datos.listaDeServicios2 += '6119,'
+                            }
+                            if(respuestaDictameneDePoliticas.find { (it."6099" == "Menores2000") }){
+                                datos.listaDeServicios2 += '6099,'
+                            }
+                            if(respuestaDictameneDePoliticas.find { (it."6129" == "A") || (it."6129" == "D") }){
+                                datos.listaDeServicios2 += '6129,'
+                            }
+                            if(respuestaDictameneDePoliticas.find { (it."6119" == "Menores2000" || it."6099" == "Menores2000" || it."6129" == "A") || it."6129" == "D" }){
+                                datosSolicitud.documento2 = tipoDeDocumento
+                                datos.listaDeServicios =  datos.listaDeServicios2
+                                datos.asalariado = (datosSolicitud.documento2.tipoDeIngresos.id == 1 ? true : false)
+                                respuestaDictameneDePoliticasCasoExtraordinario = motorDeDecisionService.obtenerDictamenteDePoliticasCasoExtraordinario(entidadFinanciera, datos)
+                            }
                         } else {
                             log.error("ERRCLN" + (aleatorio()) + ". Se detectaron errores al enviar la cadena de buro de credito. Solicitud: " + datos.solicitudId)
                             throw new BusinessException("Se detectaron errores en la respuesta de buró de crédito");
@@ -479,27 +517,40 @@ class PerfiladorService {
 	    Boolean experienciaEp = false;
             def montoOtorgado;
             
-            def listaTemporal = []
-            productosAplicables?.each { producto ->
-                if(respuestaDictameneDePoliticas) {
-                    def dictamen = respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D") }
-                    if(dictamen) {
-                        listaTemporal << producto
-                    }
-                    if(clienteExistente == "SI") {
-                        if(perfil?.experienciaCrediticia == 'EP'){
-                            experienciaEp = true;
-                             montoOtorgado = perfil?.montoMaxExpPositiva
+                def listaTemporal = []
+                productosAplicables?.each { producto ->
+                    if(respuestaDictameneDePoliticas) {
+                        def dictamen = respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D") }
+                        if(dictamen) {
+                            listaTemporal << producto
                         }
-                        if(perfil?.producto1 != null) {
-                            producto1CCPI = true;
+                        def dictamen2 = respuestaDictameneDePoliticasCasoExtraordinario.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "5000" || it."$producto.claveDeProducto" == "10000") }
+                        if(dictamen2) {
+                            if(!respuestaDictameneDePoliticasCasoExtraordinario.find { (it."6129" == "5000" || it."6129" == "10000") }){
+                               listaTemporal << producto
+                            }
+                            println listaTemporal
                         }
-                        if(perfil?.producto2 != null) {
-                            producto2CCPI = true;
+                        if(clienteExistente == "SI") {
+                            if(perfil?.experienciaCrediticia == 'EP'){
+                                experienciaEp = true;
+                                montoOtorgado = perfil?.montoMaxExpPositiva
+                            }
+                            if(perfil?.producto1 != null) {
+                                producto1CCPI = true;
+                                if(perfil?.producto1 == '6125' || perfil?.producto1  == '6126'){
+                                    listaTemporal.removeIf {it.claveDeProducto =='6125' ||  it.claveDeProducto =='6126'}
+                                }
+                            }
+                            if(perfil?.producto2 != null) {
+                                producto2CCPI = true;
+                                if(perfil?.producto2 == '6125' || perfil?.producto2  == '6126'){
+                                    listaTemporal.removeIf { it.claveDeProducto =='6125' ||  it.claveDeProducto =='6126' }
+                                }
+                            }
                         }
                     }
                 }
-            }
 			
             /*BUSCA R */
             //            productosAplicables?.each { rechazo ->
@@ -522,6 +573,9 @@ class PerfiladorService {
             boolean errorDictamenPerfil = Boolean.TRUE
             boolean errorDictamenPerfilRechazado = Boolean.TRUE
             def banderaEp = false;
+            boolean producto6119 = false;
+            boolean producto6099 = false;
+            boolean producto6129 = false;
             //Revisión de plazos por producto
             def solicitud = SolicitudDeCredito.get(datos.solicitudId as long)
             productosAplicables?.each { producto ->
@@ -529,28 +583,30 @@ class PerfiladorService {
                 ofertaProducto.producto = producto
                 ofertaProducto.listaDeOpciones = []
                 ofertaProducto.listaDePlazos = []
-                //println "Perfilando: " + producto
+                println "Solicitud "+solicitud.id+" Perfilando: " + producto +" Clave "+ producto.claveDeProducto
                 def plazosPosibles = PlazoProducto.findWhere(producto: producto, usarEnPerfilador: true)
                 def plazosPermitidos = ((plazosPosibles.plazosPermitidos ? (plazosPosibles.plazosPermitidos.tokenize(',')) : null))
                 plazosPermitidos = plazosPermitidos?.reverse()
                 //println "Plazos Permitidos: " + plazosPermitidos
-                def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (tipoDeDocumento?.tipoDeIngresos?.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: producto.id, regionId: solicitud?.sucursal?.region?.id])
+                def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (tipoDeDocumento?.tipoDeIngresos?.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId and pr.activo= :activo",[productoId: producto.id, regionId: solicitud?.sucursal?.region?.id, activo : Boolean.TRUE])
                 if(porcentajeDeDescuento){
                     datosSolicitud.porcentajeDeDescuento = porcentajeDeDescuento[0]
+                    println "----si tiene descuento"
                 }
                 if(!porcentajeDeDescuento){
+                    println "----no tiene descuento"
                     if(producto.claveDeProducto == '6115'){
-                        datosSolicitud.porcentajeDeDescuento = 1
+                        datosSolicitud.porcentajeDeDescuento = 0.5
                     }else{
                         if(tipoDeDocumento.tipoDeIngresos.id == 1){
                             datosSolicitud.porcentajeDeDescuento = 0.5
                         }else{
-                            datosSolicitud.porcentajeDeDescuento = 1
+                            datosSolicitud.porcentajeDeDescuento = 0.8
                         }
                     }
                 }
                 plazosPermitidos?.each { plazo ->
-                    //println "Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
+                    println "Solicitud "+solicitud.id+" Calculando usando plazo: " + plazo + " " + plazosPosibles.periodicidad
                     datosSolicitud.plazos = plazo
                     datosSolicitud.periodicidad = plazosPosibles.periodicidad
                     datosSolicitud.producto = producto
@@ -561,15 +617,28 @@ class PerfiladorService {
                         datosSolicitud?.montoMaximoLayOut = montoOtorgado
                     }
                     oferta = calcularOferta(datosSolicitud)
-                    if(oferta.montoMaximo>= 5000 && oferta.montoMaximo < datosSolicitud?.montoMaximoLayOut){
-                            oferta.montoMaximo = datosSolicitud?.montoMaximoLayOut;//Se asigna monto maximo por politica
-                            def results = (LimitePlazoProducto.executeQuery("Select lp.periodicidad.id,lp.limiteMaximo,lp.limiteMinimo,lp.plazo From LimitePlazoProducto lp where lp.producto.id = :productoId And (:cantidad  >= lp.limiteMinimo And :cantidad <= lp.limiteMaximo) And lp.plazo = :plazo"  , [plazo: Integer.parseInt(datosSolicitud.plazos), productoId: datosSolicitud.producto.id,cantidad: oferta.montoMaximo as float])) as Set
+                    if(producto.claveDeProducto!="6129" && oferta.montoMaximo <10000){
+                        condicion6129 = true
+                    }else{
+                        condicion6129 = false
+                    }
+                    if(oferta.ratio > 1 && oferta.montoMaximo>= 5000 && datosSolicitud?.montoMaximoLayOut > oferta.montoMaximo && producto.claveDeProducto!="6129"){
+                            def results = (LimitePlazoProducto.executeQuery("Select lp.periodicidad.id,lp.limiteMaximo,lp.limiteMinimo,lp.plazo From LimitePlazoProducto lp where lp.producto.id = :productoId And (:cantidad  >= lp.limiteMinimo And :cantidad <= lp.limiteMaximo) And lp.plazo = :plazo"  , [plazo: Integer.parseInt(datosSolicitud.plazos), productoId: datosSolicitud.producto.id,cantidad: datosSolicitud?.montoMaximoLayOut as float])) as Set
                             if(results.size() != 0){
-                                oferta.montoMaximo = datosSolicitud?.montoMaximoLayOut;//Se asigna monto maximo por politica
+                                oferta.montoMaximo = datosSolicitud?.montoMaximoLayOut;
+                            }
+                            if(results.size() == 0){
+                             results = (LimitePlazoProducto.executeQuery("Select lp.periodicidad.id,lp.limiteMaximo,lp.limiteMinimo,lp.plazo From LimitePlazoProducto lp where lp.producto.id = :productoId And (:cantidad  >= lp.limiteMinimo And :cantidad <= lp.limiteMaximo) And lp.plazo = :plazo"  , [plazo: Integer.parseInt(datosSolicitud.plazos), productoId: datosSolicitud.producto.id,cantidad: oferta.montoMaximo as float])) as Set
+                             if(results.size() != 0){
+                                 oferta.montoMaximo = oferta.montoMaximo
+                               }
+                            }
+                            if(results.size() != 0){
+                                oferta.montoMaximo = oferta.montoMaximo //Se asigna monto maximo por politica
                                 oferta.montoMinimo = results[0][2]
                                 oferta.plazos = results[0][3]
                                 oferta.periodicidad = datosSolicitud.periodicidad
-                                oferta.ratio = 1.1
+                                oferta.ratio = oferta.ratio
                                 def oferta1 = calcularCuota(datosSolicitud.producto.esquema.id,datosSolicitud?.montoMaximoLayOut, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId,datosSolicitud.producto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
                                 banderaEp = true
                                 oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
@@ -583,13 +652,14 @@ class PerfiladorService {
                                 oferta.cat = oferta1.cat
                                 oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
                                 oferta.tieneDescuento = datosSolicitud.producto.tieneDescuento
-                            }else{
+                            }
+                            else{
                                 oferta.ratio = 0
                             }
                         }else{
                              banderaEp = false
                         }
-                    if(oferta.ratio > 1){
+                    if(oferta.ratio > 1 && condicion6129 == false){
                         errorCapacidadPago = Boolean.FALSE
                         
                         def respuestaDictamenDePerfil
@@ -610,52 +680,84 @@ class PerfiladorService {
                                 def tasaAplicable = TasaDinamicaProducto.executeQuery("Select tdp From TasaDinamicaProducto tdp Where tdp.producto.id = :idProducto And :probabilidadDeMora >= tdp.probabilidadDeIncumplimientoMinima And :probabilidadDeMora <= tdp.probabilidadDeIncumplimientoMaxima ", [idProducto: producto.id, probabilidadDeMora: ((respuestaDictamenDePerfil.probabilidadDeMora * 100) as float)])
                                 if(tasaAplicable && banderaEp == false) {
                                     datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                     oferta = calcularOferta(datosSolicitud)
+                                    oferta = calcularOferta(datosSolicitud)
+                                    if(datosSolicitud?.montoMaximoLayOut> oferta.montoMaximo){
+                                         banderaEp = true
+                                         oferta.montoMaximo = datosSolicitud?.montoMaximoLayOut
+                                    }
 
-                                }
-                                if(tasaAplicable && banderaEp == true){
-                                            datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                            def ofertaTasaDinamica = calcularCuota(datosSolicitud.producto.esquema.id,datosSolicitud?.montoMaximoLayOut, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId,datosSolicitud.producto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                            oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
-                                            oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
-                                            oferta.cuota = ofertaTasaDinamica.cuota
-                                            oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
-                                            oferta.cat = ofertaTasaDinamica.cat
-                                            oferta.tipoProducto = datosSolicitud.producto.esquema.id
-                                            oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
-                                            oferta.tieneDescuento = datosSolicitud.producto.tieneDescuento
-                                            oferta.ratio = 1.1
-                                            banderaEp = true
-                                }
-                                if(oferta.ratio > 1 ){
-                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
-                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                                oferta.dictamenDePoliticas = ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
-                                //println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
-                                oferta.tipoProducto = oferta.tipoProducto
-                                oferta.plazoCondonado = oferta.plazoCondonado 
-                                oferta.cat = oferta.cat
-                                oferta.tieneDescuento = oferta.tieneDescuento
-                                ofertaProducto.listaDeOpciones << oferta
-                                def mapaPlazo = [:]
-                                mapaPlazo.plazos = (plazo as int)
-                                mapaPlazo.periodicidadId = plazosPosibles.periodicidad.id
-                                mapaPlazo.periodicidad = plazosPosibles.periodicidad.nomenclatura
-                                ofertaProducto.listaDePlazos << mapaPlazo
-                                }else{
-                                    errorCapacidadPago = Boolean.TRUE
+                                    }
+                                    if(tasaAplicable && banderaEp == true){
+                                        datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                        def ofertaTasaDinamica = calcularCuota(datosSolicitud.producto.esquema.id,datosSolicitud?.montoMaximoLayOut, datosSolicitud.periodicidad, datosSolicitud.plazos, datosSolicitud.tasaDeInteres, datosSolicitud.entidadFinancieraId,datosSolicitud.producto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                        oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
+                                        oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
+                                        oferta.cuota = ofertaTasaDinamica.cuota
+                                        oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
+                                        oferta.cat = ofertaTasaDinamica.cat
+                                        oferta.tipoProducto = datosSolicitud.producto.esquema.id
+                                        oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
+                                        oferta.tieneDescuento = datosSolicitud.producto.tieneDescuento
+                                        //oferta.ratio = 1.1
+                                        banderaEp = true
+                                    }
+                                    if(oferta.ratio > 1 ){
+                                        oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                        oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                        oferta.dictamenDePoliticas = ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
+                                        if(respuestaDictameneDePoliticasCasoExtraordinario.find{ (it."$producto.claveDeProducto" == "10000" || it."$producto.claveDeProducto" == "5000" || it."$producto.claveDeProducto" == "A" )}){
+                                            oferta.dictamenDePoliticas = "A" 
+                                        }
+                                        if(respuestaDictameneDePoliticasCasoExtraordinario.find{ (it."$producto.claveDeProducto" == "D")}){
+                                            oferta.dictamenDePoliticas = "D" 
+                                        }
+                                        //println ((respuestaDictameneDePoliticas.find { (it."$producto.claveDeProducto" == "A" || it."$producto.claveDeProducto" == "D" || it."$producto.claveDeProducto" == "R") })?."$producto.claveDeProducto")
+                                        oferta.tipoProducto = oferta.tipoProducto
+                                        oferta.plazoCondonado = oferta.plazoCondonado 
+                                        oferta.cat = oferta.cat
+                                        oferta.tieneDescuento = oferta.tieneDescuento
+                                        ofertaProducto.listaDeOpciones << oferta
+                                        def mapaPlazo = [:]
+                                        mapaPlazo.plazos = (plazo as int)
+                                        mapaPlazo.periodicidadId = plazosPosibles.periodicidad.id
+                                        mapaPlazo.periodicidad = plazosPosibles.periodicidad.nomenclatura
+                                        ofertaProducto.listaDePlazos << mapaPlazo
+                                    }
+                                    else{
+                                        errorCapacidadPago = Boolean.TRUE
+                                    }
                                 }
                             }
+                        }else if(oferta.claveDeProducto == '6129'){
+                                 println "SOLICITUD "+solicitud.id+" PRODUCTO 6129 NO PASO EL RATIO PERO SI LAS POLITICAS"
+                                 producto6129 = Boolean.TRUE
+                        }
+                        else if (oferta.claveDeProducto == '6119'){
+                                 println  "SOLICITUD "+solicitud.id+" PRODUCTO 6119  NO PASO EL RATIO PERO SI LAS POLITICAS"
+                                 producto6119 = Boolean.TRUE
+                        } 
+                        else if (oferta.claveDeProducto == '6099'){
+                                 println  "SOLICITUD "+solicitud.id+" PRODUCTO 6099  NO PASO EL RATIO PERO SI LAS POLITICAS"
+                                 producto6099 = Boolean.TRUE
                         }
                     }
+                    
+                    
+                    if(ofertaProducto.listaDeOpciones?.size() > 0) {
+                        ofertas << ofertaProducto
+                    }
                 }
-                if(ofertaProducto.listaDeOpciones?.size() > 0) {
-                    ofertas << ofertaProducto
-                }
-            }
-            
-            if (errorCapacidadPago) {
                 
+            
+                if (errorCapacidadPago) {
+                        Evaluador eval = new Evaluador();
+                        PerfiladorDAO perfDAO = new PerfiladorDAO();
+				 
+                        def ofertaProducto = [:]
+                        ofertaProducto.listaDeOpciones = []
+                        ofertaProducto.listaDePlazos = []
+                        def maxCAP
+                        def respuestaDictamenDePerfil;
                     /*Fecha de implementacion: 23 de Novimebre 17-
                      * @autor: Adrian Miramar
                      * Descripcion: Se agrega correccion para solo entrar a este apartado si no existe ninguna oferta de la corrida anterior
@@ -666,450 +768,47 @@ class PerfiladorService {
                          * @autor: Mike Martinez
                          * Descripcion: implementar la funcionalidad para renovacion a clientes que tengas capaciad de pago insuficiente
                          *
-                         * */			 
-                        println "ENTRANDO A RENOVACIONES"
-                        println "-----------------------"
-                        Evaluador eval = new Evaluador();
-                        PerfiladorDAO perfDAO = new PerfiladorDAO();
-				 
-                        def ofertaProducto = [:]
-                        ofertaProducto.listaDeOpciones = []
-                        ofertaProducto.listaDePlazos = []
-                        def maxCAP
-                        def respuestaDictamenDePerfil;
-                        //errorDictamenPerfilRechazado = Boolean.TRUE
-                    
-                        if(producto1CCPI == true ) {
-                            println "Evaluando Politica 1 para producto renovacion 1"
-                            def politica1 = politica1(perfil.clienteCredVigente,
-                                perfil.dictamenRenovacion1,perfil.experienciaCrediticia, perfil.montoMaxExpPositiva, 
-                                perfil.montoOtorgado1, perfil.numCredLiqdExp,perfil.mesesLibrosCredito_1)
-                            println "imprimiendo lo que trae oferta"+ politica1
-                            if(politica1){ 
-                                politica1.each{
-                                    if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
-                                        def objProducto = [:]
-                                        ofertaProducto = [:]
-                                        ofertaProducto.listaDeOpciones = []
-                                        ofertaProducto.listaDePlazos = []
-                                        objProducto.claveDeProducto = it.Producto;
-                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
-                                        ofertaProducto.producto = datosProducto
-                                        /*
-                                         * Se obtiene el id de la periodicidad a partir del LayOut
-                                         * */
-                                        def montoofertado = it.Monto
-                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
-                                        def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
-                                        def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
-                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
-                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                        oferta.tasaDeInteres = tasaDeInteres;
-                                        oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
-                                        oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
-                                            periodicidad, it.Monto );
-                                        oferta.periodicidad = periodicidad
-                                        oferta.cat = oferta.cat
-                                        oferta.tipoProducto = datosProducto.esquema.id
-                                        oferta.plazoCondonado = datosProducto.plazoCondonado
-                                        oferta.tieneDescuento = datosProducto.tieneDescuento
-                                        datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
-                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
-                                        
-                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
-                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
-                                            def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
-                                            if(tasaAplicable) {
-                                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                                def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, perfil.plazoCredMaxEp
-                                                    ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                                oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
-                                                oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
-                                                oferta.cuota = ofertaTasaDinamica.cuota
-                                                oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
-                                                oferta.cat = ofertaTasaDinamica.cat
-                                                oferta.tipoProducto = datosProducto.esquema.id
-                                                oferta.plazoCondonado = datosProducto.plazoCondonado 
-                                                oferta.tieneDescuento = datosProducto.tieneDescuento
-                                                
-                                            }
-                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
-                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                                            oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
-                                            //Calculo de ratio y balance de Caja 
-                                            oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
-                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
-                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
-                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
-                                            oferta.montoAPagar = maxCAP.montoAPagar
-                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
-                                            //fin 
-                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
-                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                            ofertaProducto.listaDeOpciones << oferta
-                                            def mapaPlazo = [:]
-                                            mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
-                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
-                                            ofertaProducto.listaDePlazos << mapaPlazo
-                                            /*
-                                             * Seañade Producto a  lista de ofertas auxiliares
-                                             * */
-                                            auxOfertas << ofertaProducto
-                                            
-                                        } else {
-                                            //errorDictamenPerfilRechazado = Boolean.TRUE
-                                        }
-                                    }
-                                    
-                                }
-                                
-                                
-                            }else{
-                                
-                                println "Evaluando Politica 2 producto 1"
-                                
-                                def politica2 = politica2(perfil.clienteCredVigente,
-                                    perfil.dictamenRenovacion1,perfil.experienciaCrediticia, perfil.montoMaxExpPositiva, 
-                                    perfil.montoOtorgado1, perfil.numCredLiqdExp)
-                                println "imprimiendo lo que trae oferta"+ politica2
-
-                                if (politica2){
-                                    println "ENtro a las politicas 2"
-                                    politica2.each{
-                                        if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
-                                            def objProducto = [:]
-                                            ofertaProducto = [:]
-                                            ofertaProducto.listaDeOpciones = []
-                                            ofertaProducto.listaDePlazos = []
-                                            objProducto.claveDeProducto = it.Producto;
-                                            def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
-                                            ofertaProducto.producto = datosProducto
-                                            /*
-                                             * Se obtiene el id de la periodicidad a partir del LayOut
-                                             * */
-                                            def montoofertado = it.Monto
-                                            //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
-                                            def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
-                                            def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
-                                            def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
-                                            oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                                ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                            oferta.tasaDeInteres = tasaDeInteres;
-                                            oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
-                                            oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
-                                                periodicidad, it.Monto );
-                                            oferta.periodicidad = periodicidad
-                                            oferta.cat = oferta.cat
-                                            oferta.tipoProducto = datosProducto.esquema.id
-                                            oferta.plazoCondonado = datosProducto.plazoCondonado
-                                            oferta.tieneDescuento = datosProducto.tieneDescuento
-                                            datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
-                                            datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                            respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
-                                            
-                                            if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
-                                                errorDictamenPerfilRechazado = Boolean.FALSE					 
-                                                def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
-                                                if(tasaAplicable) {
-                                                    datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                                    def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, perfil.plazoCredMaxEp
-                                                        ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                                    oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
-                                                    oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
-                                                    oferta.cuota = ofertaTasaDinamica.cuota
-                                                    oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
-                                                    oferta.cat = ofertaTasaDinamica.cat
-                                                    oferta.tipoProducto = datosProducto.esquema.id
-                                                    oferta.plazoCondonado = datosProducto.plazoCondonado 
-                                                    oferta.tieneDescuento = datosProducto.tieneDescuento
-                                                    
-                                                }
-                                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
-                                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                                                oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
-                                                //Calculo de ratio y balance de Caja 
-                                                oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                                maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
-                                                    datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
-                                                    (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
-                                                oferta.balanceDeCaja = maxCAP.balanceDeCaja
-                                                oferta.montoAPagar = maxCAP.montoAPagar
-                                                oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
-                                                //fin 
-                                                oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
-                                                oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                                ofertaProducto.listaDeOpciones << oferta
-                                                def mapaPlazo = [:]
-                                                mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                                mapaPlazo.periodicidadId = oferta.periodicidad.id
-                                                mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
-                                                ofertaProducto.listaDePlazos << mapaPlazo
-                                                /*
-                                                 * Seañade Producto a  lista de ofertas auxiliares
-                                                 * */
-                                                auxOfertas << ofertaProducto
-                                                
-                                            } else {
-                                                //errorDictamenPerfilRechazado = Boolean.TRUE
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                            }
-                        }
-            
-
-                        if(producto2CCPI == true ) {
-                        
-                            println "Evaluando Politica 1 para producto renovacion 2 "
-                            def politica1 = politica1(perfil.clienteCredVigente,
-                                perfil.dictamenRenovacion2,perfil.experienciaCrediticia, perfil.montoMaxExpPositiva, 
-                                perfil.montoOtorgado2, perfil.numCredLiqdExp,perfil.mesesLibrosCredito_2)
-                            println "imprimiendo lo que trae oferta"+ politica1
-                            if(politica1){ 
-                                politica1.each{
-                                    if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
-                                        def objProducto = [:]
-                                        ofertaProducto = [:]
-                                        ofertaProducto.listaDeOpciones = []
-                                        ofertaProducto.listaDePlazos = []
-                                        objProducto.claveDeProducto = it.Producto;
-                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
-                                        ofertaProducto.producto = datosProducto
-                                        /*
-                                         * Se obtiene el id de la periodicidad a partir del LayOut
-                                         * */
-                                        def montoofertado = it.Monto
-                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
-                                        def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
-                                        def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
-                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
-                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                        oferta.tasaDeInteres = tasaDeInteres;
-                                        oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
-                                        oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
-                                            periodicidad, it.Monto );
-                                        oferta.periodicidad = periodicidad
-                                        oferta.cat = oferta.cat
-                                        oferta.tipoProducto = datosProducto.esquema.id
-                                        oferta.plazoCondonado = datosProducto.plazoCondonado
-                                        oferta.tieneDescuento = datosProducto.tieneDescuento
-                                        datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
-                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
-                                        
-                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
-                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
-                                            def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
-                                            if(tasaAplicable) {
-                                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                                def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, perfil.plazoCredMaxEp
-                                                    ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                                oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
-                                                oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
-                                                oferta.cuota = ofertaTasaDinamica.cuota
-                                                oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
-                                                oferta.cat = ofertaTasaDinamica.cat
-                                                oferta.tipoProducto = datosProducto.esquema.id
-                                                oferta.plazoCondonado = datosProducto.plazoCondonado 
-                                                oferta.tieneDescuento = datosProducto.tieneDescuento
-                                                
-                                            }
-                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
-                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                                            oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
-                                            //Calculo de ratio y balance de Caja 
-                                            oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
-                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
-                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
-                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
-                                            oferta.montoAPagar = maxCAP.montoAPagar
-                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
-                                            //fin 
-                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
-                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                            ofertaProducto.listaDeOpciones << oferta
-                                            def mapaPlazo = [:]
-                                            mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
-                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
-                                            ofertaProducto.listaDePlazos << mapaPlazo
-                                            /*
-                                             * Seañade Producto a  lista de ofertas auxiliares
-                                             * */
-                                            auxOfertas << ofertaProducto
-                                            
-                                        } else {
-                                            //errorDictamenPerfilRechazado = Boolean.TRUE
-                                        }
-                                    }
-                                    
-                                }
-                                
-                                
-                            }else{
-                                println "Evaluando Politica 2 para producto renovacion 2 "
-
-                                def politica2 = politica2(perfil.clienteCredVigente,
-                                    perfil.dictamenRenovacion2,perfil.experienciaCrediticia, perfil.montoMaxExpPositiva, 
-                                    perfil.montoOtorgado2, perfil.numCredLiqdExp)
-                                    println "imprimiendo lo que trae oferta"+ politica2
-
-                                if (politica2){
-                                    println "Entro a las politicas 2"
-                                    politica2.each{
-                                        if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
-                                            def objProducto = [:]
-                                            ofertaProducto = [:]
-                                            ofertaProducto.listaDeOpciones = []
-                                            ofertaProducto.listaDePlazos = []
-                                            objProducto.claveDeProducto = it.Producto;
-                                            def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
-                                            ofertaProducto.producto = datosProducto
-                                            /*
-                                             * Se obtiene el id de la periodicidad a partir del LayOut
-                                             * */
-                                            def montoofertado = it.Monto
-                                            //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
-                                            def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
-                                            def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
-                                            def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
-                                            oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                                ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                            oferta.tasaDeInteres = tasaDeInteres;
-                                            oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
-                                            oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
-                                                periodicidad, it.Monto );
-                                            oferta.periodicidad = periodicidad
-                                            oferta.cat = oferta.cat
-                                            oferta.tipoProducto = datosProducto.esquema.id
-                                            oferta.plazoCondonado = datosProducto.plazoCondonado
-                                            oferta.tieneDescuento = datosProducto.tieneDescuento
-                                            datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
-                                            datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                            respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
-                                            
-                                            if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
-                                                errorDictamenPerfilRechazado = Boolean.FALSE					 
-                                                def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
-                                                if(tasaAplicable) {
-                                                    datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                                    def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, perfil.plazoCredMaxEp
-                                                        ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                                    oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
-                                                    oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
-                                                    oferta.cuota = ofertaTasaDinamica.cuota
-                                                    oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
-                                                    oferta.cat = ofertaTasaDinamica.cat
-                                                    oferta.tipoProducto = datosProducto.esquema.id
-                                                    oferta.plazoCondonado = datosProducto.plazoCondonado 
-                                                    oferta.tieneDescuento = datosProducto.tieneDescuento
-                                                    
-                                                }
-                                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
-                                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                                                oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
-                                                //Calculo de ratio y balance de Caja 
-                                                oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                                maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
-                                                    datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
-                                                    (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
-                                                oferta.balanceDeCaja = maxCAP.balanceDeCaja
-                                                oferta.montoAPagar = maxCAP.montoAPagar
-                                                oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
-                                                //fin 
-                                                oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
-                                                oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                                ofertaProducto.listaDeOpciones << oferta
-                                                def mapaPlazo = [:]
-                                                mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
-                                                mapaPlazo.periodicidadId = oferta.periodicidad.id
-                                                mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
-                                                ofertaProducto.listaDePlazos << mapaPlazo
-                                                /*
-                                                 * Seañade Producto a  lista de ofertas auxiliares
-                                                 * */
-                                                auxOfertas << ofertaProducto
-                                                
-                                            } else {
-                                                //errorDictamenPerfilRechazado = Boolean.TRUE
-                                            }
-                                        }
-                                    }
-                                }
-                         
-                            }
-                        }	
-
-                        println "Evaluando Politica 3"
-            
-                        def politica3 = politica3(perfil.clienteCredVigente,
-                            perfil.experienciaCrediticia, perfil.numCredLiqdExp,perfil.montoMaxExpPositiva)
-                        println "imprimiendo lo que trae oferta"+ politica3
-
-                        if (politica3) {
-                            println "Entro a las politicas 3"
-                            politica3.each{
-                                if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
+                         * */	
+                        if(perfil.experienciaCrediticia == "SE"){
+                            if(producto6119){
+                                if (eval.getDictamenProducto("6119", respuestaDictameneDePoliticasCasoExtraordinario)!= "R" || eval.getDictamenProducto("6119", respuestaDictameneDePoliticas)!= "R") {
                                     def objProducto = [:]
                                     ofertaProducto = [:]
                                     ofertaProducto.listaDeOpciones = []
                                     ofertaProducto.listaDePlazos = []
-                                    objProducto.claveDeProducto = it.Producto;
+                                    objProducto.claveDeProducto = "6119";
                                     def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
                                     ofertaProducto.producto = datosProducto
                                     /*
                                      * Se obtiene el id de la periodicidad a partir del LayOut
                                      * */
-                                    def montoofertado = it.Monto
+                                    def montoofertado = 5000
                                     //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
-                                    def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
-                                    def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
+                                    def periodicidad = eval.getIdPeriodicidad("Q")
+                                    def plazoProd = 24
                                     def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
-                                    oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                    oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad,24
                                         ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
                                     oferta.tasaDeInteres = tasaDeInteres;
-                                    oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
-                                    oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
-                                        periodicidad, it.Monto );
+                                    oferta.montoMaximo = 5000;//Se asigna monto maximo por politica
+                                    oferta.montoMinimo = 5000
                                     oferta.periodicidad = periodicidad
                                     oferta.cat = oferta.cat
                                     oferta.tipoProducto = datosProducto.esquema.id
                                     oferta.plazoCondonado = datosProducto.plazoCondonado
                                     oferta.tieneDescuento = datosProducto.tieneDescuento
-                                    datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
+                                    oferta.plazos = "24"
+                                    datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, objProducto, oferta)
                                     datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
-                                    respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
-                                            
+                                    respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                                    
                                     if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
                                         errorDictamenPerfilRechazado = Boolean.FALSE					 
-                                        def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
-                                        if(tasaAplicable) {
-                                            datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
-                                            def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, perfil.plazoCredMaxEp
-                                                ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
-                                            oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
-                                            oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
-                                            oferta.cuota = ofertaTasaDinamica.cuota
-                                            oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
-                                            oferta.cat = ofertaTasaDinamica.cat
-                                            oferta.tipoProducto = datosProducto.esquema.id
-                                            oferta.plazoCondonado = datosProducto.plazoCondonado 
-                                            oferta.tieneDescuento = datosProducto.tieneDescuento
-                                                    
-                                        }
                                         oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
                                         oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
-                                        oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
+                                        oferta.dictamenDePoliticas = (eval?.getDictamenProducto("6119",respuestaDictameneDePoliticas ) != null ? eval?.getDictamenProducto("6119",respuestaDictameneDePoliticas) : eval?.getDictamenProducto("6119",respuestaDictameneDePoliticasCasoExtraordinario))
                                         //Calculo de ratio y balance de Caja 
-                                        oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                        oferta.plazos = "24"
                                         maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
                                             datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
                                             (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
@@ -1121,7 +820,7 @@ class PerfiladorService {
                                         oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
                                         ofertaProducto.listaDeOpciones << oferta
                                         def mapaPlazo = [:]
-                                        mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                        mapaPlazo.plazos = "24"
                                         mapaPlazo.periodicidadId = oferta.periodicidad.id
                                         mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
                                         ofertaProducto.listaDePlazos << mapaPlazo
@@ -1129,48 +828,811 @@ class PerfiladorService {
                                          * Seañade Producto a  lista de ofertas auxiliares
                                          * */
                                         auxOfertas << ofertaProducto
-                                                
+                                        
                                     } else {
                                         //errorDictamenPerfilRechazado = Boolean.TRUE
                                     }
                                 }
                             }
+                            if(producto6099){
+                                println "SOLO A BUSCAR EL RPODUCTO 6099 CE SE"
+                                if (eval.getDictamenProducto("6099", respuestaDictameneDePoliticasCasoExtraordinario)!= "R" || eval.getDictamenProducto("6099", respuestaDictameneDePoliticas)!= "R") {
+                                    def objProducto = [:]
+                                    ofertaProducto = [:]
+                                    ofertaProducto.listaDeOpciones = []
+                                    ofertaProducto.listaDePlazos = []
+                                    objProducto.claveDeProducto = "6099";
+                                    def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                    ofertaProducto.producto = datosProducto
+                                    /*
+                                     * Se obtiene el id de la periodicidad a partir del LayOut
+                                     * */
+                                    def montoofertado = 10000
+                                    //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                    def periodicidad = eval.getIdPeriodicidad("Q")
+                                    def plazoProd = 24
+                                    def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                    oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad,24
+                                        ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                    oferta.tasaDeInteres = tasaDeInteres;
+                                    oferta.montoMaximo = 10000;//Se asigna monto maximo por politica
+                                    oferta.montoMinimo = 5000
+                                    oferta.periodicidad = periodicidad
+                                    oferta.cat = oferta.cat
+                                    oferta.tipoProducto = datosProducto.esquema.id
+                                    oferta.plazoCondonado = datosProducto.plazoCondonado
+                                    oferta.tieneDescuento = datosProducto.tieneDescuento
+                                    oferta.plazos = "24"
+                                    datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, objProducto, oferta)
+                                    datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                    respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                                    
+                                    if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                        errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                        oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                        oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                        oferta.dictamenDePoliticas = (eval?.getDictamenProducto("6099",respuestaDictameneDePoliticas ) != null ? eval?.getDictamenProducto("6099",respuestaDictameneDePoliticas) : eval?.getDictamenProducto("6099",respuestaDictameneDePoliticasCasoExtraordinario))
+                                        //Calculo de ratio y balance de Caja 
+                                        oferta.plazos = "24"
+                                        maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                            datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                            (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                        oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                        oferta.montoAPagar = maxCAP.montoAPagar
+                                        oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                        //fin 
+                                        oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                        oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                        ofertaProducto.listaDeOpciones << oferta
+                                        def mapaPlazo = [:]
+                                        mapaPlazo.plazos = "24"
+                                        mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                        mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                        ofertaProducto.listaDePlazos << mapaPlazo
+                                        /*
+                                         * Seañade Producto a  lista de ofertas auxiliares
+                                         * */
+                                        auxOfertas << ofertaProducto
+                                        
+                                    } else {
+                                        //errorDictamenPerfilRechazado = Boolean.TRUE
+                                    }
+                                }
+                            }
+                        }
+                        println "ENTRANDO A RENOVACIONES"
+                        println "-----------------------"
+                       
+                        //errorDictamenPerfilRechazado = Boolean.TRUE
+                    
+                        if(producto1CCPI == true ) {
+                            println "Evaluando Politica 1 para Producto Renovacion 1 Solicitud "+solicitud.id
+                            def politica1 = politica1(perfil.clienteCredVigente,
+                                perfil.dictamenRenovacion1,perfil.experienciaCrediticia, perfil.montoMaxExpPositiva, 
+                                perfil.montoOtorgado1, perfil.numCredLiqdExp,perfil.mesesLibrosCredito_1,perfil.producto1)
+                            println "imprimiendo lo que trae oferta"+ politica1
+                            if(politica1){ 
+                                politica1.each{
+                                    if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
+                                        def objProducto = [:]
+                                        ofertaProducto = [:]
+                                        ofertaProducto.listaDeOpciones = []
+                                        ofertaProducto.listaDePlazos = []
+                                        objProducto.claveDeProducto = it.Producto;
+                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                        ofertaProducto.producto = datosProducto
+                                        /*
+                                         * Se obtiene el id de la periodicidad a partir del LayOut
+                                         * */
+                                        def montoofertado = it.Monto
+                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                        def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil?.getPeriodoCredMaxEp()))
+                                        def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
+                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                        oferta.tasaDeInteres = tasaDeInteres;
+                                        oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
+                                        oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp),
+                                            periodicidad, it.Monto );
+                                        oferta.periodicidad = periodicidad
+                                        oferta.cat = oferta.cat
+                                        oferta.tipoProducto = datosProducto.esquema.id
+                                        oferta.plazoCondonado = datosProducto.plazoCondonado
+                                        oferta.tieneDescuento = datosProducto.tieneDescuento
+                                        datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
+                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
+
+                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                            def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
+                                            if(tasaAplicable) {
+                                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                                def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad,(it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                                    ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                                oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
+                                                oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
+                                                oferta.cuota = ofertaTasaDinamica.cuota
+                                                oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
+                                                oferta.cat = ofertaTasaDinamica.cat
+                                                oferta.tipoProducto = datosProducto.esquema.id
+                                                oferta.plazoCondonado = datosProducto.plazoCondonado 
+                                                oferta.tieneDescuento = datosProducto.tieneDescuento
+                                                
+                                            }
+                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                            oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
+                                            //Calculo de ratio y balance de Caja 
+                                            oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                            oferta.montoAPagar = maxCAP.montoAPagar
+                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                            //fin 
+                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            ofertaProducto.listaDeOpciones << oferta
+                                            def mapaPlazo = [:]
+                                            mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                            ofertaProducto.listaDePlazos << mapaPlazo
+                                            /*
+                                             * Seañade Producto a  lista de ofertas auxiliares
+                                             * */
+                                            auxOfertas << ofertaProducto
+                                            
+                                        } else {
+                                            //errorDictamenPerfilRechazado = Boolean.TRUE
+                                        }
+                                    }
+                                    
+                                }
+                                
+                                
+                            }else{
+                                println "Evaluando Politica 3"
+            
+                                def politica3 = politica3(perfil.clienteCredVigente,
+                                    perfil.experienciaCrediticia, perfil.numCredLiqdExp,perfil.montoMaxExpPositiva,perfil.producto1)
+                                println "imprimiendo lo que trae oferta"+ politica3
+
+                                if (politica3) {
+                                    println "Entro a las politicas 3"
+                                    politica3.each{
+                                        if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
+                                            def objProducto = [:]
+                                            ofertaProducto = [:]
+                                            ofertaProducto.listaDeOpciones = []
+                                            ofertaProducto.listaDePlazos = []
+                                            objProducto.claveDeProducto = it.Producto;
+                                            def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                            ofertaProducto.producto = datosProducto
+                                            /*
+                                             * Se obtiene el id de la periodicidad a partir del LayOut
+                                             * */
+                                            def montoofertado = it.Monto
+                                            //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                            def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
+                                            def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
+                                            def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                            oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                            oferta.tasaDeInteres = tasaDeInteres;
+                                            oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
+                                            oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
+                                                periodicidad, it.Monto );
+                                            oferta.periodicidad = periodicidad
+                                            oferta.cat = oferta.cat
+                                            oferta.tipoProducto = datosProducto.esquema.id
+                                            oferta.plazoCondonado = datosProducto.plazoCondonado
+                                            oferta.tieneDescuento = datosProducto.tieneDescuento
+                                            datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
+                                            datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
+                                            
+                                            if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                                errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                                def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
+                                                if(tasaAplicable) {
+                                                    datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                                    def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                                        ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                                    oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
+                                                    oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
+                                                    oferta.cuota = ofertaTasaDinamica.cuota
+                                                    oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
+                                                    oferta.cat = ofertaTasaDinamica.cat
+                                                    oferta.tipoProducto = datosProducto.esquema.id
+                                                    oferta.plazoCondonado = datosProducto.plazoCondonado 
+                                                    oferta.tieneDescuento = datosProducto.tieneDescuento
+                                                    
+                                                }
+                                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                                oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
+                                                //Calculo de ratio y balance de Caja 
+                                                oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                    datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                    (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                                oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                                oferta.montoAPagar = maxCAP.montoAPagar
+                                                oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                                //fin 
+                                                oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                                oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                                ofertaProducto.listaDeOpciones << oferta
+                                                def mapaPlazo = [:]
+                                                mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                                mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                                ofertaProducto.listaDePlazos << mapaPlazo
+                                                /*
+                                                 * Seañade Producto a  lista de ofertas auxiliares
+                                                 * */
+                                                auxOfertas << ofertaProducto
+                                                
+                                            } else {
+                                                //errorDictamenPerfilRechazado = Boolean.TRUE
+                                            }
+                                        }
+                                    }
                         				   
+                                }
+                            }
+                        }
+                        if(producto2CCPI == true ) {
+                        
+                            println "Evaluando Politica 1 para Producto Renovacion 2 Solicitud "+solicitud.id
+                            def politica1 = politica1(perfil.clienteCredVigente,
+                                perfil.dictamenRenovacion2,perfil.experienciaCrediticia, perfil.montoMaxExpPositiva, 
+                                perfil.montoOtorgado2, perfil.numCredLiqdExp,perfil.mesesLibrosCredito_2 ,perfil.producto2)
+                            println "imprimiendo lo que trae oferta"+ politica1
+                            if(politica1){ 
+                                politica1.each{
+                                    if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
+                                        def objProducto = [:]
+                                        ofertaProducto = [:]
+                                        ofertaProducto.listaDeOpciones = []
+                                        ofertaProducto.listaDePlazos = []
+                                        objProducto.claveDeProducto = it.Producto;
+                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                        ofertaProducto.producto = datosProducto
+                                        /*
+                                         * Se obtiene el id de la periodicidad a partir del LayOut
+                                         * */
+                                        def montoofertado = it.Monto
+                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                        def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil?.getPeriodoCredMaxEp()))
+                                        def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
+                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                        oferta.tasaDeInteres = tasaDeInteres;
+                                        oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
+                                        oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
+                                            periodicidad, it.Monto );
+                                        oferta.periodicidad = periodicidad
+                                        oferta.cat = oferta.cat
+                                        oferta.tipoProducto = datosProducto.esquema.id
+                                        oferta.plazoCondonado = datosProducto.plazoCondonado
+                                        oferta.tieneDescuento = datosProducto.tieneDescuento
+                                        datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
+                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
+                                        
+                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                            def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
+                                            if(tasaAplicable) {
+                                                datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                                def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                                    ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                                oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
+                                                oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
+                                                oferta.cuota = ofertaTasaDinamica.cuota
+                                                oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
+                                                oferta.cat = ofertaTasaDinamica.cat
+                                                oferta.tipoProducto = datosProducto.esquema.id
+                                                oferta.plazoCondonado = datosProducto.plazoCondonado 
+                                                oferta.tieneDescuento = datosProducto.tieneDescuento
+                                                
+                                            }
+                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                            oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
+                                            //Calculo de ratio y balance de Caja 
+                                            oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                            oferta.montoAPagar = maxCAP.montoAPagar
+                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                            //fin 
+                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            ofertaProducto.listaDeOpciones << oferta
+                                            def mapaPlazo = [:]
+                                            mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                            ofertaProducto.listaDePlazos << mapaPlazo
+                                            /*
+                                             * Seañade Producto a  lista de ofertas auxiliares
+                                             * */
+                                            auxOfertas << ofertaProducto
+                                            
+                                        } else {
+                                            //errorDictamenPerfilRechazado = Boolean.TRUE
+                                        }
+                                    }
+                                    
+                                }
+                                
+                                
+                            }else{
+                                
+                                println "Evaluando Politica 3"
+            
+                                def politica3 = politica3(perfil.clienteCredVigente,
+                                    perfil.experienciaCrediticia, perfil.numCredLiqdExp,perfil.montoMaxExpPositiva,perfil.producto2)
+                                println "imprimiendo lo que trae oferta"+ politica3
+
+                                if (politica3) {
+                                    println "Entro a las politicas 3"
+                                    politica3.each{
+                                        if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
+                                            def objProducto = [:]
+                                            ofertaProducto = [:]
+                                            ofertaProducto.listaDeOpciones = []
+                                            ofertaProducto.listaDePlazos = []
+                                            objProducto.claveDeProducto = it.Producto;
+                                            def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                            ofertaProducto.producto = datosProducto
+                                            /*
+                                             * Se obtiene el id de la periodicidad a partir del LayOut
+                                             * */
+                                            def montoofertado = it.Monto
+                                            //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                            def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
+                                            def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
+                                            def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                            oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                            oferta.tasaDeInteres = tasaDeInteres;
+                                            oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
+                                            oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
+                                                periodicidad, it.Monto );
+                                            oferta.periodicidad = periodicidad
+                                            oferta.cat = oferta.cat
+                                            oferta.tipoProducto = datosProducto.esquema.id
+                                            oferta.plazoCondonado = datosProducto.plazoCondonado
+                                            oferta.tieneDescuento = datosProducto.tieneDescuento
+                                            datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
+                                            datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
+                                            
+                                            if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                                errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                                def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
+                                                if(tasaAplicable) {
+                                                    datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                                    def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                                        ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                                    oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
+                                                    oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
+                                                    oferta.cuota = ofertaTasaDinamica.cuota
+                                                    oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
+                                                    oferta.cat = ofertaTasaDinamica.cat
+                                                    oferta.tipoProducto = datosProducto.esquema.id
+                                                    oferta.plazoCondonado = datosProducto.plazoCondonado 
+                                                    oferta.tieneDescuento = datosProducto.tieneDescuento
+                                                    
+                                                }
+                                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                                oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
+                                                //Calculo de ratio y balance de Caja 
+                                                oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                    datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                    (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                                oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                                oferta.montoAPagar = maxCAP.montoAPagar
+                                                oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                                //fin 
+                                                oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                                oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                                ofertaProducto.listaDeOpciones << oferta
+                                                def mapaPlazo = [:]
+                                                mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                                mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                                ofertaProducto.listaDePlazos << mapaPlazo
+                                                /*
+                                                 * Seañade Producto a  lista de ofertas auxiliares
+                                                 * */
+                                                auxOfertas << ofertaProducto
+                                                
+                                            } else {
+                                                //errorDictamenPerfilRechazado = Boolean.TRUE
+                                            }
+                                        }
+                                    }
+                        				   
+                                }  
+                            }
+                        }
+                        if(producto1CCPI == false && producto2CCPI == false){
+                            
+                            println "Evaluando Politica 3 No Trae Ningun producto"
+            
+                                def politica3 = politica3(perfil.clienteCredVigente,
+                                    perfil.experienciaCrediticia, perfil.numCredLiqdExp,perfil.montoMaxExpPositiva,null)
+                                println "imprimiendo lo que trae oferta"+ politica3
+
+                                if (politica3) {
+                                    println "Entro a las politicas 3"
+                                    politica3.each{
+                                        if (eval.getDictamenProducto(it.Producto, respuestaDictameneDePoliticas)!= "R") {
+                                            def objProducto = [:]
+                                            ofertaProducto = [:]
+                                            ofertaProducto.listaDeOpciones = []
+                                            ofertaProducto.listaDePlazos = []
+                                            objProducto.claveDeProducto = it.Producto;
+                                            def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                            ofertaProducto.producto = datosProducto
+                                            /*
+                                             * Se obtiene el id de la periodicidad a partir del LayOut
+                                             * */
+                                            def montoofertado = it.Monto
+                                            //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                            def periodicidad = (it.Periodicidad != null ? eval.getIdPeriodicidad(it.Periodicidad)  : eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp()))
+                                            def plazoProd = PlazoProducto.findWhere(producto: datosProducto, periodicidad:periodicidad,  usarEnPerfilador: true)
+                                            def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                            oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                            oferta.tasaDeInteres = tasaDeInteres;
+                                            oferta.montoMaximo = it.Monto;//Se asigna monto maximo por politica
+                                            oferta.montoMinimo = eval.getLimiteMontoMinimoProducto(datosProducto, (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp),
+                                                periodicidad, it.Monto );
+                                            oferta.periodicidad = periodicidad
+                                            oferta.cat = oferta.cat
+                                            oferta.tipoProducto = datosProducto.esquema.id
+                                            oferta.plazoCondonado = datosProducto.plazoCondonado
+                                            oferta.tieneDescuento = datosProducto.tieneDescuento
+                                            datos = construirDatosMotorDeDecisionClienteExistente(identificadores, objProducto, perfil, oferta)
+                                            datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfilClienteExistente(entidadFinanciera, datos)
+                                            
+                                            if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                                errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                                def tasaAplicable = perfDAO.getTasaDinamicaDelProducto(datosProducto.id, respuestaDictamenDePerfil.probabilidadDeMora)
+                                                if(tasaAplicable) {
+                                                    datosSolicitud.tasaDeInteres = (tasaAplicable[0].tasaOrdinariaAnual)
+                                                    def ofertaTasaDinamica = calcularCuota(datosProducto.esquema.id,it.Monto, periodicidad, (it.Plazo != null ? (it.Plazo)  : perfil?.plazoCredMaxEp)
+                                                        ,datosSolicitud.tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                                    oferta.montoAsistencia = ofertaTasaDinamica.montoAsistencia
+                                                    oferta.montoSeguro = ofertaTasaDinamica.montoSeguro
+                                                    oferta.cuota = ofertaTasaDinamica.cuota
+                                                    oferta.tasaDeInteres = datosSolicitud.tasaDeInteres;
+                                                    oferta.cat = ofertaTasaDinamica.cat
+                                                    oferta.tipoProducto = datosProducto.esquema.id
+                                                    oferta.plazoCondonado = datosProducto.plazoCondonado 
+                                                    oferta.tieneDescuento = datosProducto.tieneDescuento
+                                                    
+                                                }
+                                                oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                                oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                                oferta.dictamenDePoliticas = eval.getDictamenProducto(it.Producto,respuestaDictameneDePoliticas)
+                                                //Calculo de ratio y balance de Caja 
+                                                oferta.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                    datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                    (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                                oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                                oferta.montoAPagar = maxCAP.montoAPagar
+                                                oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                                //fin 
+                                                oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                                oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                                ofertaProducto.listaDeOpciones << oferta
+                                                def mapaPlazo = [:]
+                                                mapaPlazo.plazos = (it.Plazo != null ? (it.Plazo)  : perfil.plazoCredMaxEp)
+                                                mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                                mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                                ofertaProducto.listaDePlazos << mapaPlazo
+                                                /*
+                                                 * Seañade Producto a  lista de ofertas auxiliares
+                                                 * */
+                                                auxOfertas << ofertaProducto
+                                                
+                                            } else {
+                                                //errorDictamenPerfilRechazado = Boolean.TRUE
+                                            }
+                                        }
+                                    }
+                        				   
+                                }
                         }
 
-                    if (auxOfertas == null  || auxOfertas.size() == 0 ){
-                        if(ofertaProducto.listaDeOpciones?.size() > 0) {
-                            ofertas << ofertaProducto
+                        if (auxOfertas == null  || auxOfertas.size() == 0 ){
+                            if(ofertaProducto.listaDeOpciones?.size() > 0) {
+                                ofertas << ofertaProducto
+                            }
+                        }else{
+                            ofertas = auxOfertas 
                         }
-                    }else{
-                        ofertas = auxOfertas 
+                        if(ofertas.size() == 0){
+                            throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago sin ofertas de Renovacion");
+                        }
+                        if (errorDictamenPerfilRechazado) {
+                            bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil Renovaciones','Rechazado')
+                            throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil Renovaciones");
+                        }
+                    }  else if(clienteExistente == "NO"){
+
+                        if(producto6119){
+                        if (eval.getDictamenProducto("6119", respuestaDictameneDePoliticasCasoExtraordinario)!= "R" || eval.getDictamenProducto("6119", respuestaDictameneDePoliticas)!= "R") {
+                                        def objProducto = [:]
+                                        ofertaProducto = [:]
+                                        ofertaProducto.listaDeOpciones = []
+                                        ofertaProducto.listaDePlazos = []
+                                        objProducto.claveDeProducto = "6119";
+                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                        ofertaProducto.producto = datosProducto
+                                        /*
+                                         * Se obtiene el id de la periodicidad a partir del LayOut
+                                         * */
+                                        def montoofertado = 5000
+                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                        def periodicidad = eval.getIdPeriodicidad("Q")
+                                        def plazoProd = 24
+                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad,24
+                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                        oferta.tasaDeInteres = tasaDeInteres;
+                                        oferta.montoMaximo = 5000;//Se asigna monto maximo por politica
+                                        oferta.montoMinimo = 5000
+                                        oferta.periodicidad = periodicidad
+                                        oferta.cat = oferta.cat
+                                        oferta.tipoProducto = datosProducto.esquema.id
+                                        oferta.plazoCondonado = datosProducto.plazoCondonado
+                                        oferta.tieneDescuento = datosProducto.tieneDescuento
+                                        oferta.plazos = "24"
+                                        datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, objProducto, oferta)
+                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                                                                       
+                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                            oferta.dictamenDePoliticas = (eval?.getDictamenProducto("6119",respuestaDictameneDePoliticas ) != null ? eval?.getDictamenProducto("6119",respuestaDictameneDePoliticas) : eval?.getDictamenProducto("6119",respuestaDictameneDePoliticasCasoExtraordinario))
+                                            //Calculo de ratio y balance de Caja 
+                                            oferta.plazos = "24"
+                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                            oferta.montoAPagar = maxCAP.montoAPagar
+                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                            //fin 
+                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            ofertaProducto.listaDeOpciones << oferta
+                                            def mapaPlazo = [:]
+                                            mapaPlazo.plazos = "24"
+                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                            ofertaProducto.listaDePlazos << mapaPlazo
+                                            /*
+                                             * Seañade Producto a  lista de ofertas auxiliares
+                                             * */
+                                            auxOfertas << ofertaProducto
+                                            
+                                        } else {
+                                            //errorDictamenPerfilRechazado = Boolean.TRUE
+                                        }
+                                    }
+                          }
+                          if(producto6099){
+                            println "SOLO A BUSCAR EL RPODUCTO 6099 "
+                             if (eval.getDictamenProducto("6099", respuestaDictameneDePoliticasCasoExtraordinario)!= "R" || eval.getDictamenProducto("6099", respuestaDictameneDePoliticas)!= "R") {
+                                        def objProducto = [:]
+                                        ofertaProducto = [:]
+                                        ofertaProducto.listaDeOpciones = []
+                                        ofertaProducto.listaDePlazos = []
+                                        objProducto.claveDeProducto = "6099";
+                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                        ofertaProducto.producto = datosProducto
+                                        /*
+                                         * Se obtiene el id de la periodicidad a partir del LayOut
+                                         * */
+                                        def montoofertado = 10000
+                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                        def periodicidad = eval.getIdPeriodicidad("Q")
+                                        def plazoProd = 24
+                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad,24
+                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                        oferta.tasaDeInteres = tasaDeInteres;
+                                        oferta.montoMaximo = 10000;//Se asigna monto maximo por politica
+                                        oferta.montoMinimo = 5000
+                                        oferta.periodicidad = periodicidad
+                                        oferta.cat = oferta.cat
+                                        oferta.tipoProducto = datosProducto.esquema.id
+                                        oferta.plazoCondonado = datosProducto.plazoCondonado
+                                        oferta.tieneDescuento = datosProducto.tieneDescuento
+                                        oferta.plazos = "24"
+                                        datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, objProducto, oferta)
+                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                                                                       
+                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                            oferta.dictamenDePoliticas = (eval?.getDictamenProducto("6099",respuestaDictameneDePoliticas ) != null ? eval?.getDictamenProducto("6099",respuestaDictameneDePoliticas) : eval?.getDictamenProducto("6099",respuestaDictameneDePoliticasCasoExtraordinario))
+                                            //Calculo de ratio y balance de Caja 
+                                            oferta.plazos = "24"
+                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                            oferta.montoAPagar = maxCAP.montoAPagar
+                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                            //fin 
+                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            ofertaProducto.listaDeOpciones << oferta
+                                            def mapaPlazo = [:]
+                                            mapaPlazo.plazos = "24"
+                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                            ofertaProducto.listaDePlazos << mapaPlazo
+                                            /*
+                                             * Seañade Producto a  lista de ofertas auxiliares
+                                             * */
+                                            auxOfertas << ofertaProducto
+                                            
+                                        } else {
+                                            //errorDictamenPerfilRechazado = Boolean.TRUE
+                                        }
+                                    }
+                            }
+                            
+                        if(producto6129){
+                            println "SOLO A BUSCAR EL RPODUCTO 6129 EN ERROR CAP DE PAGO PRIMER CREDITO "
+                             if (eval.getDictamenProducto("6129", respuestaDictameneDePoliticas)!= "R" || eval.getDictamenProducto("6129", respuestaDictameneDePoliticas)== "R") {
+                                        def objProducto = [:]
+                                        ofertaProducto = [:]
+                                        ofertaProducto.listaDeOpciones = []
+                                        ofertaProducto.listaDePlazos = []
+                                        objProducto.claveDeProducto = "6129";
+                                        def datosProducto =  Producto.findByClaveDeProducto(objProducto.claveDeProducto)
+                                        ofertaProducto.producto = datosProducto
+                                        def montoofertado 
+                                        def montoofertadoMinimo 
+                                         /*
+                                         * Se obtiene el id de la periodicidad a partir del LayOut
+                                         * */
+                                        datos.listaDeServicios2 = '6129'
+                                        datosSolicitud.documento2 = tipoDeDocumento
+                                        datos.listaDeServicios =  datos.listaDeServicios2
+                                        datos.asalariado = (datosSolicitud.documento2.tipoDeIngresos.id == 1 ? true : false)
+                                        respuestaDictameneDePoliticasCasoExtraordinario = motorDeDecisionService.obtenerDictamenteDePoliticasCasoExtraordinario(entidadFinanciera, datos)
+                                        if(respuestaDictameneDePoliticasCasoExtraordinario.find { (it."6129" != "R") }){
+
+                                        if(respuestaDictameneDePoliticasCasoExtraordinario.find { (it."6129" == "5000") } || respuestaDictameneDePoliticas.find{(it."6129" == "5000")}){
+                                            montoofertado = 5000
+                                            montoofertadoMinimo = 5000
+                                           }
+                                        if(respuestaDictameneDePoliticasCasoExtraordinario.find { (it."6129" == "10000") } || respuestaDictameneDePoliticas.find{(it."6129" == "10000")}){
+                                            montoofertado = 10000
+                                            montoofertadoMinimo = 5000
+                                           }
+                                        if(respuestaDictameneDePoliticasCasoExtraordinario.find { (it."6129" == "A") } || respuestaDictameneDePoliticasCasoExtraordinario.find { (it."6129" == "D") }){
+                                            montoofertado = 10000
+                                            montoofertadoMinimo = 5000
+                                           }
+
+                                        //def periodicidad = eval.getIdPeriodicidad(perfil.getPeriodoCredMaxEp());
+                                        def periodicidad = eval.getIdPeriodicidad("Q")
+                                        def plazoProd = 24
+                                        def tasaDeInteres = datosProducto.getTasaDeInteresAnual();
+                                        oferta = calcularCuota(datosProducto.esquema.id,montoofertado, periodicidad,24
+                                            ,tasaDeInteres,  datosSolicitud.entidadFinancieraId,datosProducto.plazoCondonado,datosSolicitud.producto.tieneDescuento)
+                                        oferta.tasaDeInteres = tasaDeInteres;
+                                        oferta.montoMaximo = montoofertado;//Se asigna monto maximo por politica
+                                        oferta.montoMinimo = montoofertadoMinimo
+                                        oferta.periodicidad = periodicidad
+                                        oferta.cat = oferta.cat
+                                        oferta.tipoProducto = datosProducto.esquema.id
+                                        oferta.plazoCondonado = datosProducto.plazoCondonado
+                                        oferta.tieneDescuento = datosProducto.tieneDescuento
+                                        oferta.plazos = "24"
+                                        datos = construirDatosMotorDeDecisionClienteNuevo(identificadores, objProducto, oferta)
+                                        datos.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                        respuestaDictamenDePerfil = motorDeDecisionService.obtenerDictamenteDePerfil(entidadFinanciera, datos)
+                                                                       
+                                        if(eval.getEvaluacionPerfilador(respuestaDictamenDePerfil)== "A"){
+                                            errorDictamenPerfilRechazado = Boolean.FALSE					 
+                                            oferta.probabilidadDeMora = (respuestaDictamenDePerfil.probabilidadDeMora as float)
+                                            oferta.dictamenDePerfil = respuestaDictamenDePerfil?.dictamen
+                                            oferta.dictamenDePoliticas = (eval?.getDictamenProducto("6129",respuestaDictameneDePoliticasCasoExtraordinario))
+                                            //Calculo de ratio y balance de Caja 
+                                            if(respuestaDictameneDePoliticasCasoExtraordinario.find{ (it."6129" == "10000" || it."6129" == "5000" || it."6129" == "A" )}){
+                                            oferta.dictamenDePoliticas = "A" 
+                                            }
+                                            oferta.plazos = "24"
+                                            maxCAP =calcularMaximaCapacidadDePago(datosSolicitud.ingresosFijos, datosSolicitud.ingresosVariables, datosSolicitud.gastos, 
+                                                datosSolicitud.montoDeLaRenta, datosSolicitud.dependientesEconomicos, datosSolicitud.tipoDeVivienda, datosSolicitud.idSolicitud,
+                                                (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false ),datosSolicitud.porcentajeDeDescuento)
+                                            oferta.balanceDeCaja = maxCAP.balanceDeCaja
+                                            oferta.montoAPagar = maxCAP.montoAPagar
+                                            oferta.ratio = calcularRatio(oferta.cuota, oferta.balanceDeCaja, datosSolicitud.periodicidad.id)
+                                            //fin 
+                                            oferta.garantias = perfDAO.getGarantias(datosProducto.id, oferta.montoMaximo)
+                                            oferta.asalariado = (datosSolicitud.documento.tipoDeIngresos.id == 1 ? true : false)
+                                            ofertaProducto.listaDeOpciones << oferta
+                                            def mapaPlazo = [:]
+                                            mapaPlazo.plazos = "24"
+                                            mapaPlazo.periodicidadId = oferta.periodicidad.id
+                                            mapaPlazo.periodicidad = oferta.periodicidad.nomenclatura
+                                            ofertaProducto.listaDePlazos << mapaPlazo
+                                            /*
+                                             * Seañade Producto a  lista de ofertas auxiliares
+                                             * */
+                                            auxOfertas << ofertaProducto
+                                            
+                                        } else {
+                                            //errorDictamenPerfilRechazado = Boolean.TRUE
+                                        }
+                                      }
+                                    }
+                          }
+                          if (auxOfertas == null  || auxOfertas.size() == 0 ){
+                            if(ofertaProducto.listaDeOpciones?.size() > 0) {
+                                ofertas << ofertaProducto
+                            }
+                        }else{
+                            ofertas = auxOfertas 
+                        }
+                        if(ofertas.size() == 0){
+                            throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago ");
+                        }
+                        if (errorDictamenPerfilRechazado) {
+                            bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
+                            throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil ");
+                        }
+                          
                     }
-                    if(ofertas.size() == 0){
-                        throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago sin ofertas de Renovacion");
+                    else {
+                        throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago");
                     }
-                    if (errorDictamenPerfilRechazado) {
-                        bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil Renovaciones','Rechazado')
-                        throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil Renovaciones");
-                    }
-                } else {
-                    throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Capacidad de Pago");
+                } else if (errorDictamenPerfil) {
+                    bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
+                    log.error("ERRDPER" + (aleatorio()) + ". No se pudo obtener el dictamen de perfil. Solicitud: " + datos.solicitudId)
+                    throw new BusinessException("No se pudo obtener el dictamen de perfil. Inténtelo más tarde.");
+                } else if (errorDictamenPerfilRechazado) {
+                    bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
+                    throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil");
                 }
-            } else if (errorDictamenPerfil) {
-                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
-                log.error("ERRDPER" + (aleatorio()) + ". No se pudo obtener el dictamen de perfil. Solicitud: " + datos.solicitudId)
-                throw new BusinessException("No se pudo obtener el dictamen de perfil. Inténtelo más tarde.");
-            } else if (errorDictamenPerfilRechazado) {
-                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(datos.solicitudId as long),'Dictamen de Capacidad de Perfil','Rechazado')
-                throw new BusinessException("El prospecto obtuvo como resultado \"Rechazado\" en el Dictamen de Perfil");
             }
-        }
-        if (ofertas.size() > 0) {
-            return ofertas
-        } else {
-            bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(identificadores.idSolicitud as long),'No se generaron ofertas','Rechazado')
-            log.error("ERROP. No se generaron ofertas. Solicitud: " + identificadores.idSolicitud);
-            throw new BusinessException("Error desconocido. Favor de reportar al administrador del sistema");
-        }
+            if (ofertas.size() > 0) {
+                return ofertas
+            } else {
+                bitacoraOfertasService.registrarBitacora(SolicitudDeCredito.get(identificadores.idSolicitud as long),'No se generaron ofertas','Rechazado')
+                log.error("ERROP. No se generaron ofertas. Solicitud: " + identificadores.idSolicitud);
+                throw new BusinessException("Error desconocido. Favor de reportar al administrador del sistema");
+            }
         }catch(BusinessException | Exception ex ){
             loggingService.loggingExceptionEN(ex , String.valueOf(identificadores.idSolicitud), sessionUser)
             throw  ex
@@ -1222,7 +1684,7 @@ class PerfiladorService {
 
     def calcularCuota(def opcion, def montoDelCredito, def periodicidad, def plazos, def tasaDeInteres, def entidadFinancieraId,def plazoCondonado, def tieneDescuento) {
         def respuesta = [:]
-        //println "Parametros de entrada ->  monto" + montoDelCredito + ", periodicidad: " + periodicidad + ", plazo: " + plazos + ", tasa de interes: " + tasaDeInteres
+        println "Parametros de entrada ->  monto" + montoDelCredito + ", periodicidad: " + periodicidad + ", plazo: " + plazos + ", tasa de interes: " + tasaDeInteres
         respuesta.montoAsistencia = obtenerSeguroAsistencia(1, periodicidad, plazos, entidadFinancieraId, montoDelCredito)
         respuesta.montoSeguro = obtenerSeguroAsistencia(0, periodicidad, plazos, entidadFinancieraId, (montoDelCredito + respuesta.montoAsistencia))
         //println "Seguro: " + respuesta.montoSeguro + " -  Asistencia: " + respuesta.montoAsistencia
@@ -1369,10 +1831,36 @@ class PerfiladorService {
             //println "MONTO MAXIMO CALCULADO (Menos Seguro y Asistencia): " + oferta.montoMaximo
             def limites = LimitePlazoProducto.findWhere(producto: datosSolicitud.producto, plazo: (datosSolicitud.plazos as int), periodicidad: datosSolicitud.periodicidad)
             oferta.montoMinimo = limites.limiteMinimo
+            println "IMPRIMIENDO MONTO MAXIMO"+oferta.montoMaximo
             if ((limites.limiteMaximo > 0) && (oferta.montoMaximo > limites.limiteMaximo) ){
                 oferta.montoMaximo = limites.limiteMaximo
             } else if (oferta.montoMaximo < 0) {
                 oferta.montoMaximo = 0
+            }
+            if((5000 > oferta.montoMaximo) && datosSolicitud.producto.claveDeProducto =='6119') {
+                oferta.montoMinimo = oferta.montoMaximo
+                oferta.ratio = 0
+                oferta.indistinto = true
+                oferta.claveDeProducto = '6119'
+                return oferta 
+            }
+            if((10000 > oferta.montoMaximo ) && datosSolicitud.producto.claveDeProducto =='6099') {
+                oferta.montoMinimo = oferta.montoMaximo
+                oferta.ratio = 0
+                oferta.indistinto = true
+                oferta.claveDeProducto = '6099'
+
+                return oferta 
+            }
+            if((10000 > oferta.montoMaximo ) && datosSolicitud.producto.claveDeProducto =='6129') {
+                oferta.montoMinimo = oferta.montoMaximo
+                oferta.ratio = 0
+                oferta.indistinto = true
+                oferta.claveDeProducto = '6129'
+                println "Cayo y es menor a 10000"
+                println "monot maximo"+ oferta.montoMinimo 
+
+                return oferta 
             }
             if(oferta.montoMinimo > oferta.montoMaximo) {
                 oferta.montoMinimo = oferta.montoMaximo
@@ -1394,7 +1882,7 @@ class PerfiladorService {
             oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
             oferta.cat = calculoCuota.cat
             oferta.tieneDescuento = datosSolicitud.producto.tieneDescuento
-            println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR BC: " + oferta.montoAPagar + " | MONTO A PAGAR: " + oferta.montoAsistencia + " | CAT: " + oferta.cat    
+            //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTOMAX " + oferta.montoMaximo + " | MONTOMIN: " + oferta.montoMinimo + " | MONTO A PAGAR BC: " + oferta.montoAPagar + " | MONTO A PAGAR: " + oferta.montoAsistencia + " | CAT: " + oferta.cat    
         }else if(datosSolicitud.producto.esquema.id == 2){
             def respuesta
             respuesta  = calcularMontoMaximoPagosInsolutos(datosSolicitud.tasaDeInteres, datosSolicitud.periodicidad.periodosAnuales, datosSolicitud.plazos, oferta.maximaCapacidadDePago,datosSolicitud.producto)
@@ -1438,7 +1926,7 @@ class PerfiladorService {
             oferta.plazoCondonado = datosSolicitud.producto.plazoCondonado
             oferta.cat = calculoCuota.cat
             oferta.tieneDescuento = datosSolicitud.producto.tieneDescuento
-            println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTO A PAGARBC: " + oferta.montoAPagar + " | MONTO A PAGAR ASISTENCIA: " + oferta.montoAsistencia  + " | CAT: " + oferta.cat    
+            //println "RATIO " + oferta.ratio+" | CAP PAGO "+ oferta.maximaCapacidadDePago+" | BALANCE DE CAJA "+oferta.balanceDeCaja +" | CUOTA "+oferta.cuota+" | MONTO A PAGARBC: " + oferta.montoAPagar + " | MONTO A PAGAR ASISTENCIA: " + oferta.montoAsistencia  + " | CAT: " + oferta.cat    
         }
        
         return oferta
@@ -1448,7 +1936,7 @@ class PerfiladorService {
         def respuesta = [:]
         //println "Buscar producto..."
         def producto = ofertas.find { it.producto.id == (params.productoId as long)}
-               //println "Buscar oferta..."+ofertas?.tipoProducto
+        //println "Buscar oferta..."+ofertas?.tipoProducto
         def oferta = producto.listaDeOpciones.find { it.plazos as long == (params.plazo as long) && it.periodicidad.id as long == (params.periodicidadId as long) }
         respuesta.cuota =  calcularCuota(oferta.tipoProducto,(params.montoDeCredito as float), oferta.periodicidad, oferta.plazos, oferta.tasaDeInteres, producto.producto.entidadFinanciera.id,oferta.plazoCondonado,oferta.tieneDescuento)
         respuesta.tasaDeInteres = oferta.tasaDeInteres
@@ -1500,6 +1988,17 @@ class PerfiladorService {
             resultadoMotorDeDecision.dictamenDePoliticas = oferta.dictamenDePoliticas
             resultadoMotorDeDecision.dictamenFinal = "A"
             resultadoMotorDeDecision.log = "NO DISPONIBLE"
+            println "---buscando---"
+            def configuracionEntidadFinanciera = ConfiguracionEntidadFinanciera.findWhere(entidadFinanciera : solicitud.entidadFinanciera)
+            def telefonoCliente = TelefonoCliente.findWhere(cliente : solicitud.cliente, vigente : Boolean.TRUE, tipoDeTelefono : TipoDeTelefono.get(2))
+            def mensaje = configuracionEntidadFinanciera.mensajeConfirmacionPerfilador +" "+ solicitud.folio
+            println telefonoCliente.numeroTelefonico.replaceAll('-', '').replaceAll(' ', '').trim()
+            println mensaje
+            try{
+                smsService.sendSMS(telefonoCliente.numeroTelefonico.replaceAll('-', '').replaceAll(' ', '').trim(), mensaje, configuracionEntidadFinanciera)
+            }catch(Exception e){
+                println "No se pudo enviar el sms"+e
+            }
             ResultadoMotorDeDecision.executeUpdate("Delete From ResultadoMotorDeDecision r Where r.solicitud.id = :solicitudId", [solicitudId: solicitud.id])
             if(resultadoMotorDeDecision.save(flush: true)) {
                 solicitud.statusDeSolicitud = StatusDeSolicitud.get(4)
@@ -1692,16 +2191,16 @@ class PerfiladorService {
                 lista << pagoCero
                 (1..plazos).each{
                     if(it == 1){
-                        interes = (((tasaDeInteres/360)*15.2083)*montoDelCredito)
+                        interes = (((tasaDeInteres/360)*15)*montoDelCredito)
                         capital =  (pagoCapital.round(2) -interes)
                         saldo = (montoDelCredito-capital)
-                        descuento = ((0.005/30)*15.20833)*montoDelCredito
+                        descuento = ((0.005/30)*15)*montoDelCredito
                         flujo = (pagoCapital.round(2)-descuento)
                         lista << flujo
                         }else{
-                        interes = (((tasaDeInteres/360)*15.2083)*saldo)
+                        interes = (((tasaDeInteres/360)*15)*saldo)
                         capital = (pagoCapital.round(2) -interes)
-                        descuento = ((0.005/30)*15.20833)*saldo
+                        descuento = ((0.005/30)*15)*saldo
                         saldo = saldo -capital
                         flujo = (pagoCapital.round(2)-descuento)
                         lista << flujo
@@ -1733,7 +2232,7 @@ class PerfiladorService {
                 lista << pagoCapital
                 }
                 (plazoCondonado+1..plazos).each {
-                    def pagoIntereses = ((montoDelCredito*(tasaDeInteres/12))/30)*15.20833
+                    def pagoIntereses = ((montoDelCredito*(tasaDeInteres/12))/30)*15
                     def pagoIvaIntereses = pagoIntereses*0.16
                     def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
                     montoDelCredito = montoDelCredito - pagoCapital
@@ -1831,12 +2330,13 @@ class PerfiladorService {
     
     
     def  politica1(def creditoVigente, def banderaRenovacion,def experienciaCrediticia,
-        def montoMaxmimoCreditosExpPositiva, def montoCreditoActivo, def numCreditLiquidExp, def mesesEnLibros) {
+        def montoMaxmimoCreditosExpPositiva, def montoCreditoActivo, def numCreditLiquidExp, def mesesEnLibros ,def productoActual) {
         def derechoAProducto = [:]
         def arreglo = []
         def montoPrestamo;
+        println "El producto actual es"+ productoActual
         if( creditoVigente == "S" && banderaRenovacion == "S"
-            &&  experienciaCrediticia == "EP" && montoMaxmimoCreditosExpPositiva < montoCreditoActivo && mesesEnLibros >=12) {
+            &&  experienciaCrediticia == "EP") {
                 
             if(montoMaxmimoCreditosExpPositiva > montoCreditoActivo){
                 montoMaxmimoCreditosExpPositiva = montoMaxmimoCreditosExpPositiva
@@ -1844,6 +2344,7 @@ class PerfiladorService {
                 montoMaxmimoCreditosExpPositiva = montoCreditoActivo
             }        
             if (numCreditLiquidExp >= 1) {
+                if(productoActual != "6096"){
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6096")
                 derechoAProducto.Producto = '6096'
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -1852,20 +2353,44 @@ class PerfiladorService {
                                 
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
-                                
-                derechoAProducto.Producto = '6125'
-                montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6125")
-                derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
-                derechoAProducto.Periodicidad = montoPrestamo.periodicidad
-                derechoAProducto.Plazo = montoPrestamo.plazo
+                }
+                if(productoActual != '6125' && productoActual != '6126'){
+                    derechoAProducto.Producto = '6125'
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6125")
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
 
-                arreglo.add(derechoAProducto)
-                derechoAProducto = [:]
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                    
+                    
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, productoActual)
+                    if(montoPrestamo!= null){
+                    derechoAProducto.Producto = productoActual
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
+
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                    }
+                }  
+                if(productoActual == '6126'){
+                    derechoAProducto.Producto = '6089'
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6089")
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
+
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                }
 
             }
 			
             if(numCreditLiquidExp >= 2) {
-                          
+                if(productoActual != "6095"){          
                 derechoAProducto.Producto = '6095'
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6095")
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -1874,7 +2399,8 @@ class PerfiladorService {
                                 
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
-                                
+                }
+                if(productoActual != "6088"){                 
                 derechoAProducto.Producto = '6088'
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6088")
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -1882,9 +2408,11 @@ class PerfiladorService {
                 derechoAProducto.Plazo = montoPrestamo.plazo
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
+                }
             }
 			
             if(numCreditLiquidExp >= 3) {
+                if(productoActual != "6116"){                 
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6116")
                 derechoAProducto.Producto = '6116'
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -1892,6 +2420,7 @@ class PerfiladorService {
                 derechoAProducto.Plazo = montoPrestamo.plazo
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
+                }
             }
         }
         return arreglo
@@ -1902,8 +2431,7 @@ class PerfiladorService {
         def derechoAProducto = [:]
         def arreglo = []
         def montoPrestamo;
-        if( creditoVigente == "S" && banderaRenovacion == "S"
-            &&  experienciaCrediticia == "EP") {
+        if( creditoVigente == "N" &&  experienciaCrediticia == "EP") {
                 
             if (numCreditLiquidExp >= 1) {
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6096")
@@ -1914,15 +2442,26 @@ class PerfiladorService {
                                 
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
-                                
-                derechoAProducto.Producto = '6125'
-                montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6125")
-                derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
-                derechoAProducto.Periodicidad = montoPrestamo.periodicidad
-                derechoAProducto.Plazo = montoPrestamo.plazo
+                if(productoActual != '6125' || productoActual != '6126'){                
+                    derechoAProducto.Producto = '6125'
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6125")
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
 
-                arreglo.add(derechoAProducto)
-                derechoAProducto = [:]
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                }
+                if(productoActual == '6125'){
+                    derechoAProducto.Producto = '6089'
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6089")
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
+
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                }
 
             }
 			
@@ -1960,12 +2499,13 @@ class PerfiladorService {
     }
 
     def politica3(def creditoVigente,def experienciaCrediticia,
-        def numCreditLiquidExp, def montoMaxmimoCreditosExpPositiva ){
+        def numCreditLiquidExp, def montoMaxmimoCreditosExpPositiva, def productoActual ){
         def derechoAProducto = [:]
         def arreglo = []
         def montoPrestamo;
         if(creditoVigente.equals("N")	&& experienciaCrediticia.equals("EP") ) {
             if (numCreditLiquidExp >= 1) {
+                if(productoActual != "6096"){
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6096")
                 derechoAProducto.Producto = '6096'
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -1974,18 +2514,44 @@ class PerfiladorService {
                                 
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
-                                
-                derechoAProducto.Producto = '6125'
-                montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6125")
-                derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
-                derechoAProducto.Periodicidad = montoPrestamo.periodicidad
-                derechoAProducto.Plazo = montoPrestamo.plazo
+                } 
+                if(productoActual != '6125' && productoActual != '6126'){
+                    derechoAProducto.Producto = '6125'
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6125")
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
+                    
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                    if(productoActual != null){  
+                        derechoAProducto.Producto = productoActual
+                        montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, productoActual)
+                        if(montoPrestamo){
+                            derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                            derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                            derechoAProducto.Plazo = montoPrestamo.plazo
+                            
+                            arreglo.add(derechoAProducto)
+                            derechoAProducto = [:]
+                        }
+                    }
+                    
+                }  
+                if(productoActual == '6126'){
+                    derechoAProducto.Producto = '6089'
+                    montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6089")
+                    derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
+                    derechoAProducto.Periodicidad = montoPrestamo.periodicidad
+                    derechoAProducto.Plazo = montoPrestamo.plazo
 
-                arreglo.add(derechoAProducto)
-                derechoAProducto = [:]
+                    arreglo.add(derechoAProducto)
+                    derechoAProducto = [:]
+                }
             }
 			
             if(numCreditLiquidExp >= 2) {
+                if(productoActual != "6095"){ 
                 derechoAProducto.Producto = '6095'
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6095")
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -1994,7 +2560,8 @@ class PerfiladorService {
                                 
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
-                                
+                }
+                if(productoActual != "6088"){                 
                 derechoAProducto.Producto = '6088'
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6088")
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -2002,9 +2569,11 @@ class PerfiladorService {
                 derechoAProducto.Plazo = montoPrestamo.plazo
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]
+                }
             }
 			
             if(numCreditLiquidExp >= 3) {
+                if(productoActual != "6116"){  
                 montoPrestamo = this.getMontoMaxmimoPrestamo(montoMaxmimoCreditosExpPositiva, "6116")
                 derechoAProducto.Producto = '6116'
                 derechoAProducto.Monto = montoPrestamo.cantidadPrestmo
@@ -2012,6 +2581,7 @@ class PerfiladorService {
                 derechoAProducto.Plazo = montoPrestamo.plazo
                 arreglo.add(derechoAProducto) 
                 derechoAProducto = [:]		
+                }
             }
         }
         return arreglo
@@ -2023,9 +2593,12 @@ class PerfiladorService {
         sql.append("Select montoMaximo From Producto p where p.claveDeProducto = '").append(producto).append("' ");
         def  montoMaximoProducto  =  Producto.findByClaveDeProducto(producto);
         def results 
-        if(montoCreditoActual > montoMaximoProducto.getMontoMaximo()) {
-            respuesta.put('cantidadPrestmo',montoMaximoProducto.getMontoMaximo())
-            results = (LimitePlazoProducto.executeQuery("Select max(lp.plazo),lp.periodicidad.id From LimitePlazoProducto lp where lp.producto.id = :productoId And (:cantidad  >= lp.limiteMinimo And :cantidad <= lp.limiteMaximo) group by lp.periodicidad.id", [productoId: montoMaximoProducto.id,cantidad: montoMaximoProducto.getMontoMaximo()])) as Set
+        println "montomaximoproducto"+montoMaximoProducto
+        try{
+        if(montoCreditoActual > montoMaximoProducto?.getMontoMaximo()) {
+            respuesta.put('cantidadPrestmo',montoMaximoProducto?.getMontoMaximo())
+            
+            results = (LimitePlazoProducto.executeQuery("Select max(lp.plazo),lp.periodicidad.id From LimitePlazoProducto lp where lp.producto.id = :productoId And (:cantidad  >= lp.limiteMinimo And :cantidad <= lp.limiteMaximo) group by lp.periodicidad.id", [productoId: montoMaximoProducto.id,cantidad: montoMaximoProducto?.getMontoMaximo()])) as Set
             if (results.size() != 0) {
                 respuesta.put('plazo',results[0][0])
                 if(results[0][1] == 1){
@@ -2061,6 +2634,9 @@ class PerfiladorService {
                 respuesta.put('plazo',null)
             }
         }
+    }catch(Exception e){
+        respuesta = null
+    }
         return respuesta;
     }
 }

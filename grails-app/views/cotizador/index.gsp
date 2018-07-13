@@ -14,13 +14,13 @@
                 <input type="hidden" id="entidadFinancieraId" value="${entidadFinanciera.id}">
                 <div class="col6 col12-mob coti floatLeft down800">
                     <div class="padding15">
-                        <h1 id="nombreDelProducto" class="headingColor font30 fontWeight900 letterspacing1 lato">
+                        <h1 id="nombreDelProducto" class="headingColor font30 fontWeight900 letterspacing1 lato shadow">
                             ${configuracion.textoProductoDefault}
                         </h1>
                         <h3 id="precioDelProducto" class="darkBluetitle font30 fontWeight400 marginBottom20">
                             ${configuracion.textoMontoDefault}
                         </h3>
-                        <div id="imagenDelProducto" class="cotizador-bg" style="background-image: url('data:image/${landingImage.extension};base64,${landingImage.base64}');">
+                        <div id="imagenDelProducto2" class="cotizador-bg-1" >
                             <div class="cotizador-bae"></div>
                         </div>
                         <div class="paddingAside10" style='margin-top: 30px;'>

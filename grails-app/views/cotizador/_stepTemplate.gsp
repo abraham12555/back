@@ -8,14 +8,14 @@
                         <div class="floatLeft paddingTop18 marginLeft24">
                             <p class="formTitleColor font12 paddingBottom12">${paso.tituloResumen}</p>
 
-                            <p id="${paso.variableValorSeleccionado}" class="formTitleColor font20 marginBottom15"></p>
+                            <p id="${paso.variableValorSeleccionado}" class="formTitleColor font20 marginBottom15 fontWeight700 "></p>
                         </div>
                     </div>
 
                     <div class="col5 floatRight">
                         <div class="floatRight paddingTop18 marginBottom15">
-                            <div class="borderGrayButton marginBottom15">
-                                <p class="center paddingTop10 paddingBottom10 cambiar pointer">Cambiar</p>
+                            <div class="borderBlueButton marginBottom15">
+                                <p class="center fontWeight700 paddingTop10 paddingBottom10 cambiar pointer">Cambiar</p>
                             </div>
                         </div>
                     </div>
@@ -24,7 +24,7 @@
             <div class="cotizador-rightside actionsDiv">
 
                 <div class="cotizador-box-container padding20">
-                    <h1 class="darkBluetitle font20 fontWeight400 letterspacing1 marginBottom20">
+                    <h1 class="darkBluetitle font20 fontWeight700 letterspacing1 marginBottom20">
                         <span class="visibleMob">${paso.numeroDePaso}.</span>${paso.tituloDelPaso} <g:if test="${paso.tieneAyuda}"><div class="help-tip" title="${paso.textoAyuda}"></div></g:if>
                         </h1>
 

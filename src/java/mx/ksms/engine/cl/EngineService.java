@@ -25,6 +25,32 @@ public interface EngineService {
 
     /**
      * 
+     * @param servicios
+     * @param solicitudId
+     * @param asalariado
+     * @param edad
+     * @param porcentajeDeDescuento
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(name = "String", targetNamespace = "")
+    @RequestWrapper(localName = "calculateDictamenDePoliticasCasoExtraordinario", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateDictamenDePoliticasCasoExtraordinario")
+    @ResponseWrapper(localName = "calculateDictamenDePoliticasCasoExtraordinarioResponse", targetNamespace = "http://cl.engine.ksms.mx/", className = "mx.ksms.engine.cl.CalculateDictamenDePoliticasCasoExtraordinarioResponse")
+    public String calculateDictamenDePoliticasCasoExtraordinario(
+        @WebParam(name = "solicitudId", targetNamespace = "")
+        String solicitudId,
+        @WebParam(name = "servicios", targetNamespace = "")
+        String servicios,
+        @WebParam(name = "EDAD", targetNamespace = "")
+        Integer edad,
+        @WebParam(name = "porcentajeDeDescuento", targetNamespace = "")
+        Double porcentajeDeDescuento,
+        @WebParam(name = "asalariado", targetNamespace = "")
+        Boolean asalariado);
+
+    /**
+     * 
      * @param agRiesgoocupacion
      * @param cantidadIntegrantesFamilia
      * @param cuotaCredito

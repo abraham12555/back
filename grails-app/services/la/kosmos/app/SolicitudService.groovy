@@ -1447,18 +1447,18 @@ class SolicitudService {
         datos.cuotaMensualCredito = new Double(productoSolicitud.montoDelPago)
         datos.tipoDeVivienda = direccion.tipoDeVivienda.id.intValue()
         datos.asalariado = (productoSolicitud.documentoElegido.tipoDeIngresos.id == 1 ? true : false)
-        def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (productoSolicitud?.documentoElegido?.tipoDeIngresos?.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId",[productoId: productoSolicitud?.producto?.id, regionId: solicitud?.sucursal?.region?.id])
+        def porcentajeDeDescuento = ProductoPagoRegion.executeQuery("Select " +( (productoSolicitud?.documentoElegido?.tipoDeIngresos?.id == 1 ) ? "pr.pagoAsalariado" : "pr.pagoNoAsalariado" ) + " from ProductoPagoRegion pr Where pr.producto.id = :productoId and pr.region.id= :regionId and pr.activo= :activo",[productoId: productoSolicitud?.producto?.id, regionId: solicitud?.sucursal?.region?.id, activo : Boolean.TRUE])
         if(porcentajeDeDescuento){
             datos.porcentajeDeDescuento = new Double(porcentajeDeDescuento[0])
         }
         else if(!porcentajeDeDescuento){
             if(productoSolicitud.producto.claveDeProducto == '6115'){
-                datos.porcentajeDeDescuento = new Double(1)
+                datos.porcentajeDeDescuento = new Double(0.5)
             }else {
                 if(productoSolicitud.documentoElegido.tipoDeIngresos.id == 1){
                     datos.porcentajeDeDescuento = new Double (0.5)
                 }else{
-                    datos.porcentajeDeDescuento = new Double(1)
+                    datos.porcentajeDeDescuento = new Double(0.8)
                 }
             }
         }

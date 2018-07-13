@@ -215,7 +215,7 @@ function habilitarPaso(step, lastStep, parentStep) {
 
 //Show only this step and slightly the one before
         if (step > 1) {
-            $('.cotizadorStep').eq((step - 2)).css({'opacity': '0.2'}).find('.stepShadow').hide();
+            $('.cotizadorStep').eq((step - 2)).css({'opacity': '1'}).find('.stepShadow').hide();
             $('.cotizadorStep').eq((step - 2)).find('.actionsDiv').slideUp();
             $('.cotizadorStep').eq((step - 2)).find('.summaryDiv').slideDown();
             if (step > 2) {
@@ -760,7 +760,7 @@ function calcularPago(entidad, monto, producto, plazo, periodicidad) {
                 $('#txtMontoAsistencia').val(respuesta.montoAsistencia);
                 $('#pagoCalculado').html("Pago " + respuesta.nombrePeriodo + ": " + formatCurrency(respuesta.renta, "$"));
                 $('#cat').val(respuesta.cat);
-                $('#catCalculado').html("CAT: " +round((respuesta.cat * 100),1)+"%");
+                $('#catCalculado').html("CAT: " +round((respuesta.cat * 100),1)+"% SIN IVA");
             } else {
                 sweetAlert("Oops...", respuesta.mensaje, "warning");
             }

@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para calculateDictamenDePoliticas complex type.
+ * <p>Clase Java para calculateDictamenDePoliticasCasoExtraordinarioCE complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType name="calculateDictamenDePoliticas">
+ * &lt;complexType name="calculateDictamenDePoliticasCasoExtraordinarioCE">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="atrasoPago" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="malaFe" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="porcentajeDedescuento" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="asalariado" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="listaNegra" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "calculateDictamenDePoliticas", propOrder = {
+@XmlType(name = "calculateDictamenDePoliticasCasoExtraordinarioCE", propOrder = {
     "solicitudId",
     "servicios",
     "edad",
@@ -56,9 +57,10 @@ import javax.xml.bind.annotation.XmlType;
     "atrasoPago",
     "malaFe",
     "porcentajeDedescuento",
+    "asalariado",
     "listaNegra"
 })
-public class CalculateDictamenDePoliticas {
+public class CalculateDictamenDePoliticasCasoExtraordinarioCE {
 
     protected String solicitudId;
     protected String servicios;
@@ -77,6 +79,7 @@ public class CalculateDictamenDePoliticas {
     protected String atrasoPago;
     protected String malaFe;
     protected Double porcentajeDedescuento;
+    protected Boolean asalariado;
     protected String listaNegra;
 
     /**
@@ -405,6 +408,30 @@ public class CalculateDictamenDePoliticas {
      */
     public void setPorcentajeDedescuento(Double value) {
         this.porcentajeDedescuento = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad asalariado.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isAsalariado() {
+        return asalariado;
+    }
+
+    /**
+     * Define el valor de la propiedad asalariado.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setAsalariado(Boolean value) {
+        this.asalariado = value;
     }
 
     /**

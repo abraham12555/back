@@ -47,6 +47,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
     String  rutaLogotipoFormatoBuro
     String  nombreEntidadFinancieraFormatoBuro
     String  codigoCalidad
+    String mensajeConfirmacionPerfilador
 //    boolean usarEmailsCalixta 
 //    boolean usarEmailsCalixtaTemplate
 
@@ -82,6 +83,7 @@ class ConfiguracionEntidadFinanciera implements Serializable{
         rutaLogotipoFormatoBuro (nullable: true)
         nombreEntidadFinancieraFormatoBuro (nullable: true)
         codigoCalidad (nullable: true)
+        mensajeConfirmacionPerfilador (nullable: true)
 //        usarEmailsCalixta (nullable: true)
 //        usarEmailsCalixtaTemplate (nullable: true)
     }

@@ -38,6 +38,7 @@ class DashboardController {
         session.usuarioNombre= springSecurityService.currentUser.nombre
         session.configuracion = configuracion
         session.solicitudesPendientes = dashboardService.obtenerCantidadDeSolicitudesPendientes()
+        session.usuarioUltimoAcceso = userService.getUltimoAcceso(springSecurityService.currentUser)
         //solicitudes.addAll(temporales)
         //solicitudes = solicitudes.sort { it.fechaDeSolicitud }
         println "Regresando ..."

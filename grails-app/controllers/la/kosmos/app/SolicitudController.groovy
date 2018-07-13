@@ -933,6 +933,7 @@ class SolicitudController {
             }
             if(params.docType == "Pasaportes" || params.docType == "Identicaciones"){
                 if(params.cara == "frente") {
+                    session.contadorOcr = 1
                     if(session.contadorOcr == 0) {
                         def respuestaPreliminar = documentSenderService.send(listaDeArchivos,session?.folio)
                         respuesta = documentSenderService.verificarRespuestaMitek(respuestaPreliminar.referencia, session.identificadores?.idSolicitud, session.identificadores?.idSolicitudTemporal, respuestaPreliminar.dossierId,session?.folio)

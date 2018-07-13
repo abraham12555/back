@@ -572,9 +572,9 @@ class ReporteService {
                 datos.razonDeCobertura = it.razon_de_cobertura
                 datos.usuario = it.usuario
                 datos.log = it.log
-                datos.respuesta = it.respuesta
                 datos.error = it.error
                 datos.motivo = it.motivo
+                datos.usoMovil = it.uso_movil
                 datosReporte << datos
             }
             if(datosReporte.size() > 0 ){
@@ -604,7 +604,7 @@ class ReporteService {
                     }
                 }
                 workbook = builder.build {
-                    sheet(name: "ReporteOperaciones", widthColumns: [20,20,20,25,20,20,30,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,50]) {
+                    sheet(name: "ReporteOperaciones", widthColumns: [20,20,20,25,20,20,30,40,40,40,40,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20]) {
                         row (style: 'titulo') {
                             cell { "FOLIO" }
                             cell { "FECHA DE SOLICITUD" }
@@ -662,7 +662,7 @@ class ReporteService {
                             cell { "LOG" }
                             cell { "ERROR OFERTA" }
                             cell { "MOTIVO OFERTA" }
-			    cell { "RESPUESTA" }
+                            cell { "REGISTRADA POR MEDIO" }
                                 
                         }
                         datosReporte.each { fila ->
@@ -723,7 +723,8 @@ class ReporteService {
                                 cell { fila.log ?: ""} 
                                 cell { fila.error ?: ""}
                                 cell { fila.motivo ?: ""}
-                                cell { fila.respuesta ?: "" }
+                                cell { (fila?.usoMovil == true) ? "Movil" : "Escritorio" }
+                                
                             }
                         }
                     }
@@ -740,16 +741,14 @@ class ReporteService {
             //REPORTE DE CONSULTAS MITEK 
             def result = db.rows("select * from bitacora_mitek   where fecha_consulta >= '"+ finicio + " 00:00' and fecha_consulta <= '"+ ffin +" 23:59'  order by fecha_consulta asc ") 
             result?.each {
-                println it
                 def datos = [:]
                 datos.folio = it.folio  
-                datos.fechaConsulta = it.fecha_consulta  
+                datos.fechaConsulta = String.valueOf(it.fecha_consulta)
                 datos.tuvoExito = it.tuvo_exito 
                 datos.tuvoError = it.tuvo_error             
                 datos.estatus = it.estatus                 
                 datos.descripcionError = it.descripcion_error 
                 datos.tiempoEnContestar = it.tiempo_en_contestar                
-                
                 datosReporte << datos 
             }
             if(datosReporte.size() > 0 ){

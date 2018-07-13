@@ -52,7 +52,9 @@ class Evaluador {
                 respuestaDictamenDePoliticas.find {
                     (it."$producto" == "A" ||
                         it."$producto" == "D" ||
-                        it."$producto" == "R")
+                        it."$producto" == "R"||
+                        it."$producto" == "10000"||
+                        it."$producto" == "5000")
                 })?."$producto")
         return dictamen;
     }

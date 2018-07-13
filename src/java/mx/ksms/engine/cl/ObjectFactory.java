@@ -24,10 +24,12 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _CalculateDictamenDePoliticasCasoExtraordinario_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateDictamenDePoliticasCasoExtraordinario");
     private final static QName _CalculateProb_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateProb");
     private final static QName _SaveCadenaBc_QNAME = new QName("http://cl.engine.ksms.mx/", "save_cadena_bc");
     private final static QName _CalculateDictamenDePoliticasResponse_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateDictamenDePoliticasResponse");
     private final static QName _CalculateDictamenDePoliticas_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateDictamenDePoliticas");
+    private final static QName _CalculateDictamenDePoliticasCasoExtraordinarioResponse_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateDictamenDePoliticasCasoExtraordinarioResponse");
     private final static QName _CalculateDictamenDePerfil_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateDictamenDePerfil");
     private final static QName _SaveCadenaBcResponse_QNAME = new QName("http://cl.engine.ksms.mx/", "save_cadena_bcResponse");
     private final static QName _CalculateDictamenDePerfilResponse_QNAME = new QName("http://cl.engine.ksms.mx/", "calculateDictamenDePerfilResponse");
@@ -81,11 +83,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CalculateDictamenDePoliticasCasoExtraordinarioResponse }
+     * 
+     */
+    public CalculateDictamenDePoliticasCasoExtraordinarioResponse createCalculateDictamenDePoliticasCasoExtraordinarioResponse() {
+        return new CalculateDictamenDePoliticasCasoExtraordinarioResponse();
+    }
+
+    /**
      * Create an instance of {@link CalculateDictamenDePerfil }
      * 
      */
     public CalculateDictamenDePerfil createCalculateDictamenDePerfil() {
         return new CalculateDictamenDePerfil();
+    }
+
+    /**
+     * Create an instance of {@link CalculateDictamenDePoliticasCasoExtraordinario }
+     * 
+     */
+    public CalculateDictamenDePoliticasCasoExtraordinario createCalculateDictamenDePoliticasCasoExtraordinario() {
+        return new CalculateDictamenDePoliticasCasoExtraordinario();
     }
 
     /**
@@ -110,6 +128,15 @@ public class ObjectFactory {
      */
     public EngineDataOutput createEngineDataOutput() {
         return new EngineDataOutput();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CalculateDictamenDePoliticasCasoExtraordinario }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cl.engine.ksms.mx/", name = "calculateDictamenDePoliticasCasoExtraordinario")
+    public JAXBElement<CalculateDictamenDePoliticasCasoExtraordinario> createCalculateDictamenDePoliticasCasoExtraordinario(CalculateDictamenDePoliticasCasoExtraordinario value) {
+        return new JAXBElement<CalculateDictamenDePoliticasCasoExtraordinario>(_CalculateDictamenDePoliticasCasoExtraordinario_QNAME, CalculateDictamenDePoliticasCasoExtraordinario.class, null, value);
     }
 
     /**
@@ -146,6 +173,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cl.engine.ksms.mx/", name = "calculateDictamenDePoliticas")
     public JAXBElement<CalculateDictamenDePoliticas> createCalculateDictamenDePoliticas(CalculateDictamenDePoliticas value) {
         return new JAXBElement<CalculateDictamenDePoliticas>(_CalculateDictamenDePoliticas_QNAME, CalculateDictamenDePoliticas.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CalculateDictamenDePoliticasCasoExtraordinarioResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cl.engine.ksms.mx/", name = "calculateDictamenDePoliticasCasoExtraordinarioResponse")
+    public JAXBElement<CalculateDictamenDePoliticasCasoExtraordinarioResponse> createCalculateDictamenDePoliticasCasoExtraordinarioResponse(CalculateDictamenDePoliticasCasoExtraordinarioResponse value) {
+        return new JAXBElement<CalculateDictamenDePoliticasCasoExtraordinarioResponse>(_CalculateDictamenDePoliticasCasoExtraordinarioResponse_QNAME, CalculateDictamenDePoliticasCasoExtraordinarioResponse.class, null, value);
     }
 
     /**

@@ -122,7 +122,7 @@ class CotizadorController {
                 periodicidad = 3 as long
             }
             def monto = params.monto as float
-            def plazo = PlazoProducto.executeQuery('Select p from PlazoProducto p Where p.producto.id = :productoId and p.importeMinimo <= :monto and p.importeMaximo >= :monto and p.periodicidad.id = :periodicidadId', [productoId: params.productoId as long, periodicidadId: periodicidad, monto: monto])
+            def plazo = PlazoProducto.executeQuery('Select p from PlazoProducto p Where p.producto.id = :productoId and p.importeMinimo <= :monto and p.importeMaximo >= :monto and p.periodicidad.id = :periodicidadId and p.usarEnCotizador = true', [productoId: params.productoId as long, periodicidadId: periodicidad, monto: monto])
             println "Plazo encontrado: " + plazo
             if(plazo){
                 respuesta.exito = true
@@ -188,7 +188,7 @@ class CotizadorController {
                 def pagoCapital = (montoMasSeguros/((params.plazoElegido as int)))
                 def a = pagoCapital*producto.plazoCondonado
                 montoMasSeguros = montoMasSeguros-a
-                def pagoIntereses = ((montoMasSeguros*(producto.tasaDeInteresAnual/12))/30)*15.20833
+                def pagoIntereses = ((montoMasSeguros*(producto.tasaDeInteresAnual/12))/30)*15
                 def pagoIvaIntereses = pagoIntereses*0.16
                 def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
                 respuesta.cat = catPagosVariables(c,montoMasSeguros,montoSeguro,pagoCapital,(params.plazoElegido as int),periodicidad.periodosAnuales,producto.plazoCondonado,producto.tasaDeInteresAnual)
@@ -401,7 +401,7 @@ def solicitarCodigoShorUrl() {
                 lista << pagoCapital
             }
             (plazosCondonados+1..plazos).each {
-                def pagoIntereses = ((montoDelCredito*(tasaDeInteres/12))/30)*15.20833
+                def pagoIntereses = ((montoDelCredito*(tasaDeInteres/12))/30)*15
                 def pagoIvaIntereses = pagoIntereses*0.16
                 def pagoTotal= pagoCapital+pagoIntereses+pagoIvaIntereses
                 montoDelCredito = montoDelCredito - pagoCapital

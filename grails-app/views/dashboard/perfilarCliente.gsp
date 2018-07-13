@@ -72,6 +72,9 @@
                             </div>                            
                             <form id="perfiladorForm">
                                 <input type="hidden" id="uso_movil" name ="uso_movil" value="false">
+<!--                            <input type="text" id="documento_elegido_id" name ="documento_elegido_id">
+                                <input type="text" id="pasoActual" name ="pasoActual">-->
+
                                 <div id="step1" class="col12 floatLeft stepContent animated fadeInRight">
                                     <h2 class="marginMobile">Perfilador del cliente</h2>
                                     <div class="perfilador padding20">
@@ -92,14 +95,22 @@
                                         <div id="selectTipoComprobante" class="col12 floatLeft paddingTop20">
                                             <select name="cliente_tipoDeDocumento" id="tipoDeDocumento" class="datoPerfilador js-example-basic-single col6 requerido">
                                                 <option></option>
-                                                <optgroup label="Formales">
-                                                    <option value="3">Estado de cuenta</option>
-                                                    <option value="4">Recibo de Nómina</option>
-                                                    <option value="6">Recibo de Honorarios</option>
+                                                <optgroup label="Asalariados">
+                                                    <option value="12">Recibos de nómina con CFDI</option>
+                                                    <option value="13">Recibos de nómina sin CFDI</option>
+                                                    <option value="14">Recibos de jubilación y/o pensión</option>
+                                                    <option value="15">Cartas patronales</option>
                                                 </optgroup>
-                                                <optgroup label="Informales">
-                                                    <option value="8">Ticket</option>
-                                                    <option value="7">Nota</option>
+                                                <optgroup label="Independientes Formales">
+                                                    <option value="16">Declaciones fiscales</option>
+                                                    <option value="17">Facturaciones de compra</option>
+                                                    <option value="18">Facturaciones de venta</option>
+                                                    <option value="19">Recibos de honorarios</option>
+                                                </optgroup>
+                                                <optgroup label="No Asalariados">
+                                                    <option value="20">Carta de ingresos</option>
+                                                    <option value="21">Carta de proveedores y/o contratistas</option>   
+                                                    <option value="22">Nota de compra, remisión o ticket</option>
                                                 </optgroup>
                                             </select>
                                         </div>

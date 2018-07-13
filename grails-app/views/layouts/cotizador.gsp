@@ -27,12 +27,12 @@
         </g:if>
         <g:layoutHead/>
     </head>
-    <body class="marginBottom150">
-        <section class="containerWrapper height100P" style="border-top: solid 5px ${configuracion?.colorBordeSuperior}; background-color: ${configuracion?.colorFondo};">
+    <body class="marginBottom150" style="border-top: solid 5px ${configuracion?.colorBordeSuperior}; background-image: url('${resource(dir:'images', file: 'cajaLibertad/2modificado2.png')}'); background-repeat: no-repeat; background-position: center 130px; background-size: cover;">
+        <section class="containerWrapper height100P" >
             <div class="cotizador-header"  style="background-color: ${configuracion?.colorEncabezado};">
                 <div class="container paddingTop20 paddingBottom20">
-                    <img src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo">
-                    <div style="float:right; margin-right:21px; margin-left: 21px;" class="block">
+                    <img style="margin-left: 150px;"src="${resource(dir:'images', file: configuracion?.rutaLogotipo)}" alt="Logo">
+                    <div style="float:left; margin-right:21px; margin-left: 21px;" class="block">
                             <table cellspacing="0">
                                 <tbody>
                                     <tr>

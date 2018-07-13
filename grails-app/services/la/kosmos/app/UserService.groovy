@@ -885,5 +885,30 @@ class UserService {
         def result = RandomStringUtils.randomNumeric(5).toUpperCase()
         result
     }
+    
+    def getUltimoAcceso(Usuario usuario){
+        def userList = []
+        def count = 0
+        def criteria = BitacoraSesionesUsuario.createCriteria()
+        def list = criteria.list(max:2) {
+            eq ('usuario',usuario)
+            order("fecha", "desc")
+        }
+     
+        if(list.size() == 1 ){
+            count = 1
+        }
+        list.each {
+            if(count == 1){
+                def mapa = [:]
+                mapa.id = it.id
+                mapa.fecha = it.fecha
+                
+                userList << mapa
+            }
+            count ++
+        }
+        return userList
+    }
 
 }

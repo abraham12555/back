@@ -24,6 +24,9 @@ body {
 .borderGrayButton p {
     color: #71758d;
 }
+.borderBlueButton p {
+    color: #1d5398;
+}
 
 .borderGrayBottom .paddingBottom15 {
     padding-bottom: 0;
@@ -951,6 +954,10 @@ and also iPads specifically.
     }
 
     .borderGrayButton {
+        margin-right: 8px;
+        width: 120px;
+    }
+    .borderBlueButton {
         margin-right: 8px;
         width: 120px;
     }

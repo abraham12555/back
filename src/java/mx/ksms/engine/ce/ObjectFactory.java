@@ -29,7 +29,9 @@ public class ObjectFactory {
     private final static QName _CalculateDictamenDePoliticas_QNAME = new QName("http://ce.engine.ksms.mx/", "calculateDictamenDePoliticas");
     private final static QName _CalculateProb_QNAME = new QName("http://ce.engine.ksms.mx/", "calculateProb");
     private final static QName _SaveCadenaBc_QNAME = new QName("http://ce.engine.ksms.mx/", "save_cadena_bc");
+    private final static QName _CalculateDictamenDePoliticasCasoExtraordinarioCEResponse_QNAME = new QName("http://ce.engine.ksms.mx/", "calculateDictamenDePoliticasCasoExtraordinarioCEResponse");
     private final static QName _CalculateDictamenDePerfilResponse_QNAME = new QName("http://ce.engine.ksms.mx/", "calculateDictamenDePerfilResponse");
+    private final static QName _CalculateDictamenDePoliticasCasoExtraordinarioCE_QNAME = new QName("http://ce.engine.ksms.mx/", "calculateDictamenDePoliticasCasoExtraordinarioCE");
     private final static QName _CalculateProbResponse_QNAME = new QName("http://ce.engine.ksms.mx/", "calculateProbResponse");
     private final static QName _SaveCadenaBcResponse_QNAME = new QName("http://ce.engine.ksms.mx/", "save_cadena_bcResponse");
 
@@ -49,11 +51,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CalculateDictamenDePoliticasCasoExtraordinarioCE }
+     * 
+     */
+    public CalculateDictamenDePoliticasCasoExtraordinarioCE createCalculateDictamenDePoliticasCasoExtraordinarioCE() {
+        return new CalculateDictamenDePoliticasCasoExtraordinarioCE();
+    }
+
+    /**
      * Create an instance of {@link CalculateProbResponse }
      * 
      */
     public CalculateProbResponse createCalculateProbResponse() {
         return new CalculateProbResponse();
+    }
+
+    /**
+     * Create an instance of {@link CalculateDictamenDePoliticasCasoExtraordinarioCEResponse }
+     * 
+     */
+    public CalculateDictamenDePoliticasCasoExtraordinarioCEResponse createCalculateDictamenDePoliticasCasoExtraordinarioCEResponse() {
+        return new CalculateDictamenDePoliticasCasoExtraordinarioCEResponse();
     }
 
     /**
@@ -158,12 +176,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CalculateDictamenDePoliticasCasoExtraordinarioCEResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ce.engine.ksms.mx/", name = "calculateDictamenDePoliticasCasoExtraordinarioCEResponse")
+    public JAXBElement<CalculateDictamenDePoliticasCasoExtraordinarioCEResponse> createCalculateDictamenDePoliticasCasoExtraordinarioCEResponse(CalculateDictamenDePoliticasCasoExtraordinarioCEResponse value) {
+        return new JAXBElement<CalculateDictamenDePoliticasCasoExtraordinarioCEResponse>(_CalculateDictamenDePoliticasCasoExtraordinarioCEResponse_QNAME, CalculateDictamenDePoliticasCasoExtraordinarioCEResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CalculateDictamenDePerfilResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ce.engine.ksms.mx/", name = "calculateDictamenDePerfilResponse")
     public JAXBElement<CalculateDictamenDePerfilResponse> createCalculateDictamenDePerfilResponse(CalculateDictamenDePerfilResponse value) {
         return new JAXBElement<CalculateDictamenDePerfilResponse>(_CalculateDictamenDePerfilResponse_QNAME, CalculateDictamenDePerfilResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CalculateDictamenDePoliticasCasoExtraordinarioCE }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://ce.engine.ksms.mx/", name = "calculateDictamenDePoliticasCasoExtraordinarioCE")
+    public JAXBElement<CalculateDictamenDePoliticasCasoExtraordinarioCE> createCalculateDictamenDePoliticasCasoExtraordinarioCE(CalculateDictamenDePoliticasCasoExtraordinarioCE value) {
+        return new JAXBElement<CalculateDictamenDePoliticasCasoExtraordinarioCE>(_CalculateDictamenDePoliticasCasoExtraordinarioCE_QNAME, CalculateDictamenDePoliticasCasoExtraordinarioCE.class, null, value);
     }
 
     /**

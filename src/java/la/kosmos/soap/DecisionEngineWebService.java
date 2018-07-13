@@ -112,4 +112,25 @@ public class DecisionEngineWebService {
             return respuesta;
         }
     }
+    
+    public List<HashMap> getDictamenteDePoliticasCasoExtraordinario(String URL, Long solicitudId, String listaDeServicios, Integer edad, Double porcentajeDeDescuento,Boolean asalariado) {
+        List<HashMap> respuesta = new ArrayList();
+        try {
+            ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
+            String resultado = port.calculateDictamenDePoliticasCasoExtraordinario(solicitudId.toString(), listaDeServicios, edad, porcentajeDeDescuento,asalariado);
+            StringTokenizer servicios = new StringTokenizer(resultado, ",");
+            while (servicios.hasMoreElements()) {
+                StringTokenizer dictamen = new StringTokenizer(servicios.nextElement().toString(), "=");
+                while (dictamen.hasMoreElements()) {
+                    HashMap dictamenServicio = new HashMap();
+                    dictamenServicio.put(dictamen.nextElement().toString(), dictamen.nextElement().toString());
+                    respuesta.add(dictamenServicio);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Ocurrio un error al consumir el ws getDictamenteDePoliticasCasoExtraordinario", e);
+        } finally {
+            return respuesta;
+        }
+    }
 }

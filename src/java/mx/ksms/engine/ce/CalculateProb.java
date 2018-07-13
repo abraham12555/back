@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="atrasoPago" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="malaFe" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="porcentajeDedescuento" type="{http://www.w3.org/2001/XMLSchema}double" minOccurs="0"/>
+ *         &lt;element name="listaNegra" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -92,7 +93,8 @@ import javax.xml.bind.annotation.XmlType;
     "clienteConRenovacion",
     "atrasoPago",
     "malaFe",
-    "porcentajeDedescuento"
+    "porcentajeDedescuento",
+    "listaNegra"
 })
 public class CalculateProb {
 
@@ -149,6 +151,7 @@ public class CalculateProb {
     protected String atrasoPago;
     protected String malaFe;
     protected Double porcentajeDedescuento;
+    protected String listaNegra;
 
     /**
      * Obtiene el valor de la propiedad solicitudId.
@@ -924,6 +927,30 @@ public class CalculateProb {
      */
     public void setPorcentajeDedescuento(Double value) {
         this.porcentajeDedescuento = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad listaNegra.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getListaNegra() {
+        return listaNegra;
+    }
+
+    /**
+     * Define el valor de la propiedad listaNegra.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setListaNegra(String value) {
+        this.listaNegra = value;
     }
 
 }

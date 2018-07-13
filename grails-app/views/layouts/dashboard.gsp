@@ -67,12 +67,15 @@
             <div class="container clearFix">
                 <img class="logo dashboard floatLeft desktop" src="${resource(dir:'images', file: session.configuracion?.rutaLogotipo )}" alt="Logo" title="Logo" />
                 <img class="logoMobile dashboard floatLeft mobile tablet" src="${resource(dir:'images', file:'kosmos-mobile-logo.png')}" alt="Logo" title="Logo" />
-                <div class="floatingHeader floatRight clearFix">
-                    <div class="floatRight clearFix">
+                <div class="floatingHeader floatRight clearFix" style="height: 90px;">
+                    <div class="floatRight clearFix" style="height: 90px;">
                         <div class="clearFix floatLeft ">
                             <img class="userPicture dashboard floatLeft" src="${resource(dir:'images', file:'profile.png')}" id="bannerProfilePicture"/>
                         </div>
-                        <p class="userName dashboard floatLeft">Hola ${session.usuarioNombre} </p>
+                            <p class="userName dashboard floatLeft" style="margin-top: 0px;">Hola ${session.usuarioNombre} 
+                                <br> Último Acceso: <br>
+                                <g:formatDate date="${session?.usuarioUltimoAcceso?.fecha[0]}" format='E, dd MMM yyyy H:mm:ss a', locale="${Locale.ENGLISH}"/>
+                            </p>
                         <div class="dropBox floatLeft marginTop20 marginLeft5 desktop">
                             <i class="fa fa-angle-down paddingTop4 paddingRight5 paddingLeft5 dropbtn" aria-hidden="true" onclick="mostrarOpciones();"></i>
                             <div id="opcionesUsuario" class="dropdown-content">

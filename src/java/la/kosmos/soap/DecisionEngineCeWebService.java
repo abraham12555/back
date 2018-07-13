@@ -35,13 +35,13 @@ public class DecisionEngineCeWebService {
         }
     }
 
-    public HashMap doGetScore(String URL, Long solicitudId, String riesgoGeografico, String renovacion, Double rdifmspwultcpt12, Double revoPagos3, Double propMontoLiberado, Double fecAntigCliCred, Integer edad, Integer antiguedadEmpleo, String riesgoOcupacion, String estadoCivil, String claveServicio, Double rcobsldpas12, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer cantidadIntegrantesFamilia, Double gastosDeAlquiler, Double cuotaCredito, Integer tipoDeVivienda, boolean asalariado, String experienciaCrediticia, Integer creditosLiquidados, String cadenaBuroDeCredito, String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2, String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento) {
+    public HashMap doGetScore(String URL, Long solicitudId, String riesgoGeografico, String renovacion, Double rdifmspwultcpt12, Double revoPagos3, Double propMontoLiberado, Double fecAntigCliCred, Integer edad, Integer antiguedadEmpleo, String riesgoOcupacion, String estadoCivil, String claveServicio, Double rcobsldpas12, Double ingresosFijosMensuales, Double ingresosVariablesMensuales, Double otrosIngresos, Integer cantidadIntegrantesFamilia, Double gastosDeAlquiler, Double cuotaCredito, Integer tipoDeVivienda, boolean asalariado, String experienciaCrediticia, Integer creditosLiquidados, String cadenaBuroDeCredito, String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2, String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento,String listaNegra) {
 
         mx.ksms.engine.ce.EngineCEDataOutput resultado = null;
         HashMap respuesta = null;
         try {
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
-            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, renovacion, rdifmspwultcpt12, revoPagos3, propMontoLiberado, fecAntigCliCred, edad, antiguedadEmpleo, riesgoOcupacion, estadoCivil, claveServicio, rcobsldpas12, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, cantidadIntegrantesFamilia, gastosDeAlquiler, cuotaCredito, tipoDeVivienda, asalariado, experienciaCrediticia, creditosLiquidados, cadenaBuroDeCredito,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento);
+            resultado = port.calculateProb(solicitudId.toString(), riesgoGeografico, renovacion, rdifmspwultcpt12, revoPagos3, propMontoLiberado, fecAntigCliCred, edad, antiguedadEmpleo, riesgoOcupacion, estadoCivil, claveServicio, rcobsldpas12, ingresosFijosMensuales, ingresosVariablesMensuales, otrosIngresos, cantidadIntegrantesFamilia, gastosDeAlquiler, cuotaCredito, tipoDeVivienda, asalariado, experienciaCrediticia, creditosLiquidados, cadenaBuroDeCredito,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento,listaNegra);
             respuesta = new HashMap();
             respuesta.put("dictamenDePerfil", resultado.getDictamenDePerfil());
             respuesta.put("dictamenCapacidadDePago", resultado.getDictamenCapacidadDePago());
@@ -74,11 +74,11 @@ public class DecisionEngineCeWebService {
         }
     }
 
-    public List<HashMap> getDictamenteDePoliticas(String URL, Long solicitudId, String listaDeServicios, Integer edad, String experienciaCrediticia, Integer creditosLiquidados,String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2,String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento) {
+    public List<HashMap> getDictamenteDePoliticas(String URL, Long solicitudId, String listaDeServicios, Integer edad, String experienciaCrediticia, Integer creditosLiquidados,String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2,String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento,String listaNegra) {
         List<HashMap> respuesta = new ArrayList();
         try {
             ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
-            String resultado = port.calculateDictamenDePoliticas(solicitudId.toString(), listaDeServicios, edad, experienciaCrediticia, creditosLiquidados,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento);
+            String resultado = port.calculateDictamenDePoliticas(solicitudId.toString(), listaDeServicios, edad, experienciaCrediticia, creditosLiquidados,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento,listaNegra);
             StringTokenizer servicios = new StringTokenizer(resultado, ",");
             while (servicios.hasMoreElements()) {
                 StringTokenizer dictamen = new StringTokenizer(servicios.nextElement().toString(), "=");
@@ -108,6 +108,28 @@ public class DecisionEngineCeWebService {
             }
         } catch (Exception e) {
             log.error("Ocurrio un error al consumir el ws getDictamenteDePerfil", e);
+        } finally {
+            return respuesta;
+        }
+    }    
+    
+    
+        public List<HashMap> getDictamenteDePoliticasCasoExtraordinarioCE(String URL, Long solicitudId, String listaDeServicios, Integer edad, String experienciaCrediticia, Integer creditosLiquidados,String clienteCredVigente,String renovacion1,String ultimaFechaCredito,Double avanceCapital1,Double avanceCapital2,String clienteConRenovacion,String atrasoPago,String malaFe,Double porcentajeDeDescuento,Boolean asalariado,String listaNegra) {
+        List<HashMap> respuesta = new ArrayList();
+        try {
+            ((BindingProvider) port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
+            String resultado = port.calculateDictamenDePoliticasCasoExtraordinarioCE(solicitudId.toString(), listaDeServicios, edad, experienciaCrediticia, creditosLiquidados,clienteCredVigente,renovacion1,ultimaFechaCredito,avanceCapital1,avanceCapital2,clienteConRenovacion,atrasoPago,malaFe,porcentajeDeDescuento,asalariado,listaNegra);
+            StringTokenizer servicios = new StringTokenizer(resultado, ",");
+            while (servicios.hasMoreElements()) {
+                StringTokenizer dictamen = new StringTokenizer(servicios.nextElement().toString(), "=");
+                while (dictamen.hasMoreElements()) {
+                    HashMap dictamenServicio = new HashMap();
+                    dictamenServicio.put(dictamen.nextElement().toString(), dictamen.nextElement().toString());
+                    respuesta.add(dictamenServicio);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Ocurrio un error al consumir el ws getDictamenteDePoliticas", e);
         } finally {
             return respuesta;
         }

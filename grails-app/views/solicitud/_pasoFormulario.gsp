@@ -6,7 +6,7 @@
         <input type="hidden" id="revisionInicial" value="false"/>
     </g:if>
     <g:if test="${!session.tiposDeDocumento?.identificacion && !generales?.llenadoPrevio}">
-        <div class="defaultBubble <g:if test="${pasoActual?.tipoDePaso?.nombre == "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
+        <div class="defaultBubble hide <g:if test="${pasoActual?.tipoDePaso?.nombre == "pasoFormulario" && generales?.llenadoPrevio && generales?.exito}"> hide </g:if> ">
                 <div class="container clearFix relative autoMargin width920">
                     <div class="infoBox floatLeft desktop">
                         <div class="width630 autoMargin">

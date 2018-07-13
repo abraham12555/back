@@ -41,7 +41,7 @@
                                 <a onclick="mostrarApartado('opcReportes','reportesTab','contactoClientes');" title="Ver Contacto de Clientes" class="displayInline font20 fontWeight500 darkBluetitle opacity05 padding20 pointer">CONTACTO CLIENTES</a>
                             </li>-->
                         </sec:ifAnyGranted>
-                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA'>
+                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA,ROLE_DIRECTOR'>
                             <li id="operacionesButton" class="opcReportes floatLeft lightGrayBG paddingLeft5 paddingRight5">
                                 <a onclick="mostrarApartado('opcReportes','reportesTab','operaciones');" title="Ver Operaciones" class="displayInline font20 fontWeight500 darkBluetitle padding20 pointer">OPERACIONES</a>
                             </li>
@@ -84,7 +84,7 @@
         </div>-->
     </sec:ifAnyGranted>
     
-    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA'>
+    <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_RIESGOS,ROLE_MERCADOTECNIA,ROLE_DIRECTOR'>
         <div class="reportesTab" id="operaciones" style="display: none;" >
             <g:render template="operaciones"/>
         </div>

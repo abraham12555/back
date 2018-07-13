@@ -8,7 +8,6 @@ package la.kosmos.app.security
 
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.security.authentication.AccountExpiredException
-import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.SpringSecurityMessageSource
@@ -30,8 +29,6 @@ class CustomPreAuthenticationChecks implements UserDetailsChecker {
             throw new AccountExpiredException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.expired", "User account has expired"));
         } else if (!user.isAccountNonLocked()) {
             throw new LockedException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.locked", "User account is locked"));
-        } else if(!user.isCredentialsNonExpired()){
-            throw new CredentialsExpiredException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.credentialsExpired", "User credentials have expired"));
         }
     }
 }

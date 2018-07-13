@@ -1,4 +1,4 @@
-<div class="idLightbox" id="login">
+<div class="idLightbox hide" id="login">
     <div class="overlay">
         <form id="formRedesSociales" method="POST" action="formulario">
             <input type="hidden" id="datosFb" name="datosFb"/>
@@ -8,7 +8,7 @@
             <input type="hidden" id="pasoInicial" value="0">
             <input type="hidden" id="tipoDeDocumento">
         </form>
-        <div class="lightboxPos">
+        <div class="lightboxPos hide">
             <div class="marginTop20">  
                 <div class="whiteBox width550 autoMargin marginTop13">
                     <div class="paddingAside20">
